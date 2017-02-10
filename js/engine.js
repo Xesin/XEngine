@@ -1,3 +1,5 @@
+/* global navigator Image */
+
 var XEngine = {
 	version: '0.3-alpha'
 };
@@ -82,8 +84,8 @@ XEngine.Game.prototype = {
 		_this.frameTime = _this.elapsedTime;									//tiempo en el que transcurre este frame
 		_this.deltaMillis = (_this.frameTime - _this.previousFrameTime);		//tiempo entre frames (en milisegundos)
 		_this.deltaTime = _this.deltaMillis / 1000;								//tiempo entre frames (en segundos)
-		_this.previousFrameTime = _this.frameTime;								//guardamos el tiempo de este frame para después calcular el delta time
 		if(1/_this.frameLimit > _this.deltaTime) return;
+		_this.previousFrameTime = _this.frameTime;								//guardamos el tiempo de este frame para después calcular el delta time
 		if(_this.state.currentState == null) return;							//Si no hay arrancado ningún estado, saltamos el update
 		if(!this.load.preloading){												//Si no estamos precargando los assets, ejecutamos el update
 			for(var i = _this.gameObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del juego para hacer su update
@@ -147,10 +149,10 @@ XEngine.Game.prototype = {
 		var _this = this;
 		for(var i = 0; i < arrayObjects.length; i++){							
 			var object = arrayObjects[i];
-			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
+			if(XEngine.Group.prototype.isPrototypeOf(object) && object.alive && object.render){					//Si es un grupo, llamamos al render pasando los objetos que contiene
 				_this.render(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
-				if(!object.alive) continue;
+				if(!object.alive || !object.render) continue;
 				object._renderToCanvas(_this.canvas);							
 				if(object.body != undefined){
 					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
@@ -409,29 +411,33 @@ XEngine.ObjectFactory.prototype = {
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
-		if(gameObject.init != undefined){										//Si el objeto tiene definida la función de init, la llamamos
-			gameObject.init();
+		if(gameObject.start != undefined){										//Si el objeto tiene definida la función de start, la llamamos
+			gameObject.start();
 		}
 		return gameObject;
 	},
 	
 	sprite : function (posX, posY, sprite) {									//Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
+		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	tilled : function (posX, posY, sprite, width, height) {						//Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
+		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	rect : function (posX, posY, width, height, color) {			//Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Rect(this.game, posX, posY, width, height, color);
+		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	text : function (posX, posY, text, size, font, color) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, font, color);
+		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
@@ -444,6 +450,7 @@ XEngine.ObjectFactory.prototype = {
 		var x = posX || 0;
 		var y = posY || 0;
 		var gameObject = new XEngine.Group(this.game, x, y);
+		gameObject.start();
 		return this.existing(gameObject);
 	}
 };
@@ -883,6 +890,7 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this.max = new XEngine.Vector(0,0);
 	this.debug = false;
 	this._contObject = contObject;
+	this.bounds = this._contObject.getBounds();
 	this.updateBounds();
 };
 
@@ -921,19 +929,18 @@ XEngine.Physics.PhysicsBody.prototype = {
 		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
 		_this.updateBounds();													//Actualizamos los bounds una vez se ha calculado la nueva posición
 		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
-			var bounds = _this._contObject.getBounds();
 			if(_this.min.x < 0){												//Izquierda
-				_this.position.x = (bounds.width * _this._contObject.anchor.x);
+				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
 				_this.velocity.x = (-this.velocity.x * _this.restitution);
 			}else if(_this.max.x > _this.game.worldWidth){						//Derecha
-				_this.position.x = _this.game.worldWidth - (bounds.width * ( 1 -_this._contObject.anchor.x));
+				_this.position.x = _this.game.worldWidth - (_this.bounds.width * ( 1 -_this._contObject.anchor.x));
 				_this.velocity.x = (-this.velocity.x * _this.restitution);
 			}
 			if(_this.min.y < 0){												//Arriba
-				_this.position.y = (bounds.height * _this._contObject.anchor.y);
+				_this.position.y = (_this.bounds.height * _this._contObject.anchor.y);
 				_this.velocity.y = (-this.velocity.y * _this.restitution);
 			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
-				_this.position.y = _this.game.worldHeight - (bounds.height * (1 - _this._contObject.anchor.y));
+				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
 				_this.velocity.y = (-this.velocity.y * _this.restitution);
 			}
 		}
@@ -942,11 +949,10 @@ XEngine.Physics.PhysicsBody.prototype = {
 	
 	updateBounds: function () {													//Se obtiene la caja de colisión teniendo en cuenta el achor del sprite
 		var _this = this;
-		var bounds = _this._contObject.getBounds();
-		_this.min.x = _this.position.x - (bounds.width * _this._contObject.anchor.x);
-		_this.min.y = _this.position.y - (bounds.height * _this._contObject.anchor.y);
-		_this.max.x = _this.position.x + (bounds.width * (1 - _this._contObject.anchor.x));
-		_this.max.y = _this.position.y + (bounds.height * (1 - _this._contObject.anchor.y));
+		_this.min.x = _this.position.x - (_this.bounds.width * _this._contObject.anchor.x);
+		_this.min.y = _this.position.y - (_this.bounds.height * _this._contObject.anchor.y);
+		_this.max.x = _this.position.x + (_this.bounds.width * (1 - _this._contObject.anchor.x));
+		_this.max.y = _this.position.y + (_this.bounds.height * (1 - _this._contObject.anchor.y));
 	},
 	
 	_renderBounds: function (canvas) {
@@ -954,7 +960,7 @@ XEngine.Physics.PhysicsBody.prototype = {
 		if(_this.debug){														//Si el objeto está en debug, pintaremos su bounding box por encima
 			canvas.save();														
 			canvas.fillStyle = 'rgba(200,255,200, 0.7)';
-			canvas.fillRect(_this.position.x - ((_this._contObject.width * _this._contObject.scale.x) * _this._contObject.anchor.x), _this.position.y - ((_this._contObject.height * _this._contObject.scale.y) * _this._contObject.anchor.y), _this._contObject.width * _this._contObject.scale.x, _this._contObject.height * _this._contObject.scale.y);
+			canvas.fillRect(_this.position.x - (_this.bounds.width * _this._contObject.anchor.x), _this.position.y - (_this.bounds.height * _this._contObject.anchor.y), _this.bounds.width, _this.bounds.height);
 			canvas.restore();
 		}
 	},
@@ -1192,59 +1198,54 @@ XEngine.InputManager.prototype = {
 	},
 	
 	clickHandler: function(event){
-		var rect = this.game.reference.getBoundingClientRect();
-		var newEvent = {
-			position : {
-				x: event.pageX - rect.left,
-				y: event.pageY - rect.top,
-			},
-		};
-		this.clickDispatcher(newEvent);
+		var inputPos = this.getInputPosition(event);
+		this.clickDispatcher(inputPos);
 	},
 	
 	inputDownHandler: function(event){
 		this.isDown = true;
-		var rect = this.game.reference.getBoundingClientRect();
-		var newEvent = {
-			position : {
-				x: event.pageX - rect.left,
-				y: event.pageY - rect.top,
-			},
-		};
-		
-		if(this.game.isMobile){
-			newEvent = {
-				position: {
-					x: event.touches[0].pageX - rect.left,
-	        		y: event.touches[0].pageY - rect.top
-				}
-			};
+		var inputPos = this.getInputPosition(event);
+		this.pointer.x = inputPos.position.x;
+		this.pointer.y = inputPos.position.y;
+		this.onInputDown.dispatch(inputPos);
+		for(var i = this.game.gameObjects.length - 1; i >= 0; i--){
+			var gameObject = this.game.gameObjects[i];
+			if(!gameObject.inputEnabled) continue;
+			if(this._pointerInsideBounds(gameObject)){
+				if(gameObject.onInputDown == undefined){
+					gameObject.onInputDown = new XEngine.Signal();
+				} 
+				gameObject.onInputDown.dispatch(event);
+			}
 		}
-		this.pointer.x = newEvent.position.x;
-		this.pointer.y = newEvent.position.y;
-		this.onInputDown.dispatch(newEvent);
 	},
 	
 	inputMoveHandler: function (event) {
+		
+		var inputPos = this.getInputPosition(event);
+		this.pointer.x = inputPos.position.x;
+		this.pointer.y = inputPos.position.y;
+		this.onInputMove.dispatch(inputPos);
+	},
+	
+	getInputPosition: function (event) {
 		var rect = this.game.reference.getBoundingClientRect();
 		var newEvent = {
 			position : {
-				x: event.pageX - rect.left,
-				y: event.pageY - rect.top,
+				x: event.pageX - (document.documentElement.scrollLeft || document.body.scrollLeft) - rect.left,
+				y: event.pageY - (document.documentElement.scrollTop || document.body.scrollTop) - rect.top
 			},
 		};
 		
 		if(this.game.isMobile){
 			newEvent = {
 				position: {
-					x: event.touches[0].pageX - rect.left,
-	        		y: event.touches[0].pageY - rect.top
+					x: event.touches[0].pageX - (document.documentElement.scrollLeft || document.body.scrollLeft) - rect.left,
+	        		y: event.touches[0].pageY - (document.documentElement.scrollTop || document.body.scrollTop) - rect.top
 				}
 			};
 		}
-		this.pointer.x = newEvent.position.x;
-		this.pointer.y = newEvent.position.y;
-		this.onInputMove.dispatch(newEvent);
+		return newEvent;
 	},
 	
 	inputUpHandler: function(event){
@@ -1303,12 +1304,15 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.game = game;															//Referencia al juego
     _this.isPendingDestroy = false;
     _this.alive = true;
+    _this.render = true;
     _this.alpha = 1.0;
     _this.scale = new XEngine.Vector(1,1);
     _this.anchor = new XEngine.Vector(0,0);										//Ancla del objeto (0,0) = Arriba a la izquierda
     _this.rotation = 0;
     _this.position = new XEngine.Vector(0, 0); 
     _this.onClick = new XEngine.Signal();
+    _this.onInputDown = new XEngine.Signal();			
+    _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
 };
 
 XEngine.BaseObject.prototype = {
@@ -1318,6 +1322,10 @@ XEngine.BaseObject.prototype = {
         if(this.onDestroy != undefined){
         	this.onDestroy();
         }
+    },
+    
+    start: function () {
+    	
     },
     
     kill: function () {
@@ -1384,7 +1392,7 @@ XEngine.Group.prototypeExtends = {
     },
     
     getFirstDead: function () {
-    	for(var i = this.children.length - 1; i >= 0; i--)						//Recorremos los objetos del grupo para hacer su update
+    	for(var i = this.children.length - 1; i >= 0; i--)						//Recorremos los objetos del grupo para encontrar alguno que esté "muerto"
 		{
 			var gameObject = this.children[i];
 			if(!gameObject.alive)
@@ -1392,6 +1400,7 @@ XEngine.Group.prototypeExtends = {
 				return gameObject;
 			}
 		}
+		return null;
     },
     
     getChildAtIndex: function (index) {
@@ -1421,8 +1430,8 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        if(gameObject.init != undefined){
-			gameObject.init(gameObject);
+        if(gameObject.start != undefined){
+			gameObject.start(gameObject);
 		}
         gameObject.parent = this;
         return gameObject;
@@ -1463,6 +1472,19 @@ XEngine.Sprite.prototypeExtends = {
 		var height = _this.height * _this.scale.y;
 		return {width : width, height: height};
 	},
+	
+	reset: function (x, y) {
+		this.position.x = x;
+		this.position.y = y;
+		this.rotation = 0;
+		this.alive = true;
+		if(this.body){
+			this.body.velocity = new XEngine.Vector(0, 0);
+		}
+		if(this.start){
+			this.start();
+		}
+	}
 };
 
 Object.assign(XEngine.Sprite.prototype, XEngine.Sprite.prototypeExtends);
