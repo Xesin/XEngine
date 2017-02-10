@@ -1,5 +1,3 @@
-/* global navigator Image */
-
 var XEngine = {
 	version: '0.3-alpha'
 };
@@ -117,8 +115,7 @@ XEngine.Game.prototype = {
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
 			}													//Llamamos al handler de condición de fin;
 		}			
-		_this.canvas.fillStyle = _this.reference.style.backgroundColor;
-		_this.canvas.fillRect(0, 0, _this.width, _this.height);					//Limpiamos el canvas
+		_this.canvas.clearRect(0, 0, _this.width, _this.height);					//Limpiamos el canvas
 		_this.render(this.gameObjects);											//Renderizamos la escena
 	},
 	
@@ -149,10 +146,10 @@ XEngine.Game.prototype = {
 		var _this = this;
 		for(var i = 0; i < arrayObjects.length; i++){							
 			var object = arrayObjects[i];
-			if(XEngine.Group.prototype.isPrototypeOf(object) && object.alive && object.render){					//Si es un grupo, llamamos al render pasando los objetos que contiene
+			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
 				_this.render(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
-				if(!object.alive || !object.render) continue;
+				if(!object.alive) continue;
 				object._renderToCanvas(_this.canvas);							
 				if(object.body != undefined){
 					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
@@ -411,33 +408,29 @@ XEngine.ObjectFactory.prototype = {
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
-		if(gameObject.start != undefined){										//Si el objeto tiene definida la función de start, la llamamos
-			gameObject.start();
+		if(gameObject.init != undefined){										//Si el objeto tiene definida la función de init, la llamamos
+			gameObject.init();
 		}
 		return gameObject;
 	},
 	
 	sprite : function (posX, posY, sprite) {									//Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	tilled : function (posX, posY, sprite, width, height) {						//Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	rect : function (posX, posY, width, height, color) {			//Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Rect(this.game, posX, posY, width, height, color);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	text : function (posX, posY, text, size, font, color) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, font, color);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
@@ -450,7 +443,6 @@ XEngine.ObjectFactory.prototype = {
 		var x = posX || 0;
 		var y = posY || 0;
 		var gameObject = new XEngine.Group(this.game, x, y);
-		gameObject.start();
 		return this.existing(gameObject);
 	}
 };
@@ -1304,7 +1296,6 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.game = game;															//Referencia al juego
     _this.isPendingDestroy = false;
     _this.alive = true;
-    _this.render = true;
     _this.alpha = 1.0;
     _this.scale = new XEngine.Vector(1,1);
     _this.anchor = new XEngine.Vector(0,0);										//Ancla del objeto (0,0) = Arriba a la izquierda
@@ -1322,10 +1313,6 @@ XEngine.BaseObject.prototype = {
         if(this.onDestroy != undefined){
         	this.onDestroy();
         }
-    },
-    
-    start: function () {
-    	
     },
     
     kill: function () {
@@ -1430,8 +1417,8 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        if(gameObject.start != undefined){
-			gameObject.start(gameObject);
+        if(gameObject.init != undefined){
+			gameObject.init(gameObject);
 		}
         gameObject.parent = this;
         return gameObject;
@@ -1476,13 +1463,9 @@ XEngine.Sprite.prototypeExtends = {
 	reset: function (x, y) {
 		this.position.x = x;
 		this.position.y = y;
-		this.rotation = 0;
 		this.alive = true;
 		if(this.body){
 			this.body.velocity = new XEngine.Vector(0, 0);
-		}
-		if(this.start){
-			this.start();
 		}
 	}
 };
