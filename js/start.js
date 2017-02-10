@@ -18,13 +18,17 @@ var Start = function (game) {
 Start.prototype = {
 	
 	preload: function () {
-		this.game.load.image('candy', 'img/candy0.png');
+		this.game.load.spriteSheet('candy', 'img/candy0.png', 50, 50);
 	},
 	
 	start: function () {
 		this.game.physics.startSystem();
 		//this.candy = this.game.add.sprite(0,0, 'candy');
 		//this.game.tween.add(this.candy.position).to({x : 200}, 1000, XEngine.Easing.Linear);
+		var candy = this.game.add.sprite(100, 200, 'candy');
+		candy.frame = 1;
+		candy.animation.add('candy', [0,1,2,3], 100, true);
+		candy.animation.play('candy');
 		var text = this.game.add.text(100,160, 'Hello World', 30, 'Roboto');
 		text.strokeWidth = 3;
 		text.anchor.setTo(0.5);
