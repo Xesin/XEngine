@@ -349,7 +349,7 @@ XEngine.ImageLoader.prototype = {
         	}
         	
         	if(_this.frameHeight == 0){
-        		imageRef.frameHeight = this.width;
+        		imageRef.frameHeight = this.height;
         	}else{
         		imageRef.frameHeight = _this.frameHeight;
         	}
@@ -434,8 +434,8 @@ XEngine.ObjectFactory.prototype = {
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
-		if(gameObject.init != undefined){										//Si el objeto tiene definida la función de init, la llamamos
-			gameObject.init();
+		if(gameObject.start != undefined){
+			gameObject.start();
 		}
 		return gameObject;
 	},
@@ -1443,8 +1443,8 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        if(gameObject.init != undefined){
-			gameObject.init(gameObject);
+        if(gameObject.start != undefined){
+			gameObject.start();
 		}
         gameObject.parent = this;
         return gameObject;
@@ -1499,6 +1499,9 @@ XEngine.Sprite.prototypeExtends = {
 		this.position.x = x;
 		this.position.y = y;
 		this.alive = true;
+		if(this.start != undefined){
+			this.start();
+		}
 		if(this.body){
 			this.body.velocity = new XEngine.Vector(0, 0);
 		}
