@@ -1,7 +1,5 @@
-/* global navigator Image */
-
 var XEngine = {
-	version: '0.3-alpha'
+	version: '0.4-alpha'
 };
 
 // ----------------------------------------- GAME ENGINE ------------------------------------------//
@@ -100,9 +98,14 @@ XEngine.Game.prototype = {
 					delete _this.gameObjects[i];								//Liberamos memoria
 					_this.gameObjects.splice(i, 1);
 				}
-				else if(gameObject.update != undefined && gameObject.alive)		//En caso contrario miramos si contiene el método update y está vivo, lo ejecutamos
+				else if(gameObject.alive)		//En caso contrario miramos si contiene el método update y está vivo, lo ejecutamos
 				{	
-					gameObject.update(_this.deltaTime);	
+					if(gameObject.update != undefined){
+						gameObject.update(_this.deltaTime);
+					}
+					if(XEngine.Sprite.prototype.isPrototypeOf(gameObject)){
+						gameObject._updateAnims(_this.deltaMillis);
+					}
 				}
 			}
 			
@@ -117,8 +120,7 @@ XEngine.Game.prototype = {
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
 			}													//Llamamos al handler de condición de fin;
 		}			
-		_this.canvas.fillStyle = _this.reference.style.backgroundColor;
-		_this.canvas.fillRect(0, 0, _this.width, _this.height);					//Limpiamos el canvas
+		_this.canvas.clearRect(0, 0, _this.width, _this.height);					//Limpiamos el canvas
 		_this.render(this.gameObjects);											//Renderizamos la escena
 	},
 	
@@ -149,10 +151,10 @@ XEngine.Game.prototype = {
 		var _this = this;
 		for(var i = 0; i < arrayObjects.length; i++){							
 			var object = arrayObjects[i];
-			if(XEngine.Group.prototype.isPrototypeOf(object) && object.alive && object.render){					//Si es un grupo, llamamos al render pasando los objetos que contiene
+			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
 				_this.render(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
-				if(!object.alive || !object.render) continue;
+				if(!object.alive) continue;
 				object._renderToCanvas(_this.canvas);							
 				if(object.body != undefined){
 					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
@@ -271,6 +273,10 @@ XEngine.Loader.prototype = {
 		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this));
 	},
 	
+	spriteSheet: function (imageName, imageUrl, frameWidth, frameHeight) {
+		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
+	},
+	
 	audio: function (audioName, audioUrl) {
 		this.pendingLoads.push(new XEngine.AudioLoader(audioName, audioUrl, this));
 	},
@@ -312,11 +318,13 @@ XEngine.Loader.prototype = {
 	},
 };
 
-XEngine.ImageLoader = function (imageName, imageUrl, loader) {
+XEngine.ImageLoader = function (imageName, imageUrl, loader, frameWidth, frameHeight) {
 	this.imageName = imageName;													//Nombre de la imagen a guardar en chache
 	this.imageUrl = imageUrl;													//Url de la imagen (con extension y todo)
 	this.completed = false;												
 	this.loader = loader;														//Referencia al loader
+	this.frameWidth = frameWidth || 0;
+	this.frameHeight = frameHeight || 0;
 };
 
 XEngine.ImageLoader.prototype = {
@@ -324,13 +332,28 @@ XEngine.ImageLoader.prototype = {
 		var _this = this;
 		var newImage = {														//Creamos el objeto a guardar en cache
 			imageName : _this.imageName,										//Nombre de la imagen
-			image: null															//Referencia de la imagen
+			image: null,														//Referencia de la imagen
+			frameWidth : _this.frameWidth,
+			frameHeight: _this.frameHeight 
 		};
 		var img1 = new Image();													//Creamos el objeto Image
 		var handler = function () {												//Creamos el handler de cuando se completa o da error
         	var imageRef = _this.loader.game.cache.images[_this.imageName];		//Obtenemos la imagen de cache
         	imageRef.image = this;												//Asignamos la referencia
         	_this.completed = true;												//Marcamos como completado
+        
+        	if(_this.frameWidth == 0){
+        		imageRef.frameWidth = this.width;
+        	}else{
+        		imageRef.frameWidth = _this.frameWidth;
+        	}
+        	
+        	if(_this.frameHeight == 0){
+        		imageRef.frameHeight = this.width;
+        	}else{
+        		imageRef.frameHeight = _this.frameHeight;
+        	}
+        	
         	_this.loader._notifyCompleted();									//Notificamos de que la carga se ha completado
         };
         img1.onload = handler;													//Asignamos los handlers
@@ -411,33 +434,29 @@ XEngine.ObjectFactory.prototype = {
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
-		if(gameObject.start != undefined){										//Si el objeto tiene definida la función de start, la llamamos
-			gameObject.start();
+		if(gameObject.init != undefined){										//Si el objeto tiene definida la función de init, la llamamos
+			gameObject.init();
 		}
 		return gameObject;
 	},
 	
 	sprite : function (posX, posY, sprite) {									//Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	tilled : function (posX, posY, sprite, width, height) {						//Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	rect : function (posX, posY, width, height, color) {			//Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Rect(this.game, posX, posY, width, height, color);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
 	text : function (posX, posY, text, size, font, color) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, font, color);
-		gameObject.start();
 		return this.existing(gameObject);
 	},
 	
@@ -450,7 +469,6 @@ XEngine.ObjectFactory.prototype = {
 		var x = posX || 0;
 		var y = posY || 0;
 		var gameObject = new XEngine.Group(this.game, x, y);
-		gameObject.start();
 		return this.existing(gameObject);
 	}
 };
@@ -1304,7 +1322,6 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.game = game;															//Referencia al juego
     _this.isPendingDestroy = false;
     _this.alive = true;
-    _this.render = true;
     _this.alpha = 1.0;
     _this.scale = new XEngine.Vector(1,1);
     _this.anchor = new XEngine.Vector(0,0);										//Ancla del objeto (0,0) = Arriba a la izquierda
@@ -1322,10 +1339,6 @@ XEngine.BaseObject.prototype = {
         if(this.onDestroy != undefined){
         	this.onDestroy();
         }
-    },
-    
-    start: function () {
-    	
     },
     
     kill: function () {
@@ -1430,8 +1443,8 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        if(gameObject.start != undefined){
-			gameObject.start(gameObject);
+        if(gameObject.init != undefined){
+			gameObject.init(gameObject);
 		}
         gameObject.parent = this;
         return gameObject;
@@ -1444,11 +1457,15 @@ XEngine.Sprite = function (game, posX, posY, sprite){
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.sprite = sprite;
-	var image = _this.game.cache.image(sprite).image;
+	var cache_image = _this.game.cache.image(sprite);
     _this.game = game;                                                   		//guardamos una referencia al juego
-    _this.width = image.width || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
-    _this.height = image.height || 10;
+    _this.width = cache_image.frameWidth || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
+    _this.height = cache_image.frameHeight || 10;
+    _this._columns = Math.floor(cache_image.image.width / _this.width);
+    _this._rows = Math.floor(cache_image.image.height / _this.height);
     _this.position.setTo(posX, posY);
+    _this.frame = 0;
+    _this.animation = new XEngine.AnimationManager(game, this);
 };
 
 XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
@@ -1458,11 +1475,16 @@ XEngine.Sprite.prototypeExtends = {
 		var _this = this;
 		var bounds = _this.getBounds();
 		canvas.save();															//Guardamos el estado actual del canvas
-		var image = _this.game.cache.image(_this.sprite).image;					//Obtenemos la imagen a renderizar
+		var cache_image = _this.game.cache.image(_this.sprite);					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		canvas.drawImage(image, -(bounds.width * _this.anchor.x), -(bounds.height * _this.anchor.y), bounds.width, bounds.height);
+		var column = _this.frame;
+		if(_this.frame > _this._columns - 1){
+			column -= _this._columns; 
+		}
+		var row = Math.floor(_this.frame / _this._columns);
+		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, -(bounds.width * _this.anchor.x), -(bounds.height * _this.anchor.y), bounds.width, bounds.height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -1476,18 +1498,106 @@ XEngine.Sprite.prototypeExtends = {
 	reset: function (x, y) {
 		this.position.x = x;
 		this.position.y = y;
-		this.rotation = 0;
 		this.alive = true;
 		if(this.body){
 			this.body.velocity = new XEngine.Vector(0, 0);
 		}
-		if(this.start){
-			this.start();
-		}
+	},
+	
+	_updateAnims: function(deltaMillis){
+		this.animation._update(deltaMillis);
 	}
 };
 
 Object.assign(XEngine.Sprite.prototype, XEngine.Sprite.prototypeExtends);
+
+XEngine.Animation = function (game, sprite, frames, rate){
+	var _this = this;
+	_this.sprite = sprite;
+    _this.game = game;                                                   		//guardamos una referencia al juego
+    _this.currentFrame = 0;
+    _this.maxFrames = frames.length - 1;
+    _this.frames = frames;
+    _this.rate = rate;
+    _this.frameTime = 0;
+    _this.loop = false;
+    _this.playing = false;
+};
+
+XEngine.Animation.prototype = {
+	_update: function (deltaMillis) {
+		var _this = this;
+		_this.frameTime += deltaMillis;
+		if(_this.frameTime >= _this.rate){
+			_this.currentFrame++;
+			_this.frameTime = 0;
+			if(_this.currentFrame > _this.maxFrames){
+				if(_this.loop){
+					_this.currentFrame = 0;
+				}else{
+					_this._stop();
+					return;
+				}
+			}
+		}
+		_this.sprite.frame = _this.frames[_this.currentFrame];
+	},
+	
+	_start: function () {
+		this.started = true;
+	},
+	
+	_stop: function(){
+		this.playing = false;
+		this.frameTime = 0;
+		this.currentFrame = 0;
+	},
+};
+
+XEngine.AnimationManager = function (game, sprite){
+	var _this = this;
+	_this.sprite = sprite;
+    _this.game = game;                                                   		//guardamos una referencia al juego
+    _this.animations = new Array();
+    _this.currentAnim = null;
+};
+
+XEngine.AnimationManager.prototype = {
+	_update: function (deltaMillis) {
+		var _this = this;
+		if(_this.currentAnim){
+			_this.currentAnim._update(deltaMillis);
+		}
+	},
+	
+	play: function (animName) {
+		if(this.currentAnim){
+			this.currentAnim._stop();
+		}
+		var anim = this.animations[animName];
+		if(!anim){
+			return;
+		}
+		this.currentAnim = anim;
+		anim._start();
+	},
+	
+	_stop: function(animName){
+		var anim = this.animations[animName];
+		if(!anim){
+			return;
+		}
+		this.currentAnim = null;
+		anim._stop();
+	},
+	
+	add: function (animName, frames, rate, loop) {
+		var anim = new XEngine.Animation(this.game, this.sprite, frames, rate);
+		anim.loop = loop || false;
+		this.animations[animName] = anim;
+	}
+};
+
 
 XEngine.Rect = function (game, posX, posY, width, height, color){
 	XEngine.BaseObject.call(this, game);
