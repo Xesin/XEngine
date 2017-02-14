@@ -1679,13 +1679,13 @@ XEngine.TilledImage.prototypeExtends = {
 		var rectHeigth = _this.height * _this.scale.y;
 		canvas.beginPath();
 		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
-		canvas.fillStyle = pattern;										//Asignamos el patrón que hemos creado antes
+		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
 		canvas.globalAlpha =_this.alpha;							
 		canvas.fill();
 		canvas.restore();
 	},
 	
-	applyRotationAndPos: function (canvas, pos) {									//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
+	applyRotationAndPos: function (canvas, pos) {								//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
 		var _this = this;
 		if(_this.offSet.x > _this.imageWidht){									//Evitamos que el offset llegue a ser un número demasiado grande
 			_this.offSet.x = _this.offSet.x - _this.imageWidht;
@@ -1713,7 +1713,6 @@ XEngine.Text = function (game, posX, posY, text, size, font, color){
     _this.text = text || "";													//Set de los atributos del texto
 	_this.font = font || 'Arial';
 	_this.size = size || 12;
-	_this.textAlign = 'left';
 	_this.color = color || 'white';
 	_this.style = '';
 	_this.strokeWidth = 0;
