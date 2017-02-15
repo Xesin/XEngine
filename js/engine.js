@@ -1298,8 +1298,9 @@ XEngine.InputManager.prototype = {
 					} 
 					gameObject.onClick.dispatch(event);
 					return true;
+				}else{
+					continue;
 				}
-				return false;
 			}
 		};
 		loop(this.game.gameObjects);
