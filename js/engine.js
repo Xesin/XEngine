@@ -1,5 +1,5 @@
 var XEngine = {
-	version: '0.4-alpha'
+	version: '0.5-alpha'
 };
 
 // ----------------------------------------- GAME ENGINE ------------------------------------------//
@@ -151,6 +151,7 @@ XEngine.Game.prototype = {
 		var _this = this;
 		for(var i = 0; i < arrayObjects.length; i++){							
 			var object = arrayObjects[i];
+			if(!object.render) continue;
 			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
 				_this.render(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
@@ -349,7 +350,7 @@ XEngine.ImageLoader.prototype = {
         	}
         	
         	if(_this.frameHeight == 0){
-        		imageRef.frameHeight = this.width;
+        		imageRef.frameHeight = this.height;
         	}else{
         		imageRef.frameHeight = _this.frameHeight;
         	}
@@ -434,8 +435,8 @@ XEngine.ObjectFactory.prototype = {
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
-		if(gameObject.init != undefined){										//Si el objeto tiene definida la función de init, la llamamos
-			gameObject.init();
+		if(gameObject.start != undefined){
+			gameObject.start();
 		}
 		return gameObject;
 	},
@@ -1282,19 +1283,30 @@ XEngine.InputManager.prototype = {
 	
 	clickDispatcher: function (event) {
 		this.onClick.dispatch(event);
-		for(var i = this.game.gameObjects.length - 1; i >= 0; i--){
-			var gameObject = this.game.gameObjects[i];
-			if(!gameObject.inputEnabled) continue;
-			if(this._pointerInsideBounds(gameObject)){
-				if(gameObject.onClick == undefined){
-					gameObject.onClick = new XEngine.Signal();
-				} 
-				gameObject.onClick.dispatch(event);
+		var _this = this;
+		var loop = function (array) {											//Bucle que inspecciona todos los elementos de un Array
+			for(var i = array.length - 1; i >= 0; i--){
+				var gameObject = array[i];
+				if(XEngine.Group.prototype.isPrototypeOf(gameObject)){
+					if(loop(gameObject.children)) return true;					//Si éste loop ha encontrado un objeto que hacer click, terminamos 
+					continue;
+				}
+				if(!gameObject || !gameObject.inputEnabled) continue;			//Si el objeto no existe o no tiene el input habilitado, pasamos al siguiente	
+				if(_this._pointerInsideBounds(gameObject)){						//Si el area el objeto está dentro del puntero, lanzamos el click y acabamos
+					if(gameObject.onClick == undefined){
+						gameObject.onClick = new XEngine.Signal();
+					} 
+					gameObject.onClick.dispatch(event);
+					return true;
+				}else{
+					continue;
+				}
 			}
-		}
+		};
+		loop(this.game.gameObjects);
 	},
 	
-	_pointerInsideBounds: function (gameObject) {
+	_pointerInsideBounds: function (gameObject) {								//Obtenemos si el puntero está dentro del area de un objeto
 		var bounds = gameObject.getBounds();
 		if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * gameObject.anchor.x)) {
                 return false;
@@ -1330,6 +1342,7 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.onClick = new XEngine.Signal();
     _this.onInputDown = new XEngine.Signal();			
     _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
+    _this.render = true;
 };
 
 XEngine.BaseObject.prototype = {
@@ -1443,8 +1456,8 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        if(gameObject.init != undefined){
-			gameObject.init(gameObject);
+        if(gameObject.start != undefined){
+			gameObject.start();
 		}
         gameObject.parent = this;
         return gameObject;
@@ -1495,10 +1508,13 @@ XEngine.Sprite.prototypeExtends = {
 		return {width : width, height: height};
 	},
 	
-	reset: function (x, y) {
+	reset: function (x, y) {													//Reseteamos el sprite
 		this.position.x = x;
 		this.position.y = y;
 		this.alive = true;
+		if(this.start != undefined){
+			this.start();
+		}
 		if(this.body){
 			this.body.velocity = new XEngine.Vector(0, 0);
 		}
@@ -1511,7 +1527,7 @@ XEngine.Sprite.prototypeExtends = {
 
 Object.assign(XEngine.Sprite.prototype, XEngine.Sprite.prototypeExtends);
 
-XEngine.Animation = function (game, sprite, frames, rate){
+XEngine.Animation = function (game, sprite, frames, rate){						//Objeto que almacena la información de una animación y la ejecuta
 	var _this = this;
 	_this.sprite = sprite;
     _this.game = game;                                                   		//guardamos una referencia al juego
@@ -1554,7 +1570,7 @@ XEngine.Animation.prototype = {
 	},
 };
 
-XEngine.AnimationManager = function (game, sprite){
+XEngine.AnimationManager = function (game, sprite){								//Manager para manejar el uso de las animaciones de los sprites
 	var _this = this;
 	_this.sprite = sprite;
     _this.game = game;                                                   		//guardamos una referencia al juego
@@ -1570,8 +1586,8 @@ XEngine.AnimationManager.prototype = {
 		}
 	},
 	
-	play: function (animName) {
-		if(this.currentAnim){
+	play: function (animName) {													//Ejecuta una animación
+		if(this.currentAnim){													//Si ya hay una en marcha, la paramos
 			this.currentAnim._stop();
 		}
 		var anim = this.animations[animName];
@@ -1664,13 +1680,13 @@ XEngine.TilledImage.prototypeExtends = {
 		var rectHeigth = _this.height * _this.scale.y;
 		canvas.beginPath();
 		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
-		canvas.fillStyle = pattern;										//Asignamos el patrón que hemos creado antes
+		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
 		canvas.globalAlpha =_this.alpha;							
 		canvas.fill();
 		canvas.restore();
 	},
 	
-	applyRotationAndPos: function (canvas, pos) {									//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
+	applyRotationAndPos: function (canvas, pos) {								//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
 		var _this = this;
 		if(_this.offSet.x > _this.imageWidht){									//Evitamos que el offset llegue a ser un número demasiado grande
 			_this.offSet.x = _this.offSet.x - _this.imageWidht;
@@ -1698,7 +1714,6 @@ XEngine.Text = function (game, posX, posY, text, size, font, color){
     _this.text = text || "";													//Set de los atributos del texto
 	_this.font = font || 'Arial';
 	_this.size = size || 12;
-	_this.textAlign = 'left';
 	_this.color = color || 'white';
 	_this.style = '';
 	_this.strokeWidth = 0;
@@ -1750,7 +1765,7 @@ XEngine.Text.prototypeExtends = {
 
 Object.assign(XEngine.Text.prototype, XEngine.Text.prototypeExtends);
 
-XEngine.Button = function (game, posX, posY, sprite){
+XEngine.Button = function (game, posX, posY, sprite){							
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.sprite = sprite;
