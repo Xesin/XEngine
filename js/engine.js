@@ -335,7 +335,8 @@ XEngine.ImageLoader.prototype = {
 			imageName : _this.imageName,										//Nombre de la imagen
 			image: null,														//Referencia de la imagen
 			frameWidth : _this.frameWidth,
-			frameHeight: _this.frameHeight 
+			frameHeight: _this.frameHeight,
+			data: new Array(),
 		};
 		var img1 = new Image();													//Creamos el objeto Image
 		var handler = function () {												//Creamos el handler de cuando se completa o da error
@@ -354,6 +355,27 @@ XEngine.ImageLoader.prototype = {
         	}else{
         		imageRef.frameHeight = _this.frameHeight;
         	}
+        	
+        	var canvas = document.createElement("canvas");
+	        canvas.width =this.width;
+	        canvas.height =this.height;
+	
+	        var ctx = canvas.getContext("2d");
+	        ctx.drawImage(this, 0, 0);
+	
+	        var data = ctx.getImageData(0,0, this.width, this.height).data;
+	        
+	        //Push pixel data to more usable object
+	        for(var i = 0; i < data.length; i+=4){
+	        	var rgba = {
+	        		r: data[i],
+	        		g: data[i+1],
+	        		b: data[i+2],
+	        		a: data[i+3]
+	        	};
+	        	
+	        	imageRef.data.push(rgba);
+	        }
         	
         	_this.loader._notifyCompleted();									//Notificamos de que la carga se ha completado
         };
