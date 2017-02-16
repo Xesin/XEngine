@@ -1311,19 +1311,19 @@ XEngine.InputManager.prototype = {
 				var gameObject = array[i];
 				if(XEngine.Group.prototype.isPrototypeOf(gameObject)){
 					if(loop(gameObject.children)) return true;					//Si éste loop ha encontrado un objeto que hacer click, terminamos 
-					continue;
-				}
-				if(!gameObject || !gameObject.inputEnabled) continue;			//Si el objeto no existe o no tiene el input habilitado, pasamos al siguiente	
-				if(_this._pointerInsideBounds(gameObject)){						//Si el area el objeto está dentro del puntero, lanzamos el click y acabamos
-					if(gameObject.onClick == undefined){
-						gameObject.onClick = new XEngine.Signal();
-					} 
-					gameObject.onClick.dispatch(event);
-					return true;
 				}else{
-					continue;
+					if(gameObject || gameObject.inputEnabled){
+						if(_this._pointerInsideBounds(gameObject)){				//Si el area el objeto está dentro del puntero, lanzamos el click y acabamos
+							if(gameObject.onClick == undefined){
+								gameObject.onClick = new XEngine.Signal();
+							} 
+							gameObject.onClick.dispatch(event);
+							return true;
+						}
+					}
 				}
 			}
+			return false;
 		};
 		loop(this.game.gameObjects);
 	},
