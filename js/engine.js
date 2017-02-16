@@ -1519,7 +1519,11 @@ XEngine.Sprite.prototypeExtends = {
 			column -= _this._columns; 
 		}
 		var row = Math.floor(_this.frame / _this._columns);
-		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, -(bounds.width * _this.anchor.x), -(bounds.height * _this.anchor.y), bounds.width, bounds.height);
+		var posX = Math.round(-(bounds.width * _this.anchor.x));
+		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var width = Math.round(bounds.width);
+		var height = Math.round(bounds.height);
+		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -1658,7 +1662,11 @@ XEngine.Rect.prototypeExtends = {
 		this.applyRotationAndPos(canvas);
 		canvas.fillStyle=_this.color;
 		canvas.globalAlpha =_this.alpha;
-		canvas.fillRect(-(bounds.width * _this.anchor.x), -(bounds.height * _this.anchor.y), bounds.width, bounds.height);
+		var posX = Math.round(-(bounds.width * _this.anchor.x));
+		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var width = Math.round(bounds.width);
+		var height = Math.round(bounds.height);
+		canvas.fillRect(posX, posY, width, height);
 		canvas.restore();
 	},
 	
@@ -1695,11 +1703,11 @@ XEngine.TilledImage.prototypeExtends = {
 		var pos = _this.getWorldPos();
 		var image = _this.game.cache.image(_this.sprite).image;
 		var pattern = canvas.createPattern(image, "repeat");					//Creamos el patron en modo repetición
-		var rectX = -(pos.x - this.game.camera.position.x + _this.offSet.x);
-		var rectY = -(pos.y - this.game.camera.position.y + _this.offSet.y);
+		var rectX = Math.round(-(pos.x + _this.offSet.x));
+		var rectY = Math.round(-(pos.y + _this.offSet.y));
 		this.applyRotationAndPos(canvas, {x: rectX, y: rectY});	
-		var rectWidht = _this.width * _this.scale.x;
-		var rectHeigth = _this.height * _this.scale.y;
+		var rectWidht = Math.round(_this.width * _this.scale.x);
+		var rectHeigth = Math.round(_this.height * _this.scale.y);
 		canvas.beginPath();
 		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
 		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
@@ -1763,7 +1771,9 @@ XEngine.Text.prototypeExtends = {
 		canvas.globalAlpha =_this.alpha;
 		var font = 	font = _this.style + ' ' + _this.size + 'px ' + _this.font;
 		canvas.font = font.trim();
-		var pos = {x: -(bounds.width * _this.anchor.x), y: -(bounds.height * _this.anchor.y) + _this.size};
+		var posX = Math.round(-(bounds.width * _this.anchor.x));
+		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var pos = {x: posX, y: posY + _this.size};
 		if(_this.strokeWidth > 0){
 			canvas.strokeStyle = _this.strokeColor;
     		canvas.lineWidth = _this.strokeWidth;
@@ -1809,8 +1819,12 @@ XEngine.Button.prototypeExtends = {
 		var image = _this.game.cache.image(_this.sprite).image;					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
+		var posX = Math.round(-(bounds.width * _this.anchor.x));
+		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var width = Math.round(bounds.width);
+		var height = Math.round(bounds.height);
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		canvas.drawImage(image, -(bounds.width * _this.anchor.x), -(bounds.height * _this.anchor.y), bounds.width, bounds.height);
+		canvas.drawImage(image, posX, posY, width, height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
