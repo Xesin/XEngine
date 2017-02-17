@@ -472,7 +472,7 @@ XEngine.Renderer.prototype = {
 	},
 	
 	getFrameInfo: function () {
-        var data = this.context.getImageData(0,0, this.width, this.height).data;
+        var data = this.context.getImageData(0,0, this.game.width, this.game.height).data;
         var returnData = new Array();
         //Push pixel data to more usable object
         for(var i = 0; i < data.length; i+=4){
@@ -483,10 +483,21 @@ XEngine.Renderer.prototype = {
         		a: data[i+3]
         	};
         	
-        	returnData.data.push(rgba);
+        	returnData.push(rgba);
         }
         
         return returnData;
+	},
+	
+	getPixelInfo: function (posX, posY) {
+		var data = this.context.getImageData(Math.round(posX),Math.round(posY), 1, 1).data;
+		var rgba = {
+			r: data[0],
+    		g: data[1],
+    		b: data[2],
+    		a: data[3]
+		};
+        return rgba;
 	}
 };
 
@@ -1387,6 +1398,8 @@ XEngine.InputManager.prototype = {
 				}
 			};
 		}
+		newEvent.position.x /= this.game.renderer.scale.x;
+		newEvent.position.y /= this.game.renderer.scale.y;
 		return newEvent;
 	},
 	
@@ -1882,7 +1895,7 @@ XEngine.Text.prototypeExtends = {
 		}
 		var textSize = canvas.measureText(_this.text);
 		_this.width = textSize.width;
-		_this.height = _this.size;
+		_this.height = _this.size * 1.5;
 		canvas.fillStyle = _this.color;
 		canvas.fillText(_this.text, pos.x, pos.y);
 		canvas.restore();
