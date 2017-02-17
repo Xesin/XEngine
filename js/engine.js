@@ -590,8 +590,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	circle : function (posX, posY, radius, color, stroke, strokeColor) {			//Creamos un rectangulo a partir de los datos proporcionados
-		var gameObject = new XEngine.Circle(this.game, posX, posY, radius, color, stroke, strokeColor);
+	circle : function (posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle) {			//Creamos un rectangulo a partir de los datos proporcionados
+		var gameObject = new XEngine.Circle(this.game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle);
 		return this.existing(gameObject);
 	},
 	
@@ -1799,15 +1799,21 @@ XEngine.Rect.prototypeExtends = {
 
 Object.assign(XEngine.Rect.prototype, XEngine.Rect.prototypeExtends);
 
-XEngine.Circle = function (game, posX, posY, radius, color, stroke, strokeColor){
+XEngine.Circle = function (game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle){
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
     _this.game = game;                                                   		//guardamos una referencia al juego
     _this.radius = radius;
     _this.color = color;
     _this.position.setTo(posX, posY);				                     		//set de la posición
-    _this.stroke = stroke || 0; 
+    _this.stroke = stroke || 0;
+    _this.fill = fill;
+    if(fill == undefined){
+    	_this.fill = true;
+    }
     _this.strokeColor = strokeColor || 'white';
+    _this.startAngle = startAngle || 0;
+    _this.endAngle = endAngle || 360;
 };
 
 XEngine.Circle.prototype = Object.create(XEngine.BaseObject.prototype);
@@ -1819,13 +1825,17 @@ XEngine.Circle.prototypeExtends = {
 		var bounds = _this.getBounds();
 		canvas.save();
 		this.applyRotationAndPos(canvas);
-		canvas.fillStyle=_this.color;
 		canvas.globalAlpha =_this.alpha;
 		var posX = Math.round(-(bounds.width * _this.anchor.x));
 		var posY = Math.round(-(bounds.height * _this.anchor.y));
 		canvas.beginPath();
-		canvas.arc(posX, posY, _this.radius, 0, 2 * Math.PI);
-		canvas.fill();
+		var startAntle = _this.startAngle * (Math.PI / 180);
+		var endAngle = _this.endAngle * (Math.PI / 180);
+		canvas.arc(posX, posY, _this.radius, startAntle, endAngle);
+		if(_this.fill){
+			canvas.fillStyle=_this.color;
+			canvas.fill();
+		}
 		if(_this.stroke > 0){
 			canvas.lineWidth = 5;
 			canvas.strokeStyle = _this.strokeColor;
