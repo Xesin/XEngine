@@ -147,23 +147,6 @@ XEngine.Game.prototype = {
 		this.camera = new XEngine.Camera(this);	
 	},
 	
-	render: function (arrayObjects) {											//Renderizamos el array de objetos que le pasamos por parametro
-		var _this = this;
-		for(var i = 0; i < arrayObjects.length; i++){							
-			var object = arrayObjects[i];
-			if(!object.render) continue;
-			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
-				_this.render(object.children);
-			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
-				if(!object.alive) continue;
-				object._renderToCanvas(_this.canvas);							
-				if(object.body != undefined){
-					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
-				}
-			}
-		}
-	},
-	
 	getWorldPos : function () {
     	return this.position;
     },
@@ -444,6 +427,49 @@ XEngine.Cache.prototype = {
 		delete this.audios;
 		this.images = new Array();
 		this.audios = new Array();
+	}
+};
+
+// -------------------------------------------- RENDERER ---------------------------------------------//
+
+XEngine.Renderer = function (game, context) {
+	this.game = game;
+	this.scale = {x: 1, y: 1};
+	this.context = context;
+};
+
+XEngine.Renderer.prototype = {
+	render: function () {
+		this.context.save();
+		this.context.scale(this.scale.x, this.scale.y);
+		this.renderLoop(this.game.gameObjects);
+		this.context.restore();
+	},
+	
+	renderLoop: function (arrayObjects) {											//Renderizamos el array de objetos que le pasamos por parametro
+		var _this = this;
+		for(var i = 0; i < arrayObjects.length; i++){							
+			var object = arrayObjects[i];
+			if(!object.render) continue;
+			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
+				_this.render(object.children);
+			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
+				if(!object.alive) continue;
+				object._renderToCanvas(_this.canvas);							
+				if(object.body != undefined){
+					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
+				}
+			}
+		}
+	},
+	
+	setScale: function (x, y) {
+		this.scale.x = x;
+		this.scale.y = y || x;
+	},
+	
+	getFrameInfo: function () {
+		
 	}
 };
 
