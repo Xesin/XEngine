@@ -590,6 +590,11 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
+	circle : function (posX, posY, radius, color, stroke, strokeColor) {			//Creamos un rectangulo a partir de los datos proporcionados
+		var gameObject = new XEngine.Circle(this.game, posX, posY, radius, color, stroke, strokeColor);
+		return this.existing(gameObject);
+	},
+	
 	text : function (posX, posY, text, size, font, color) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, font, color);
 		return this.existing(gameObject);
@@ -1793,6 +1798,51 @@ XEngine.Rect.prototypeExtends = {
 };
 
 Object.assign(XEngine.Rect.prototype, XEngine.Rect.prototypeExtends);
+
+XEngine.Circle = function (game, posX, posY, radius, color, stroke, strokeColor){
+	XEngine.BaseObject.call(this, game);
+	var _this = this;
+    _this.game = game;                                                   		//guardamos una referencia al juego
+    _this.radius = radius;
+    _this.color = color;
+    _this.position.setTo(posX, posY);				                     		//set de la posición
+    _this.stroke = stroke || 0; 
+    _this.strokeColor = strokeColor || 'white';
+};
+
+XEngine.Circle.prototype = Object.create(XEngine.BaseObject.prototype);
+XEngine.Circle.constructor = XEngine.Circle;
+
+XEngine.Circle.prototypeExtends = {
+	_renderToCanvas: function (canvas) {
+		var _this = this;
+		var bounds = _this.getBounds();
+		canvas.save();
+		this.applyRotationAndPos(canvas);
+		canvas.fillStyle=_this.color;
+		canvas.globalAlpha =_this.alpha;
+		var posX = Math.round(-(bounds.width * _this.anchor.x));
+		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		canvas.beginPath();
+		canvas.arc(posX, posY, _this.radius, 0, 2 * Math.PI);
+		canvas.fill();
+		if(_this.stroke > 0){
+			canvas.lineWidth = 5;
+			canvas.strokeStyle = _this.strokeColor;
+			canvas.stroke();
+		}
+		canvas.restore();
+	},
+	
+	getBounds: function () {
+		var _this = this;
+		var width = (_this.radius * 2) * _this.scale.x;
+		var height = (_this.radius * 2) * _this.scale.y;
+		return {width : width, height: height};
+	},
+};
+
+Object.assign(XEngine.Circle.prototype, XEngine.Circle.prototypeExtends);
 
 XEngine.TilledImage = function (game, posX, posY, sprite, widht, height){
 	XEngine.BaseObject.call(this, game);
