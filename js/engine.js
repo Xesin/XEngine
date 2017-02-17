@@ -43,6 +43,9 @@ XEngine.Game.prototype = {
 		_this.cache = new XEngine.Cache(_this);									//Cache para guardar los objetos descargados
 		_this.load = new XEngine.Loader(_this);									//Loader de objetos, para obtener imagenes y guardarlas en cache
 		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);	//Camara del juego
+		_this.renderer = new XEngine.Renderer(_this, _this.canvas);				//Creamos el renderer
+		_this.scale = new XEngine.ScaleManager(_this);							//Creamos el scaleManager
+		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil
 		_this.input = new XEngine.InputManager(_this);							//Controla los inputs sobre el canvas
 		_this.onWindowsResize = new XEngine.Signal();
@@ -118,10 +121,10 @@ XEngine.Game.prototype = {
 			
 			if(_this.physics.systemEnabled){
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
-			}													//Llamamos al handler de condición de fin;
+			}																	//Llamamos al handler de condición de fin;
 		}			
-		_this.canvas.clearRect(0, 0, _this.width, _this.height);					//Limpiamos el canvas
-		_this.render(this.gameObjects);											//Renderizamos la escena
+		_this.canvas.clearRect(0, 0, _this.width, _this.height);				//Limpiamos el canvas
+		_this.renderer.render();												//Renderizamos la escena
 	},
 	
 	destroy: function () {														//Este paso se llama cuando se cambia de un estado a otro
@@ -452,12 +455,12 @@ XEngine.Renderer.prototype = {
 			var object = arrayObjects[i];
 			if(!object.render) continue;
 			if(XEngine.Group.prototype.isPrototypeOf(object)){					//Si es un grupo, llamamos al render pasando los objetos que contiene
-				_this.render(object.children);
+				_this.renderLoop(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
 				if(!object.alive) continue;
-				object._renderToCanvas(_this.canvas);							
+				object._renderToCanvas(_this.context);							
 				if(object.body != undefined){
-					object.body._renderBounds(_this.canvas);					//Si tiene un body, llamamos al render de los bounds
+					object.body._renderBounds(_this.context);					//Si tiene un body, llamamos al render de los bounds
 				}
 			}
 		}
@@ -469,8 +472,80 @@ XEngine.Renderer.prototype = {
 	},
 	
 	getFrameInfo: function () {
-		
+        var data = this.context.getImageData(0,0, this.width, this.height).data;
+        var returnData = new Array();
+        //Push pixel data to more usable object
+        for(var i = 0; i < data.length; i+=4){
+        	var rgba = {
+        		r: data[i],
+        		g: data[i+1],
+        		b: data[i+2],
+        		a: data[i+3]
+        	};
+        	
+        	returnData.data.push(rgba);
+        }
+        
+        return returnData;
 	}
+};
+
+// ----------------------------------------- SCALE MANAGER -------------------------------------------//
+
+XEngine.ScaleManager = function (game) {
+	this.game = game;
+	this.scaleType = XEngine.Scale.NO_SCALE;
+	this.orientation = 'landScape';
+	this.sourceAspectRatio = 0;
+};
+
+XEngine.Scale = {
+	FIT : 0,
+	SHOW_ALL: 1,
+	NO_SCALE : 2,
+};
+
+XEngine.ScaleManager.prototype = {
+	
+	init: function () {
+		var _this = this;
+		var onWindowsResize = function (event) {
+			_this.onWindowsResize(event);
+		};
+		window.addEventListener('resize', onWindowsResize, true);
+	},
+	
+	onWindowsResize: function (event) {
+		this.updateScale();
+	},
+	
+	updateScale: function () {
+		if(this.scaleType !== XEngine.Scale.NO_SCALE){
+			var newWidth = 0;
+			var newHeight = 0;
+			if(this.scaleType === XEngine.Scale.FIT){
+				newWidth = window.innerWidth;
+				newHeight = window.innerHeight;
+			}else{
+				this.sourceAspectRatio = this.game.width / this.game.height;
+				newHeight = window.innerHeight;
+				newWidth = newHeight * this.sourceAspectRatio;
+				if(newWidth > window.innerWidth){
+					newWidth = window.innerWidth;
+					newHeight = newWidth / this.sourceAspectRatio;
+				}
+			}
+			newWidth = Math.round(newWidth);
+			newHeight = Math.round(newHeight);
+			this.resizeCanvas(newWidth, newHeight);
+		}
+	},
+	
+	resizeCanvas: function(newWidth, newHeight){
+		this.game.reference.setAttribute('width', newWidth);
+		this.game.reference.setAttribute('height', newHeight);
+		this.game.renderer.setScale(newWidth / this.game.width, newHeight / this.game.height);
+	},
 };
 
 // ----------------------------------------- OBJECT FACTORY ------------------------------------------//
