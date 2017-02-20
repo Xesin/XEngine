@@ -4,18 +4,208 @@ var XEngine = {
 
 // ----------------------------------------- GAME ENGINE ------------------------------------------//
 
+/**
+ * Clase principal del juego, ésta inicia el juego y maneja su funcionamiento
+ * 
+ * @class XEngine.Game
+ * @constructor
+ * @param {Number} width - El ancho del juego
+ * @param {Number} height - El alto del juego
+ * @param {String} idContainer - En id del elemento canvas que está en el body del documento
+ */
 XEngine.Game = function (width, height, idContainer) {
+	
+	/**
+	 * Referencia al elemento canvas
+	 * 
+	 * @property {HTMLElement} reference
+	 * @readonly
+	 */
 	this.reference = document.getElementById(idContainer);
-	this.position = new XEngine.Vector(0,0);									//valor por defecto del juego (para que los hijos que accedan a la posicón del padre y sea el propio juego no de un undefined)
+	/**
+	 * Posición por defecto del juego
+	 * 
+	 * @property {XEngine.Vector} position
+	 * @readonly
+	 * @private
+	 */
+	this.position = new XEngine.Vector(0,0);
+	/**
+	 * Ancho del juego
+	 * 
+	 * @property {Number} width
+	 * @public
+	 */
 	this.width = width;															
+	/**
+	 * Alto del juego
+	 * 
+	 * @property {Number} height
+	 * @public
+	 */
 	this.height = height;
-	this.worldWidth = width;													//ancho del mundo. Lo usa la cámara para no salirse
-	this.worldHeight = height;													//alto del mundo. Lo usa la cámara para no salirse
+	/**
+	 * Ancho del mundo (al iniciar es igual que el del juego)
+	 * 
+	 * @property {Number} worldWidth
+	 * @public
+	 */
+	this.worldWidth = width;													
+	/**
+	 * Alto del mundo (al iniciar es igual que el del juego)
+	 * 
+	 * @property {Number} height
+	 * @public
+	 */
+	this.worldHeight = height;
+
 	this.reference.setAttribute('width', width+'px');							//asignamos el ancho del canvas
 	this.reference.setAttribute('height', height+'px');							//asignamos el alto del canvas
-	this.canvas = this.reference.getContext('2d');								//Obtenemos el contexto 2d del canvas
-	this.frameLimit = 30;														//Ponemos un valor por defecto al límite de frames
-	this.init();
+	
+	/**
+	 * Contexto 2D del canvas
+	 * 
+	 * @property {CanvasRenderingContext2D} canvas
+	 * @readonly
+	 */
+	this.canvas = this.reference.getContext('2d');
+	/**
+	 * Limite de frames por segundo
+	 * 
+	 * @property {Number} frameLimit
+	 * @default
+	 */
+	this.frameLimit = 30;
+	/**
+	 * Tiempo tiempo en el que se arrancó el juego
+	 * 
+	 * @property {Number} _startTime
+	 * @readonly
+	 * @private
+	 */
+	this._startTime = 0;
+	/**
+	 * Tiempo desde que se arrancó el juego
+	 * 
+	 * @property {Number} _elapsedTime
+	 * @readonly
+	 * @private
+	 */
+	this._elapsedTime = 0;
+	/**
+	 * Tiempo en el que transcurre el frame
+	 * 
+	 * @property {Number} frameTime
+	 * @readonly
+	 */
+	this.frameTime = 0;
+	/**
+	 * Tiempo en el que transcurrió el último frame
+	 * 
+	 * @property {Number} previousFrameTime
+	 * @readonly
+	 */
+	this.previousFrameTime = 0;
+	/**
+	 * Tiempo entre frames en segundos
+	 * 
+	 * @property {Number} deltaTime
+	 * @readonly
+	 */
+	this.deltaTime = 0;
+	/**
+	 * Tiempo entre frames en milisegundos
+	 * 
+	 * @property {Number} deltaMillis
+	 * @readonly
+	 */
+	this.deltaMillis = 0;
+	/**
+	 * Array con las referencias de todos los objetos añadidos directamente al juego
+	 * 
+	 * @property {Array} gameObjects
+	 */
+	this.gameObjects = null;
+	/**
+	 * Estado en el que está actualmente el juego
+	 * 
+	 * @property {Object} state
+	 */
+	this.state = null;
+	/**
+	 * Fábrica de objetos. Esto ofrece acceso al creador de objetos
+	 * 
+	 * @property {XEngine.ObjectFactory} add
+	 * @readonly
+	 */
+	this.add = null;
+	/**
+	 * Motor de físicas
+	 * 
+	 * @property {XEngine.Physics} physics
+	 * @readonly
+	 * @private
+	 */
+	this.physics = null;
+	/**
+	 * Tween Manager. Da acceso a la creación de tweens.
+	 * 
+	 * @property {XEngine.TweenManager} tween
+	 * @readonly
+	 */
+	this.tween = null;
+	/**
+	 * Caché del juego. Aquí se almacenan todos los assets que se cargan
+	 * 
+	 * @property {XEngine.Cache} cache
+	 * @readonly
+	 */
+	this.cache = null;
+	/**
+	 * Loader. Da acceso a la carga de assets
+	 * 
+	 * @property {XEngine.Loader} load
+	 * @readonly
+	 */
+	this.load = null;
+	/**
+	 * Camara del juego
+	 * 
+	 * @property {XEngine.Camera} camera
+	 */
+	this.camera = null;
+	/**
+	 * Renderer del juego.
+	 * 
+	 * @property {XEngine.Cache} renderer
+	 * @readonly
+	 * @private
+	 */
+	this.renderer = null;
+	/**
+	 * Scale manager
+	 * 
+	 * @property {XEngine.ScaleManager} scale
+	 * @readonly
+	 */
+	this.scale = null;
+	/**
+	 * Define si se está ejecutando en móvil o no
+	 * 
+	 * @property {Bool} cache
+	 * @readonly
+	 */
+	this.isMobile = false;
+	/**
+	 * Input manager. Da acceso al inputManager
+	 * 
+	 * @property {XEngine.InputManager} input
+	 * @readonly
+	 */
+	this.input = null;
+	
+	this.init();																//iniciamos el juego
+	
 	XEngine.Game._ref = this;
 };
 
@@ -26,52 +216,52 @@ XEngine.Game._updateCaller = function () {
 };
 
 XEngine.Game.prototype = {
+	/**
+	 * Llamado automaticamente al crear el juego. Inicia todas las propiedades del juego y ejecuta el primer loop
+	 * 
+	 * @method XEngine.Game#init
+	 * @private
+	 */
 	init : function () {
 		var _this = this;
 		console.log('Game engine ' + XEngine.version + ' arrancado con canvas!!!');
-		_this._startTime = Date.now();											//Tiempo en el que empieza el juego
-		_this._elapsedTime = 0;													//Tiempo transcurrido desde que el juego se creó
-		_this.frameTime = 0;													//Tiempo en el que transcurre el frame (tiempo desde el inicio del juego)
-		_this.previousFrameTime = 0;											//Tiempo en el que transcurrió el último frame
-		_this.deltaTime = 0;													//Tiempo entre frames en segundos
-		_this.deltaMillis = 0;													//Tiempo entre frames en milisegundos
-		_this.gameObjects = new Array();										//objetos pertenecientes al juego
-		_this.state = new XEngine.StateManager(_this);							//Manager de estados
-		_this.add = new XEngine.ObjectFactory(_this);							//Fabrica de objetos
-		_this.physics = new XEngine.Physics(_this);								//Motor de físicas
-		_this.tween = new XEngine.TweenManager(_this);							//Manager de tweens
-		_this.cache = new XEngine.Cache(_this);									//Cache para guardar los objetos descargados
-		_this.load = new XEngine.Loader(_this);									//Loader de objetos, para obtener imagenes y guardarlas en cache
-		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);	//Camara del juego
-		_this.renderer = new XEngine.Renderer(_this, _this.canvas);				//Creamos el renderer
-		_this.scale = new XEngine.ScaleManager(_this);							//Creamos el scaleManager
+		_this._startTime = Date.now();
+		_this._elapsedTime = 0;
+		_this.frameTime = 0;		_this.previousFrameTime = 0;
+		_this.deltaTime = 0;
+		_this.deltaMillis = 0;
+		_this.gameObjects = new Array();
+		_this.state = new XEngine.StateManager(_this);
+		_this.add = new XEngine.ObjectFactory(_this);
+		_this.physics = new XEngine.Physics(_this);	
+		_this.tween = new XEngine.TweenManager(_this);
+		_this.cache = new XEngine.Cache(_this);
+		_this.load = new XEngine.Loader(_this);
+		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);
+		_this.renderer = new XEngine.Renderer(_this, _this.canvas);
+		_this.scale = new XEngine.ScaleManager(_this);
 		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil
-		_this.input = new XEngine.InputManager(_this);							//Controla los inputs sobre el canvas
-		_this.onWindowsResize = new XEngine.Signal();
-	/*	window.onresize = function (event) {									//Evento para cambiar el tamaño del canvas cuando se cambie el tamaño de la pantalla
-			_this.resizeHandle.call(_this, event);
-			_this.onWindowsResize.dispatch.call(_this.onWindowsResize, event);
-		};
-
-		_this.resizeHandle();													//Llamamos una vez al handler del evento anterior para iniciar con los valores que toca
-	*/	
+		_this.input = new XEngine.InputManager(_this);
 		this.update();															//Iniciamos el loop
 	},
 	
-	/*resizeHandle: function (event) {											//escalamos el canvas para que se ajuste al tamaño de la ventana
-		this.width = window.innerWidth;
-		this.height = window.innerHeight;
-		this.reference.width = window.innerWidth;								
-		this.reference.height = window.innerHeight;
-		this.worldHeight = window.innerHeight;
-		this.worldWidth = window.innerWidth;
-	},*/
-	
+	/**
+	 * Asigna el color de background del canvas
+	 * 
+	 * @method XEngine.Game#setBackgroundColor
+	 * @param {String} color - El color a poner de fondo
+	 */
 	setBackgroundColor: function (color) {
 		this.reference.style.backgroundColor = color;
 	},
 	
+	/**
+	 * Llamado automaticamente en cada frame
+	 * 
+	 * @method XEngine.Game#update
+	 * @private
+	 */
 	update : function () {
 		var _this = this;
 		if(window.requestAnimationFrame){
@@ -127,6 +317,12 @@ XEngine.Game.prototype = {
 		_this.renderer.render();												//Renderizamos la escena
 	},
 	
+	/**
+	 * Se llama cuando se inicia un nuevo estado
+	 * 
+	 * @method XEngine.Game#destroy
+	 * @private
+	 */
 	destroy: function () {														//Este paso se llama cuando se cambia de un estado a otro
 		for(var i = this.gameObjects.length - 1; i >= 0; i--)					//Destruimos todos los objetos del juego
 		{
@@ -150,10 +346,25 @@ XEngine.Game.prototype = {
 		this.camera = new XEngine.Camera(this);	
 	},
 	
+	/**
+	 * Unicamente para que los hijos directos del estado no tengan una referencia nula a este método
+	 * 
+	 * @method XEngine.Game#getWorldPos
+	 * @private
+	 * @returns {XEngine.Vector}
+	 */
 	getWorldPos : function () {
     	return this.position;
     },
     
+    
+    /**
+	 * Unicamente para que los hijos directos del estado no tengan una referencia nula a este método
+	 * 
+	 * @method XEngine.Game#getTotalRotation
+	 * @private
+	 * @returns {Number}
+	 */
     getTotalRotation : function () {
     	return 0;
     }
@@ -161,21 +372,64 @@ XEngine.Game.prototype = {
 
 // ----------------------------------------- CAMERA ------------------------------------------//
 
+/**
+ * Enum para limitar los ejes en los que se puede mover la camara
+ * 
+ * @enum {String}
+ * @readonly
+ */
 XEngine.AXIS = {
 	NONE: "none", 
 	HORIZONTAL: "horizontal", 
 	VERTICAL: "vertical", 
 	BOTH: "both"
 };
-
+/**
+ * Objeto de cámara. Se usa para saber qué se debe renderizar y dónde se ubica en pantalla
+ * 
+ * @class XEngine.Camera
+ * @constructor
+ * @param {XEngine.Game} game - Referencia al juego
+ */
 XEngine.Camera = function (game) {
+	/**
+	 * Referencia al juego
+	 * 
+	 * @property {XEngine.Game} game
+	 * @private
+	 * @readonly
+	 */
 	this.game = game;
+	/**
+	 * Posición actual de la camara
+	 * 
+	 * @property {XEngine.Vector} position
+	 */
 	this.position = new XEngine.Vector(0,0);
-	this.followedObject = null;													//Objeto a seguir
-	this.axis = XEngine.AXIS.BOTH;												//Ejes en los que se puede mover la cámara
+	/**
+	 * Objeto que tiene que seguir la camara. Si es nulo no sigue a nada
+	 * Se cambia con {@link #followObject}.
+	 * @property {XEngine.BaseObject} followedObject
+	 * 
+	 * @protected
+	 */
+	this.followedObject = null;
+	/**
+	 * Ejes en los que se puede mover la cámara
+	 * 
+	 * @property {XEngine.AXIS} axis
+	 */
+	this.axis = XEngine.AXIS.BOTH;
 };
 
 XEngine.Camera.prototype = {
+	/**
+	 * Asigna el objeto que tiene que seguir la cámara
+	 * @method XEngine.Camera#followObject
+	 * @param {XEngine.BaseObject} gameObject - Objeto a seguir
+	 * @param {Number} offsetLeft - Offset que tendrá por la izquierda
+	 * @param {Number} offsetUp - Offset que tendrá por arriba
+	 */
 	followObject: function(gameObject, offsetLeft, offsetUp){					//Asigna el objeto a seguir
 		this.follow = true;
 		this.offsetLeft = offsetLeft || 0;										
@@ -183,6 +437,11 @@ XEngine.Camera.prototype = {
 		this.followedObject = gameObject;
 	},
 	
+	/**
+	 * Actualiza la cámara. Se llama automáticamente.
+	 * @method XEngine.Camera#update
+	 * @private
+	 */
 	update: function () {														//Si tiene objeto a seguir, intenta alcanzarlo si el movimiento de los ejes se lo permite y si no se sale del mundo
 		var _this = this;
 		if(_this.followedObject != null){
@@ -210,10 +469,21 @@ XEngine.StateManager = function (game) {
 };
 
 XEngine.StateManager.prototype = {
+	/**
+	 * Añade un estado al array de estados
+	 * @method XEngine.StateManager#add
+	 * @param {String} stateName - KeyName del estado
+	 * @param {Object} stateClass - Objeto de la clase del estado
+	 */
 	add : function (stateName, stateClass) {									//Añade un estado al array de estados
 		this.states[stateName] = stateClass;
 	},
 	
+	/**
+	 * Arranca un estado
+	 * @method XEngine.StateManager#start
+	 * @param {String} stateName - KeyName del estado
+	 */
 	start : function (stateName) {												//Iniciamos un nuevo estado
 		var _this = this;
 		if(_this.currentState != null){
@@ -240,6 +510,10 @@ XEngine.StateManager.prototype = {
          _this.game.load._startPreload();										//Una vez se ha llamado al preload del estado, podemos proceder a cargar los assets
 	},
 	
+	/**
+	 * Reinicia el estado actual
+	 * @method XEngine.StateManager#restart
+	 */
 	restart : function () {
 		this.start(this.currentState.stateName);								//Reiniciamos el estado actual
 	}
@@ -256,18 +530,43 @@ XEngine.Loader = function (game) {
 };
 
 XEngine.Loader.prototype = {
-	image: function (imageName, imageUrl) {										//Añade una imagen al array de cargas pendientes
+	/**
+	 * Añade una imagen a la cola de carga
+	 * @method XEngine.Loader#image
+	 * @param {String} imageName - KeyName de la imagen
+	 * @param {String} imageUrl - fuente de la imagen
+	 */
+	image: function (imageName, imageUrl) {
 		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this));
 	},
 	
+	/**
+	 * Añade hoja de sprites a la cola de carga
+	 * @method XEngine.Loader#spriteSheet
+	 * @param {String} imageName - KeyName de la imagen
+	 * @param {String} imageUrl - fuente de la imagen
+	 * @param {Number} frameWidth - ancho de cada frame
+	 * @param {Number} frameHeight - alto de cada frame
+	 */
 	spriteSheet: function (imageName, imageUrl, frameWidth, frameHeight) {
 		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
 	},
 	
+	/**
+	 * Añade un audio a la cola de carga
+	 * @method XEngine.Loader#audio
+	 * @param {String} audioName - KeyName del audio
+	 * @param {String} audioUrl - fuente del audio
+	 */
 	audio: function (audioName, audioUrl) {
 		this.pendingLoads.push(new XEngine.AudioLoader(audioName, audioUrl, this));
 	},
 	
+	/**
+	 * Arranca la carga de archivos
+	 * @method XEngine.Loader#startPreload
+	 * @private
+	 */
 	_startPreload: function () {
 		this.preloading = true;
 		if(this.pendingLoads.length == 0) {										//Si no hay cargas pendientes, llama directamente al start
@@ -279,7 +578,12 @@ XEngine.Loader.prototype = {
 		}
 	},
 	
-	_notifyCompleted: function () {												//Metodo que se llama al completarse una carga
+	/**
+	 * Actualiza las tareas completadas y las notifica cada vez que una termina
+	 * @method XEngine.Loader#notifyCompleted
+	 * @private
+	 */
+	_notifyCompleted: function () {
 		var completedTasks = 0;
 		
 		for(var i = 0; i < this.pendingLoads.length; i++){						//Recorremos las cargas pendientes para ver cuales se han completado
@@ -299,6 +603,11 @@ XEngine.Loader.prototype = {
 		}
 	},
 	
+	/**
+	 * Una vez que finaliza el proceso de carga o no hay datos a cargar, se llama al start del estado
+	 * @method XEngine.Loader#callStart
+	 * @private
+	 */
 	_callStart: function () {
 		this.preloading = false;
 		this.game.state.currentState.start();									//Llama al start del estado actual
@@ -315,6 +624,11 @@ XEngine.ImageLoader = function (imageName, imageUrl, loader, frameWidth, frameHe
 };
 
 XEngine.ImageLoader.prototype = {
+	/**
+	 * Arranca la carga de la imagen
+	 * @method XEngine.ImageLoader#load
+	 * @private
+	 */
 	load: function () {
 		var _this = this;
 		var newImage = {														//Creamos el objeto a guardar en cache
@@ -380,6 +694,11 @@ XEngine.AudioLoader = function (audioName, audioUrl, loader) {
 };
 
 XEngine.AudioLoader.prototype = {
+	/**
+	 * Arranca la carga del audio
+	 * @method XEngine.AudioLoader#load
+	 * @private
+	 */
 	load: function () {
 		var _this = this;
 		var newAudio = {														//Creamos el objeto a guardar en cache
@@ -409,7 +728,13 @@ XEngine.Cache = function (game) {
 };
 
 XEngine.Cache.prototype = {
-	image: function(imageName){													//Devuelve una imagen de cache
+	/**
+	 * Devuelve una imagen guardada en cache
+	 * @method XEngine.Cache#image
+	 * @param {String} imageName - keyName de la imagen
+	 * @private
+	 */
+	image: function(imageName){
 		if(this.images[imageName] == undefined){
 			console.error('No hay imagen para el nombre: '+ imageName);	
 		}else{
@@ -417,7 +742,13 @@ XEngine.Cache.prototype = {
 		}
 	},
 	
-	audio: function (audioName) {												//Devuelve un audio de la cache
+	/**
+	 * Devuelve un audio guardado en cache
+	 * @method XEngine.Cache#audio
+	 * @param {String} audioName - keyName del audio
+	 * @private
+	 */
+	audio: function (audioName) {
 		if(this.audios[audioName] == undefined){
 			console.error('No hay audio para el nombre: '+ audioName);	
 		}else{
@@ -425,7 +756,11 @@ XEngine.Cache.prototype = {
 		}
 	},
 	
-	clearCache: function () {													//Borra la cache
+	/**
+	 * Borra toda la cache
+	 * @method XEngine.Cache#clearChache
+	 */
+	clearCache: function () {
 		delete this.images;
 		delete this.audios;
 		this.images = new Array();
@@ -442,6 +777,11 @@ XEngine.Renderer = function (game, context) {
 };
 
 XEngine.Renderer.prototype = {
+	/**
+	 * Inicia el proceso de render
+	 * @method XEngine.Renderer#render
+	 * @private
+	 */
 	render: function () {
 		this.context.save();
 		this.context.scale(this.scale.x, this.scale.y);
@@ -449,6 +789,12 @@ XEngine.Renderer.prototype = {
 		this.context.restore();
 	},
 	
+	/**
+	 * Loop que llama al render de todos los objetos. Si es un grupo, se llama a si misma.
+	 * @method XEngine.Renderer#renderLoop
+	 * @param {Array} arrayObjects - Array de objetos a renderizar
+	 * @private
+	 */
 	renderLoop: function (arrayObjects) {											//Renderizamos el array de objetos que le pasamos por parametro
 		var _this = this;
 		for(var i = 0; i < arrayObjects.length; i++){							
@@ -466,11 +812,23 @@ XEngine.Renderer.prototype = {
 		}
 	},
 	
+	/**
+	 * Asigna la escala del renderer (Para cuando el canvas está escalado)
+	 * @method XEngine.Renderer#setScale
+	 * @param {Number} x - Escala en x
+	 * @param {Number} y - Escala en y
+	 * @private
+	 */
 	setScale: function (x, y) {
 		this.scale.x = x;
 		this.scale.y = y || x;
 	},
 	
+	/**
+	 * Obtiene la información de color del frame acutal
+	 * @method XEngine.Renderer#getFrameInfo
+	 * @return {Array}
+	 */
 	getFrameInfo: function () {
         var data = this.context.getImageData(0,0, this.game.width, this.game.height).data;
         var returnData = new Array();
@@ -489,6 +847,13 @@ XEngine.Renderer.prototype = {
         return returnData;
 	},
 	
+	/**
+	 * Obtiene la información de color de un pixel
+	 * @method XEngine.Renderer#getPixelInfo
+	 * @param {Number} posX - Posición x del pixel
+	 * @param {Number} posY - Posición y del pixel
+	 * @return {Array}
+	 */
 	getPixelInfo: function (posX, posY) {
 		var data = this.context.getImageData(Math.round(posX),Math.round(posY), 1, 1).data;
 		var rgba = {
@@ -517,7 +882,11 @@ XEngine.Scale = {
 };
 
 XEngine.ScaleManager.prototype = {
-	
+	/**
+	 * Inicializa el ScaleManager. Se llama al iniciar el juego
+	 * @method XEngine.ScaleManager#init
+	 * @private
+	 */
 	init: function () {
 		var _this = this;
 		var onWindowsResize = function (event) {
@@ -526,10 +895,21 @@ XEngine.ScaleManager.prototype = {
 		window.addEventListener('resize', onWindowsResize, true);
 	},
 	
+	/**
+	 * Callback que se llama al redimensionar la ventana
+	 * @method XEngine.ScaleManager#onWindowsResize
+	 * @param {Object} event - Evento que lanza el listener
+	 * @private
+	 */
 	onWindowsResize: function (event) {
 		this.updateScale();
 	},
 	
+	/**
+	 * Actualiza el tamaño del canvas y la escala que tiene. Es llamada por el callback onWindowsResize
+	 * @method XEngine.ScaleManager#updateScale
+	 * @private
+	 */
 	updateScale: function () {
 		if(this.scaleType !== XEngine.Scale.NO_SCALE){
 			var newWidth = 0;
@@ -552,6 +932,13 @@ XEngine.ScaleManager.prototype = {
 		}
 	},
 	
+	/**
+	 * Cambia el tamaño del canvas
+	 * @method XEngine.ScaleManager#resizeCanvas
+	 * @param {Number} newWidth - nuevo ancho del canvas
+	 * @param {Number} newHeight - nuevo alto del canvas
+	 * @private
+	 */
 	resizeCanvas: function(newWidth, newHeight){
 		this.game.reference.setAttribute('width', newWidth);
 		this.game.reference.setAttribute('height', newHeight);
@@ -566,6 +953,13 @@ XEngine.ObjectFactory = function (game) {
 };
 
 XEngine.ObjectFactory.prototype = {
+	/**
+	 * Añade un objeto ya existente (creado con new) al juego
+	 * @method XEngine.ObjectFacory#existing
+	 * @param {XEngine.BasicObject} gameObject - Objeto a añadir
+	 * @return {Object}
+	 * @private
+	 */
 	existing : function (gameObject) {											//Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject);									//Añadimos el objeto al array de objetos
 		gameObject.parent = this.game;											//Asignamos el padre del objeto
@@ -575,11 +969,31 @@ XEngine.ObjectFactory.prototype = {
 		return gameObject;
 	},
 	
+	/**
+	 * Crea y añade un sprite al juego
+	 * @method XEngine.ObjectFacory#sprite
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {String} sprite - keyName del sprite
+	 * @return {XEngine.Sprite}
+	 * @private
+	 */
 	sprite : function (posX, posY, sprite) {									//Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
 		return this.existing(gameObject);
 	},
 	
+	/**
+	 * Crea y añade una imagen que se repite
+	 * @method XEngine.ObjectFacory#tilled
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {String} sprite - keyName de la imagen
+	 * @param {Number} width - ancho de la imagen
+	 * @param {Number} height - alto de la imagen
+	 * @return {XEngine.TilledImage}
+	 * @private
+	 */
 	tilled : function (posX, posY, sprite, width, height) {						//Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
 		return this.existing(gameObject);
@@ -1165,6 +1579,29 @@ XEngine.Mathf.clamp = function (number, min, max) {								//Devuelve el número
 XEngine.Mathf.lerp = function (a, b, t) {										//Interpolación lineal
 	t = XEngine.Mathf.clamp(t, 0, 1);
 	return (1 - t) * a + t * b;
+};
+
+/**
+ * A linear interpolator for hexadecimal colors
+ * @param {String} a
+ * @param {String} b
+ * @param {Number} amount
+ * @example
+ * // returns #7F7F7F
+ * lerpColor('#000000', '#ffffff', 0.5)
+ * @returns {String}
+ */
+XEngine.Mathf.lerpColor = function(a, b, amount) { 
+
+    var ah = parseInt(a.replace(/#/g, ''), 16),
+        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+        bh = parseInt(b.replace(/#/g, ''), 16),
+        br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+        rr = ar + amount * (br - ar),
+        rg = ag + amount * (bg - ag),
+        rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
 };
 
 XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
