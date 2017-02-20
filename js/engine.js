@@ -341,7 +341,6 @@ XEngine.Game.prototype = {
 		this.gameObjects = new Array();
 		this.physics._destroy();												//Llamamos a los destroy de los distintos componentes
 		this.tween._destroy();
-		this.onWindowsResize._destroy();
 		delete this.camera;														//Liberamos la memoria de la camara para crear una nueva								
 		this.camera = new XEngine.Camera(this);	
 	},
@@ -1009,8 +1008,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	text : function (posX, posY, text, size, font, color) {
-		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, font, color);
+	text : function (posX, posY, text, size, textStyle) {
+		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, textStyle);
 		return this.existing(gameObject);
 	},
 	
@@ -1155,9 +1154,13 @@ XEngine.Tween.prototype = {
 	
 	_destroy: function () {														//Se destruye el tween y se libera memoria 
 		this.isRunning = false;
-		this.isPendingDestroy = true;	
-		this.onComplete._destroy();
-		this.onCompleteLoop._destroy();
+		this.isPendingDestroy = true;
+		if(this.onComplete != undefined){
+			this.onComplete._destroy();
+		}
+		if(this.onCompleteLoop != undefined){
+			this.onCompleteLoop._destroy();
+		}
 		delete this.onComplete;
 		delete this.onCompleteLoop;
 		delete this.fromProperties;
@@ -2348,17 +2351,17 @@ XEngine.TilledImage.prototypeExtends = {
 
 Object.assign(XEngine.TilledImage.prototype, XEngine.TilledImage.prototypeExtends);
 
-XEngine.Text = function (game, posX, posY, text, size, font, color){
+XEngine.Text = function (game, posX, posY, text, textStyle){
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
     _this.game = game;                                                   		//guardamos una referencia al juego
     _this.text = text || "";													//Set de los atributos del texto
-	_this.font = font || 'Arial';
-	_this.size = size || 12;
-	_this.color = color || 'white';
+	_this.font = textStyle.font || 'Arial';
+	_this.size = textStyle.font_size || 12;
+	_this.color = textStyle.font_color || 'white';
 	_this.style = '';
-	_this.strokeWidth = 0;
-	_this.strokeColor = 'black';
+	_this.strokeWidth = textStyle.stroke_width || 0;
+	_this.strokeColor = textStyle.stroke_color || 'black';
     var canvas = game.canvas;													//Ponemos los valores al canvas para objeter el width del texto
     canvas.save();
     canvas.font = _this.size + 'px ' + _this.font;
