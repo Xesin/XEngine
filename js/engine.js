@@ -313,7 +313,6 @@ XEngine.Game.prototype = {
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
 			}																	//Llamamos al handler de condición de fin;
 		}			
-		_this.canvas.clearRect(0, 0, _this.width, _this.height);				//Limpiamos el canvas
 		_this.renderer.render();												//Renderizamos la escena
 	},
 	
@@ -782,6 +781,7 @@ XEngine.Renderer.prototype = {
 	 * @private
 	 */
 	render: function () {
+		this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y);				//Limpiamos el canvas
 		this.context.save();
 		this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.gameObjects);
