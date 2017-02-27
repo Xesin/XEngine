@@ -69,6 +69,16 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @readonly
 	 */
 	this.canvas = this.reference.getContext('2d');
+	
+	window.AudioContext = window.AudioContext||window.webkitAudioContext;
+	
+	/**
+	 * Contexto del audio
+	 * 
+	 * @property {AudioContext} audioContext
+	 * @readonly
+	 */
+	this.audioContext = new AudioContext();
 	/**
 	 * Limite de frames por segundo
 	 * 
@@ -120,6 +130,14 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @readonly
 	 */
 	this.deltaMillis = 0;
+	
+	/**
+	 * Determina si el juego está pausado o no
+	 * 
+	 * @property {Bool} pause
+	 */
+	this.pause = false;
+	
 	/**
 	 * Array con las referencias de todos los objetos añadidos directamente al juego
 	 * 
@@ -231,6 +249,7 @@ XEngine.Game.prototype = {
 		_this.deltaTime = 0;
 		_this.deltaMillis = 0;
 		_this.gameObjects = new Array();
+		_this.pause = false;
 		_this.state = new XEngine.StateManager(_this);
 		_this.add = new XEngine.ObjectFactory(_this);
 		_this.physics = new XEngine.Physics(_this);	
@@ -277,6 +296,7 @@ XEngine.Game.prototype = {
 		_this.deltaTime = _this.deltaMillis / 1000;								//tiempo entre frames (en segundos)
 		if(1/_this.frameLimit > _this.deltaTime) return;
 		_this.previousFrameTime = _this.frameTime;								//guardamos el tiempo de este frame para después calcular el delta time
+		if(_this.pause) return;
 		if(_this.state.currentState == null) return;							//Si no hay arrancado ningún estado, saltamos el update
 		if(!this.load.preloading){												//Si no estamos precargando los assets, ejecutamos el update
 			for(var i = _this.gameObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del juego para hacer su update
@@ -701,20 +721,32 @@ XEngine.AudioLoader.prototype = {
 		var _this = this;
 		var newAudio = {														//Creamos el objeto a guardar en cache
 			audioName : _this.audioName,										//Nombre del audio
-			audio: null															//Referencia del audio
+			audio: null,														//Referencia del audio
+			decoded: false,														//El audio ya está decodificado?
 		};
-		var audio = new Audio(_this.audioUrl);									//Creamos el objeto Audio
-		var handler = function (e) {											//Creamos el handler de cuando se completa o da error
+		var request = new XMLHttpRequest();
+		request.open('GET', _this.audioUrl, true);
+		request.responseType = 'arraybuffer';
+		var handler = function () {												//Creamos el handler de cuando se completa o da error
         	var audioRef = _this.loader.game.cache.audios[_this.audioName];		//Obtenemos el audio de cache
-        	audioRef.audio = this;												//Asignamos la referencia
-        	_this.completed = true;												//Marcamos como completado
-        	_this.loader._notifyCompleted();									//Notificamos de que la carga se ha completado
+        	if(request.status == 200){
+	        	_this.loader.game.audioContext.decodeAudioData(request.response, function(buffer) {
+			    	audioRef.audio = buffer;
+			    	audioRef.decoded = true;
+			    	_this.completed = true;
+			    	_this.loader._notifyCompleted();
+			    }, function(){
+			    	_this.completed = true;										//Marcamos como completado
+        			_this.loader._notifyCompleted();
+			    });
+        	}else{
+        		_this.completed = true;											//Marcamos como completado
+        		_this.loader._notifyCompleted();								//Notificamos de que la carga se ha completado
+        	}
         };
-        audio.addEventListener('error', handler, false);
-        audio.addEventListener('canplaythrough', handler, false);
-        audio.onLoad = handler;
-        audio.load();
+        request.onload = handler;
 		_this.loader.game.cache.audios[_this.audioName] = newAudio;				//Guardamos nuesto objeto de audio en cache para luego recogerlo
+		request.send();
 	}	
 };
 
@@ -1888,16 +1920,20 @@ XEngine.InputManager.prototype = {
 	},
 	
 	_pointerInsideBounds: function (gameObject) {								//Obtenemos si el puntero está dentro del area de un objeto
-		var bounds = gameObject.getBounds();
-		if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * gameObject.anchor.x)) {
-                return false;
-
-        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * gameObject.anchor.y)) {
-            return false;
-
-        } else {
-            return true;
-        }
+		if(gameObject.getBounds != undefined){
+			var bounds = gameObject.getBounds();
+			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * gameObject.anchor.x)) {
+	                return false;
+	
+	        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * gameObject.anchor.y)) {
+	            return false;
+	
+	        } else {
+	            return true;
+	        }
+		}else{
+			return false;
+		}
 	},
 	
 	reset: function () {
@@ -2453,54 +2489,38 @@ XEngine.Button.prototypeExtends = {
 Object.assign(XEngine.Button.prototype, XEngine.Button.prototypeExtends);
 
 
-XEngine.Audio = function (game, audioName ,autoStart){
+XEngine.Audio = function (game, audioName, autoStart, volume){
 	var _this = this;
 	_this.game = game;
 	_this.audio = _this.game.cache.audio(audioName).audio;
-	_this.volume = 1;
+	_this.audio.volume = volume || 1;
 	_this.audio.volume = _this.volume;
 	_this.onComplete = new XEngine.Signal();
 	_this.completed = false;
 	_this.pendingDestroy = false;
 	_this.alive = true;
+	_this.source = game.audioContext.createBufferSource(); 
+	_this.source.buffer = _this.audio;                    
+	_this.source.connect(game.audioContext.destination);
+	_this.source.onended = function(){
+		_this._complete();
+	};
 	if(autoStart){
 		this.play();
 	}
 };
 
 XEngine.Audio.prototype = {
-	
-	update:function () {
-		var _this = this;
-		if(!_this.audio.loop && _this.audio.ended && !_this.completed){
-			_this.completed = true;
-			_this.onComplete.dispatch();
-		}
+	play: function (time) {															
+		this.source.start(time || 0);
 	},
 	
-	play: function () {															
-		this.audio.play();
-	},
-	
-	stop: function () {
-		this.audio.pause();
-		this.audio.currentTime = 0;
-	},
-	
-	pause: function () {
-		this.audio.pause();
-	},
-	
-	resume: function () {
-		this.audio.resume();
+	stop: function (time) {
+		this.source.stop(time || 0);
 	},
 	
 	loop: function (value) {
-		this.audio.loop = value;
-	},
-	
-	setVolume: function (newValue) {
-		this.audio.volume = newValue;
+		this.source.loop = value;
 	},
 	
 	destroy: function () {
@@ -2515,5 +2535,10 @@ XEngine.Audio.prototype = {
 	kill: function () {
 		this.alive = false;
 		this.stop();
+	},
+	
+	_complete: function(){
+		var _this = this;
+		_this.onComplete.dispatch();
 	}
 };
