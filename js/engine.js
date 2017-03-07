@@ -348,16 +348,17 @@ XEngine.Game.prototype = {
 			var gameObject = this.gameObjects[i];
 			if(gameObject.destroy != undefined)						
 			{
-				gameObject.destroy();
-				if(gameObject.body != undefined){								//Si tienen un body, lo destruimos también
-					gameObject.body.destroy();
-					delete this.gameObjects[i].body;							//Liberamos memoria
+				if(!gameObject.persist){
+					gameObject.destroy();
+					if(gameObject.body != undefined){								//Si tienen un body, lo destruimos también
+						gameObject.body.destroy();
+						delete this.gameObjects[i].body;							//Liberamos memoria
+					}
+					delete this.gameObjects[i];										//Liberamos memoria
+					this.gameObjects.splice(i, 1);
 				}
-				delete this.gameObjects[i];										//Liberamos memoria
 			}
 		}
-		delete this.gameObjects;												//Liberamos la memoria del array para luego crear uno nuevo
-		this.gameObjects = new Array();
 		this.physics._destroy();												//Llamamos a los destroy de los distintos componentes
 		this.tween._destroy();
 		delete this.camera;														//Liberamos la memoria de la camara para crear una nueva								
@@ -1045,8 +1046,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	audio: function (audio, autoStart) {
-		var audioObject = new XEngine.Audio(this.game, audio, autoStart);
+	audio: function (audio, autoStart, volume) {
+		var audioObject = new XEngine.Audio(this.game, audio, autoStart, volume);
 		return this.existing(audioObject);
 	},
 	
@@ -2493,8 +2494,8 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 	var _this = this;
 	_this.game = game;
 	_this.audio = _this.game.cache.audio(audioName).audio;
-	_this.audio.volume = volume || 1;
-	_this.audio.volume = _this.volume;
+	_this.persist = false;
+	_this.volume = volume || 1;
 	_this.onComplete = new XEngine.Signal();
 	_this.completed = false;
 	_this.pendingDestroy = false;
@@ -2505,12 +2506,20 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 	_this.source.onended = function(){
 		_this._complete();
 	};
+	_this.gainNode = game.audioContext.createGain();
+	_this.source.connect(_this.gainNode);
+	_this.gainNode.connect(game.audioContext.destination);
+	_this.gainNode.gain.value = _this.volume;
 	if(autoStart){
 		this.play();
 	}
 };
 
 XEngine.Audio.prototype = {
+	update: function(){
+		this.gainNode.gain.value = this.volume;
+	},
+	
 	play: function (time) {															
 		this.source.start(time || 0);
 	},
