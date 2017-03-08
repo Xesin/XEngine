@@ -292,7 +292,7 @@ XEngine.Game.prototype = {
 		
 		_this.elapsedTime = Date.now() - _this._startTime;						//tiempo transcurrido desde que se creó el juego
 		_this.frameTime = _this.elapsedTime;									//tiempo en el que transcurre este frame
-		_this.deltaMillis = (_this.frameTime - _this.previousFrameTime);		//tiempo entre frames (en milisegundos)
+		_this.deltaMillis = XEngine.Mathf.clamp((_this.frameTime - _this.previousFrameTime), 0, 100);		//tiempo entre frames (en milisegundos)
 		_this.deltaTime = _this.deltaMillis / 1000;								//tiempo entre frames (en segundos)
 		if(1/_this.frameLimit > _this.deltaTime) return;
 		_this.previousFrameTime = _this.frameTime;								//guardamos el tiempo de este frame para después calcular el delta time
@@ -1346,9 +1346,13 @@ XEngine.SignalBinding = function (signal, listener, listenerContext, isOnce) {	/
 
 XEngine.SignalBinding.prototype = {
 	dispatch : function (params) {
-		this.listener.apply(this.listenerContext, arguments);
-		if(this.isOnce){
+		if(this.listenerContext == null || this.listenerContext == undefined){
 			this.detach();
+		}else{
+			this.listener.apply(this.listenerContext, arguments);
+			if(this.isOnce){
+				this.detach();
+			}
 		}
 	},
 	
@@ -1366,7 +1370,7 @@ XEngine.Physics = function (game) {
 	this.game = game;
 	this.systemEnabled = false;													//Flag de sistema habilitado
 	this.physicsObjects = new Array();											//Array de objetos que tienen fisicas activas
-	this.gravity = 5;															//Gravedad global
+	this.gravity = 1;															//Gravedad global
 };
 
 XEngine.Physics.prototype = {
@@ -1406,6 +1410,21 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
+	_isOverlapping: function (gameObject1, gameObject2) {							
+		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
+			return false;
+		}
+		if (gameObject1.max.x < gameObject2.min.x || gameObject1.min.x > gameObject2.max.x) {
+                return false;
+
+        } else if (gameObject1.max.y < gameObject2.min.y || gameObject1.min.y > gameObject2.max.y) {
+            return false;
+
+        } else {
+            return true;
+        }
+	},
+	
 	_overlapHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
 		if(body1 == undefined || !body1._contObject.alive){													
 			return false;
@@ -1415,13 +1434,163 @@ XEngine.Physics.prototype = {
 		}
 		if(this._isOverlapping(body1, body2)) 									//Miramos si colisionan
 		{
-			body1.onCollision(body2);											//Llamamos al método onCollision del body
-			body2.onCollision(body1);											//Llamamos al método onCollision del body
+			body1.onOverlap(body2);												//Llamamos al método onOverlap del body
+			body2.onOverlap(body1);												//Llamamos al método onOverlap del body
 			return true;
 		}else{
 			return false;
 		}
 	},
+	
+	_collisionHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
+		if(body1 == undefined || !body1._contObject.alive){													
+			return false;
+		}
+		if(body2 == undefined || !body2._contObject.alive){
+			return false;
+		}
+	
+		if(this._isOverlapping(body1, body2) && (this.separateX(body1, body2) || this.separateY(body1, body2))){
+			body1.onCollision(body2);											//Llamamos al método onCollision del body
+			body2.onCollision(body1);											//Llamamos al método onCollision del body
+			return true;
+		}
+		else{
+			return false;
+		}
+	},
+	
+	separateX: function (body1, body2) {
+
+        var overlap = this.getOverlapX(body1, body2);
+
+        //  Can't separate two immovable bodies, or a body with its own custom separation logic
+        if (body1.immovable && body2.immovable)
+        {
+            //  return true if there was some overlap, otherwise false
+            return (overlap !== 0);
+        }
+        
+        if(overlap === 0)
+        	return false;
+
+        //  Adjust their positions and velocities accordingly (if there was any overlap)
+        var v1 = body1.velocity.x;
+        var v2 = body2.velocity.x;
+        var e = Math.min(body1.restitution, body2.restitution);
+
+        if (!body1.immovable && !body2.immovable)
+        {
+            overlap *= 0.5;
+
+            body1.position.x -= overlap;
+            body2.position.x += overlap;
+
+            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+            var avg = (nv1 + nv2) * 0.5;
+
+            nv1 -= avg;
+            nv2 -= avg;
+
+            body1.velocity.x = avg + nv1 * e;
+            body2.velocity.x = avg + nv2 * e;
+        }
+        else if (!body1.immovable)
+        {
+            body1.position.x -= overlap;
+            body1.velocity.x = v2 - v1 * e;
+        }
+        else
+        {
+            body2.position.x += overlap;
+            body2.velocity.x = v1 - v2 * e;
+        }
+
+        //  If we got this far then there WAS overlap, and separation is complete, so return true
+        return true;
+
+    },
+    
+    separateY: function (body1, body2) {
+
+        var overlap = this.getOverlapY(body1, body2);
+
+        //  Can't separate two immovable bodies, or a body with its own custom separation logic
+        if (body1.immovable && body2.immovable)
+        {
+            //  return true if there was some overlap, otherwise false
+            return (overlap !== 0);
+        }
+        
+        if(overlap === 0)
+        	return false;
+
+        //  Adjust their positions and velocities accordingly (if there was any overlap)
+        var v1 = body1.velocity.y;
+        var v2 = body2.velocity.y;
+        var e = Math.min(body1.restitution, body2.restitution);
+
+        if (!body1.immovable && !body2.immovable)
+        {
+            overlap *= 0.5;
+
+            body1.position.y -= overlap;
+            body2.position.y += overlap;
+
+            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+            var avg = (nv1 + nv2) * 0.5;
+
+            nv1 -= avg;
+            nv2 -= avg;
+
+            body1.velocity.y = avg + nv1 * e;
+            body2.velocity.y = avg + nv2 * e;
+        }
+        else if (!body1.immovable)
+        {
+            body1.position.y -= overlap;
+            body1.velocity.y = v2 - v1 * e;
+        }
+        else
+        {
+            body2.position.y += overlap;
+            body2.velocity.y = v1 - v2 * e;
+        }
+
+        //  If we got this far then there WAS overlap, and separation is complete, so return true
+        return true;
+
+    },
+    
+    getOverlapY: function (body1, body2) {
+    	var overlap = 0;
+    	
+    	if(body1.velocity.y > body2.velocity.y)
+    	{
+    		overlap = body1.max.y - body2.min.y; 
+    	}else if(body1.velocity.y > body2.velocity.y)
+    	{
+    		overlap = body1.min.y - body2.max.y; 
+    	}
+    	
+    	return overlap;
+    },
+    
+    getOverlapX: function (body1, body2) {
+    	var overlap = 0;
+    	
+    	if(body1.velocity.x > body2.velocity.x)
+    	{
+    		overlap = body1.max.x - body2.position.x; 
+    	}else if(body1.velocity.x > body2.velocity.x)
+    	{
+    		overlap = body1.position.x - body2.max.x; 
+    	}
+    	
+    	return overlap;
+    },
 	
 	overlap: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
 		var _this = this;
@@ -1463,19 +1632,44 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
-	_isOverlapping: function (gameObject1, gameObject2) {							
-		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
-			return false;
+	collide: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
+		var _this = this;
+		if(!_this.systemEnabled) return;
+		var _coll1;
+		var _coll2;
+		if(XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
+		{
+			for(var i = 0; i < collider.children.length; i++)
+			{
+				_coll1 = collider.children[i].body;
+		
+				for(var j = 0; j < collideWith.children.length; j++)
+				{
+					_coll2 = collideWith.children[j].body;
+					_this._collisionHandler(_coll1, _coll2);
+				}
+			}
 		}
-		if (gameObject1.max.x < gameObject2.min.x || gameObject1.min.x > gameObject2.max.x) {
-                return false;
-
-        } else if (gameObject1.max.y < gameObject2.min.y || gameObject1.min.y > gameObject2.max.y) {
-            return false;
-
-        } else {
-            return true;
-        }
+		else if(!XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
+		{									
+			_coll1 = collider.body;
+			for(var i = 0; i < collideWith.children.length; i++)
+			{
+				_coll2 = collideWith.children[i].body;
+				_this._collisionHandler(_coll1, _coll2);
+			}
+		}else if(XEngine.Group.prototype.isPrototypeOf(collider) && !XEngine.Group.prototype.isPrototypeOf(collideWith)){
+			_coll2 = collideWith.body;
+			for(var i = 0; i < collider.children.length; i++)
+			{
+				_coll1 = collider.children[i].body;
+				_this._collisionHandler(_coll1, _coll2);
+			}
+		}else{
+			_coll1 = collider.body;
+			_coll2 = collideWith.body;
+			_this._collisionHandler(_coll1, _coll2);
+		}
 	},
 	
 	_destroy : function () {
@@ -1489,6 +1683,8 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this.velocity = new XEngine.Vector(0,0);
 	this.collideWithWorld = false;												//Determina si colisiona con los limites del mundo
 	this.restitution = 0.1;														//Al colisionar, cuanta energia mantiene
+	this.mass = 1;
+	this.immovable = false;
 	this.gravity = 9;															//Gravedad local (cuanto la afecta la gravedad)
 	this.maxVelocity = 300;
 	this.staticFriction = 40;													//Fricción base para la velocidad en x
@@ -1509,7 +1705,31 @@ XEngine.Physics.PhysicsBody.prototype = {
 	
 	update : function (deltaTime) {
 		var _this = this;
-		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime, -_this.maxVelocity, _this.maxVelocity;
+		
+		_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
+		_this.position.y += _this.velocity.y * deltaTime;
+		
+		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
+		_this.updateBounds();													//Actualizamos los bounds una vez se ha calculado la nueva posición
+		
+		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
+			if(_this.min.x < 0){												//Izquierda
+				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
+				_this.velocity.x = (-this.velocity.x * _this.restitution);
+			}else if(_this.max.x > _this.game.worldWidth){						//Derecha
+				_this.position.x = _this.game.worldWidth - (_this.bounds.width * ( 1 -_this._contObject.anchor.x));
+				_this.velocity.x = (-this.velocity.x * _this.restitution);
+			}
+			if(_this.min.y < 0){												//Arriba
+				_this.position.y = (_this.bounds.height * _this._contObject.anchor.y);
+				_this.velocity.y = (-this.velocity.y * _this.restitution);
+			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
+				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
+				_this.velocity.y = (-this.velocity.y * _this.restitution);
+			}
+		}
+		
+		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime
 		
 		if(_this.velocity.x != 0 && _this.acceleration.x == 0){					//Si el objeto tiene velocidad y no está acelerando, se le aplica la fricción
 			var signX = _this.velocity.x / Math.abs(_this.velocity.x);			//Se obtiene el signo (dirección, negativa o positiva)
@@ -1530,28 +1750,6 @@ XEngine.Physics.PhysicsBody.prototype = {
 		
 		_this.velocity.y = XEngine.Mathf.clamp(_this.velocity.y, -_this.maxVelocity, _this.maxVelocity); //Aplicamos la velocidad máxima
 		_this.velocity.x = XEngine.Mathf.clamp(_this.velocity.x, -_this.maxVelocity, _this.maxVelocity);
-		
-		_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
-		_this.position.y += _this.velocity.y * deltaTime;
-		
-		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
-		_this.updateBounds();													//Actualizamos los bounds una vez se ha calculado la nueva posición
-		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
-			if(_this.min.x < 0){												//Izquierda
-				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
-				_this.velocity.x = (-this.velocity.x * _this.restitution);
-			}else if(_this.max.x > _this.game.worldWidth){						//Derecha
-				_this.position.x = _this.game.worldWidth - (_this.bounds.width * ( 1 -_this._contObject.anchor.x));
-				_this.velocity.x = (-this.velocity.x * _this.restitution);
-			}
-			if(_this.min.y < 0){												//Arriba
-				_this.position.y = (_this.bounds.height * _this._contObject.anchor.y);
-				_this.velocity.y = (-this.velocity.y * _this.restitution);
-			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
-				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
-				_this.velocity.y = (-this.velocity.y * _this.restitution);
-			}
-		}
 		
 	},
 	
