@@ -299,6 +299,13 @@ XEngine.Game.prototype = {
 		if(_this.pause) return;
 		if(_this.state.currentState == null) return;							//Si no hay arrancado ningún estado, saltamos el update
 		if(!this.load.preloading){												//Si no estamos precargando los assets, ejecutamos el update
+			this.updatePassed = false;
+			if(_this.physics.systemEnabled){
+				_this.physics.preupdate();
+			}
+			if(_this.state.currentState.update != undefined){
+				_this.state.currentState.update(_this.deltaTime);				//Llamamos al update del estado actual
+			}
 			for(var i = _this.gameObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del juego para hacer su update
 			{
 				var gameObject = _this.gameObjects[i];
@@ -322,16 +329,13 @@ XEngine.Game.prototype = {
 				}
 			}
 			
-			if(_this.state.currentState.update != undefined){
-				_this.state.currentState.update(_this.deltaTime);				//Llamamos al update del estado actual
-			}
-			
 			_this.camera.update(_this.deltaTime);								//Actualizamos la cámara
 			_this.tween._update(_this.deltaMillis);								//Actualizamos el tween manager
 			
 			if(_this.physics.systemEnabled){
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
-			}																	//Llamamos al handler de condición de fin;
+			}	
+			this.updatePassed = true;											//Llamamos al handler de condición de fin;
 		}			
 		_this.renderer.render();												//Renderizamos la escena
 	},
@@ -1393,6 +1397,17 @@ XEngine.Physics.prototype = {
 		this.physicsObjects.push(gameObject.body);								//Se añade el objeto de fisicas al array
 	},
 	
+	preupdate: function () {
+		for(var i = this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
+		{
+			var gameObject = this.physicsObjects[i];
+			if(gameObject.preupdate != undefined)							//En caso contrario miramos si contiene el método update y lo ejecutamos
+			{	
+				gameObject.preupdate();	
+			}
+		}
+	},
+	
 	update : function (deltaTime) {
 		var _this = this;
 		for(var i = _this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
@@ -1414,10 +1429,10 @@ XEngine.Physics.prototype = {
 		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
 			return false;
 		}
-		if (gameObject1.max.x < gameObject2.min.x || gameObject1.min.x > gameObject2.max.x) {
+		if (gameObject1.max.x <= gameObject2.min.x || gameObject1.min.x >= gameObject2.max.x) {
                 return false;
 
-        } else if (gameObject1.max.y < gameObject2.min.y || gameObject1.min.y > gameObject2.max.y) {
+        } else if (gameObject1.max.y <= gameObject2.min.y || gameObject1.min.y >= gameObject2.max.y) {
             return false;
 
         } else {
@@ -1450,7 +1465,21 @@ XEngine.Physics.prototype = {
 			return false;
 		}
 	
-		if(this._isOverlapping(body1, body2) && (this.separateX(body1, body2) || this.separateY(body1, body2))){
+		if(this._isOverlapping(body1, body2)){
+			var overlapX = this.getOverlapX(body1, body2);
+			var overlapY = this.getOverlapY(body1, body2);
+			if(Math.abs(overlapX) > Math.abs(overlapY)){
+				this.separateY(body1, body2, overlapY);
+				if(this._isOverlapping(body1, body2)){
+					this.separateX(body1, body2, overlapX);
+				}
+			}else{
+				this.separateX(body1, body2, overlapX);
+				if(this._isOverlapping(body1, body2)){
+					this.separateY(body1, body2, overlapY);
+				}	
+			}
+			
 			body1.onCollision(body2);											//Llamamos al método onCollision del body
 			body2.onCollision(body1);											//Llamamos al método onCollision del body
 			return true;
@@ -1460,9 +1489,7 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
-	separateX: function (body1, body2) {
-
-        var overlap = this.getOverlapX(body1, body2);
+	separateX: function (body1, body2, overlap) {
 
         //  Can't separate two immovable bodies, or a body with its own custom separation logic
         if (body1.immovable && body2.immovable)
@@ -1495,16 +1522,20 @@ XEngine.Physics.prototype = {
 
             body1.velocity.x = avg + nv1 * e;
             body2.velocity.x = avg + nv2 * e;
+            body1.updateBounds();
+            body2.updateBounds();
         }
         else if (!body1.immovable)
         {
             body1.position.x -= overlap;
             body1.velocity.x = v2 - v1 * e;
+            body1.updateBounds();
         }
         else
         {
             body2.position.x += overlap;
             body2.velocity.x = v1 - v2 * e;
+            body2.updateBounds();
         }
 
         //  If we got this far then there WAS overlap, and separation is complete, so return true
@@ -1512,9 +1543,7 @@ XEngine.Physics.prototype = {
 
     },
     
-    separateY: function (body1, body2) {
-
-        var overlap = this.getOverlapY(body1, body2);
+    separateY: function (body1, body2, overlap) {
 
         //  Can't separate two immovable bodies, or a body with its own custom separation logic
         if (body1.immovable && body2.immovable)
@@ -1547,16 +1576,20 @@ XEngine.Physics.prototype = {
 
             body1.velocity.y = avg + nv1 * e;
             body2.velocity.y = avg + nv2 * e;
+            body1.updateBounds();
+            body2.updateBounds();
         }
         else if (!body1.immovable)
         {
             body1.position.y -= overlap;
             body1.velocity.y = v2 - v1 * e;
+            body1.updateBounds();
         }
         else
         {
             body2.position.y += overlap;
             body2.velocity.y = v1 - v2 * e;
+            body2.updateBounds();
         }
 
         //  If we got this far then there WAS overlap, and separation is complete, so return true
@@ -1569,10 +1602,12 @@ XEngine.Physics.prototype = {
     	
     	if(body1.velocity.y > body2.velocity.y)
     	{
-    		overlap = body1.max.y - body2.min.y; 
-    	}else if(body1.velocity.y > body2.velocity.y)
+    		overlap = body1.max.y - body2.min.y;
+			body1.inAir = false;
+    	}else if(body1.velocity.y < body2.velocity.y)
     	{
     		overlap = body1.min.y - body2.max.y; 
+    		body2.inAir = false;
     	}
     	
     	return overlap;
@@ -1583,10 +1618,10 @@ XEngine.Physics.prototype = {
     	
     	if(body1.velocity.x > body2.velocity.x)
     	{
-    		overlap = body1.max.x - body2.position.x; 
-    	}else if(body1.velocity.x > body2.velocity.x)
+    		overlap = body1.max.x - body2.min.x; 
+    	}else if(body1.velocity.x < body2.velocity.x)
     	{
-    		overlap = body1.position.x - body2.max.x; 
+    		overlap = body1.min.x - body2.max.x; 
     	}
     	
     	return overlap;
@@ -1696,6 +1731,7 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this._contObject = contObject;
 	this.bounds = this._contObject.getBounds();
 	this.updateBounds();
+	this.inAir = true;
 };
 
 XEngine.Physics.PhysicsBody.prototype = {
@@ -1703,9 +1739,12 @@ XEngine.Physics.PhysicsBody.prototype = {
 		this.pendingDestroy = true;
 	},
 	
+	preupdate: function () {
+		this.inAir = true;
+	},
+	
 	update : function (deltaTime) {
 		var _this = this;
-		
 		_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
 		_this.position.y += _this.velocity.y * deltaTime;
 		
@@ -1726,6 +1765,7 @@ XEngine.Physics.PhysicsBody.prototype = {
 			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
 				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
 				_this.velocity.y = (-this.velocity.y * _this.restitution);
+				_this.inAir = false;
 			}
 		}
 		
@@ -1750,7 +1790,6 @@ XEngine.Physics.PhysicsBody.prototype = {
 		
 		_this.velocity.y = XEngine.Mathf.clamp(_this.velocity.y, -_this.maxVelocity, _this.maxVelocity); //Aplicamos la velocidad máxima
 		_this.velocity.x = XEngine.Mathf.clamp(_this.velocity.x, -_this.maxVelocity, _this.maxVelocity);
-		
 	},
 	
 	updateBounds: function () {													//Se obtiene la caja de colisión teniendo en cuenta el achor del sprite
