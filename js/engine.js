@@ -1955,6 +1955,12 @@ XEngine.Physics.PhysicsBody.prototype = {
     	}
     },
     
+    onOverlap: function (other) {
+    	if(this._contObject.onOverlap != undefined){							//Si el objeto controlado tiene implementado el metodo, lo llamamos
+    		this._contObject.onOverlap(other._contObject);
+    	}	
+    },
+    
     disablePhysics : function () {												//Deshabilitamos las fisicas para este objeto
     	var index = this.physicsEngine.physicsObjects.indexOf(this);
     	this.physicsEngine.physicsObjects.splice(index, 1);
