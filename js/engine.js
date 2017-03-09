@@ -575,6 +575,10 @@ XEngine.Loader.prototype = {
 		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
 	},
 	
+	jsonSpriteSheet: function(imageName, imageUrl, jsonUrl){
+		this.pendingLoads.push(new XEngine.JsonImageLoader(imageName, imageUrl, jsonUrl, this));	
+	},
+	
 	/**
 	 * Añade un audio a la cola de carga
 	 * @method XEngine.Loader#audio
@@ -660,6 +664,7 @@ XEngine.ImageLoader.prototype = {
 			frameWidth : _this.frameWidth,
 			frameHeight: _this.frameHeight,
 			data: new Array(),
+			type: "sprite"
 		};
 		var img1 = new Image();													//Creamos el objeto Image
 		var handler = function () {												//Creamos el handler de cuando se completa o da error
@@ -707,6 +712,122 @@ XEngine.ImageLoader.prototype = {
         img1.src = _this.imageUrl;												//Asignamos la url al objeto imagen
 		_this.loader.game.cache.images[_this.imageName] = newImage;				//Guardamos nuesto objeto de imagen en cache para luego recogerlo
 	}	
+};
+
+XEngine.JsonImageLoader = function (imageName, imageUrl, jsonUrl, loader) {
+	this.imageName = imageName;													//Nombre de la imagen a guardar en chache
+	this.imageUrl = imageUrl;													//Url de la imagen (con extension y todo)
+	this.jsonUrl = jsonUrl;
+	this.completed = false;												
+	this.loader = loader;														//Referencia al loader
+	this.frameWidth = 0;
+	this.frameHeight = 0;
+	this.oneCompleted = false;
+};
+
+XEngine.JsonImageLoader.prototype = {
+	/**
+	 * Arranca la carga de la imagen
+	 * @method XEngine.ImageLoader#load
+	 * @private
+	 */
+	load: function () {
+		var _this = this;
+		_this.loadImage();
+		_this.loadJson();
+	},
+	
+	loadImage: function () {
+		var _this = this;
+		var newImage = {														//Creamos el objeto a guardar en cache
+			imageName : _this.imageName,										//Nombre de la imagen
+			image: null,														//Referencia de la imagen
+			frameWidth : _this.frameWidth,
+			frameHeight: _this.frameHeight,
+			data: new Array(),
+			type: "jsonSprite"
+		};
+		var img1 = new Image();													//Creamos el objeto Image
+		var imageHandler = function () {												//Creamos el handler de cuando se completa o da error
+        	var imageRef = _this.loader.game.cache.images[_this.imageName];		//Obtenemos la imagen de cache
+        	imageRef.image = this;												//Asignamos la referencia
+        
+        	if(_this.frameWidth == 0){
+        		imageRef.frameWidth = this.width;
+        	}else{
+        		imageRef.frameWidth = _this.frameWidth;
+        	}
+        	
+        	if(_this.frameHeight == 0){
+        		imageRef.frameHeight = this.height;
+        	}else{
+        		imageRef.frameHeight = _this.frameHeight;
+        	}
+        	
+        	var canvas = document.createElement("canvas");
+	        canvas.width =this.width;
+	        canvas.height =this.height;
+	
+	        var ctx = canvas.getContext("2d");
+	        ctx.drawImage(this, 0, 0);
+	
+	        var data = ctx.getImageData(0,0, this.width, this.height).data;
+	        
+	        //Push pixel data to more usable object
+	        for(var i = 0; i < data.length; i+=4){
+	        	var rgba = {
+	        		r: data[i],
+	        		g: data[i+1],
+	        		b: data[i+2],
+	        		a: data[i+3]
+	        	};
+	        	
+	        	imageRef.data.push(rgba);
+	        }
+        	if(_this.oneCompleted)
+        	{
+        		_this.completed = true;											//Marcamos como completado
+        		_this.loader._notifyCompleted();								//Notificamos de que la carga se ha completado
+        	}
+        	else
+        	{
+        		_this.oneCompleted = true;
+        	}
+        };
+        img1.onload = imageHandler;												//Asignamos los handlers
+        img1.onerror = imageHandler;
+        img1.src = _this.imageUrl;												//Asignamos la url al objeto imagen
+		_this.loader.game.cache.images[_this.imageName] = newImage;				//Guardamos nuesto objeto de imagen en cache para luego recogerlo
+	},
+	
+	loadJson: function (){
+		var _this = this;
+		var request = new XMLHttpRequest();
+		request.open('GET', _this.jsonUrl, true);
+		var handler = function () {												//Creamos el handler de cuando se completa o da error
+        	if(request.status == 200){
+        		var returnedJson = JSON.parse(request.responseText);
+        		var newJson = returnedJson;
+        		for(var i = 0; i< newJson.frames.length; i++){
+        			var frame = newJson.frames[i];
+        			newJson[frame.filename] = frame;
+        		}
+        		_this.loader.game.cache.json[_this.imageName] = newJson;
+        	}
+        	
+        	if(_this.oneCompleted)
+        	{
+        		_this.completed = true;											//Marcamos como completado
+        		_this.loader._notifyCompleted();								//Notificamos de que la carga se ha completado
+        	}
+        	else
+        	{
+        		_this.oneCompleted = true;
+        	}
+        };
+        request.onload = handler;
+		request.send();
+	},
 };
 
 XEngine.AudioLoader = function (audioName, audioUrl, loader) {
@@ -760,6 +881,7 @@ XEngine.Cache = function (game) {
 	this.game = game;
 	this.images = new Array();													//Cache de imagenes
 	this.audios = new Array();													//Cache de audios
+	this.json = new Array();
 };
 
 XEngine.Cache.prototype = {
@@ -774,6 +896,14 @@ XEngine.Cache.prototype = {
 			console.error('No hay imagen para el nombre: '+ imageName);	
 		}else{
 			return this.images[imageName];
+		}
+	},
+	
+	getJson: function(jsonName){
+		if(this.json[jsonName] == undefined){
+			console.error('No hay json para el nombre: '+ jsonName);	
+		}else{
+			return this.json[jsonName];
 		}
 	},
 	
@@ -798,8 +928,10 @@ XEngine.Cache.prototype = {
 	clearCache: function () {
 		delete this.images;
 		delete this.audios;
+		delete this.json;
 		this.images = new Array();
 		this.audios = new Array();
+		this.json = new Array();
 	}
 };
 
@@ -2325,14 +2457,22 @@ XEngine.Sprite = function (game, posX, posY, sprite){
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.sprite = sprite;
-	var cache_image = _this.game.cache.image(sprite);
     _this.game = game;                                                   		//guardamos una referencia al juego
-    _this.width = cache_image.frameWidth || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
-    _this.height = cache_image.frameHeight || 10;
-    _this._columns = Math.floor(cache_image.image.width / _this.width);
-    _this._rows = Math.floor(cache_image.image.height / _this.height);
+	_this.frame = 0;
+	var cache_image = _this.game.cache.image(sprite);
+	if(cache_image.type == "sprite"){
+	    _this.width = cache_image.frameWidth || 10;								//Si la imagen no se ha cargado bien, ponemos valor por defecto
+	    _this.height = cache_image.frameHeight || 10;
+	    _this._columns = Math.floor(cache_image.image.width / _this.width);
+	    _this._rows = Math.floor(cache_image.image.height / _this.height);
+	}else{
+		_this.json = _this.game.cache.getJson(sprite);
+		var frameInfo = _this.json.frames[_this.frame];
+		_this.width = frameInfo.frame.w;
+		_this.height = frameInfo.frame.h;
+	}
     _this.position.setTo(posX, posY);
-    _this.frame = 0;
+    
     _this.animation = new XEngine.AnimationManager(game, this);
 };
 
@@ -2345,18 +2485,31 @@ XEngine.Sprite.prototypeExtends = {
 		canvas.save();															//Guardamos el estado actual del canvas
 		var cache_image = _this.game.cache.image(_this.sprite);					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
-		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
-		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		var column = _this.frame;
-		if(_this.frame > _this._columns - 1){
-			column -= _this._columns; 
-		}
-		var row = Math.floor(_this.frame / _this._columns);
+		canvas.globalAlpha =_this.alpha;					
 		var posX = Math.round(-(bounds.width * _this.anchor.x));
 		var posY = Math.round(-(bounds.height * _this.anchor.y));
 		var width = Math.round(bounds.width);
 		var height = Math.round(bounds.height);
-		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
+		//Aplicamos el alpha del objeto
+		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
+		if(cache_image.type == "sprite"){
+			var column = _this.frame;
+			if(_this.frame > _this._columns - 1){
+				column -= _this._columns; 
+			}
+			
+			var row = Math.floor(_this.frame / _this._columns);
+			canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
+		}else{
+			var frameInfo = {};
+			if(typeof _this.frame === 'string'){
+				frameInfo = _this.json[_this.frame];
+			}else{
+				frameInfo = _this.json.frames[_this.frame];
+			}
+			
+			canvas.drawImage(cache_image.image, frameInfo.frame.x, frameInfo.frame.y, frameInfo.frame.w, frameInfo.frame.h, posX, posY, width, height);
+		}
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
