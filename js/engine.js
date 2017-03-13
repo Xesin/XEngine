@@ -303,6 +303,9 @@ XEngine.Game.prototype = {
 			if(_this.physics.systemEnabled){
 				_this.physics.preupdate();
 			}
+			if(_this.physics.systemEnabled){
+				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
+			}
 			if(_this.state.currentState.update != undefined){
 				_this.state.currentState.update(_this.deltaTime);				//Llamamos al update del estado actual
 			}
@@ -329,13 +332,9 @@ XEngine.Game.prototype = {
 				}
 			}
 			
+			
 			_this.camera.update(_this.deltaTime);								//Actualizamos la cámara
 			_this.tween._update(_this.deltaMillis);								//Actualizamos el tween manager
-			
-			if(_this.physics.systemEnabled){
-				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
-			}	
-			this.updatePassed = true;											//Llamamos al handler de condición de fin;
 		}			
 		_this.renderer.render();												//Renderizamos la escena
 	},
@@ -1177,8 +1176,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	text : function (posX, posY, text, size, textStyle) {
-		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, textStyle);
+	text : function (posX, posY, text, textStyle) {
+		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
 		return this.existing(gameObject);
 	},
 	
@@ -1864,6 +1863,7 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this.bounds = this._contObject.getBounds();
 	this.updateBounds();
 	this.inAir = true;
+	this.prev = new XEngine.Vector(position.x, position.y);
 };
 
 XEngine.Physics.PhysicsBody.prototype = {
@@ -1875,13 +1875,28 @@ XEngine.Physics.PhysicsBody.prototype = {
 		this.inAir = true;
 	},
 	
+	isInAir:function(){
+		return this.deltaY() !== 0;
+	},
+	
+	deltaY: function(){
+		return (Math.round(this.position.y) - Math.round(this.prev.y));
+	},
+	
 	update : function (deltaTime) {
 		var _this = this;
-		_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
-		_this.position.y += _this.velocity.y * deltaTime;
-		
+		_this.prev.x = _this.position.x;
+		_this.prev.y = _this.position.y;
 		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
-		_this.updateBounds();													//Actualizamos los bounds una vez se ha calculado la nueva posición
+																				//Actualizamos los bounds una vez se ha calculado la nueva posición
+		
+		if(!_this.immovable){
+			_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
+			_this.position.y += _this.velocity.y * deltaTime;
+		}
+		_this.updateBounds();	
+		
+		if(_this.immovable) return;
 		
 		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
 			if(_this.min.x < 0){												//Izquierda
@@ -2336,6 +2351,7 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.onInputDown = new XEngine.Signal();			
     _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
     _this.render = true;
+    _this.fixedToCamera = false;
 };
 
 XEngine.BaseObject.prototype = {
@@ -2377,8 +2393,13 @@ XEngine.BaseObject.prototype = {
 	applyRotationAndPos: function (canvas) {									//Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
 		var _this = this;
 		var pos = _this.getWorldPos();
-	    canvas.translate(pos.x - this.game.camera.position.x , pos.y - this.game.camera.position.y);
+		if(_this.fixedToCamera){
+	    	canvas.translate(pos.x, pos.y);
+		}else{
+	    	canvas.translate(pos.x - this.game.camera.position.x , pos.y - this.game.camera.position.y);
+		}
 	    canvas.rotate(this.getTotalRotation()*Math.PI/180);
+	    canvas.scale(this.scale.x, this.scale.y);
 	}
 };
 
@@ -2487,18 +2508,18 @@ XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Sprite.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										//Sobreescribimos el método render	
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();															//Guardamos el estado actual del canvas
 		var cache_image = _this.game.cache.image(_this.sprite);					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;					
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
+		
 		//Aplicamos el alpha del objeto
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
 		if(cache_image.type == "sprite"){
+			var width = Math.round(_this.width);
+			var height = Math.round(_this.height);
+			var posX = Math.round(-(width * _this.anchor.x));
+			var posY = Math.round(-(height * _this.anchor.y));
 			var column = _this.frame;
 			if(_this.frame > _this._columns - 1){
 				column -= _this._columns; 
@@ -2513,7 +2534,10 @@ XEngine.Sprite.prototypeExtends = {
 			}else{
 				frameInfo = _this.json.frames[_this.frame];
 			}
-			
+			var width = frameInfo.frame.w;
+			var height = frameInfo.frame.h;
+			var posX = Math.round(-(width * _this.anchor.x));
+			var posY = Math.round(-(height * _this.anchor.y));
 			canvas.drawImage(cache_image.image, frameInfo.frame.x, frameInfo.frame.y, frameInfo.frame.w, frameInfo.frame.h, posX, posY, width, height);
 		}
 		canvas.restore();														//Restauramos el estado del canvas
@@ -2578,7 +2602,7 @@ XEngine.Animation.prototype = {
 	},
 	
 	_start: function () {
-		this.started = true;
+		this.playing = true;
 	},
 	
 	_stop: function(){
@@ -2599,7 +2623,7 @@ XEngine.AnimationManager = function (game, sprite){								//Manager para maneja
 XEngine.AnimationManager.prototype = {
 	_update: function (deltaMillis) {
 		var _this = this;
-		if(_this.currentAnim){
+		if(_this.currentAnim && _this.currentAnim.playing){
 			_this.currentAnim._update(deltaMillis);
 		}
 	},
@@ -2649,15 +2673,14 @@ XEngine.Rect.constructor = XEngine.Rect;
 XEngine.Rect.prototypeExtends = {
 	_renderToCanvas: function (canvas) {
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.fillStyle=_this.color;
 		canvas.globalAlpha =_this.alpha;
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
+		var width = Math.round(_this.width);
+		var height = Math.round(_this.height);
+		var posX = Math.round(-(width * _this.anchor.x));
+		var posY = Math.round(-(height * _this.anchor.y));
 		canvas.fillRect(posX, posY, width, height);
 		canvas.restore();
 	},
@@ -2812,23 +2835,22 @@ XEngine.Text.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Text.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		_this.applyRotationAndPos(canvas, _this.offSet);
 		canvas.globalAlpha =_this.alpha;
 		var font = 	font = _this.style + ' ' + _this.size + 'px ' + _this.font;
 		canvas.font = font.trim();
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var textSize = canvas.measureText(_this.text);
+		_this.width = textSize.width;
+		_this.height = _this.size * 1.5;
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
 		var pos = {x: posX, y: posY + _this.size};
 		if(_this.strokeWidth > 0){
 			canvas.strokeStyle = _this.strokeColor;
     		canvas.lineWidth = _this.strokeWidth;
     		canvas.strokeText(_this.text, pos.x, pos.y);
 		}
-		var textSize = canvas.measureText(_this.text);
-		_this.width = textSize.width;
-		_this.height = _this.size * 1.5;
 		canvas.fillStyle = _this.color;
 		canvas.fillText(_this.text, pos.x, pos.y);
 		canvas.restore();
@@ -2861,15 +2883,15 @@ XEngine.Button.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Button.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										//Sobreescribimos el método render	
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();															//Guardamos el estado actual del canvas
 		var image = _this.game.cache.image(_this.sprite).image;					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
+		var width = Math.round(_this.width);
+		var height = Math.round(_this.height);
+		var posX = Math.round(-(width * _this.anchor.x));
+		var posY = Math.round(-(height * _this.anchor.y));
+		
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
 		canvas.drawImage(image, posX, posY, width, height);
 		canvas.restore();														//Restauramos el estado del canvas
