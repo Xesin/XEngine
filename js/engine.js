@@ -1,3 +1,7 @@
+/**
+ * Created by Xisco Ferrer on 1/15/17.
+ */
+
 var XEngine = {
 	version: '0.6-alpha'
 };
