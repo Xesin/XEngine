@@ -953,9 +953,8 @@ XEngine.Renderer.prototype = {
 	 * @private
 	 */
 	render: function () {
-		this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y);				//Limpiamos el canvas
+		this.context.clearRect(0, 0, this.game.width, this.game.height);				//Limpiamos el canvas
 		this.context.save();
-		this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.gameObjects);
 		this.context.restore();
 	},
@@ -1111,8 +1110,8 @@ XEngine.ScaleManager.prototype = {
 	 * @private
 	 */
 	resizeCanvas: function(newWidth, newHeight){
-		this.game.reference.setAttribute('width', newWidth);
-		this.game.reference.setAttribute('height', newHeight);
+		this.game.reference.style.width = newWidth.toString()+'px';
+		this.game.reference.style.height = newHeight.toString()+'px';
 		this.game.renderer.setScale(newWidth / this.game.width, newHeight / this.game.height);
 	},
 };
@@ -2072,7 +2071,8 @@ XEngine.Vector.prototype = {
 	
 	setTo: function (x, y) {													//Asigna los valores (solo por comodidad)
 		this.x = x;
-		this.y = y || x;
+		if(y === undefined) y = x;
+		this.y = y;
 	},
 	
 	add: function (other) {														//Suma de vectores
@@ -2209,6 +2209,9 @@ XEngine.InputManager.prototype = {
 	},
 	
 	keyDownHandler: function (event) {
+		if(this.keysPressed[event.keyCode]){
+			return;
+		}
 		this.keysPressed[event.keyCode] = true;
 		this.onKeyDown.dispatch(event);
 	},
@@ -2465,6 +2468,7 @@ XEngine.Group.prototypeExtends = {
 			{
 				gameObject.destroy(gameObject);
 				delete this.children[i];
+				this.children.splice(i, 1);
 			}
 		}
 		if(this.onDestroy != undefined){
@@ -2474,6 +2478,10 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
+        var indexOf = this.game.gameObjects.indexOf(gameObject);
+        if(indexOf >= 0){
+        	this.game.gameObjects.splice(indexOf, 1);
+        }
         if(gameObject.start != undefined){
 			gameObject.start();
 		}
@@ -2932,6 +2940,7 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 	_this.source.connect(_this.gainNode);
 	_this.gainNode.connect(game.audioContext.destination);
 	_this.gainNode.gain.value = _this.volume;
+	_this.startTime = 0;
 	if(autoStart){
 		this.play();
 	}
@@ -2939,11 +2948,12 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 
 XEngine.Audio.prototype = {
 	update: function(){
-		this.gainNode.gain.value = this.volume;
+		this.gainNode.gain.value = XEngine.Mathf.lerp(-1, 0, this.volume);
 	},
 	
-	play: function (time) {															
+	play: function (time) {			
 		this.source.start(time || 0);
+		this.startTime = this.source.context.currentTime + (time || 0);
 	},
 	
 	stop: function (time) {
@@ -2952,6 +2962,10 @@ XEngine.Audio.prototype = {
 	
 	loop: function (value) {
 		this.source.loop = value;
+	},
+	
+	getCurrentTime: function(){
+		return this.source.context.currentTime - this.startTime;
 	},
 	
 	destroy: function () {
