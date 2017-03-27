@@ -1233,7 +1233,6 @@ XEngine.TweenManager.prototype = {
 		{
 			this.tweens[i]._destroy();
 			delete this.tweens[i];
-			delete this.tweens;
 		}
 		
 		this.tweens = new Array();
