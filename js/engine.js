@@ -1,7 +1,3 @@
-/**
- * Created by Xisco Ferrer on 1/15/17.
- */
-
 var XEngine = {
 	version: '0.6-alpha'
 };
@@ -296,23 +292,13 @@ XEngine.Game.prototype = {
 		
 		_this.elapsedTime = Date.now() - _this._startTime;						//tiempo transcurrido desde que se creó el juego
 		_this.frameTime = _this.elapsedTime;									//tiempo en el que transcurre este frame
-		_this.deltaMillis = XEngine.Mathf.clamp((_this.frameTime - _this.previousFrameTime), 0, 100);		//tiempo entre frames (en milisegundos)
+		_this.deltaMillis = (_this.frameTime - _this.previousFrameTime);		//tiempo entre frames (en milisegundos)
 		_this.deltaTime = _this.deltaMillis / 1000;								//tiempo entre frames (en segundos)
 		if(1/_this.frameLimit > _this.deltaTime) return;
 		_this.previousFrameTime = _this.frameTime;								//guardamos el tiempo de este frame para después calcular el delta time
 		if(_this.pause) return;
 		if(_this.state.currentState == null) return;							//Si no hay arrancado ningún estado, saltamos el update
 		if(!this.load.preloading){												//Si no estamos precargando los assets, ejecutamos el update
-			this.updatePassed = false;
-			if(_this.physics.systemEnabled){
-				_this.physics.preupdate();
-			}
-			if(_this.physics.systemEnabled){
-				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
-			}
-			if(_this.state.currentState.update != undefined){
-				_this.state.currentState.update(_this.deltaTime);				//Llamamos al update del estado actual
-			}
 			for(var i = _this.gameObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del juego para hacer su update
 			{
 				var gameObject = _this.gameObjects[i];
@@ -336,9 +322,16 @@ XEngine.Game.prototype = {
 				}
 			}
 			
+			if(_this.state.currentState.update != undefined){
+				_this.state.currentState.update(_this.deltaTime);				//Llamamos al update del estado actual
+			}
 			
 			_this.camera.update(_this.deltaTime);								//Actualizamos la cámara
 			_this.tween._update(_this.deltaMillis);								//Actualizamos el tween manager
+			
+			if(_this.physics.systemEnabled){
+				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
+			}																	//Llamamos al handler de condición de fin;
 		}			
 		_this.renderer.render();												//Renderizamos la escena
 	},
@@ -578,10 +571,6 @@ XEngine.Loader.prototype = {
 		this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
 	},
 	
-	jsonSpriteSheet: function(imageName, imageUrl, jsonUrl){
-		this.pendingLoads.push(new XEngine.JsonImageLoader(imageName, imageUrl, jsonUrl, this));	
-	},
-	
 	/**
 	 * Añade un audio a la cola de carga
 	 * @method XEngine.Loader#audio
@@ -667,7 +656,6 @@ XEngine.ImageLoader.prototype = {
 			frameWidth : _this.frameWidth,
 			frameHeight: _this.frameHeight,
 			data: new Array(),
-			type: "sprite"
 		};
 		var img1 = new Image();													//Creamos el objeto Image
 		var handler = function () {												//Creamos el handler de cuando se completa o da error
@@ -715,122 +703,6 @@ XEngine.ImageLoader.prototype = {
         img1.src = _this.imageUrl;												//Asignamos la url al objeto imagen
 		_this.loader.game.cache.images[_this.imageName] = newImage;				//Guardamos nuesto objeto de imagen en cache para luego recogerlo
 	}	
-};
-
-XEngine.JsonImageLoader = function (imageName, imageUrl, jsonUrl, loader) {
-	this.imageName = imageName;													//Nombre de la imagen a guardar en chache
-	this.imageUrl = imageUrl;													//Url de la imagen (con extension y todo)
-	this.jsonUrl = jsonUrl;
-	this.completed = false;												
-	this.loader = loader;														//Referencia al loader
-	this.frameWidth = 0;
-	this.frameHeight = 0;
-	this.oneCompleted = false;
-};
-
-XEngine.JsonImageLoader.prototype = {
-	/**
-	 * Arranca la carga de la imagen
-	 * @method XEngine.ImageLoader#load
-	 * @private
-	 */
-	load: function () {
-		var _this = this;
-		_this.loadImage();
-		_this.loadJson();
-	},
-	
-	loadImage: function () {
-		var _this = this;
-		var newImage = {														//Creamos el objeto a guardar en cache
-			imageName : _this.imageName,										//Nombre de la imagen
-			image: null,														//Referencia de la imagen
-			frameWidth : _this.frameWidth,
-			frameHeight: _this.frameHeight,
-			data: new Array(),
-			type: "jsonSprite"
-		};
-		var img1 = new Image();													//Creamos el objeto Image
-		var imageHandler = function () {												//Creamos el handler de cuando se completa o da error
-        	var imageRef = _this.loader.game.cache.images[_this.imageName];		//Obtenemos la imagen de cache
-        	imageRef.image = this;												//Asignamos la referencia
-        
-        	if(_this.frameWidth == 0){
-        		imageRef.frameWidth = this.width;
-        	}else{
-        		imageRef.frameWidth = _this.frameWidth;
-        	}
-        	
-        	if(_this.frameHeight == 0){
-        		imageRef.frameHeight = this.height;
-        	}else{
-        		imageRef.frameHeight = _this.frameHeight;
-        	}
-        	
-        	var canvas = document.createElement("canvas");
-	        canvas.width =this.width;
-	        canvas.height =this.height;
-	
-	        var ctx = canvas.getContext("2d");
-	        ctx.drawImage(this, 0, 0);
-	
-	        var data = ctx.getImageData(0,0, this.width, this.height).data;
-	        
-	        //Push pixel data to more usable object
-	        for(var i = 0; i < data.length; i+=4){
-	        	var rgba = {
-	        		r: data[i],
-	        		g: data[i+1],
-	        		b: data[i+2],
-	        		a: data[i+3]
-	        	};
-	        	
-	        	imageRef.data.push(rgba);
-	        }
-        	if(_this.oneCompleted)
-        	{
-        		_this.completed = true;											//Marcamos como completado
-        		_this.loader._notifyCompleted();								//Notificamos de que la carga se ha completado
-        	}
-        	else
-        	{
-        		_this.oneCompleted = true;
-        	}
-        };
-        img1.onload = imageHandler;												//Asignamos los handlers
-        img1.onerror = imageHandler;
-        img1.src = _this.imageUrl;												//Asignamos la url al objeto imagen
-		_this.loader.game.cache.images[_this.imageName] = newImage;				//Guardamos nuesto objeto de imagen en cache para luego recogerlo
-	},
-	
-	loadJson: function (){
-		var _this = this;
-		var request = new XMLHttpRequest();
-		request.open('GET', _this.jsonUrl, true);
-		var handler = function () {												//Creamos el handler de cuando se completa o da error
-        	if(request.status == 200){
-        		var returnedJson = JSON.parse(request.responseText);
-        		var newJson = returnedJson;
-        		for(var i = 0; i< newJson.frames.length; i++){
-        			var frame = newJson.frames[i];
-        			newJson[frame.filename] = frame;
-        		}
-        		_this.loader.game.cache.json[_this.imageName] = newJson;
-        	}
-        	
-        	if(_this.oneCompleted)
-        	{
-        		_this.completed = true;											//Marcamos como completado
-        		_this.loader._notifyCompleted();								//Notificamos de que la carga se ha completado
-        	}
-        	else
-        	{
-        		_this.oneCompleted = true;
-        	}
-        };
-        request.onload = handler;
-		request.send();
-	},
 };
 
 XEngine.AudioLoader = function (audioName, audioUrl, loader) {
@@ -884,7 +756,6 @@ XEngine.Cache = function (game) {
 	this.game = game;
 	this.images = new Array();													//Cache de imagenes
 	this.audios = new Array();													//Cache de audios
-	this.json = new Array();
 };
 
 XEngine.Cache.prototype = {
@@ -899,14 +770,6 @@ XEngine.Cache.prototype = {
 			console.error('No hay imagen para el nombre: '+ imageName);	
 		}else{
 			return this.images[imageName];
-		}
-	},
-	
-	getJson: function(jsonName){
-		if(this.json[jsonName] == undefined){
-			console.error('No hay json para el nombre: '+ jsonName);	
-		}else{
-			return this.json[jsonName];
 		}
 	},
 	
@@ -931,10 +794,8 @@ XEngine.Cache.prototype = {
 	clearCache: function () {
 		delete this.images;
 		delete this.audios;
-		delete this.json;
 		this.images = new Array();
 		this.audios = new Array();
-		this.json = new Array();
 	}
 };
 
@@ -953,8 +814,9 @@ XEngine.Renderer.prototype = {
 	 * @private
 	 */
 	render: function () {
-		this.context.clearRect(0, 0, this.game.width, this.game.height);				//Limpiamos el canvas
+		this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y);				//Limpiamos el canvas
 		this.context.save();
+		this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.gameObjects);
 		this.context.restore();
 	},
@@ -1110,8 +972,8 @@ XEngine.ScaleManager.prototype = {
 	 * @private
 	 */
 	resizeCanvas: function(newWidth, newHeight){
-		this.game.reference.style.width = newWidth.toString()+'px';
-		this.game.reference.style.height = newHeight.toString()+'px';
+		this.game.reference.setAttribute('width', newWidth);
+		this.game.reference.setAttribute('height', newHeight);
 		this.game.renderer.setScale(newWidth / this.game.width, newHeight / this.game.height);
 	},
 };
@@ -1179,8 +1041,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	text : function (posX, posY, text, textStyle) {
-		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
+	text : function (posX, posY, text, size, textStyle) {
+		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, textStyle);
 		return this.existing(gameObject);
 	},
 	
@@ -1233,6 +1095,7 @@ XEngine.TweenManager.prototype = {
 		{
 			this.tweens[i]._destroy();
 			delete this.tweens[i];
+			delete this.tweens;
 		}
 		
 		this.tweens = new Array();
@@ -1483,13 +1346,9 @@ XEngine.SignalBinding = function (signal, listener, listenerContext, isOnce) {	/
 
 XEngine.SignalBinding.prototype = {
 	dispatch : function (params) {
-		if(this.listenerContext == null || this.listenerContext == undefined){
+		this.listener.apply(this.listenerContext, arguments);
+		if(this.isOnce){
 			this.detach();
-		}else{
-			this.listener.apply(this.listenerContext, arguments);
-			if(this.isOnce){
-				this.detach();
-			}
 		}
 	},
 	
@@ -1507,7 +1366,7 @@ XEngine.Physics = function (game) {
 	this.game = game;
 	this.systemEnabled = false;													//Flag de sistema habilitado
 	this.physicsObjects = new Array();											//Array de objetos que tienen fisicas activas
-	this.gravity = 1;															//Gravedad global
+	this.gravity = 5;															//Gravedad global
 };
 
 XEngine.Physics.prototype = {
@@ -1530,17 +1389,6 @@ XEngine.Physics.prototype = {
 		this.physicsObjects.push(gameObject.body);								//Se añade el objeto de fisicas al array
 	},
 	
-	preupdate: function () {
-		for(var i = this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
-		{
-			var gameObject = this.physicsObjects[i];
-			if(gameObject.preupdate != undefined)							//En caso contrario miramos si contiene el método update y lo ejecutamos
-			{	
-				gameObject.preupdate();	
-			}
-		}
-	},
-	
 	update : function (deltaTime) {
 		var _this = this;
 		for(var i = _this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
@@ -1558,21 +1406,6 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
-	_isOverlapping: function (gameObject1, gameObject2) {							
-		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
-			return false;
-		}
-		if (gameObject1.max.x <= gameObject2.min.x || gameObject1.min.x >= gameObject2.max.x) {
-                return false;
-
-        } else if (gameObject1.max.y <= gameObject2.min.y || gameObject1.min.y >= gameObject2.max.y) {
-            return false;
-
-        } else {
-            return true;
-        }
-	},
-	
 	_overlapHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
 		if(body1 == undefined || !body1._contObject.alive){													
 			return false;
@@ -1582,183 +1415,13 @@ XEngine.Physics.prototype = {
 		}
 		if(this._isOverlapping(body1, body2)) 									//Miramos si colisionan
 		{
-			body1.onOverlap(body2);												//Llamamos al método onOverlap del body
-			body2.onOverlap(body1);												//Llamamos al método onOverlap del body
+			body1.onCollision(body2);											//Llamamos al método onCollision del body
+			body2.onCollision(body1);											//Llamamos al método onCollision del body
 			return true;
 		}else{
 			return false;
 		}
 	},
-	
-	_collisionHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
-		if(body1 == undefined || !body1._contObject.alive){													
-			return false;
-		}
-		if(body2 == undefined || !body2._contObject.alive){
-			return false;
-		}
-	
-		if(this._isOverlapping(body1, body2)){
-			var overlapX = this.getOverlapX(body1, body2);
-			var overlapY = this.getOverlapY(body1, body2);
-			if(Math.abs(overlapX) > Math.abs(overlapY)){
-				this.separateY(body1, body2, overlapY);
-				if(this._isOverlapping(body1, body2)){
-					this.separateX(body1, body2, overlapX);
-				}
-			}else{
-				this.separateX(body1, body2, overlapX);
-				if(this._isOverlapping(body1, body2)){
-					this.separateY(body1, body2, overlapY);
-				}	
-			}
-			
-			body1.onCollision(body2);											//Llamamos al método onCollision del body
-			body2.onCollision(body1);											//Llamamos al método onCollision del body
-			return true;
-		}
-		else{
-			return false;
-		}
-	},
-	
-	separateX: function (body1, body2, overlap) {
-
-        //  Can't separate two immovable bodies, or a body with its own custom separation logic
-        if (body1.immovable && body2.immovable)
-        {
-            //  return true if there was some overlap, otherwise false
-            return (overlap !== 0);
-        }
-        
-        if(overlap === 0)
-        	return false;
-
-        //  Adjust their positions and velocities accordingly (if there was any overlap)
-        var v1 = body1.velocity.x;
-        var v2 = body2.velocity.x;
-        var e = Math.min(body1.restitution, body2.restitution);
-
-        if (!body1.immovable && !body2.immovable)
-        {
-            overlap *= 0.5;
-
-            body1.position.x -= overlap;
-            body2.position.x += overlap;
-
-            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
-            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
-            var avg = (nv1 + nv2) * 0.5;
-
-            nv1 -= avg;
-            nv2 -= avg;
-
-            body1.velocity.x = avg + nv1 * e;
-            body2.velocity.x = avg + nv2 * e;
-            body1.updateBounds();
-            body2.updateBounds();
-        }
-        else if (!body1.immovable)
-        {
-            body1.position.x -= overlap;
-            body1.velocity.x = v2 - v1 * e;
-            body1.updateBounds();
-        }
-        else
-        {
-            body2.position.x += overlap;
-            body2.velocity.x = v1 - v2 * e;
-            body2.updateBounds();
-        }
-
-        //  If we got this far then there WAS overlap, and separation is complete, so return true
-        return true;
-
-    },
-    
-    separateY: function (body1, body2, overlap) {
-
-        //  Can't separate two immovable bodies, or a body with its own custom separation logic
-        if (body1.immovable && body2.immovable)
-        {
-            //  return true if there was some overlap, otherwise false
-            return (overlap !== 0);
-        }
-        
-        if(overlap === 0)
-        	return false;
-
-        //  Adjust their positions and velocities accordingly (if there was any overlap)
-        var v1 = body1.velocity.y;
-        var v2 = body2.velocity.y;
-        var e = Math.min(body1.restitution, body2.restitution);
-
-        if (!body1.immovable && !body2.immovable)
-        {
-            overlap *= 0.5;
-
-            body1.position.y -= overlap;
-            body2.position.y += overlap;
-
-            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
-            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
-            var avg = (nv1 + nv2) * 0.5;
-
-            nv1 -= avg;
-            nv2 -= avg;
-
-            body1.velocity.y = avg + nv1 * e;
-            body2.velocity.y = avg + nv2 * e;
-            body1.updateBounds();
-            body2.updateBounds();
-        }
-        else if (!body1.immovable)
-        {
-            body1.position.y -= overlap;
-            body1.velocity.y = v2 - v1 * e;
-            body1.updateBounds();
-        }
-        else
-        {
-            body2.position.y += overlap;
-            body2.velocity.y = v1 - v2 * e;
-            body2.updateBounds();
-        }
-
-        //  If we got this far then there WAS overlap, and separation is complete, so return true
-        return true;
-
-    },
-    
-    getOverlapY: function (body1, body2) {
-    	var overlap = 0;
-    	
-    	if(body1.velocity.y > body2.velocity.y)
-    	{
-    		overlap = body1.max.y - body2.min.y;
-			body1.inAir = false;
-    	}else if(body1.velocity.y < body2.velocity.y)
-    	{
-    		overlap = body1.min.y - body2.max.y; 
-    		body2.inAir = false;
-    	}
-    	
-    	return overlap;
-    },
-    
-    getOverlapX: function (body1, body2) {
-    	var overlap = 0;
-    	
-    	if(body1.velocity.x > body2.velocity.x)
-    	{
-    		overlap = body1.max.x - body2.min.x; 
-    	}else if(body1.velocity.x < body2.velocity.x)
-    	{
-    		overlap = body1.min.x - body2.max.x; 
-    	}
-    	
-    	return overlap;
-    },
 	
 	overlap: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
 		var _this = this;
@@ -1800,44 +1463,19 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
-	collide: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
-		var _this = this;
-		if(!_this.systemEnabled) return;
-		var _coll1;
-		var _coll2;
-		if(XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
-		{
-			for(var i = 0; i < collider.children.length; i++)
-			{
-				_coll1 = collider.children[i].body;
-		
-				for(var j = 0; j < collideWith.children.length; j++)
-				{
-					_coll2 = collideWith.children[j].body;
-					_this._collisionHandler(_coll1, _coll2);
-				}
-			}
+	_isOverlapping: function (gameObject1, gameObject2) {							
+		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
+			return false;
 		}
-		else if(!XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
-		{									
-			_coll1 = collider.body;
-			for(var i = 0; i < collideWith.children.length; i++)
-			{
-				_coll2 = collideWith.children[i].body;
-				_this._collisionHandler(_coll1, _coll2);
-			}
-		}else if(XEngine.Group.prototype.isPrototypeOf(collider) && !XEngine.Group.prototype.isPrototypeOf(collideWith)){
-			_coll2 = collideWith.body;
-			for(var i = 0; i < collider.children.length; i++)
-			{
-				_coll1 = collider.children[i].body;
-				_this._collisionHandler(_coll1, _coll2);
-			}
-		}else{
-			_coll1 = collider.body;
-			_coll2 = collideWith.body;
-			_this._collisionHandler(_coll1, _coll2);
-		}
+		if (gameObject1.max.x < gameObject2.min.x || gameObject1.min.x > gameObject2.max.x) {
+                return false;
+
+        } else if (gameObject1.max.y < gameObject2.min.y || gameObject1.min.y > gameObject2.max.y) {
+            return false;
+
+        } else {
+            return true;
+        }
 	},
 	
 	_destroy : function () {
@@ -1851,8 +1489,6 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this.velocity = new XEngine.Vector(0,0);
 	this.collideWithWorld = false;												//Determina si colisiona con los limites del mundo
 	this.restitution = 0.1;														//Al colisionar, cuanta energia mantiene
-	this.mass = 1;
-	this.immovable = false;
 	this.gravity = 9;															//Gravedad local (cuanto la afecta la gravedad)
 	this.maxVelocity = 300;
 	this.staticFriction = 40;													//Fricción base para la velocidad en x
@@ -1864,8 +1500,6 @@ XEngine.Physics.PhysicsBody = function(game, position, contObject){
 	this._contObject = contObject;
 	this.bounds = this._contObject.getBounds();
 	this.updateBounds();
-	this.inAir = true;
-	this.prev = new XEngine.Vector(position.x, position.y);
 };
 
 XEngine.Physics.PhysicsBody.prototype = {
@@ -1873,52 +1507,9 @@ XEngine.Physics.PhysicsBody.prototype = {
 		this.pendingDestroy = true;
 	},
 	
-	preupdate: function () {
-		this.inAir = true;
-	},
-	
-	isInAir:function(){
-		return this.deltaY() !== 0;
-	},
-	
-	deltaY: function(){
-		return (Math.round(this.position.y) - Math.round(this.prev.y));
-	},
-	
 	update : function (deltaTime) {
 		var _this = this;
-		_this.prev.x = _this.position.x;
-		_this.prev.y = _this.position.y;
-		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
-																				//Actualizamos los bounds una vez se ha calculado la nueva posición
-		
-		if(!_this.immovable){
-			_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
-			_this.position.y += _this.velocity.y * deltaTime;
-		}
-		_this.updateBounds();	
-		
-		if(_this.immovable) return;
-		
-		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
-			if(_this.min.x < 0){												//Izquierda
-				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
-				_this.velocity.x = (-this.velocity.x * _this.restitution);
-			}else if(_this.max.x > _this.game.worldWidth){						//Derecha
-				_this.position.x = _this.game.worldWidth - (_this.bounds.width * ( 1 -_this._contObject.anchor.x));
-				_this.velocity.x = (-this.velocity.x * _this.restitution);
-			}
-			if(_this.min.y < 0){												//Arriba
-				_this.position.y = (_this.bounds.height * _this._contObject.anchor.y);
-				_this.velocity.y = (-this.velocity.y * _this.restitution);
-			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
-				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
-				_this.velocity.y = (-this.velocity.y * _this.restitution);
-				_this.inAir = false;
-			}
-		}
-		
-		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime
+		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime, -_this.maxVelocity, _this.maxVelocity;
 		
 		if(_this.velocity.x != 0 && _this.acceleration.x == 0){					//Si el objeto tiene velocidad y no está acelerando, se le aplica la fricción
 			var signX = _this.velocity.x / Math.abs(_this.velocity.x);			//Se obtiene el signo (dirección, negativa o positiva)
@@ -1939,6 +1530,29 @@ XEngine.Physics.PhysicsBody.prototype = {
 		
 		_this.velocity.y = XEngine.Mathf.clamp(_this.velocity.y, -_this.maxVelocity, _this.maxVelocity); //Aplicamos la velocidad máxima
 		_this.velocity.x = XEngine.Mathf.clamp(_this.velocity.x, -_this.maxVelocity, _this.maxVelocity);
+		
+		_this.position.x += _this.velocity.x * deltaTime;						//Actualizamos la posición en base a la velocidad
+		_this.position.y += _this.velocity.y * deltaTime;
+		
+		_this._contObject.position = _this.position;							//Actualizamos la posición del objeto controlado
+		_this.updateBounds();													//Actualizamos los bounds una vez se ha calculado la nueva posición
+		if(_this.collideWithWorld){												//Si tiene que colisionar con el mundo, evitamos que se salga
+			if(_this.min.x < 0){												//Izquierda
+				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
+				_this.velocity.x = (-this.velocity.x * _this.restitution);
+			}else if(_this.max.x > _this.game.worldWidth){						//Derecha
+				_this.position.x = _this.game.worldWidth - (_this.bounds.width * ( 1 -_this._contObject.anchor.x));
+				_this.velocity.x = (-this.velocity.x * _this.restitution);
+			}
+			if(_this.min.y < 0){												//Arriba
+				_this.position.y = (_this.bounds.height * _this._contObject.anchor.y);
+				_this.velocity.y = (-this.velocity.y * _this.restitution);
+			}else if(_this.max.y > _this.game.worldHeight){						//Abajo
+				_this.position.y = _this.game.worldHeight - (_this.bounds.height * (1 - _this._contObject.anchor.y));
+				_this.velocity.y = (-this.velocity.y * _this.restitution);
+			}
+		}
+		
 	},
 	
 	updateBounds: function () {													//Se obtiene la caja de colisión teniendo en cuenta el achor del sprite
@@ -1970,12 +1584,6 @@ XEngine.Physics.PhysicsBody.prototype = {
     	if(this._contObject.onCollision != undefined){							//Si el objeto controlado tiene implementado el metodo, lo llamamos
     		this._contObject.onCollision(other._contObject);
     	}
-    },
-    
-    onOverlap: function (other) {
-    	if(this._contObject.onOverlap != undefined){							//Si el objeto controlado tiene implementado el metodo, lo llamamos
-    		this._contObject.onOverlap(other._contObject);
-    	}	
     },
     
     disablePhysics : function () {												//Deshabilitamos las fisicas para este objeto
@@ -2070,8 +1678,7 @@ XEngine.Vector.prototype = {
 	
 	setTo: function (x, y) {													//Asigna los valores (solo por comodidad)
 		this.x = x;
-		if(y === undefined) y = x;
-		this.y = y;
+		this.y = y || x;
 	},
 	
 	add: function (other) {														//Suma de vectores
@@ -2208,9 +1815,6 @@ XEngine.InputManager.prototype = {
 	},
 	
 	keyDownHandler: function (event) {
-		if(this.keysPressed[event.keyCode]){
-			return;
-		}
 		this.keysPressed[event.keyCode] = true;
 		this.onKeyDown.dispatch(event);
 	},
@@ -2358,6 +1962,7 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
     _this.render = true;
     _this.fixedToCamera = false;
+    _this.isometric = false;
 };
 
 XEngine.BaseObject.prototype = {
@@ -2399,7 +2004,7 @@ XEngine.BaseObject.prototype = {
 	applyRotationAndPos: function (canvas) {									//Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
 		var _this = this;
 		var pos = _this.getWorldPos();
-		if(_this.fixedToCamera){
+	    if(_this.fixedToCamera){
 	    	canvas.translate(pos.x, pos.y);
 		}else{
 	    	canvas.translate(pos.x - this.game.camera.position.x , pos.y - this.game.camera.position.y);
@@ -2467,7 +2072,6 @@ XEngine.Group.prototypeExtends = {
 			{
 				gameObject.destroy(gameObject);
 				delete this.children[i];
-				this.children.splice(i, 1);
 			}
 		}
 		if(this.onDestroy != undefined){
@@ -2477,10 +2081,6 @@ XEngine.Group.prototypeExtends = {
     
     add: function (gameObject) {
         this.children.push(gameObject);
-        var indexOf = this.game.gameObjects.indexOf(gameObject);
-        if(indexOf >= 0){
-        	this.game.gameObjects.splice(indexOf, 1);
-        }
         if(gameObject.start != undefined){
 			gameObject.start();
 		}
@@ -2495,22 +2095,14 @@ XEngine.Sprite = function (game, posX, posY, sprite){
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.sprite = sprite;
-    _this.game = game;                                                   		//guardamos una referencia al juego
-	_this.frame = 0;
 	var cache_image = _this.game.cache.image(sprite);
-	if(cache_image.type == "sprite"){
-	    _this.width = cache_image.frameWidth || 10;								//Si la imagen no se ha cargado bien, ponemos valor por defecto
-	    _this.height = cache_image.frameHeight || 10;
-	    _this._columns = Math.floor(cache_image.image.width / _this.width);
-	    _this._rows = Math.floor(cache_image.image.height / _this.height);
-	}else{
-		_this.json = _this.game.cache.getJson(sprite);
-		var frameInfo = _this.json.frames[_this.frame];
-		_this.width = frameInfo.frame.w;
-		_this.height = frameInfo.frame.h;
-	}
+    _this.game = game;                                                   		//guardamos una referencia al juego
+    _this.width = cache_image.frameWidth || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
+    _this.height = cache_image.frameHeight || 10;
+    _this._columns = Math.floor(cache_image.image.width / _this.width);
+    _this._rows = Math.floor(cache_image.image.height / _this.height);
     _this.position.setTo(posX, posY);
-    
+    _this.frame = 0;
     _this.animation = new XEngine.AnimationManager(game, this);
 };
 
@@ -2522,35 +2114,16 @@ XEngine.Sprite.prototypeExtends = {
 		canvas.save();															//Guardamos el estado actual del canvas
 		var cache_image = _this.game.cache.image(_this.sprite);					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
-		canvas.globalAlpha =_this.alpha;					
-		
-		//Aplicamos el alpha del objeto
+		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		if(cache_image.type == "sprite"){
-			var width = Math.round(_this.width);
-			var height = Math.round(_this.height);
-			var posX = Math.round(-(width * _this.anchor.x));
-			var posY = Math.round(-(height * _this.anchor.y));
-			var column = _this.frame;
-			if(_this.frame > _this._columns - 1){
-				column -= _this._columns; 
-			}
-			
-			var row = Math.floor(_this.frame / _this._columns);
-			canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
-		}else{
-			var frameInfo = {};
-			if(typeof _this.frame === 'string'){
-				frameInfo = _this.json[_this.frame];
-			}else{
-				frameInfo = _this.json.frames[_this.frame];
-			}
-			var width = frameInfo.frame.w;
-			var height = frameInfo.frame.h;
-			var posX = Math.round(-(width * _this.anchor.x));
-			var posY = Math.round(-(height * _this.anchor.y));
-			canvas.drawImage(cache_image.image, frameInfo.frame.x, frameInfo.frame.y, frameInfo.frame.w, frameInfo.frame.h, posX, posY, width, height);
+		var column = _this.frame;
+		if(_this.frame > _this._columns - 1){
+			column -= _this._columns; 
 		}
+		var row = Math.floor(_this.frame / _this._columns);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
+		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, _this.width, _this.height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -2613,7 +2186,7 @@ XEngine.Animation.prototype = {
 	},
 	
 	_start: function () {
-		this.playing = true;
+		this.started = true;
 	},
 	
 	_stop: function(){
@@ -2634,7 +2207,7 @@ XEngine.AnimationManager = function (game, sprite){								//Manager para maneja
 XEngine.AnimationManager.prototype = {
 	_update: function (deltaMillis) {
 		var _this = this;
-		if(_this.currentAnim && _this.currentAnim.playing){
+		if(_this.currentAnim){
 			_this.currentAnim._update(deltaMillis);
 		}
 	},
@@ -2688,11 +2261,9 @@ XEngine.Rect.prototypeExtends = {
 		this.applyRotationAndPos(canvas);
 		canvas.fillStyle=_this.color;
 		canvas.globalAlpha =_this.alpha;
-		var width = Math.round(_this.width);
-		var height = Math.round(_this.height);
-		var posX = Math.round(-(width * _this.anchor.x));
-		var posY = Math.round(-(height * _this.anchor.y));
-		canvas.fillRect(posX, posY, width, height);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
+		canvas.fillRect(posX, posY, _this.width, _this.height);
 		canvas.restore();
 	},
 	
@@ -2729,12 +2300,11 @@ XEngine.Circle.constructor = XEngine.Circle;
 XEngine.Circle.prototypeExtends = {
 	_renderToCanvas: function (canvas) {
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.globalAlpha =_this.alpha;
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var posX = Math.round(-(_this.radius * 2));
+		var posY = Math.round(-(_this.radius * 2));
 		canvas.beginPath();
 		var startAntle = _this.startAngle * (Math.PI / 180);
 		var endAngle = _this.endAngle * (Math.PI / 180);
@@ -2782,23 +2352,7 @@ XEngine.TilledImage.prototypeExtends = {
 		var _this = this;
 		canvas.save();
 		var pos = _this.getWorldPos();
-		var image = _this.game.cache.image(_this.sprite).image;
-		var pattern = canvas.createPattern(image, "repeat");					//Creamos el patron en modo repetición
-		var rectX = Math.round(-(pos.x + _this.offSet.x));
-		var rectY = Math.round(-(pos.y + _this.offSet.y));
-		this.applyRotationAndPos(canvas, {x: rectX, y: rectY});	
-		var rectWidht = Math.round(_this.width * _this.scale.x);
-		var rectHeigth = Math.round(_this.height * _this.scale.y);
-		canvas.beginPath();
-		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
-		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
-		canvas.globalAlpha =_this.alpha;							
-		canvas.fill();
-		canvas.restore();
-	},
-	
-	applyRotationAndPos: function (canvas, pos) {								//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
-		var _this = this;
+		
 		if(_this.offSet.x > _this.imageWidht){									//Evitamos que el offset llegue a ser un número demasiado grande
 			_this.offSet.x = _this.offSet.x - _this.imageWidht;
 		}else if(_this.offSet.x < -_this.imageWidth){
@@ -2811,9 +2365,24 @@ XEngine.TilledImage.prototypeExtends = {
 			_this.offSet.y = _this.offSet.y + _this.imageHeigh;
 		}
 		
-	    canvas.translate(-pos.x, -pos.y);
-	    canvas.rotate(this.getTotalRotation()*Math.PI/180);
-	}
+		var image = _this.game.cache.image(_this.sprite).image
+		var pattern = canvas.createPattern(image, "repeat");					//Creamos el patron en modo repetición
+		
+		var rectX = Math.round(-(pos.x + _this.offSet.x));
+		var rectY = Math.round(-(pos.y + _this.offSet.y));
+		
+		this.applyRotationAndPos(canvas, {x: rectX, y: rectY});	
+		
+		var rectWidht = Math.round(_this.width * _this.scale.x);
+		var rectHeigth = Math.round(_this.height * _this.scale.y);
+		
+		canvas.beginPath();
+		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
+		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
+		canvas.globalAlpha =_this.alpha;							
+		canvas.fill();
+		canvas.restore();
+	},
 };
 
 Object.assign(XEngine.TilledImage.prototype, XEngine.TilledImage.prototypeExtends);
@@ -2851,9 +2420,6 @@ XEngine.Text.prototypeExtends = {
 		canvas.globalAlpha =_this.alpha;
 		var font = 	font = _this.style + ' ' + _this.size + 'px ' + _this.font;
 		canvas.font = font.trim();
-		var textSize = canvas.measureText(_this.text);
-		_this.width = textSize.width;
-		_this.height = _this.size * 1.5;
 		var posX = Math.round(-(_this.width * _this.anchor.x));
 		var posY = Math.round(-(_this.height * _this.anchor.y));
 		var pos = {x: posX, y: posY + _this.size};
@@ -2862,6 +2428,9 @@ XEngine.Text.prototypeExtends = {
     		canvas.lineWidth = _this.strokeWidth;
     		canvas.strokeText(_this.text, pos.x, pos.y);
 		}
+		var textSize = canvas.measureText(_this.text);
+		_this.width = textSize.width;
+		_this.height = _this.size * 1.5;
 		canvas.fillStyle = _this.color;
 		canvas.fillText(_this.text, pos.x, pos.y);
 		canvas.restore();
@@ -2898,13 +2467,10 @@ XEngine.Button.prototypeExtends = {
 		var image = _this.game.cache.image(_this.sprite).image;					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
-		var width = Math.round(_this.width);
-		var height = Math.round(_this.height);
-		var posX = Math.round(-(width * _this.anchor.x));
-		var posY = Math.round(-(height * _this.anchor.y));
-		
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		canvas.drawImage(image, posX, posY, width, height);
+		canvas.drawImage(image, posX, posY, _this.width, _this.height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -2939,7 +2505,6 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 	_this.source.connect(_this.gainNode);
 	_this.gainNode.connect(game.audioContext.destination);
 	_this.gainNode.gain.value = _this.volume;
-	_this.startTime = 0;
 	if(autoStart){
 		this.play();
 	}
@@ -2947,12 +2512,11 @@ XEngine.Audio = function (game, audioName, autoStart, volume){
 
 XEngine.Audio.prototype = {
 	update: function(){
-		this.gainNode.gain.value = XEngine.Mathf.lerp(-1, 0, this.volume);
+		this.gainNode.gain.value = this.volume;
 	},
 	
-	play: function (time) {			
+	play: function (time) {															
 		this.source.start(time || 0);
-		this.startTime = this.source.context.currentTime + (time || 0);
 	},
 	
 	stop: function (time) {
@@ -2961,10 +2525,6 @@ XEngine.Audio.prototype = {
 	
 	loop: function (value) {
 		this.source.loop = value;
-	},
-	
-	getCurrentTime: function(){
-		return this.source.context.currentTime - this.startTime;
 	},
 	
 	destroy: function () {
@@ -2985,93 +2545,4 @@ XEngine.Audio.prototype = {
 		var _this = this;
 		_this.onComplete.dispatch();
 	}
-};
-
-XEngine.KeyCode = {
-    BACKSPACE: 8,
-    TAB: 9,
-    ENTER: 13,
-
-    SHIFT: 16,
-    CTRL: 17,
-    ALT: 18,
-
-    PAUSE: 19,
-    CAPS_LOCK: 20,
-    ESC: 27,
-    SPACE: 32,
-
-    PAGE_UP: 33,
-    PAGE_DOWN: 34,
-    END: 35,
-    HOME: 36,
-
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-
-    PRINT_SCREEN: 42,
-    INSERT: 45,
-    DELETE: 46,
-
-    ZERO: 48,
-    ONE: 49,
-    TWO: 50,
-    THREE: 51,
-    FOUR: 52,
-    FIVE: 53,
-    SIX: 54,
-    SEVEN: 55,
-    EIGHT: 56,
-    NINE: 57,
-
-    A: 65,
-    B: 66,
-    C: 67,
-    D: 68,
-    E: 69,
-    F: 70,
-    G: 71,
-    H: 72,
-    I: 73,
-    J: 74,
-    K: 75,
-    L: 76,
-    M: 77,
-    N: 78,
-    O: 79,
-    P: 80,
-    Q: 81,
-    R: 82,
-    S: 83,
-    T: 84,
-    U: 85,
-    V: 86,
-    W: 87,
-    X: 88,
-    Y: 89,
-    Z: 90,
-
-    F1: 112,
-    F2: 113,
-    F3: 114,
-    F4: 115,
-    F5: 116,
-    F6: 117,
-    F7: 118,
-    F8: 119,
-    F9: 120,
-    F10: 121,
-    F11: 122,
-    F12: 123,
-
-    SEMICOLON: 186,
-    PLUS: 187,
-    COMMA: 188,
-    MINUS: 189,
-    PERIOD: 190,
-    FORWAD_SLASH: 191,
-    BACK_SLASH: 220,
-    QUOTES: 222
 };
