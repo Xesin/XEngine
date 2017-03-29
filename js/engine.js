@@ -222,6 +222,22 @@ XEngine.Game = function (width, height, idContainer) {
 	 */
 	this.input = null;
 	
+	/**
+	 * Define el ancho de los tiles (para perspectiva isometrica)
+	 * 
+	 * @property {Number} ISO_TILE_WIDTH
+	 * @public
+	 */
+	this.ISO_TILE_WIDTH = 32;
+	
+	/**
+	 * Define el alto de los tiles (para perspectiva isometrica)
+	 * 
+	 * @property {Number} ISO_TILE_HEIGHT
+	 * @public
+	 */
+	this.ISO_TILE_HEIGHT = 32;
+	
 	this.init();																//iniciamos el juego
 	
 	XEngine.Game._ref = this;
@@ -836,6 +852,9 @@ XEngine.Renderer.prototype = {
 				_this.renderLoop(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
 				if(!object.alive) continue;
+				if(object.sprite == 'player'){
+					console.log("cosa");
+				}
 				object._renderToCanvas(_this.context);							
 				if(object.body != undefined){
 					object.body._renderBounds(_this.context);					//Si tiene un body, llamamos al render de los bounds
@@ -1652,6 +1671,8 @@ XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 XEngine.Vector = function (x, y) {												//Vector de 2 dimensiones
 	this.x = x;
 	this.y = y;
+	this.z = 0;																	//Sólo se usa en caso de isometrica
+	this.zOffset = 0;
 };
 
 XEngine.Vector.sub = function(vector1, vector2){
@@ -1673,12 +1694,28 @@ XEngine.Vector.distance = function(vector1, vector2){
 	return difference.length();
 };
 
+XEngine.Vector.cartToIsoCoord = function(coordinates){
+	var outCoordinates = new XEngine.Vector(0,0);
+	outCoordinates.x = coordinates.x - coordinates.y;
+	outCoordinates.y = (coordinates.x + coordinates.y) / 2;
+	outCoordinates.z = (coordinates.x + coordinates.y) + coordinates.zOffset;
+	return outCoordinates;
+};
+	
+XEngine.Vector.isoToCarCoord= function (isoCoord) {
+	var outCoordinates = new XEngine.Vector(0,0);
+	outCoordinates.x = (isoCoord.x / 2) + isoCoord.y;
+	outCoordinates.y = isoCoord.y - (isoCoord.x / 2);
+	return outCoordinates;
+};
+
 
 XEngine.Vector.prototype = {
 	
 	setTo: function (x, y) {													//Asigna los valores (solo por comodidad)
 		this.x = x;
-		this.y = y || x;
+		if(y === undefined) y = x;
+		this.y = y;
 	},
 	
 	add: function (other) {														//Suma de vectores
@@ -1847,6 +1884,7 @@ XEngine.InputManager.prototype = {
 					gameObject.onInputDown = new XEngine.Signal();
 				} 
 				gameObject.onInputDown.dispatch(event);
+				return true;
 			}
 		}
 	},
@@ -1923,10 +1961,10 @@ XEngine.InputManager.prototype = {
 	_pointerInsideBounds: function (gameObject) {								//Obtenemos si el puntero está dentro del area de un objeto
 		if(gameObject.getBounds != undefined){
 			var bounds = gameObject.getBounds();
-			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * gameObject.anchor.x)) {
+			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * (1 - gameObject.anchor.x))) {
 	                return false;
 	
-	        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * gameObject.anchor.y)) {
+	        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * (1 - gameObject.anchor.y))) {
 	            return false;
 	
 	        } else {
@@ -2003,7 +2041,12 @@ XEngine.BaseObject.prototype = {
 	
 	applyRotationAndPos: function (canvas) {									//Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
 		var _this = this;
-		var pos = _this.getWorldPos();
+		var pos = new XEngine.Vector(0,0);
+		if(_this.isometric){
+			pos = XEngine.Vector.cartToIsoCoord(_this.position);
+		}else{
+			pos = _this.getWorldPos();
+		}
 	    if(_this.fixedToCamera){
 	    	canvas.translate(pos.x, pos.y);
 		}else{
@@ -2020,6 +2063,7 @@ XEngine.Group = function (game, x, y) {
 	_this.game = game;
     _this.children = new Array();												//Array de objetos contenidos
     _this.position.setTo(x, y);
+    _this.position.z = 0;
 };
 
 XEngine.Group.prototypeExtends = {
@@ -2080,6 +2124,11 @@ XEngine.Group.prototypeExtends = {
     },
     
     add: function (gameObject) {
+    	if(this.game.gameObjects.indexOf(gameObject) >= 0)
+    	{
+    		var index = this.game.gameObjects.indexOf(gameObject);
+    		this.game.gameObjects.splice(index, 1);
+    	}
         this.children.push(gameObject);
         if(gameObject.start != undefined){
 			gameObject.start();
@@ -2132,6 +2181,13 @@ XEngine.Sprite.prototypeExtends = {
 		var width = _this.width * _this.scale.x;
 		var height = _this.height * _this.scale.y;
 		return {width : width, height: height};
+	},
+	
+	recalculateWidht: function () {
+		var _this = this;
+		var cache_image = _this.game.cache.image(_this.sprite);
+	    _this.width = cache_image.frameWidth || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
+	    _this.height = cache_image.frameHeight || 10;
 	},
 	
 	reset: function (x, y) {													//Reseteamos el sprite
@@ -2303,8 +2359,8 @@ XEngine.Circle.prototypeExtends = {
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.globalAlpha =_this.alpha;
-		var posX = Math.round(-(_this.radius * 2));
-		var posY = Math.round(-(_this.radius * 2));
+		var posX = Math.round(-(_this.radius * 2) * _this.anchor.x);
+		var posY = Math.round(-(_this.radius * 2) * _this.anchor.y);
 		canvas.beginPath();
 		var startAntle = _this.startAngle * (Math.PI / 180);
 		var endAngle = _this.endAngle * (Math.PI / 180);
@@ -2545,4 +2601,93 @@ XEngine.Audio.prototype = {
 		var _this = this;
 		_this.onComplete.dispatch();
 	}
+};
+
+XEngine.KeyCode = {
+    BACKSPACE: 8,
+    TAB: 9,
+    ENTER: 13,
+
+    SHIFT: 16,
+    CTRL: 17,
+    ALT: 18,
+
+    PAUSE: 19,
+    CAPS_LOCK: 20,
+    ESC: 27,
+    SPACE: 32,
+
+    PAGE_UP: 33,
+    PAGE_DOWN: 34,
+    END: 35,
+    HOME: 36,
+
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+
+    PRINT_SCREEN: 42,
+    INSERT: 45,
+    DELETE: 46,
+
+    ZERO: 48,
+    ONE: 49,
+    TWO: 50,
+    THREE: 51,
+    FOUR: 52,
+    FIVE: 53,
+    SIX: 54,
+    SEVEN: 55,
+    EIGHT: 56,
+    NINE: 57,
+
+    A: 65,
+    B: 66,
+    C: 67,
+    D: 68,
+    E: 69,
+    F: 70,
+    G: 71,
+    H: 72,
+    I: 73,
+    J: 74,
+    K: 75,
+    L: 76,
+    M: 77,
+    N: 78,
+    O: 79,
+    P: 80,
+    Q: 81,
+    R: 82,
+    S: 83,
+    T: 84,
+    U: 85,
+    V: 86,
+    W: 87,
+    X: 88,
+    Y: 89,
+    Z: 90,
+
+    F1: 112,
+    F2: 113,
+    F3: 114,
+    F4: 115,
+    F5: 116,
+    F6: 117,
+    F7: 118,
+    F8: 119,
+    F9: 120,
+    F10: 121,
+    F11: 122,
+    F12: 123,
+
+    SEMICOLON: 186,
+    PLUS: 187,
+    COMMA: 188,
+    MINUS: 189,
+    PERIOD: 190,
+    FORWAD_SLASH: 191,
+    BACK_SLASH: 220,
+    QUOTES: 222
 };
