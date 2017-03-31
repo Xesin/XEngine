@@ -1112,7 +1112,7 @@ XEngine.TweenManager.prototype = {
 	_destroy: function () {
 		for(var i = this.tweens.length - 1; i >= 0; i--)						//Liberamos la memoria de todos los tweens que teníamos creados
 		{
-			this.tweens[i]._destroy();
+			this.tweens[i].destroy();
 			delete this.tweens[i];
 			delete this.tweens;
 		}
@@ -1139,6 +1139,7 @@ XEngine.Tween = function (target) {
 	this.yoyo = false;															//Determina si el tween solo va a las propiedades asignadas o también vuelve a las originales
 	this.onComplete = new XEngine.Signal();										//Se llama al completarse el tween
 	this.onCompleteLoop = new XEngine.Signal();									//Se llama al completarse un loop del tween
+	this.reverse = 1;
 };
 
 XEngine.Tween.prototype = {
@@ -1160,8 +1161,11 @@ XEngine.Tween.prototype = {
 		this.isRunning = true;													//Marcamos como que se está ejecutando
 	},
 	
-	finish : function () {
+	complete : function () {
 		this.time = this.duration;
+		for(var property in this.properties){									//Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
+			this.target[property] = this.fromProperties[property];
+		}
 	},
 	
 	_update: function (deltaTime) {
@@ -1171,12 +1175,17 @@ XEngine.Tween.prototype = {
 		for(var property in _this.properties){									//Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
 			var t = _this.progress;
 			if(_this.yoyo){
-				t /= 2;
+				if(t <= 0.5){
+					t *= 2;
+				}else{
+					var t2 = (t - 0.5) * 2;
+					t = XEngine.Mathf.lerp(1,0, t2);
+				}
 			}
-			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(this.progress));
+			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(t));
 		}
-		_this.time += deltaTime;												//Incrementamos el tiempo de ejecución
-		if(_this.progress == 1){												//Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
+		_this.time += deltaTime * this.reverse;									//Incrementamos el tiempo de ejecución
+		if((_this.progress == 1)){												//Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
 			if(_this.repeat == -1 || _this.runCount <= _this.repeat){
 				_this.onCompleteLoop.dispatch();
 				_this.time = 0;
@@ -1184,7 +1193,7 @@ XEngine.Tween.prototype = {
 				_this.play();
 			}else{
 				_this.onComplete.dispatch();
-				_this._destroy();
+				_this.destroy();
 			}
 		}
 		
@@ -1204,7 +1213,7 @@ XEngine.Tween.prototype = {
 		return this;
 	},
 	
-	_destroy: function () {														//Se destruye el tween y se libera memoria 
+	destroy: function () {														//Se destruye el tween y se libera memoria 
 		this.isRunning = false;
 		this.isPendingDestroy = true;
 		if(this.onComplete != undefined){
@@ -1884,6 +1893,7 @@ XEngine.InputManager.prototype = {
 					gameObject.onInputDown = new XEngine.Signal();
 				} 
 				gameObject.onInputDown.dispatch(event);
+				gameObject.isInputDown = true;
 				return true;
 			}
 		}
@@ -1931,6 +1941,18 @@ XEngine.InputManager.prototype = {
 			this.clickDispatcher(newEvent);
 		}
 		this.onInputUp.dispatch(newEvent);
+		for(var i = this.game.gameObjects.length - 1; i >= 0; i--){
+			var gameObject = this.game.gameObjects[i];
+			if(!gameObject.inputEnabled) continue;
+			if(gameObject.isInputDown){
+				if(gameObject.onInputUp == undefined){
+					gameObject.onInputUp = new XEngine.Signal();
+				} 
+				gameObject.onInputUp.dispatch(event);
+				gameObject.isInputDown = false;
+				return true;
+			}
+		}
 	},
 	
 	clickDispatcher: function (event) {
@@ -1997,10 +2019,12 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.position = new XEngine.Vector(0, 0); 
     _this.onClick = new XEngine.Signal();
     _this.onInputDown = new XEngine.Signal();			
+    _this.onInputUp = new XEngine.Signal();
     _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
     _this.render = true;
     _this.fixedToCamera = false;
     _this.isometric = false;
+    _this.isInputDown = false;
 };
 
 XEngine.BaseObject.prototype = {
@@ -2043,7 +2067,7 @@ XEngine.BaseObject.prototype = {
 		var _this = this;
 		var pos = new XEngine.Vector(0,0);
 		if(_this.isometric){
-			pos = XEngine.Vector.cartToIsoCoord(_this.position);
+			pos = XEngine.Vector.cartToIsoCoord(_this.getWorldPos());
 		}else{
 			pos = _this.getWorldPos();
 		}
