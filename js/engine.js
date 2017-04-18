@@ -1,5 +1,5 @@
 var XEngine = {
-	version: '0.6-alpha'
+	version: '0.7-alpha'
 };
 
 // ----------------------------------------- GAME ENGINE ------------------------------------------//
@@ -221,6 +221,22 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @readonly
 	 */
 	this.input = null;
+	
+	/**
+	 * Define el ancho de los tiles (para perspectiva isometrica)
+	 * 
+	 * @property {Number} ISO_TILE_WIDTH
+	 * @public
+	 */
+	this.ISO_TILE_WIDTH = 32;
+	
+	/**
+	 * Define el alto de los tiles (para perspectiva isometrica)
+	 * 
+	 * @property {Number} ISO_TILE_HEIGHT
+	 * @public
+	 */
+	this.ISO_TILE_HEIGHT = 32;
 	
 	this.init();																//iniciamos el juego
 	
@@ -836,6 +852,9 @@ XEngine.Renderer.prototype = {
 				_this.renderLoop(object.children);
 			}else if(!XEngine.Audio.prototype.isPrototypeOf(object)){			//Si no es un audio, renderizamos
 				if(!object.alive) continue;
+				if(object.sprite == 'player'){
+					console.log("cosa");
+				}
 				object._renderToCanvas(_this.context);							
 				if(object.body != undefined){
 					object.body._renderBounds(_this.context);					//Si tiene un body, llamamos al render de los bounds
@@ -1041,8 +1060,8 @@ XEngine.ObjectFactory.prototype = {
 		return this.existing(gameObject);
 	},
 	
-	text : function (posX, posY, text, size, textStyle) {
-		var gameObject = new XEngine.Text(this.game, posX, posY, text, size, textStyle);
+	text : function (posX, posY, text, textStyle) {
+		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
 		return this.existing(gameObject);
 	},
 	
@@ -1093,7 +1112,7 @@ XEngine.TweenManager.prototype = {
 	_destroy: function () {
 		for(var i = this.tweens.length - 1; i >= 0; i--)						//Liberamos la memoria de todos los tweens que teníamos creados
 		{
-			this.tweens[i]._destroy();
+			this.tweens[i].destroy();
 			delete this.tweens[i];
 			delete this.tweens;
 		}
@@ -1120,6 +1139,7 @@ XEngine.Tween = function (target) {
 	this.yoyo = false;															//Determina si el tween solo va a las propiedades asignadas o también vuelve a las originales
 	this.onComplete = new XEngine.Signal();										//Se llama al completarse el tween
 	this.onCompleteLoop = new XEngine.Signal();									//Se llama al completarse un loop del tween
+	this.reverse = 1;
 };
 
 XEngine.Tween.prototype = {
@@ -1141,8 +1161,11 @@ XEngine.Tween.prototype = {
 		this.isRunning = true;													//Marcamos como que se está ejecutando
 	},
 	
-	finish : function () {
+	complete : function () {
 		this.time = this.duration;
+		for(var property in this.properties){									//Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
+			this.target[property] = this.fromProperties[property];
+		}
 	},
 	
 	_update: function (deltaTime) {
@@ -1152,12 +1175,17 @@ XEngine.Tween.prototype = {
 		for(var property in _this.properties){									//Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
 			var t = _this.progress;
 			if(_this.yoyo){
-				t /= 2;
+				if(t <= 0.5){
+					t *= 2;
+				}else{
+					var t2 = (t - 0.5) * 2;
+					t = XEngine.Mathf.lerp(1,0, t2);
+				}
 			}
-			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(this.progress));
+			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(t));
 		}
-		_this.time += deltaTime;												//Incrementamos el tiempo de ejecución
-		if(_this.progress == 1){												//Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
+		_this.time += deltaTime * this.reverse;									//Incrementamos el tiempo de ejecución
+		if((_this.progress == 1)){												//Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
 			if(_this.repeat == -1 || _this.runCount <= _this.repeat){
 				_this.onCompleteLoop.dispatch();
 				_this.time = 0;
@@ -1165,7 +1193,7 @@ XEngine.Tween.prototype = {
 				_this.play();
 			}else{
 				_this.onComplete.dispatch();
-				_this._destroy();
+				_this.destroy();
 			}
 		}
 		
@@ -1185,7 +1213,7 @@ XEngine.Tween.prototype = {
 		return this;
 	},
 	
-	_destroy: function () {														//Se destruye el tween y se libera memoria 
+	destroy: function () {														//Se destruye el tween y se libera memoria 
 		this.isRunning = false;
 		this.isPendingDestroy = true;
 		if(this.onComplete != undefined){
@@ -1652,6 +1680,8 @@ XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 XEngine.Vector = function (x, y) {												//Vector de 2 dimensiones
 	this.x = x;
 	this.y = y;
+	this.z = 0;																	//Sólo se usa en caso de isometrica
+	this.zOffset = 0;
 };
 
 XEngine.Vector.sub = function(vector1, vector2){
@@ -1673,12 +1703,28 @@ XEngine.Vector.distance = function(vector1, vector2){
 	return difference.length();
 };
 
+XEngine.Vector.cartToIsoCoord = function(coordinates){
+	var outCoordinates = new XEngine.Vector(0,0);
+	outCoordinates.x = coordinates.x - coordinates.y;
+	outCoordinates.y = (coordinates.x + coordinates.y) / 2;
+	outCoordinates.z = (coordinates.x + coordinates.y) + coordinates.zOffset;
+	return outCoordinates;
+};
+	
+XEngine.Vector.isoToCarCoord= function (isoCoord) {
+	var outCoordinates = new XEngine.Vector(0,0);
+	outCoordinates.x = (isoCoord.x / 2) + isoCoord.y;
+	outCoordinates.y = isoCoord.y - (isoCoord.x / 2);
+	return outCoordinates;
+};
+
 
 XEngine.Vector.prototype = {
 	
 	setTo: function (x, y) {													//Asigna los valores (solo por comodidad)
 		this.x = x;
-		this.y = y || x;
+		if(y === undefined) y = x;
+		this.y = y;
 	},
 	
 	add: function (other) {														//Suma de vectores
@@ -1847,6 +1893,8 @@ XEngine.InputManager.prototype = {
 					gameObject.onInputDown = new XEngine.Signal();
 				} 
 				gameObject.onInputDown.dispatch(event);
+				gameObject.isInputDown = true;
+				return true;
 			}
 		}
 	},
@@ -1893,6 +1941,18 @@ XEngine.InputManager.prototype = {
 			this.clickDispatcher(newEvent);
 		}
 		this.onInputUp.dispatch(newEvent);
+		for(var i = this.game.gameObjects.length - 1; i >= 0; i--){
+			var gameObject = this.game.gameObjects[i];
+			if(!gameObject.inputEnabled) continue;
+			if(gameObject.isInputDown){
+				if(gameObject.onInputUp == undefined){
+					gameObject.onInputUp = new XEngine.Signal();
+				} 
+				gameObject.onInputUp.dispatch(event);
+				gameObject.isInputDown = false;
+				return true;
+			}
+		}
 	},
 	
 	clickDispatcher: function (event) {
@@ -1923,10 +1983,10 @@ XEngine.InputManager.prototype = {
 	_pointerInsideBounds: function (gameObject) {								//Obtenemos si el puntero está dentro del area de un objeto
 		if(gameObject.getBounds != undefined){
 			var bounds = gameObject.getBounds();
-			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * gameObject.anchor.x)) {
+			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * (1 - gameObject.anchor.x))) {
 	                return false;
 	
-	        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * gameObject.anchor.y)) {
+	        } else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * (1 - gameObject.anchor.y))) {
 	            return false;
 	
 	        } else {
@@ -1959,8 +2019,12 @@ XEngine.BaseObject = function(game){											//De este objeto parten todos los
     _this.position = new XEngine.Vector(0, 0); 
     _this.onClick = new XEngine.Signal();
     _this.onInputDown = new XEngine.Signal();			
+    _this.onInputUp = new XEngine.Signal();
     _this.inputEnabled = false;													//No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
     _this.render = true;
+    _this.fixedToCamera = false;
+    _this.isometric = false;
+    _this.isInputDown = false;
 };
 
 XEngine.BaseObject.prototype = {
@@ -2001,9 +2065,19 @@ XEngine.BaseObject.prototype = {
 	
 	applyRotationAndPos: function (canvas) {									//Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
 		var _this = this;
-		var pos = _this.getWorldPos();
-	    canvas.translate(pos.x - this.game.camera.position.x , pos.y - this.game.camera.position.y);
+		var pos = new XEngine.Vector(0,0);
+		if(_this.isometric){
+			pos = XEngine.Vector.cartToIsoCoord(_this.getWorldPos());
+		}else{
+			pos = _this.getWorldPos();
+		}
+	    if(_this.fixedToCamera){
+	    	canvas.translate(pos.x, pos.y);
+		}else{
+	    	canvas.translate(pos.x - this.game.camera.position.x , pos.y - this.game.camera.position.y);
+		}
 	    canvas.rotate(this.getTotalRotation()*Math.PI/180);
+	    canvas.scale(this.scale.x, this.scale.y);
 	}
 };
 
@@ -2013,6 +2087,7 @@ XEngine.Group = function (game, x, y) {
 	_this.game = game;
     _this.children = new Array();												//Array de objetos contenidos
     _this.position.setTo(x, y);
+    _this.position.z = 0;
 };
 
 XEngine.Group.prototypeExtends = {
@@ -2073,6 +2148,11 @@ XEngine.Group.prototypeExtends = {
     },
     
     add: function (gameObject) {
+    	if(this.game.gameObjects.indexOf(gameObject) >= 0)
+    	{
+    		var index = this.game.gameObjects.indexOf(gameObject);
+    		this.game.gameObjects.splice(index, 1);
+    	}
         this.children.push(gameObject);
         if(gameObject.start != undefined){
 			gameObject.start();
@@ -2104,7 +2184,6 @@ XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Sprite.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										//Sobreescribimos el método render	
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();															//Guardamos el estado actual del canvas
 		var cache_image = _this.game.cache.image(_this.sprite);					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
@@ -2115,11 +2194,9 @@ XEngine.Sprite.prototypeExtends = {
 			column -= _this._columns; 
 		}
 		var row = Math.floor(_this.frame / _this._columns);
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
-		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
+		canvas.drawImage(cache_image.image,column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, _this.width, _this.height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -2128,6 +2205,13 @@ XEngine.Sprite.prototypeExtends = {
 		var width = _this.width * _this.scale.x;
 		var height = _this.height * _this.scale.y;
 		return {width : width, height: height};
+	},
+	
+	recalculateWidht: function () {
+		var _this = this;
+		var cache_image = _this.game.cache.image(_this.sprite);
+	    _this.width = cache_image.frameWidth || 10;											//Si la imagen no se ha cargado bien, ponemos valor por defecto
+	    _this.height = cache_image.frameHeight || 10;
 	},
 	
 	reset: function (x, y) {													//Reseteamos el sprite
@@ -2253,16 +2337,13 @@ XEngine.Rect.constructor = XEngine.Rect;
 XEngine.Rect.prototypeExtends = {
 	_renderToCanvas: function (canvas) {
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.fillStyle=_this.color;
 		canvas.globalAlpha =_this.alpha;
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
-		canvas.fillRect(posX, posY, width, height);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
+		canvas.fillRect(posX, posY, _this.width, _this.height);
 		canvas.restore();
 	},
 	
@@ -2299,12 +2380,11 @@ XEngine.Circle.constructor = XEngine.Circle;
 XEngine.Circle.prototypeExtends = {
 	_renderToCanvas: function (canvas) {
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.globalAlpha =_this.alpha;
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var posX = Math.round(-(_this.radius * 2) * _this.anchor.x);
+		var posY = Math.round(-(_this.radius * 2) * _this.anchor.y);
 		canvas.beginPath();
 		var startAntle = _this.startAngle * (Math.PI / 180);
 		var endAngle = _this.endAngle * (Math.PI / 180);
@@ -2352,23 +2432,7 @@ XEngine.TilledImage.prototypeExtends = {
 		var _this = this;
 		canvas.save();
 		var pos = _this.getWorldPos();
-		var image = _this.game.cache.image(_this.sprite).image;
-		var pattern = canvas.createPattern(image, "repeat");					//Creamos el patron en modo repetición
-		var rectX = Math.round(-(pos.x + _this.offSet.x));
-		var rectY = Math.round(-(pos.y + _this.offSet.y));
-		this.applyRotationAndPos(canvas, {x: rectX, y: rectY});	
-		var rectWidht = Math.round(_this.width * _this.scale.x);
-		var rectHeigth = Math.round(_this.height * _this.scale.y);
-		canvas.beginPath();
-		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
-		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
-		canvas.globalAlpha =_this.alpha;							
-		canvas.fill();
-		canvas.restore();
-	},
-	
-	applyRotationAndPos: function (canvas, pos) {								//Sobreescribimos el método ya que necesitamos tener en cuenta el offset
-		var _this = this;
+		
 		if(_this.offSet.x > _this.imageWidht){									//Evitamos que el offset llegue a ser un número demasiado grande
 			_this.offSet.x = _this.offSet.x - _this.imageWidht;
 		}else if(_this.offSet.x < -_this.imageWidth){
@@ -2381,9 +2445,24 @@ XEngine.TilledImage.prototypeExtends = {
 			_this.offSet.y = _this.offSet.y + _this.imageHeigh;
 		}
 		
-	    canvas.translate(-pos.x, -pos.y);
-	    canvas.rotate(this.getTotalRotation()*Math.PI/180);
-	}
+		var image = _this.game.cache.image(_this.sprite).image
+		var pattern = canvas.createPattern(image, "repeat");					//Creamos el patron en modo repetición
+		
+		var rectX = Math.round(-(pos.x + _this.offSet.x));
+		var rectY = Math.round(-(pos.y + _this.offSet.y));
+		
+		this.applyRotationAndPos(canvas, {x: rectX, y: rectY});	
+		
+		var rectWidht = Math.round(_this.width * _this.scale.x);
+		var rectHeigth = Math.round(_this.height * _this.scale.y);
+		
+		canvas.beginPath();
+		canvas.rect(rectX, rectY, rectWidht, rectHeigth);						//Creamos el rect donde se va pintar nuestra imagen
+		canvas.fillStyle = pattern;												//Asignamos el patrón que hemos creado antes
+		canvas.globalAlpha =_this.alpha;							
+		canvas.fill();
+		canvas.restore();
+	},
 };
 
 Object.assign(XEngine.TilledImage.prototype, XEngine.TilledImage.prototypeExtends);
@@ -2416,14 +2495,13 @@ XEngine.Text.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Text.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();
 		_this.applyRotationAndPos(canvas, _this.offSet);
 		canvas.globalAlpha =_this.alpha;
 		var font = 	font = _this.style + ' ' + _this.size + 'px ' + _this.font;
 		canvas.font = font.trim();
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
 		var pos = {x: posX, y: posY + _this.size};
 		if(_this.strokeWidth > 0){
 			canvas.strokeStyle = _this.strokeColor;
@@ -2465,17 +2543,14 @@ XEngine.Button.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Button.prototypeExtends = {
 	_renderToCanvas: function (canvas) {										//Sobreescribimos el método render	
 		var _this = this;
-		var bounds = _this.getBounds();
 		canvas.save();															//Guardamos el estado actual del canvas
 		var image = _this.game.cache.image(_this.sprite).image;					//Obtenemos la imagen a renderizar
 		this.applyRotationAndPos(canvas);										
 		canvas.globalAlpha =_this.alpha;										//Aplicamos el alpha del objeto
-		var posX = Math.round(-(bounds.width * _this.anchor.x));
-		var posY = Math.round(-(bounds.height * _this.anchor.y));
-		var width = Math.round(bounds.width);
-		var height = Math.round(bounds.height);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
 		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		canvas.drawImage(image, posX, posY, width, height);
+		canvas.drawImage(image, posX, posY, _this.width, _this.height);
 		canvas.restore();														//Restauramos el estado del canvas
 	},
 	
@@ -2550,4 +2625,93 @@ XEngine.Audio.prototype = {
 		var _this = this;
 		_this.onComplete.dispatch();
 	}
+};
+
+XEngine.KeyCode = {
+    BACKSPACE: 8,
+    TAB: 9,
+    ENTER: 13,
+
+    SHIFT: 16,
+    CTRL: 17,
+    ALT: 18,
+
+    PAUSE: 19,
+    CAPS_LOCK: 20,
+    ESC: 27,
+    SPACE: 32,
+
+    PAGE_UP: 33,
+    PAGE_DOWN: 34,
+    END: 35,
+    HOME: 36,
+
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+
+    PRINT_SCREEN: 42,
+    INSERT: 45,
+    DELETE: 46,
+
+    ZERO: 48,
+    ONE: 49,
+    TWO: 50,
+    THREE: 51,
+    FOUR: 52,
+    FIVE: 53,
+    SIX: 54,
+    SEVEN: 55,
+    EIGHT: 56,
+    NINE: 57,
+
+    A: 65,
+    B: 66,
+    C: 67,
+    D: 68,
+    E: 69,
+    F: 70,
+    G: 71,
+    H: 72,
+    I: 73,
+    J: 74,
+    K: 75,
+    L: 76,
+    M: 77,
+    N: 78,
+    O: 79,
+    P: 80,
+    Q: 81,
+    R: 82,
+    S: 83,
+    T: 84,
+    U: 85,
+    V: 86,
+    W: 87,
+    X: 88,
+    Y: 89,
+    Z: 90,
+
+    F1: 112,
+    F2: 113,
+    F3: 114,
+    F4: 115,
+    F5: 116,
+    F6: 117,
+    F7: 118,
+    F8: 119,
+    F9: 120,
+    F10: 121,
+    F11: 122,
+    F12: 123,
+
+    SEMICOLON: 186,
+    PLUS: 187,
+    COMMA: 188,
+    MINUS: 189,
+    PERIOD: 190,
+    FORWAD_SLASH: 191,
+    BACK_SLASH: 220,
+    QUOTES: 222
 };
