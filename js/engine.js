@@ -1394,8 +1394,13 @@ XEngine.Physics = function (game) {
 	this.game = game;
 	this.systemEnabled = false;													//Flag de sistema habilitado
 	this.physicsObjects = new Array();											//Array de objetos que tienen fisicas activas
-	this.gravity = 5;															//Gravedad global
+	this.gravity = 1;															//Gravedad global
 };
+
+XEngine.Physics.Shapes = {
+	Box : 0,
+	Circle : 0
+},
 
 XEngine.Physics.prototype = {
 	startSystem : function () {
@@ -1417,6 +1422,17 @@ XEngine.Physics.prototype = {
 		this.physicsObjects.push(gameObject.body);								//Se añade el objeto de fisicas al array
 	},
 	
+	preupdate: function () {
+		for(var i = this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
+		{
+			var gameObject = this.physicsObjects[i];
+			if(gameObject.preupdate != undefined)							//En caso contrario miramos si contiene el método update y lo ejecutamos
+			{	
+				gameObject.preupdate();	
+			}
+		}
+	},
+	
 	update : function (deltaTime) {
 		var _this = this;
 		for(var i = _this.physicsObjects.length - 1; i >= 0; i--)				//Recorremos los objetos del motor de fisicas para hacer su update
@@ -1434,6 +1450,21 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
+	_isOverlapping: function (gameObject1, gameObject2) {							
+		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
+			return false;
+		}
+		if (gameObject1.max.x <= gameObject2.min.x || gameObject1.min.x >= gameObject2.max.x) {
+                return false;
+
+        } else if (gameObject1.max.y <= gameObject2.min.y || gameObject1.min.y >= gameObject2.max.y) {
+            return false;
+
+        } else {
+            return true;
+        }
+	},
+	
 	_overlapHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
 		if(body1 == undefined || !body1._contObject.alive){													
 			return false;
@@ -1443,13 +1474,183 @@ XEngine.Physics.prototype = {
 		}
 		if(this._isOverlapping(body1, body2)) 									//Miramos si colisionan
 		{
-			body1.onCollision(body2);											//Llamamos al método onCollision del body
-			body2.onCollision(body1);											//Llamamos al método onCollision del body
+			body1.onOverlap(body2);												//Llamamos al método onOverlap del body
+			body2.onOverlap(body1);												//Llamamos al método onOverlap del body
 			return true;
 		}else{
 			return false;
 		}
 	},
+	
+	_collisionHandler : function (body1, body2) {									//Determina si dos objetos de fisicas están uno encima de otro
+		if(body1 == undefined || !body1._contObject.alive){													
+			return false;
+		}
+		if(body2 == undefined || !body2._contObject.alive){
+			return false;
+		}
+	
+		if(this._isOverlapping(body1, body2)){
+			var overlapX = this.getOverlapX(body1, body2);
+			var overlapY = this.getOverlapY(body1, body2);
+			if(Math.abs(overlapX) > Math.abs(overlapY)){
+				this.separateY(body1, body2, overlapY);
+				if(this._isOverlapping(body1, body2)){
+					this.separateX(body1, body2, overlapX);
+				}
+			}else{
+				this.separateX(body1, body2, overlapX);
+				if(this._isOverlapping(body1, body2)){
+					this.separateY(body1, body2, overlapY);
+				}	
+			}
+			
+			body1.onCollision(body2);											//Llamamos al método onCollision del body
+			body2.onCollision(body1);											//Llamamos al método onCollision del body
+			return true;
+		}
+		else{
+			return false;
+		}
+	},
+	
+	separateX: function (body1, body2, overlap) {
+
+        //  Can't separate two immovable bodies, or a body with its own custom separation logic
+        if (body1.immovable && body2.immovable)
+        {
+            //  return true if there was some overlap, otherwise false
+            return (overlap !== 0);
+        }
+        
+        if(overlap === 0)
+        	return false;
+
+        //  Adjust their positions and velocities accordingly (if there was any overlap)
+        var v1 = body1.velocity.x;
+        var v2 = body2.velocity.x;
+        var e = Math.min(body1.restitution, body2.restitution);
+
+        if (!body1.immovable && !body2.immovable)
+        {
+            overlap *= 0.5;
+
+            body1.position.x -= overlap;
+            body2.position.x += overlap;
+
+            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+            var avg = (nv1 + nv2) * 0.5;
+
+            nv1 -= avg;
+            nv2 -= avg;
+
+            body1.velocity.x = avg + nv1 * e;
+            body2.velocity.x = avg + nv2 * e;
+            body1.updateBounds();
+            body2.updateBounds();
+        }
+        else if (!body1.immovable)
+        {
+            body1.position.x -= overlap;
+            body1.velocity.x = v2 - v1 * e;
+            body1.updateBounds();
+        }
+        else
+        {
+            body2.position.x += overlap;
+            body2.velocity.x = v1 - v2 * e;
+            body2.updateBounds();
+        }
+
+        //  If we got this far then there WAS overlap, and separation is complete, so return true
+        return true;
+
+    },
+    
+    separateY: function (body1, body2, overlap) {
+
+        //  Can't separate two immovable bodies, or a body with its own custom separation logic
+        if (body1.immovable && body2.immovable)
+        {
+            //  return true if there was some overlap, otherwise false
+            return (overlap !== 0);
+        }
+        
+        if(overlap === 0)
+        	return false;
+
+        //  Adjust their positions and velocities accordingly (if there was any overlap)
+        var v1 = body1.velocity.y;
+        var v2 = body2.velocity.y;
+        var e = Math.min(body1.restitution, body2.restitution);
+
+        if (!body1.immovable && !body2.immovable)
+        {
+            overlap *= 0.5;
+
+            body1.position.y -= overlap;
+            body2.position.y += overlap;
+
+            var nv1 = Math.sqrt((v2 * v2 * body2.mass) / body1.mass) * ((v2 > 0) ? 1 : -1);
+            var nv2 = Math.sqrt((v1 * v1 * body1.mass) / body2.mass) * ((v1 > 0) ? 1 : -1);
+            var avg = (nv1 + nv2) * 0.5;
+
+            nv1 -= avg;
+            nv2 -= avg;
+
+            body1.velocity.y = avg + nv1 * e;
+            body2.velocity.y = avg + nv2 * e;
+            body1.updateBounds();
+            body2.updateBounds();
+        }
+        else if (!body1.immovable)
+        {
+            body1.position.y -= overlap;
+            body1.velocity.y = v2 - v1 * e;
+            body1.updateBounds();
+        }
+        else
+        {
+            body2.position.y += overlap;
+            body2.velocity.y = v1 - v2 * e;
+            body2.updateBounds();
+        }
+
+        //  If we got this far then there WAS overlap, and separation is complete, so return true
+        return true;
+
+    },
+    
+    getOverlapY: function (body1, body2) {
+    	var overlap = 0;
+    	
+    	if(body1.velocity.y > body2.velocity.y)
+    	{
+    		overlap = body1.max.y - body2.min.y;
+			body1.inAir = false;
+    	}else if(body1.velocity.y < body2.velocity.y)
+    	{
+    		overlap = body1.min.y - body2.max.y; 
+    		body2.inAir = false;
+    	}
+    	
+    	return overlap;
+    },
+    
+    getOverlapX: function (body1, body2) {
+    	var overlap = 0;
+    	
+    	if(body1.velocity.x > body2.velocity.x)
+    	{
+    		overlap = body1.max.x - body2.min.x; 
+    	}else if(body1.velocity.x < body2.velocity.x)
+    	{
+    		overlap = body1.min.x - body2.max.x; 
+    	}
+    	
+    	return overlap;
+    },
 	
 	overlap: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
 		var _this = this;
@@ -1491,19 +1692,44 @@ XEngine.Physics.prototype = {
 		}
 	},
 	
-	_isOverlapping: function (gameObject1, gameObject2) {							
-		if(gameObject1 == undefined || gameObject2 == undefined){				//Si alguno de los objetos no está definido, saltamos el resto de la función
-			return false;
+	collide: function (collider, collideWith) {									//Metodo que se llama para que se determine el overlapping de dos objetos
+		var _this = this;
+		if(!_this.systemEnabled) return;
+		var _coll1;
+		var _coll2;
+		if(XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
+		{
+			for(var i = 0; i < collider.children.length; i++)
+			{
+				_coll1 = collider.children[i].body;
+		
+				for(var j = 0; j < collideWith.children.length; j++)
+				{
+					_coll2 = collideWith.children[j].body;
+					_this._collisionHandler(_coll1, _coll2);
+				}
+			}
 		}
-		if (gameObject1.max.x < gameObject2.min.x || gameObject1.min.x > gameObject2.max.x) {
-                return false;
-
-        } else if (gameObject1.max.y < gameObject2.min.y || gameObject1.min.y > gameObject2.max.y) {
-            return false;
-
-        } else {
-            return true;
-        }
+		else if(!XEngine.Group.prototype.isPrototypeOf(collider) && XEngine.Group.prototype.isPrototypeOf(collideWith))
+		{									
+			_coll1 = collider.body;
+			for(var i = 0; i < collideWith.children.length; i++)
+			{
+				_coll2 = collideWith.children[i].body;
+				_this._collisionHandler(_coll1, _coll2);
+			}
+		}else if(XEngine.Group.prototype.isPrototypeOf(collider) && !XEngine.Group.prototype.isPrototypeOf(collideWith)){
+			_coll2 = collideWith.body;
+			for(var i = 0; i < collider.children.length; i++)
+			{
+				_coll1 = collider.children[i].body;
+				_this._collisionHandler(_coll1, _coll2);
+			}
+		}else{
+			_coll1 = collider.body;
+			_coll2 = collideWith.body;
+			_this._collisionHandler(_coll1, _coll2);
+		}
 	},
 	
 	_destroy : function () {
