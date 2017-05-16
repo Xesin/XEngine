@@ -347,6 +347,9 @@ XEngine.Game.prototype = {
 			
 			if(_this.physics.systemEnabled){
 				_this.physics.update(_this.deltaTime);							//Actualizamos el motor de físicas
+				if(_this.state.currentState.physicsUpdate != undefined){
+					_this.state.currentState.physicsUpdate();
+				}
 			}																	//Llamamos al handler de condición de fin;
 		}			
 		_this.renderer.render();												//Renderizamos la escena
@@ -1762,8 +1765,9 @@ XEngine.Physics.PhysicsBody.prototype = {
 	},
 	
 	update : function (deltaTime) {
+		if(this.immovable) {this.updateBounds();return;}
 		var _this = this;
-		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime, -_this.maxVelocity, _this.maxVelocity;
+		_this.velocity.y += _this.physicsEngine.gravity * _this.gravity * deltaTime;
 		
 		if(_this.velocity.x != 0 && _this.acceleration.x == 0){					//Si el objeto tiene velocidad y no está acelerando, se le aplica la fricción
 			var signX = _this.velocity.x / Math.abs(_this.velocity.x);			//Se obtiene el signo (dirección, negativa o positiva)
@@ -1837,6 +1841,12 @@ XEngine.Physics.PhysicsBody.prototype = {
     onCollision :function (other) {
     	if(this._contObject.onCollision != undefined){							//Si el objeto controlado tiene implementado el metodo, lo llamamos
     		this._contObject.onCollision(other._contObject);
+    	}
+    },
+    
+    onOverlap :function (other) {
+    	if(this._contObject.onOverlap != undefined){							//Si el objeto controlado tiene implementado el metodo, lo llamamos
+    		this._contObject.onOverlap(other._contObject);
     	}
     },
     
@@ -2918,6 +2928,17 @@ XEngine.KeyCode = {
     X: 88,
     Y: 89,
     Z: 90,
+    
+    PAD0: 96,
+    PAD1: 97,
+    PAD2: 98,
+    PAD3: 99,
+    PAD4: 100,
+    PAD5: 101,
+    PAD6: 102,
+    PAD7: 103,
+    PAD8: 104,
+    PAD9: 105,
 
     F1: 112,
     F2: 113,
