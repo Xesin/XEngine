@@ -973,7 +973,6 @@ XEngine.ScaleManager.prototype = {
 	/**
 	 * Actualiza el tamaño del canvas y la escala que tiene. Es llamada por el callback onWindowsResize
 	 * @method XEngine.ScaleManager#updateScale
-	 * @private
 	 */
 	updateScale: function () {
 		if (this.scaleType !== XEngine.Scale.NO_SCALE) {
@@ -1003,7 +1002,6 @@ XEngine.ScaleManager.prototype = {
 	 * @method XEngine.ScaleManager#resizeCanvas
 	 * @param {Number} newWidth - nuevo ancho del canvas
 	 * @param {Number} newHeight - nuevo alto del canvas
-	 * @private
 	 */
 	resizeCanvas: function (newWidth, newHeight) {
 		this.game.reference.setAttribute('width', newWidth);
@@ -1024,7 +1022,6 @@ XEngine.ObjectFactory.prototype = {
 	 * @method XEngine.ObjectFacory#existing
 	 * @param {XEngine.BasicObject} gameObject - Objeto a añadir
 	 * @return {Object}
-	 * @private
 	 */
 	existing: function (gameObject) { //Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject); //Añadimos el objeto al array de objetos
@@ -1042,7 +1039,6 @@ XEngine.ObjectFactory.prototype = {
 	 * @param {Number} posY - Posición Y del objeto
 	 * @param {String} sprite - keyName del sprite
 	 * @return {XEngine.Sprite}
-	 * @private
 	 */
 	sprite: function (posX, posY, sprite) { //Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
@@ -1058,38 +1054,99 @@ XEngine.ObjectFactory.prototype = {
 	 * @param {Number} width - ancho de la imagen
 	 * @param {Number} height - alto de la imagen
 	 * @return {XEngine.TilledImage}
-	 * @private
 	 */
 	tilled: function (posX, posY, sprite, width, height) { //Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
 		return this.existing(gameObject);
 	},
 
+
+	/**
+	 * Crea y añade una imagen que hace la función de bottón
+	 * @method XEngine.ObjectFacory#button
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {String} sprite - keyName de la imagen
+	 * @param {String} spriteDown - keyName de la imagen cuando se pulsa el botón
+	 * @param {String} spriteOver - keyName de la imagen cuando se pasa el ratón por encima
+	 * @param {String} spriteUp - keyName de la imagen cuando se levanta el input
+	 * @return {XEngine.Button}
+	 */
 	button: function (posX, posY, sprite, spriteDown, spriteOver, spriteUp) {
 		var gameObject = new XEngine.Button(this.game, posX, posY, sprite, spriteDown, spriteOver, spriteUp);
 		return this.existing(gameObject);
 	},
 
+
+	/**
+	 * Crea y añade un rectangulo de color
+	 * @method XEngine.ObjectFacory#rect
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {Number} width - ancho de la imagen
+	 * @param {Number} height - alto de la imagen
+	 * @param {String} color - color en hexadecimal con formato rgb
+	 * @return {XEngine.Rect}
+	 */
 	rect: function (posX, posY, width, height, color) { //Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Rect(this.game, posX, posY, width, height, color);
 		return this.existing(gameObject);
 	},
 
+
+	/**
+	 * Crea y añade un circulo de color
+	 * @method XEngine.ObjectFacory#circle
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {Number} radius - radio del circulo
+	 * @param {Number} stroke - ancho del borde
+	 * @param {String} color - color de relleno en hexadecimal con formato rgb
+	 * @param {String} strokeColor - color del borde en hexadecimal con formato rgb
+	 * @param {Boolean} fill - define si se rellena el circulo o se deja transparente
+	 * @param {Number} startAngle - angulo de comienzo
+	 * @param {Number} endAngle - angulo en el que termina
+	 * @return {XEngine.Circe}
+	 */
 	circle: function (posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle) { //Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Circle(this.game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle);
 		return this.existing(gameObject);
 	},
 
+	/**
+	 * Crea y añade un objeto de texto
+	 * @method XEngine.ObjectFacory#text
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {String} text - texto a mostrar
+	 * @param {Object} textStyle - objeto que contiene los parametros de estilo
+	 * @return {XEngine.Text}
+	 */
 	text: function (posX, posY, text, textStyle) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
 		return this.existing(gameObject);
 	},
 
+	/**
+	 * Crea y añade un objeto de audio
+	 * @method XEngine.ObjectFacory#audio
+	 * @param {String} audio - keyName del archivo de audio a reproducir
+	 * @param {Boolean} autoStart - indica si empieza al crearse o no
+	 * @param {Number} volume - indica el volumen del audio;
+	 * @return {XEngine.Audio}
+	 */
 	audio: function (audio, autoStart, volume) {
 		var audioObject = new XEngine.Audio(this.game, audio, autoStart, volume);
 		return this.existing(audioObject);
 	},
 
+	/**
+	 * Crea y añade un contenedor de objetos
+	 * @method XEngine.ObjectFacory#group
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @return {XEngine.Group}
+	 */
 	group: function (posX, posY) { //Creamos y añadimos un grupo
 		var x = posX || 0;
 		var y = posY || 0;
@@ -1107,6 +1164,12 @@ XEngine.TweenManager = function (game) {
 
 XEngine.TweenManager.prototype = {
 
+	/**
+	 * Añade un tween que controla el target que se le pasa por parametro
+	 * @method XEngine.TweenManager#add
+	 * @param {Object} target - objeto al que se le va a aplicar el tween en una de sus propiedades
+	 * @return {XEngine.Tween}
+	 */
 	add: function (target) { //Añade un tween para el objeto que se le pasa por parametro
 		var tween = new XEngine.Tween(target);
 		this.tweens.push(tween);
@@ -1131,6 +1194,11 @@ XEngine.TweenManager.prototype = {
 		}
 	},
 
+	/**
+	 * Destruye todos los tweens
+	 * @method XEngine.TweenManager#_destroy
+	 * @private
+	 */
 	_destroy: function () {
 		for (var i = this.tweens.length - 1; i >= 0; i--) //Liberamos la memoria de todos los tweens que teníamos creados
 		{
@@ -1166,6 +1234,10 @@ XEngine.Tween = function (target) {
 
 XEngine.Tween.prototype = {
 
+	/**
+	 * Arranca el tween con el delay que se haya definido
+	 * @method XEngine.Tween#play
+	 */
 	play: function () {
 		var _this = this;
 		_this.started = true; //Marcamos que ya se ha llamado al play
@@ -1175,6 +1247,12 @@ XEngine.Tween.prototype = {
 		}, _this.delay);
 	},
 
+	/**
+	 * Metodo interno para arrancar el tween
+	 * @method XEngine.Tween#_startTween
+	 * @param {Object} target - objeto al que se le va a aplicar el tween en una de sus propiedades
+	 * @private
+	 */
 	_startTween: function () {
 		this.runCount++; //Aumentamos el contador de ejecuciones
 		for (var property in this.properties) {
@@ -1183,6 +1261,10 @@ XEngine.Tween.prototype = {
 		this.isRunning = true; //Marcamos como que se está ejecutando
 	},
 
+	/**
+	 * completa el tween sin tener en cuenta el tiempo que haya pasado
+	 * @method XEngine.Tween#complete
+	 */
 	complete: function () {
 		this.time = this.duration;
 		for (var property in this.properties) { //Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
@@ -1226,6 +1308,18 @@ XEngine.Tween.prototype = {
 
 	},
 
+	/**
+	 * Añade las propiedades a cambiar, la duración, easing, etc del tween
+	 * @method XEngine.Tween#to
+	 * @param {Object} properties - objeto que contiene las propiedades a cambiar y su valor final
+	 * @param {Number} duration - tiempo en milisegundos que va a durar el tween
+	 * @param {XEngine.Easing} ease - Funcion de easing que va a tener el tween
+	 * @param {Boolean} autoStart - define si el tween empieza al crearse
+	 * @param {Number} delay - tiempo en milisegundos que tarda el tween en empezar una vez que se le ha dado al play
+	 * @param {Number} repeat - define la cantidad de veces que se repite el tween (-1 indica que siempre se repite)
+	 * @param {Boolean} yoyo - define si el tween va y vuelve a sus propiedades iniciales
+	 * @return {XEngine.Tween}
+	 */
 	to: function (properties, duration, ease, autoStart, delay, repeat, yoyo) {
 		for (var property in properties) { //Se asignan todas las propiedades de las que se proviene
 			this.fromProperties[property] = this.target[property];
@@ -1240,6 +1334,11 @@ XEngine.Tween.prototype = {
 		return this;
 	},
 
+
+	/**
+	 * Destruye el tween
+	 * @method XEngine.Tween#destroy
+	 */
 	destroy: function () { //Se destruye el tween y se libera memoria 
 		this.isRunning = false;
 		this.isPendingDestroy = true;
@@ -1255,7 +1354,13 @@ XEngine.Tween.prototype = {
 		delete this.properties;
 	},
 
-	from: function (properties) { //Asigna unas propiedades iniciacles definidas por el usuario
+	/**
+	 * asigna unas propiedades iniciacles definidas por el usuario (se tiene que llamar después del to)
+	 * @method XEngine.Tween#from 
+	 * @param {Object} properties - objeto que contiene las propiedades a cambiar y su valor final
+	 * @return {XEngine.Tween}
+	 */
+	from: function (properties) {
 		for (var property in properties) {
 			this.fromProperties[property] = properties[property];
 		}
@@ -1424,15 +1529,35 @@ XEngine.Signal = function () {
 };
 
 XEngine.Signal.prototype = {
+
+	/**
+	 * añade un listener a este objeto
+	 * @method XEngine.Signal#add
+	 * @param {Function} listener - funcion a ejecutar
+	 * @param {Object} listenerContext - contexto en el que se ejecuta la funcion
+	 * @return {XEngine.Signal}
+	 */
 	add: function (listener, listenerContext) { //Añade un listener que siempre se ejecuta
 		this.bindings.push(new XEngine.SignalBinding(this, listener, listenerContext, false));
 	},
 
-	addOnce: function (listener, listenerContext) { //Añade un listener que solo se ejecuta una vez
+	/**
+	 * añade un listener a este objeto que solo se ejecuta una vez
+	 * @method XEngine.Signal#add
+	 * @param {Function} listener - funcion a ejecutar
+	 * @param {Object} listenerContext - contexto en el que se ejecuta la funcion
+	 * @return {XEngine.Signal}
+	 */
+	addOnce: function (listener, listenerContext) {
 		this.bindings.push(new XEngine.SignalBinding(this, listener, listenerContext, true));
 	},
 
-	_unBind: function (signalBinding) { //Elimina un listener
+	/**
+	 * Elimina un listener de los bindings
+	 * @method XEngine.Signal#add
+	 * @param {XEngine.SignalBinding} signalBinding - binding a eliminar
+	 */
+	_unBind: function (signalBinding) {
 		var index = this.bindings.indexOf(signalBinding);
 		delete this.bindings[index]; //Liberamos memoria
 		this.bindings.splice(index, 1);
@@ -1443,7 +1568,12 @@ XEngine.Signal.prototype = {
 		this.bindings = new Array();
 	},
 
-	dispatch: function (params) { //Manda el evento a todos los bindings
+	/**
+	 * Lanza el evento a todos los listeners
+	 * @method XEngine.Signal#dispatch
+	 * @param {Object} args[] - sequencia de todos los parametros a ser enviados
+	 */
+	dispatch: function () {
 		for (var i = this.bindings.length - 1; i >= 0; i--) {
 			if (this.bindings[i] == null || this.bindings[i] == undefined) { //Si el binding ha dejado de existir, lo quitamos del array
 				this.bindings.splice(i, 1);
@@ -1462,13 +1592,23 @@ XEngine.SignalBinding = function (signal, listener, listenerContext, isOnce) { /
 };
 
 XEngine.SignalBinding.prototype = {
-	dispatch: function (params) {
+
+	/**
+	 * Lanza el evento al listener que tiene asignado
+	 * @method XEngine.SignalBinding#dispatch
+	 * @param {Object} args[] - sequencia de todos los parametros a ser enviados
+	 */
+	dispatch: function () {
 		this.listener.apply(this.listenerContext, arguments);
 		if (this.isOnce) {
 			this.detach();
 		}
 	},
 
+	/**
+	 * Se elimina el listener del signal
+	 * @method XEngine.SignalBinding#detach
+	 */
 	detach: function () {
 		this.signal._unBind(this);
 	}
