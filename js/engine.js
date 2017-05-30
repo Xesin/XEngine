@@ -1259,6 +1259,7 @@ XEngine.Tween.prototype = {
 		for (var property in properties) {
 			this.fromProperties[property] = properties[property];
 		}
+		return this;
 	}
 
 };
@@ -2205,18 +2206,29 @@ XEngine.InputManager.prototype = {
 		this.pointer.x = inputPos.position.x;
 		this.pointer.y = inputPos.position.y;
 		this.onInputDown.dispatch(inputPos);
-		for (var i = this.game.gameObjects.length - 1; i >= 0; i--) {
-			var gameObject = this.game.gameObjects[i];
-			if (!gameObject.inputEnabled) continue;
-			if (this._pointerInsideBounds(gameObject)) {
-				if (gameObject.onInputDown == undefined) {
-					gameObject.onInputDown = new XEngine.Signal();
+		var _this = this;
+		var loop = function (array) { //Bucle que inspecciona todos los elementos de un Array
+			for (var i = array.length - 1; i >= 0; i--) {
+				var gameObject = array[i];
+				if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
+					return loop(gameObject.children); //Si éste loop ha encontrado un objeto que hacer el input down, terminamos 
 				}
-				gameObject.onInputDown.dispatch(event);
-				gameObject.isInputDown = true;
-				return true;
+				else {
+					if (!gameObject.inputEnabled) continue;
+					if (_this._pointerInsideBounds(gameObject)) {
+						if (gameObject.onInputDown == undefined) {
+							gameObject.onInputDown = new XEngine.Signal();
+						}
+						gameObject.onInputDown.dispatch(event);
+						gameObject.isInputDown = true;
+						return true;
+					}
+				}
+
 			}
-		}
+		};
+
+		loop(this.game.gameObjects);
 	},
 
 	inputMoveHandler: function (event) {
@@ -2224,29 +2236,38 @@ XEngine.InputManager.prototype = {
 		var inputPos = this.getInputPosition(event);
 		this.pointer.x = inputPos.position.x;
 		this.pointer.y = inputPos.position.y;
-
-		for (var i = this.game.gameObjects.length - 1; i >= 0; i--) {
-			var gameObject = this.game.gameObjects[i];
-			if (!gameObject.inputEnabled) continue;
-			if (this._pointerInsideBounds(gameObject)) {
-				if (!gameObject.isInputOver) {
-					if (gameObject.onInputOver == undefined) {
-						gameObject.onInputOver = new XEngine.Signal();
+		var _this = this;
+		var loop = function (array) { //Bucle que inspecciona todos los elementos de un Array
+			for (var i = array.length - 1; i >= 0; i--) {
+				var gameObject = array[i];
+				if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
+					loop(gameObject.children);
+				}
+				else {
+					if (!gameObject.inputEnabled) continue;
+					if (_this._pointerInsideBounds(gameObject)) {
+						if (!gameObject.isInputOver) {
+							if (gameObject.onInputOver == undefined) {
+								gameObject.onInputOver = new XEngine.Signal();
+							}
+							gameObject.onInputOver.dispatch(event);
+							gameObject.isInputOver = true;
+						}
 					}
-					gameObject.onInputOver.dispatch(event);
-					gameObject.isInputOver = true;
+					else if (gameObject.isInputOver) {
+						if (gameObject.onInputLeft == undefined) {
+							gameObject.onInputLeft = new XEngine.Signal();
+						}
+						gameObject.onInputLeft.dispatch(event);
+						gameObject.isInputOver = false;
+					}
 				}
+
 			}
-			else if (gameObject.isInputOver) {
-				if (gameObject.onInputLeft == undefined) {
-					gameObject.onInputLeft = new XEngine.Signal();
-				}
-				gameObject.onInputLeft.dispatch(event);
-				gameObject.isInputOver = false;
-			}
-		}
+		};
 
 		this.onInputMove.dispatch(inputPos);
+		loop(this.game.gameObjects);
 	},
 
 	getInputPosition: function (event) {
@@ -2283,19 +2304,31 @@ XEngine.InputManager.prototype = {
 			this.clickDispatcher(newEvent);
 		}
 		this.onInputUp.dispatch(newEvent);
-		for (var i = this.game.gameObjects.length - 1; i >= 0; i--) {
-			var gameObject = this.game.gameObjects[i];
-			if (!gameObject.inputEnabled) continue;
-			if (gameObject.isInputDown) {
 
-				if (gameObject.onInputUp == undefined) {
-					gameObject.onInputUp = new XEngine.Signal();
+		var _this = this;
+		var loop = function (array) { //Bucle que inspecciona todos los elementos de un Array
+			for (var i = array.length - 1; i >= 0; i--) {
+				var gameObject = array[i];
+				if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
+					loop(gameObject.children);
 				}
-				gameObject.onInputUp.dispatch(event);
-				gameObject.isInputDown = false;
-				return true;
+				else {
+					if (!gameObject.inputEnabled) continue;
+					if (gameObject.isInputDown) {
+
+						if (gameObject.onInputUp == undefined) {
+							gameObject.onInputUp = new XEngine.Signal();
+						}
+						gameObject.onInputUp.dispatch(event);
+						gameObject.isInputDown = false;
+						return true;
+					}
+				}
+
 			}
-		}
+		};
+
+		loop(this.game.gameObjects);
 	},
 
 	clickDispatcher: function (event) {
@@ -2327,11 +2360,12 @@ XEngine.InputManager.prototype = {
 	_pointerInsideBounds: function (gameObject) { //Obtenemos si el puntero está dentro del area de un objeto
 		if (gameObject.getBounds != undefined) {
 			var bounds = gameObject.getBounds();
-			if (this.pointer.x < (gameObject.position.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (gameObject.position.x + bounds.width * (1 - gameObject.anchor.x))) {
+			var worldPos = gameObject.getWorldPos();
+			if (this.pointer.x < (worldPos.x - bounds.width * gameObject.anchor.x) || this.pointer.x > (worldPos.x + bounds.width * (1 - gameObject.anchor.x))) {
 				return false;
 
 			}
-			else if (this.pointer.y < (gameObject.position.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (gameObject.position.y + bounds.height * (1 - gameObject.anchor.y))) {
+			else if (this.pointer.y < (worldPos.y - bounds.height * gameObject.anchor.y) || this.pointer.y > (worldPos.y + bounds.height * (1 - gameObject.anchor.y))) {
 				return false;
 
 			}
@@ -3042,7 +3076,9 @@ XEngine.Audio.prototype = {
 	_complete: function () {
 		var _this = this;
 		this.stop();
-		_this.onComplete.dispatch();
+		if (_this.onComplete) {
+			_this.onComplete.dispatch();
+		}
 	}
 };
 
