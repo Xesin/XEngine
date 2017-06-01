@@ -1330,9 +1330,8 @@ XEngine.TweenManager.prototype = {
 		{
 			this.tweens[i].destroy();
 			delete this.tweens[i];
-			delete this.tweens;
 		}
-
+		delete this.tweens;
 		this.tweens = new Array();
 	}
 };
@@ -2857,11 +2856,15 @@ XEngine.Sprite.prototypeExtends = {
 			var posX = Math.round(-(width * _this.anchor.x));
 			var posY = Math.round(-(height * _this.anchor.y));
 			var column = _this.frame;
-			if (_this.frame > _this._columns - 1) {
-				column -= _this._columns;
+
+			if (column > _this._columns - 1) {
+				column = _this.frame % _this._columns;
 			}
 
 			var row = Math.floor(_this.frame / _this._columns);
+			if (_this.frame > 0) {
+				console.log('Hola');
+			}
 			canvas.drawImage(cache_image.image, column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
 		}
 		else {
