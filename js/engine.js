@@ -1,3 +1,14 @@
+/**
+ * @author Francisco Ferrer <xisco@xiscoferrer.com>
+ * @license
+ * Copyright © 2017 Francisco Ferrer Fernandez <http://www.xiscoferrer.com>
+ * 
+ * Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+ * 
+ * Complete Licence definition: https://www.gnu.org/licenses/lgpl.html
+ */
+
+
 var XEngine = {
 	version: '0.7-alpha'
 };
@@ -1403,6 +1414,19 @@ XEngine.Tween.prototype = {
 			return;
 		} //Si el target ha sido destruido, destruimos el tween
 		var _this = this;
+		if ((_this.progress == 1)) { //Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
+			if (_this.repeat == -1 || _this.runCount <= _this.repeat) {
+				_this.onCompleteLoop.dispatch();
+				_this.time = 0;
+				_this.progress = 0;
+				_this.play();
+			}
+			else {
+				_this.onComplete.dispatch();
+				_this.destroy();
+			}
+			return;
+		}
 		_this.progress = XEngine.Mathf.clamp(_this.time / _this.duration, 0, 1); //Calculamos el progreso del tween basado en el tiempo que está corriendo y la duración
 		for (var property in _this.properties) { //Para cada propiedad, calculamos su valor actual y se lo asignamos al objetivo
 			var t = _this.progress;
@@ -1418,19 +1442,6 @@ XEngine.Tween.prototype = {
 			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(t));
 		}
 		_this.time += deltaTime * this.reverse; //Incrementamos el tiempo de ejecución
-		if ((_this.progress == 1)) { //Si el tween llega al final, se comprueba si tiene que hacer loop o ha acabado
-			if (_this.repeat == -1 || _this.runCount <= _this.repeat) {
-				_this.onCompleteLoop.dispatch();
-				_this.time = 0;
-				_this.progress = 0;
-				_this.play();
-			}
-			else {
-				_this.onComplete.dispatch();
-				_this.destroy();
-			}
-		}
-
 	},
 
 	/**
