@@ -10,7 +10,7 @@
 
 
 var XEngine = {
-	version: '0.7-alpha'
+	version: '1.0'
 };
 
 
