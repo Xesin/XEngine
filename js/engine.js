@@ -13,6 +13,7 @@ var XEngine = {
 	version: '0.7-alpha'
 };
 
+
 // ----------------------------------------- GAME ENGINE ------------------------------------------//
 
 /**
@@ -27,45 +28,33 @@ var XEngine = {
 XEngine.Game = function (width, height, idContainer) {
 
 	/**
-	 * Referencia al elemento canvas
-	 * 
-	 * @property {HTMLElement} reference
+	 * @property {HTMLElement} reference - Referencia al elemento canvas
 	 * @readonly
 	 */
 	this.reference = document.getElementById(idContainer);
 	/**
-	 * Posición por defecto del juego
-	 * 
-	 * @property {XEngine.Vector} position
+	 * @property {XEngine.Vector} position - Posición por defecto del juego
 	 * @readonly
 	 * @private
 	 */
 	this.position = new XEngine.Vector(0, 0);
 	/**
-	 * Ancho del juego
-	 * 
-	 * @property {Number} width
+	 * @property {Number} width - Ancho del juego
 	 * @public
 	 */
 	this.width = width;
 	/**
-	 * Alto del juego
-	 * 
-	 * @property {Number} height
+	 * @property {Number} height - Alto del juego
 	 * @public
 	 */
 	this.height = height;
 	/**
-	 * Ancho del mundo (al iniciar es igual que el del juego)
-	 * 
-	 * @property {Number} worldWidth
+	 * @property {Number} worldWidth - Ancho del mundo (al iniciar es igual que el del juego)
 	 * @public
 	 */
 	this.worldWidth = width;
 	/**
-	 * Alto del mundo (al iniciar es igual que el del juego)
-	 * 
-	 * @property {Number} height
+	 * @property {Number} height - Alto del mundo (al iniciar es igual que el del juego)
 	 * @public
 	 */
 	this.worldHeight = height;
@@ -74,9 +63,7 @@ XEngine.Game = function (width, height, idContainer) {
 	this.reference.setAttribute('height', height + 'px'); //asignamos el alto del canvas
 
 	/**
-	 * Contexto 2D del canvas
-	 * 
-	 * @property {CanvasRenderingContext2D} canvas
+	 * @property {CanvasRenderingContext2D} canvas - Contexto 2D del canvas
 	 * @readonly
 	 */
 	this.canvas = this.reference.getContext('2d');
@@ -84,167 +71,122 @@ XEngine.Game = function (width, height, idContainer) {
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 	/**
-	 * Contexto del audio
-	 * 
-	 * @property {AudioContext} audioContext
+	 * @property {AudioContext} audioContext - Contexto del audio
 	 * @readonly
 	 */
 	this.audioContext = new AudioContext();
 	/**
-	 * Limite de frames por segundo
-	 * 
-	 * @property {Number} frameLimit
+	 * @property {Number} frameLimit - Limite de frames por segundo
 	 * @default
 	 */
 	this.frameLimit = 30;
 	/**
-	 * Tiempo tiempo en el que se arrancó el juego
-	 * 
-	 * @property {Number} _startTime
+	 * @property {Number} _startTime - Tiempo tiempo en el que se arrancó el juego
 	 * @readonly
-	 * @private
 	 */
 	this._startTime = 0;
 	/**
-	 * Tiempo desde que se arrancó el juego
-	 * 
-	 * @property {Number} _elapsedTime
-	 * @readonly
+	 * @property {Number} _elapsedTime - Tiempo desde que se arrancó el juego
 	 * @private
 	 */
 	this._elapsedTime = 0;
 	/**
-	 * Tiempo en el que transcurre el frame
-	 * 
-	 * @property {Number} frameTime
+	 * @property {Number} frameTime - Tiempo en el que transcurre el frame
 	 * @readonly
 	 */
 	this.frameTime = 0;
 	/**
-	 * Tiempo en el que transcurrió el último frame
-	 * 
-	 * @property {Number} previousFrameTime
+	 * @property {Number} previousFrameTime - Tiempo en el que transcurrió el último frame
 	 * @readonly
 	 */
 	this.previousFrameTime = 0;
 	/**
-	 * Tiempo entre frames en segundos
-	 * 
-	 * @property {Number} deltaTime
+	 * @property {Number} deltaTime - Tiempo entre frames en segundos
 	 * @readonly
 	 */
 	this.deltaTime = 0;
 	/**
-	 * Tiempo entre frames en milisegundos
-	 * 
-	 * @property {Number} deltaMillis
+	 * @property {Number} deltaMillis - Tiempo entre frames en milisegundos
 	 * @readonly
 	 */
 	this.deltaMillis = 0;
 
 	/**
-	 * Determina si el juego está pausado o no
-	 * 
-	 * @property {Bool} pause
+	 * @property {Bool} pause - Determina si el juego está pausado o no
+	 * @public
 	 */
 	this.pause = false;
 
 	/**
-	 * Array con las referencias de todos los objetos añadidos directamente al juego
-	 * 
-	 * @property {Array} gameObjects
+	 * @property {Array.<XEngine.BaseObject>} gameObjects - Array con las referencias de todos los objetos añadidos directamente al juego
+	 * @readonly
 	 */
 	this.gameObjects = null;
 	/**
-	 * Estado en el que está actualmente el juego
-	 * 
-	 * @property {Object} state
+	 * @property {XEngine.StateManager} state - Acceso al StateManager
+	 * @readonly
 	 */
 	this.state = null;
 	/**
-	 * Fábrica de objetos. Esto ofrece acceso al creador de objetos
-	 * 
-	 * @property {XEngine.ObjectFactory} add
+	 * @property {XEngine.ObjectFactory} add - Fábrica de objetos. Esto ofrece acceso al creador de objetos
 	 * @readonly
 	 */
 	this.add = null;
 	/**
-	 * Motor de físicas
-	 * 
-	 * @property {XEngine.Physics} physics
+	 * @property {XEngine.Physics} physics - Motor de físicas
 	 * @readonly
-	 * @private
 	 */
 	this.physics = null;
 	/**
-	 * Tween Manager. Da acceso a la creación de tweens.
-	 * 
-	 * @property {XEngine.TweenManager} tween
+	 * @property {XEngine.TweenManager} tween - Tween Manager. Da acceso a la creación de tweens.
 	 * @readonly
 	 */
 	this.tween = null;
 	/**
-	 * Caché del juego. Aquí se almacenan todos los assets que se cargan
-	 * 
-	 * @property {XEngine.Cache} cache
+	 * @property {XEngine.Cache} cache - Caché del juego. Aquí se almacenan todos los assets que se cargan
 	 * @readonly
 	 */
 	this.cache = null;
 	/**
-	 * Loader. Da acceso a la carga de assets
-	 * 
-	 * @property {XEngine.Loader} load
+	 * @property {XEngine.Loader} load - Loader. Da acceso a la carga de assets
 	 * @readonly
 	 */
 	this.load = null;
 	/**
-	 * Camara del juego
-	 * 
-	 * @property {XEngine.Camera} camera
+	 * @property {XEngine.Camera} camera - Camara del juego
+	 * @readonly
 	 */
 	this.camera = null;
 	/**
-	 * Renderer del juego.
-	 * 
-	 * @property {XEngine.Cache} renderer
+	 * @property {XEngine.Cache} renderer - Renderer del juego.
 	 * @readonly
 	 * @private
 	 */
 	this.renderer = null;
 	/**
-	 * Scale manager
-	 * 
-	 * @property {XEngine.ScaleManager} scale
+	 * @property {XEngine.ScaleManager} scale - Scale manager
 	 * @readonly
 	 */
 	this.scale = null;
 	/**
-	 * Define si se está ejecutando en móvil o no
-	 * 
-	 * @property {Bool} cache
+	 * @property {Bool} isMobile - Define si se está ejecutando en móvil o no
 	 * @readonly
 	 */
 	this.isMobile = false;
 	/**
-	 * Input manager. Da acceso al inputManager
-	 * 
-	 * @property {XEngine.InputManager} input
+	 * @property {XEngine.InputManager} input - Input manager. Da acceso al inputManager
 	 * @readonly
 	 */
 	this.input = null;
 
 	/**
-	 * Define el ancho de los tiles (para perspectiva isometrica)
-	 * 
-	 * @property {Number} ISO_TILE_WIDTH
+	 * @property {Number} ISO_TILE_WIDTH - Define el ancho de los tiles (para perspectiva isometrica)
 	 * @public
 	 */
 	this.ISO_TILE_WIDTH = 32;
 
 	/**
-	 * Define el alto de los tiles (para perspectiva isometrica)
-	 * 
-	 * @property {Number} ISO_TILE_HEIGHT
+	 * @property {Number} ISO_TILE_HEIGHT - Define el alto de los tiles (para perspectiva isometrica)
 	 * @public
 	 */
 	this.ISO_TILE_HEIGHT = 32;
@@ -423,15 +365,18 @@ XEngine.Game.prototype = {
 // ----------------------------------------- CAMERA ------------------------------------------//
 
 /**
- * Enum para limitar los ejes en los que se puede mover la camara
- * 
- * @enum {String}
- * @readonly
- */
+* Definicion de Ejes para la camara
+*
+* @class XEngine.AXIS
+*/
 XEngine.AXIS = {
+	/** @static */
 	NONE: "none",
+	/** @static */
 	HORIZONTAL: "horizontal",
+	/** @static */
 	VERTICAL: "vertical",
+	/** @static */
 	BOTH: "both"
 };
 /**
@@ -443,31 +388,25 @@ XEngine.AXIS = {
  */
 XEngine.Camera = function (game) {
 	/**
-	 * Referencia al juego
-	 * 
-	 * @property {XEngine.Game} game
-	 * @private
+	 * @property {XEngine.Game} game - Referencia al juego
 	 * @readonly
 	 */
 	this.game = game;
 	/**
-	 * Posición actual de la camara
-	 * 
-	 * @property {XEngine.Vector} position
+	 * @property {XEngine.Vector} position - Posición actual de la camara
 	 */
 	this.position = new XEngine.Vector(0, 0);
 	/**
-	 * Objeto que tiene que seguir la camara. Si es nulo no sigue a nada
-	 * Se cambia con {@link #followObject}.
-	 * @property {XEngine.BaseObject} followedObject
 	 * 
-	 * @protected
+	 * @property {XEngine.BaseObject} followedObject - Objeto que tiene que seguir la camara. Si es nulo no sigue a nada (Se cambia con {@link XEngine.Camera#followObject})
+	 * 
+	 * @readonly
 	 */
 	this.followedObject = null;
 	/**
-	 * Ejes en los que se puede mover la cámara
 	 * 
-	 * @property {XEngine.AXIS} axis
+	 * 
+	 * @property {XEngine.AXIS} axis - Ejes en los que se puede mover la cámara
 	 */
 	this.axis = XEngine.AXIS.BOTH;
 };
@@ -479,6 +418,7 @@ XEngine.Camera.prototype = {
 	 * @param {XEngine.BaseObject} gameObject - Objeto a seguir
 	 * @param {Number} offsetLeft - Offset que tendrá por la izquierda
 	 * @param {Number} offsetUp - Offset que tendrá por arriba
+	 * @public
 	 */
 	followObject: function (gameObject, offsetLeft, offsetUp) { //Asigna el objeto a seguir
 		this.follow = true;
@@ -510,11 +450,33 @@ XEngine.Camera.prototype = {
 };
 // ----------------------------------------- STATE MANAGER ------------------------------------------//
 
-
+/**
+ * Manager que controla los distintos estados que se añadan
+ * 
+ * @class XEngine.StateManager
+ * @constructor
+ * @param {XEngine.Game} game - Referencia al objeto game
+ */
 XEngine.StateManager = function (game) {
+	/**
+	 * @property {XEngine.Game} game - Referencia al juego
+	 * @readonly
+	 */
 	this.game = game;
+	/**
+	 * @property {Array.<*>} states - Array de estados que se han añadido al juego
+	 * @public
+	 */
 	this.states = new Array();
+	/**
+	 * @property {*} currentState - Estado en el que se encuentra actualmente el juego
+	 * @readonly
+	 */
 	this.currentState = null;
+	/**
+	 * @property {String} currentStateName - Nombre del estado actual
+	 * @readonly
+	 */
 	this.currentStateName = null;
 };
 
@@ -571,6 +533,14 @@ XEngine.StateManager.prototype = {
 
 
 // ----------------------------------------- PRELOADER AND CACHE ------------------------------------------//
+
+/**
+ * Manager que controla la carga de assets
+ * 
+ * @class XEngine.Loader
+ * @constructor
+ * @param {XEngine.Game} game - Referencia al objeto game
+ */
 XEngine.Loader = function (game) {
 	this.game = game;
 	this.pendingLoads = new Array(); //Objetos a cargar
@@ -676,6 +646,17 @@ XEngine.Loader.prototype = {
 	},
 };
 
+/**
+ * Objeto que maneja la carga de las imagenes
+ * 
+ * @class XEngine.ImageLoader
+ * @constructor
+ * @param {String} imageName - KeyName de la imagen a cargar
+ * @param {String} imageUrl - uri donde está la imagen
+ * @param {XEngine.Loader} loader - referencia al loader
+ * @param {Number} [frameWidth] - ancho de la imagen;
+ * @param {Number} [frameHeight] - alto de la imagen;
+ */
 XEngine.ImageLoader = function (imageName, imageUrl, loader, frameWidth, frameHeight) {
 	this.imageName = imageName; //Nombre de la imagen a guardar en chache
 	this.imageUrl = imageUrl; //Url de la imagen (con extension y todo)
@@ -751,6 +732,16 @@ XEngine.ImageLoader.prototype = {
 	}
 };
 
+/**
+ * Objeto que maneja la carga de atlas con JSON
+ * 
+ * @class XEngine.JsonImageLoader
+ * @constructor
+ * @param {String} imageName - KeyName de la imagen a cargar
+ * @param {String} imageUrl - uri donde está la imagen
+ * @param {String} jsonUrl - uri donde está el json
+ * @param {XEngine.Loader} loader - referencia al loader
+ */
 XEngine.JsonImageLoader = function (imageName, imageUrl, jsonUrl, loader) {
 	this.imageName = imageName; //Nombre de la imagen a guardar en chache
 	this.imageUrl = imageUrl; //Url de la imagen (con extension y todo)
@@ -865,6 +856,15 @@ XEngine.JsonImageLoader.prototype = {
 	},
 };
 
+/**
+ * Objeto que maneja la carga sonidos
+ * 
+ * @class XEngine.AudioLoader
+ * @constructor
+ * @param {String} audioName - KeyName de la imagen a cargar
+ * @param {String} audioUrl - uri donde está la imagen
+ * @param {XEngine.Loader} loader - referencia al loader
+ */
 XEngine.AudioLoader = function (audioName, audioUrl, loader) {
 	this.audioName = audioName; //Nombre del audio a guardar en chache
 	this.audioUrl = audioUrl; //Url del audio (con extension y todo)
@@ -913,6 +913,13 @@ XEngine.AudioLoader.prototype = {
 };
 
 
+/**
+ * Objeto que almacena los assets cargados
+ * 
+ * @class XEngine.Cache
+ * @constructor
+ * @param {XEngine.Game} game - referencia al objeto del juego
+ */
 XEngine.Cache = function (game) {
 	this.game = game;
 	this.images = new Array(); //Cache de imagenes
@@ -964,6 +971,14 @@ XEngine.Cache.prototype = {
 
 // -------------------------------------------- RENDERER ---------------------------------------------//
 
+/**
+ * Renderer principal del juego (usa el contexto de canvas)
+ * 
+ * @class XEngine.Renderer
+ * @constructor
+ * @param {XEngine.Game} game - referencia al objeto del juego
+ * @param {CanvasRenderingContext2D} context - contexto en el que pinta este renderer
+ */
 XEngine.Renderer = function (game, context) {
 	this.game = game;
 	this.scale = {
@@ -990,7 +1005,7 @@ XEngine.Renderer.prototype = {
 	/**
 	 * Loop que llama al render de todos los objetos. Si es un grupo, se llama a si misma.
 	 * @method XEngine.Renderer#renderLoop
-	 * @param {Array} arrayObjects - Array de objetos a renderizar
+	 * @param {Array.<XEngine.BaseObject>} arrayObjects - Array de objetos a renderizar
 	 * @private
 	 */
 	renderLoop: function (arrayObjects) { //Renderizamos el array de objetos que le pasamos por parametro
@@ -1029,7 +1044,7 @@ XEngine.Renderer.prototype = {
 	/**
 	 * Obtiene la información de color del frame acutal
 	 * @method XEngine.Renderer#getFrameInfo
-	 * @return {Array}
+	 * @return {Array.<object>}
 	 */
 	getFrameInfo: function () {
 		var data = this.context.getImageData(0, 0, this.game.width, this.game.height).data;
@@ -1054,7 +1069,7 @@ XEngine.Renderer.prototype = {
 	 * @method XEngine.Renderer#getPixelInfo
 	 * @param {Number} posX - Posición x del pixel
 	 * @param {Number} posY - Posición y del pixel
-	 * @return {Array}
+	 * @return {Array.<object>}
 	 */
 	getPixelInfo: function (posX, posY) {
 		var data = this.context.getImageData(Math.round(posX), Math.round(posY), 1, 1).data;
@@ -1070,6 +1085,13 @@ XEngine.Renderer.prototype = {
 
 // ----------------------------------------- SCALE MANAGER -------------------------------------------//
 
+/**
+ * Manager que se encarga de escalar el manager según el tipo de escala que se especifique
+ * 
+ * @class XEngine.ScaleManager
+ * @constructor
+ * @param {XEngine.Game} game - referencia al objeto del juego
+ */
 XEngine.ScaleManager = function (game) {
 	this.game = game;
 	this.scaleType = XEngine.Scale.NO_SCALE;
@@ -1149,6 +1171,13 @@ XEngine.ScaleManager.prototype = {
 
 // ----------------------------------------- OBJECT FACTORY ------------------------------------------//
 
+/**
+ * Se encarga de crear y añadir a la escena los distintos objetos del juego
+ * 
+ * @class XEngine.ObjectFactory
+ * @constructor
+ * @param {XEngine.Game} game - referencia al objeto del juego
+ */
 XEngine.ObjectFactory = function (game) {
 	this.game = game;
 };
@@ -1157,7 +1186,7 @@ XEngine.ObjectFactory.prototype = {
 	/**
 	 * Añade un objeto ya existente (creado con new) al juego
 	 * @method XEngine.ObjectFacory#existing
-	 * @param {XEngine.BasicObject} gameObject - Objeto a añadir
+	 * @param {XEngine.BaseObject} gameObject - Objeto a añadir
 	 * @return {Object}
 	 */
 	existing: function (gameObject) { //Añade un objeto que ya ha sido creado
@@ -1294,6 +1323,13 @@ XEngine.ObjectFactory.prototype = {
 
 // ----------------------------------------- TWEENS ------------------------------------------//
 
+/**
+ * Manager que se encarga de la creación y el manejo de Tweens
+ * 
+ * @class XEngine.TweenManager
+ * @constructor
+ * @param {XEngine.Game} game - referencia al objeto del juego
+ */
 XEngine.TweenManager = function (game) {
 	this.game = game;
 	this.tweens = new Array();
@@ -1347,25 +1383,99 @@ XEngine.TweenManager.prototype = {
 	}
 };
 
+/**
+ * Objeto que controla las propiedades del objeto que se le asigna
+ * 
+ * @class XEngine.Tween
+ * @constructor
+ * @param {*} target - objeto a controlar
+ */
 XEngine.Tween = function (target) {
+	/**
+	 * @property {Boolean} isPendingDestroy - Determina si el tween va a ser eliminado en el proximo update
+	 * @readonly
+	 */
 	this.isPendingDestroy = false;
+	/**
+	 * @property {Boolean} started - Determina si el tween ha empezado
+	 * @readonly
+	 */
 	this.started = false;
+	/**
+	 * @property {*} target - Objeto al que se le modifican los atributos
+	 * @private
+	 */
 	this.target = target;
-	this.fromProperties = new Array(); //Propiedades de inicio
-	this.properties = new Array(); //Propiedades a las que se quiere llegar
+	/**
+	 * @property {Array.<*>} fromProperties - Propiedades iniciales
+	 * @private
+	 */
+	this.fromProperties = new Array();
+	/**
+	 * @property {Array.<*>} properties - Propiedades a las que se quiere llegar
+	 * @private
+	 */
+	this.properties = new Array(); 
+	/**
+	 * @property {Number} duration - Duracion en milisegundos
+	 * @public
+	 */
 	this.duration = 0;
+	/**
+	 * @property {Boolean} autoStart - Determina si el tween tiene el auto start activado (solo es valida su modificación antes de que empiece el tween)
+	 * @public
+	 */
 	this.autoStart = true;
-	this.easing = undefined; //Funcion de Easing
+	/**
+	 * @property {XEngine.Easing} easing - Funcion de Easing a usar
+	 * @public
+	 */
+	this.easing = undefined;
+	/**
+	 * @property {Number} delay - Tiempo que tarda el tween en empezar desde que se llama al play
+	 * @public
+	 */
 	this.delay = 0;
-	this.repeat = 0; //Cantidad de veces a repetir
-	this.runCount = 0; //Cantidad de veces que se ha ejecutado el tween desde el principio
+	/**
+	 * @property {Number} repeat - Cantidad de veces a repetir (si es -1 se repite continuamente)
+	 * @public
+	 */
+	this.repeat = 0;
+	/**
+	 * @property {Number} runCount - Cantidad de veces que se ha ejecutado el tween desde el principio
+	 * @readonly
+	 */
+	this.runCount = 0;
+	/**
+	 * @property {Boolean} isRunning - Determina si el tween se está ejecutando
+	 * @readonly
+	 */
 	this.isRunning = false;
+	/**
+	 * @property {Number} progress - Progreso actual del tween (valor entre 0 y 1)
+	 * @public
+	 */
 	this.progress = 0;
-	this.time = 0; //Tiempo que lleva corriendo el tween
-	this.yoyo = false; //Determina si el tween solo va a las propiedades asignadas o también vuelve a las originales
-	this.onComplete = new XEngine.Signal(); //Se llama al completarse el tween
-	this.onCompleteLoop = new XEngine.Signal(); //Se llama al completarse un loop del tween
-	this.reverse = 1;
+	/**
+	 * @property {Number} time - Tiempo en milisegundos que lleva corriendo el tween
+	 * @readonly
+	 */
+	this.time = 0;
+	/**
+	 * @property {Boolean} yoyo - Determina si el tween solo va a las propiedades asignadas o también vuelve a las originales
+	 * @public
+	 */
+	this.yoyo = false;
+	/**
+	 * @property {XEngine.Signal} onComplete - Se llama al completarse el tween
+	 * @public
+	 */
+	this.onComplete = new XEngine.Signal(); 
+	/**
+	 * @property {XEngine.Signal} onCompleteLoop - Se llama al completarse un loop del tween
+	 * @public
+	 */
+	this.onCompleteLoop = new XEngine.Signal();
 };
 
 XEngine.Tween.prototype = {
@@ -1441,7 +1551,7 @@ XEngine.Tween.prototype = {
 			}
 			this.target[property] = XEngine.Mathf.lerp(_this.fromProperties[property], _this.properties[property], _this.easing(t));
 		}
-		_this.time += deltaTime * this.reverse; //Incrementamos el tiempo de ejecución
+		_this.time += deltaTime; //Incrementamos el tiempo de ejecución
 	},
 
 	/**
@@ -1505,7 +1615,16 @@ XEngine.Tween.prototype = {
 
 };
 
+/**
+ * @callback easingFunction
+ * @param {Number} t - tiempo en el que se encuentra el tween (valores entre 0 y 1)
+ */
 
+/**
+ * Enum Para las distintas funciones de Easing
+ * @enum {easingFunction}
+ * 
+ */
 XEngine.Easing = { //Todas las funciones de Easing
 	Linear: function (t) {
 		return t
@@ -1660,7 +1779,18 @@ XEngine.Easing = { //Todas las funciones de Easing
 
 // ----------------------------------------- EVENTS ------------------------------------------//
 
+
+/**
+ * Objeto que almacena observadores para lanzar los eventos posteriormente
+ * 
+ * @class XEngine.Signal
+ * @constructor
+ */
 XEngine.Signal = function () {
+	/**
+	 * @property {Array.<XEngine.SignalBinding>} bindings - Almacena todos los bindings que tiene el evento
+	 * @readonly
+	 */
 	this.bindings = new Array(); //Listener que tiene la señal
 };
 
@@ -1719,12 +1849,42 @@ XEngine.Signal.prototype = {
 	}
 };
 
+/**
+  @callback signalCallback
+ */
+
+/**
+ * Objeto que almacena un observador de una señal
+ * 
+ * @class XEngine.SignalBinding
+ * @constructor
+ * 
+ * @param {XEngine.Signal} signal - referencia al objeto Signal
+ * @param {signalCallback} listener - funcion a ejecutar
+ * @param {*} listenerContext - contexto donde se ejecuta la funcion
+ * @param {Boolean} [isOnce=false] - define si se debe ejecutar solo una vez
+ */
 XEngine.SignalBinding = function (signal, listener, listenerContext, isOnce) { //Objeto donde se almacena un listener
+	/**
+	 * @property {XEngine.Signal} signal - Referencia al objeto Signal
+	 * @readonly
+	 */
 	this.signal = signal;
-	this.bindings = new Array();
+	/**
+	 * @property {signalCallback} listener - funcion a ejecutar
+	 * @readonly
+	 */
 	this.listener = listener;
+	/**
+	 * @property {*} listenerContext - contexto donde se ejecuta la funcion
+	 * @readonly
+	 */
 	this.listenerContext = listenerContext;
-	this.isOnce = isOnce;
+	/**
+	 * @property {Boolean} isOnce - define si se debe ejecutar solo una vez
+	 * @readonly
+	 */
+	this.isOnce = isOnce || false;
 };
 
 XEngine.SignalBinding.prototype = {
@@ -1755,10 +1915,30 @@ XEngine.SignalBinding.prototype = {
 // ----------------------------------------- PHYSICS ------------------------------------------//
 
 
+/**
+ * Motor de físicas
+ * 
+ * @class XEngine.Physics
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia al objeto principal del juego
+ */
 XEngine.Physics = function (game) {
 	this.game = game;
+	/**
+	 * @property {Boolean} systemEnabled - determina si el motor está activo
+	 * @public
+	 */
 	this.systemEnabled = false; //Flag de sistema habilitado
+	/**
+	 * @property {Array.<XEngine.Physics.PhysicsBody>} physicsObjects - determina si el motor está activo
+	 * @private
+	 */
 	this.physicsObjects = new Array(); //Array de objetos que tienen fisicas activas
+	/**
+	 * @property {Number} gravity - Cantidad de gravedad que hay en el juego
+	 * @public
+	 */
 	this.gravity = 1; //Gravedad global
 };
 
@@ -1768,25 +1948,47 @@ XEngine.Physics.Shapes = {
 	},
 
 	XEngine.Physics.prototype = {
+		/**
+		 * Arranca el motor de fisicas
+		 * @method XEngine.Physics#startSystem
+		 * @public
+		 */
 		startSystem: function () {
 			this.systemEnabled = true; //Arranca el sistema
 		},
-
+		/**
+		 * Pausa el motor de físicas
+		 * @method XEngine.Physics#pauseSystem
+		 * @public
+		 */
 		pauseSystem: function () {
 			this.systemEnabled = false; //Pausa el sistema
 		},
-
+		/**
+		 * Para por completo el motor y elimina los objetos que tenía añadidos
+		 * @method XEngine.Physics#stop
+		 * @public
+		 */
 		stop: function () { //Para por comleto el sistema
 			this.systemEnabled = false;
 			this._destroy();
 		},
-
+		/**
+		 * Habilita las físicas para un objeto
+		 * @method XEngine.Physics#enablePhysics
+		 * @param {XEngine.BaseObject} gameObject - objeto al que se le habilitan las físicas
+		 * @public
+		 */
 		enablePhysics: function (gameObject) { //Habilita las fisicas para un objeto
 			gameObject.body = new XEngine.Physics.PhysicsBody(this.game, gameObject.position, gameObject); //Se crea el objeto de fisicas
 			gameObject.body.physicsEngine = this; //Se le asigna una referencia a este sistema
 			this.physicsObjects.push(gameObject.body); //Se añade el objeto de fisicas al array
 		},
-
+		/**
+		 * Hace los cambios oportunos antes de llamar al update
+		 * @method XEngine.Physics#preupdate
+		 * @private
+		 */
 		preupdate: function () {
 			for (var i = this.physicsObjects.length - 1; i >= 0; i--) //Recorremos los objetos del motor de fisicas para hacer su update
 			{
@@ -1797,7 +1999,12 @@ XEngine.Physics.Shapes = {
 				}
 			}
 		},
-
+		/**
+		 * Llama al update de todos los objetos que contiene
+		 * @method XEngine.Physics#update
+		 * @param {Number} deltaTime - Tiempo entre frames en segundos
+		 * @private
+		 */
 		update: function (deltaTime) {
 			var _this = this;
 			for (var i = _this.physicsObjects.length - 1; i >= 0; i--) //Recorremos los objetos del motor de fisicas para hacer su update
@@ -1815,6 +2022,14 @@ XEngine.Physics.Shapes = {
 			}
 		},
 
+		/**
+		 * Devuelve true si los dos objetos están uno encima del otro
+		 * @method XEngine.Physics#_isOverlapping
+		 * @param {XEngine.Physics.PhysicsBody} gameObject1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} gameObject2 - Segundo objeto
+		 * @returns {Boolean}
+		 * @private
+		 */
 		_isOverlapping: function (gameObject1, gameObject2) {
 			if (gameObject1 == undefined || gameObject2 == undefined) { //Si alguno de los objetos no está definido, saltamos el resto de la función
 				return false;
@@ -1832,6 +2047,14 @@ XEngine.Physics.Shapes = {
 			}
 		},
 
+		/**
+		 * Ejecuta los ovelaps si se da el caso
+		 * @method XEngine.Physics#_overlaphandler
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @returns {Boolean}
+		 * @private
+		 */
 		_overlapHandler: function (body1, body2) { //Determina si dos objetos de fisicas están uno encima de otro
 			if (body1 == undefined || !body1._contObject.alive) {
 				return false;
@@ -1850,6 +2073,14 @@ XEngine.Physics.Shapes = {
 			}
 		},
 
+		/**
+		 * Ejecuta los onCollision y separa los objetos si se da el caso
+		 * @method XEngine.Physics#_collisionHandler
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @returns {Boolean}
+		 * @private
+		 */
 		_collisionHandler: function (body1, body2) { //Determina si dos objetos de fisicas están uno encima de otro
 			if (body1 == undefined || !body1._contObject.alive) {
 				return false;
@@ -1882,7 +2113,16 @@ XEngine.Physics.Shapes = {
 				return false;
 			}
 		},
-
+		
+		/**
+		 * Separa los objetos en el eje X
+		 * @method XEngine.Physics#separateX
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @param {Number} overlap - Cantidad de overlap que hay
+		 * @returns {Boolean}
+		 * @private
+		 */
 		separateX: function (body1, body2, overlap) {
 
 			//  Can't separate two immovable bodies, or a body with its own custom separation logic
@@ -1933,6 +2173,15 @@ XEngine.Physics.Shapes = {
 
 		},
 
+		/**
+		 * Separa los objetos en el eje Y
+		 * @method XEngine.Physics#separateY
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @param {Number} overlap - Cantidad de overlap que hay
+		 * @returns {Boolean}
+		 * @private
+		 */
 		separateY: function (body1, body2, overlap) {
 
 			//  Can't separate two immovable bodies, or a body with its own custom separation logic
@@ -1983,6 +2232,14 @@ XEngine.Physics.Shapes = {
 
 		},
 
+		/**
+		 * Obtiene la cantidad de overlap que hay entre dos objetos en el eje Y
+		 * @method XEngine.Physics#getOverlapY
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @returns {Boolean}
+		 * @public
+		 */
 		getOverlapY: function (body1, body2) {
 			var overlap = 0;
 
@@ -1998,6 +2255,14 @@ XEngine.Physics.Shapes = {
 			return overlap;
 		},
 
+		/**
+		 * Obtiene la cantidad de overlap que hay entre dos objetos en el eje X
+		 * @method XEngine.Physics#getOverlapX
+		 * @param {XEngine.Physics.PhysicsBody} body1 - Primer objeto
+		 * @param {XEngine.Physics.PhysicsBody} body2 - Segundo objeto
+		 * @returns {Boolean}
+		 * @public
+		 */
 		getOverlapX: function (body1, body2) {
 			var overlap = 0;
 
@@ -2011,6 +2276,13 @@ XEngine.Physics.Shapes = {
 			return overlap;
 		},
 
+		/**
+		 * Ejecuta todo el calculo de la colisión para hacer overlap
+		 * @method XEngine.Physics#overlap
+		 * @param {XEngine.BaseObject} collider - Objeto que colisiona
+		 * @param {XEngine.BaseObject} collideWith - Objeto con el que colisiona el primer objeto
+		 * @public
+		 */
 		overlap: function (collider, collideWith) { //Metodo que se llama para que se determine el overlapping de dos objetos
 			var _this = this;
 			if (!_this.systemEnabled) return;
@@ -2047,6 +2319,13 @@ XEngine.Physics.Shapes = {
 			}
 		},
 
+		/**
+		 * Ejecuta todo el calculo de la colisión para hacer colisión
+		 * @method XEngine.Physics#collide
+		 * @param {XEngine.BaseObject} collider - Objeto que colisiona
+		 * @param {XEngine.BaseObject} collideWith - Objeto con el que colisiona el primer objeto
+		 * @public
+		 */
 		collide: function (collider, collideWith) { //Metodo que se llama para que se determine el overlapping de dos objetos
 			var _this = this;
 			if (!_this.systemEnabled) return;
@@ -2083,35 +2362,125 @@ XEngine.Physics.Shapes = {
 			}
 		},
 
+		/**
+		 * Destruye todos los objetos de físicas que están registrados en el motor
+		 * @method XEngine.Physics#_destroy
+		 * @private
+		 */
 		_destroy: function () {
 			this.physicsObjects = new Array();
 		}
 	};
 
+/**
+ * Objeto de físicas. Contiene toda la información sobre el comportamiento que debe tener un objeto dentro del motor de físicas
+ * 
+ * @class XEngine.Physics.PhysicsBody
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia al objeto principal del juego
+ * @param {XEngine.Vector} position - posición inicial del objeto de físicas
+ * @param {XEngine.BaseObject} contObject - referencia al objeto que controla
+ */
 XEngine.Physics.PhysicsBody = function (game, position, contObject) {
 	this.game = game;
+	/**
+	 * @property {XEngine.Vector} position - determina la posición del objeto
+	 * @public
+	 */
 	this.position = position;
+	/**
+	 * @property {XEngine.Vector} velocity - determina la velocidad actual
+	 * @public
+	 */
 	this.velocity = new XEngine.Vector(0, 0);
-	this.collideWithWorld = false; //Determina si colisiona con los limites del mundo
-	this.restitution = 0.1; //Al colisionar, cuanta energia mantiene
-	this.gravity = 9; //Gravedad local (cuanto la afecta la gravedad)
+	
+	/**
+	 * @property {Boolean} collideWithWorld - Determina si colisiona con los limites del mundo
+	 * @public
+	 */
+	this.collideWithWorld = false;
+	
+	/**
+	 * @property {Number} restitution - Cantidad de energia que mantiene al collisionar
+	 * @public
+	 */
+	this.restitution = 0.1; 
+	
+	/**
+	 * @property {Number} restitution - Gravedad local (cuanto la afecta la gravedad)
+	 * @public
+	 */
+	this.gravity = 9;
+	
+	/**
+	 * @property {Number} maxVelocity - Velocidad máxima que puede tener el objeto
+	 * @public
+	 */
 	this.maxVelocity = 300;
-	this.staticFriction = 40; //Fricción base para la velocidad en x
+	/**
+	 * @property {Number} staticFriction - Fricción base para la velocidad en x
+	 * @public
+	 */
+	this.staticFriction = 40;
+	
+	/**
+	 * @property {Boolean} pendingDestroy - Si es true, el objeto será eliminado en el siguiente update
+	 * @readonly
+	 */
 	this.pendingDestroy = false;
+	
+	/**
+	 * @property {XEngine.Vector} acceleration - Aceleración del objeto
+	 * @public
+	 */
 	this.acceleration = new XEngine.Vector(0, 0);
+	
+	/**
+	 * @property {XEngine.Vector} min - Bounds en la posición mínima de cada eje
+	 * @readonly
+	 */
 	this.min = new XEngine.Vector(0, 0); //Min y Max son los bounds del objeto
+	/**
+	 * @property {XEngine.Vector} max - Bounds en la posición máxima de cada eje
+	 * @readonly
+	 */
 	this.max = new XEngine.Vector(0, 0);
+	/**
+	 * @property {Boolean} debug - Si es true, se pintará una caja verder indicando los bounds del objeto
+	 * @public
+	 */
 	this.debug = false;
+	/**
+	 * @property {XEngine.BaseObject} _contObject - Objeto que controla este body
+	 * @readonly
+	 */
 	this._contObject = contObject;
+	/**
+	 * @property {XEngine.BaseObject} bounds - Ancho y alto del objeto que está controlando
+	 * @public
+	 */
 	this.bounds = this._contObject.getBounds();
 	this.updateBounds();
 };
 
 XEngine.Physics.PhysicsBody.prototype = {
+	
+	/**
+	 * Marca el objeto para que sea destruido
+	 * @method XEngine.Physics.PhysicsBody#destroy
+	 * @private
+	 */
 	destroy: function () {
 		this.pendingDestroy = true;
 	},
 
+	/**
+	 * Acualiza velocidades y mueve al objeto
+	 * @method XEngine.Physics.PhysicsBody#update
+	 * @param {Number} deltaTime - Tiempo entre frames en segundos
+	 * @private
+	 */
 	update: function (deltaTime) {
 		if (this.immovable) {
 			this.updateBounds();
@@ -2129,7 +2498,7 @@ XEngine.Physics.PhysicsBody.prototype = {
 
 		if (_this.velocity.y != 0 && _this.acceleration.y == 0 && _this.gravity == 0) { //Si el objeto tiene velocidad y no está acelerando, se le aplica la fricción
 			var signY = _this.velocity.y / Math.abs(_this.velocity.y); //Se obtiene el signo (dirección, negativa o positiva)
-			var newVelocityY = XEngine.Mathf.clamp(Math.abs(_this.velocity.y) - _this.staticFriction * deltaTime, 0, _this.maxVelocity); //Se obtiene la nueva velocidad en valores positivos
+			var newVelocityY = XEngine.Mathf.clamp(Math.abs(_this.velocity.y), 0, _this.maxVelocity); //Se obtiene la nueva velocidad en valores positivos
 			newVelocityY *= signY; //Se le aplica el signo
 			_this.velocity.y = newVelocityY; //Se asigna la nueva velocidad
 		}
@@ -2166,6 +2535,11 @@ XEngine.Physics.PhysicsBody.prototype = {
 
 	},
 
+	/**
+	 * Actualiza los bounds minimos y maximos
+	 * @method XEngine.Physics.PhysicsBody#updateBounds
+	 * @private
+	 */
 	updateBounds: function () { //Se obtiene la caja de colisión teniendo en cuenta el achor del sprite
 		var _this = this;
 		_this.min.x = _this.position.x - (_this.bounds.width * _this._contObject.anchor.x);
@@ -2174,6 +2548,12 @@ XEngine.Physics.PhysicsBody.prototype = {
 		_this.max.y = _this.position.y + (_this.bounds.height * (1 - _this._contObject.anchor.y));
 	},
 
+	/**
+	 * Renderiza la caja verde que indica los bounds encima del objeto
+	 * @method XEngine.Physics.PhysicsBody#_renderBounds
+	 * @param {CanvasRenderingContext2D} canvas - Contexto de canvas en el que pinta la caja
+	 * @private
+	 */
 	_renderBounds: function (canvas) {
 		var _this = this;
 		if (_this.debug) { //Si el objeto está en debug, pintaremos su bounding box por encima
@@ -2184,28 +2564,47 @@ XEngine.Physics.PhysicsBody.prototype = {
 		}
 	},
 
+	/**
+	 * Obtiene la posición del objeto en coordenadas globales
+	 * @method XEngine.Physics.PhysicsBody#getWorldPos
+	 * @returns {XEngine.Vector}
+	 * @public
+	 */
 	getWorldPos: function () {
 		var parentPos = this._contObject.parent.getWorldPos();
 		var x = this.position.x + parentPos.x;
 		var y = this.position.y + parentPos.y;
-		return {
-			x: x,
-			y: y
-		};
+		
+		return new XEngine.Vector(x, y);
 	},
-
+	
+	/**
+	 * Llama al evento onCollision del objeto al que controla
+	 * @method XEngine.Physics.PhysicsBody#onCollision
+	 * @private
+	 */
 	onCollision: function (other) {
 		if (this._contObject.onCollision != undefined) { //Si el objeto controlado tiene implementado el metodo, lo llamamos
 			this._contObject.onCollision(other._contObject);
 		}
 	},
 
+	/**
+	 * Llama al evento onOverlap del objeto al que controla
+	 * @method XEngine.Physics.PhysicsBody#onOverlap
+	 * @private
+	 */
 	onOverlap: function (other) {
 		if (this._contObject.onOverlap != undefined) { //Si el objeto controlado tiene implementado el metodo, lo llamamos
 			this._contObject.onOverlap(other._contObject);
 		}
 	},
 
+	/**
+	 * Deshabilita y destruye este objeto
+	 * @method XEngine.Physics.PhysicsBody#disablePhysics
+	 * @private
+	 */
 	disablePhysics: function () { //Deshabilitamos las fisicas para este objeto
 		var index = this.physicsEngine.physicsObjects.indexOf(this);
 		this.physicsEngine.physicsObjects.splice(index, 1);
@@ -2219,32 +2618,84 @@ XEngine.Physics.PhysicsBody.prototype = {
 
 // ----------------------------------------- MATHS ------------------------------------------//
 
+/**
+ * Funciones mátematicas que no están en la clase Math de JS
+ * 
+ * @class XEngine.Mathf
+ * @static
+ */
 XEngine.Mathf = {};
+
+/**
+ * Devuelve un float aleatorio entre el rango especificado
+ * @param {Number} min - Número mínimo que puede devolver (inclusivo)
+ * @param {Number} max - Número máximo que puede devolver (exclusivo)
+ * 
+ * @example
+ * // returns 8.93
+ * XEngine.Mathf.randomRange(1, 9)
+ * @returns {Number}
+ */
 XEngine.Mathf.randomRange = function (min, max) {
 	return min + (Math.random() * (max - min)); //Obtiene un float random con el rango que se le asigna, min (inclusive) y max (exclusive)
 };
 
+/**
+ * Devuelve un entero aleatorio entre el rango especificado
+ * @param {Number} min - Número mínimo que puede devolver (inclusivo)
+ * @param {Number} max - Número máximo que puede devolver (inclusivo)
+ * 
+ * @example
+ * // returns 3
+ * XEngine.Mathf.randomIntRange(1, 9)
+ * @returns {Number}
+ */
 XEngine.Mathf.randomIntRange = function (min, max) { //Obtiene un float random con el rango que se le asigna, min (inclusive) y max (inclusive)
 	return Math.round(min + Math.random() * (max - min));
 };
 
+
+/**
+ * Devuelve el número indicado entre el máximo y el mínimo, si number < min devuelve min, si number > max devuelve max, en cualquier otro caso devuelve number
+ * @param {Number} number - Número al que se le aplica el clamp
+ * @param {Number} min - Número mínimo que puede devolver
+ * @param {Number} max - Número máximo que puede devolver
+ * 
+ * @example
+ * // returns 10
+ * XEngine.Mathf.clamp(70, 4, 10)
+ * 
+ * // returns 5
+ * XEngine.Mathf.clamp(5, 4, 10)
+ * @returns {Number}
+ */
 XEngine.Mathf.clamp = function (number, min, max) { //Devuelve el número si está dentro de min o max, en caso contrario devuelve min o max
 	return Math.max(Math.min(number, max), min);
 };
 
+/**
+ * Interpolacion lineal entre dos numeros
+ * @param {Number} a - color 1
+ * @param {Number} b - color 2
+ * @param {Number} amount - 0 devuelve a, 1 devuelve b, cualquier valor entre esos devuelve un número entre a y b
+ * @example
+ * // returns 5
+ * XEngine.Mathf.lerpColor(0, 10, 0.5)
+ * @returns {Number}
+ */
 XEngine.Mathf.lerp = function (a, b, t) { //Interpolación lineal
 	t = XEngine.Mathf.clamp(t, 0, 1);
 	return (1 - t) * a + t * b;
 };
 
 /**
- * A linear interpolator for hexadecimal colors
- * @param {String} a
- * @param {String} b
- * @param {Number} amount
+ * Interpolacion lineal entre dos colores
+ * @param {String} a - color 1
+ * @param {String} b - color 2
+ * @param {Number} amount - 0 devuelve a, 1 devuelve b, cualquier valor entre esos devuelve un color entre a y b
  * @example
  * // returns #7F7F7F
- * lerpColor('#000000', '#ffffff', 0.5)
+ * XEngine.Mathf.lerpColor('#000000', '#ffffff', 0.5)
  * @returns {String}
  */
 XEngine.Mathf.lerpColor = function (a, b, amount) {
@@ -2264,6 +2715,14 @@ XEngine.Mathf.lerpColor = function (a, b, amount) {
 	return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
 };
 
+/**
+ * Devuelve el angulo en radianes entre dos posiciones
+ * @param {Number} originX - origen en X
+ * @param {Number} originY - origen en Y
+ * @param {Number} targetX - objetivo en X
+ * @param {Number} targetY - objetivo en Y
+ * @returns {Number}
+ */
 XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 	var x = targetX - originX;
 	var y = targetY - originY;
@@ -2273,13 +2732,45 @@ XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 	return angle;
 };
 
+
+/**
+ * Objeto vector que almacena coordenadas
+ * 
+ * @class XEngine.Vector
+ * @constructor
+ * 
+ * @param {Number} x - posición en el eje x
+ * @param {Number} y - posición en el eje y
+ */
 XEngine.Vector = function (x, y) { //Vector de 2 dimensiones
+	/**
+	 * @property {Number} x - coordenada en X
+	 * @public
+	 */
 	this.x = x;
+	/**
+	 * @property {Number} y - coordenada en Y
+	 * @public
+	 */
 	this.y = y;
+	/**
+	 * @property {Number} z - coordenada en Z (dentro del motor solo se usa para los sprites en isométrica)
+	 * @public
+	 */
 	this.z = 0; //Sólo se usa en caso de isometrica
+	/**
+	 * @property {Number} zOffset - Añade un offset al eje Z
+	 * @public
+	 */
 	this.zOffset = 0;
 };
 
+/**
+ * Devuelve un vector que es la resta de dos vectores
+ * @param {XEngine.Vector} vector1
+ * @param {XEngine.Vector} vector2
+ * @returns {XEngine.Vector}
+ */
 XEngine.Vector.sub = function (vector1, vector2) {
 	var newVector = new XEngine.Vector(vector1.x, vector1.y);
 	newVector.x -= vector2.x;
@@ -2287,6 +2778,12 @@ XEngine.Vector.sub = function (vector1, vector2) {
 	return newVector;
 };
 
+/**
+ * Devuelve un vector que es la suma de dos vectores
+ * @param {XEngine.Vector} vector1
+ * @param {XEngine.Vector} vector2
+ * @returns {XEngine.Vector}
+ */
 XEngine.Vector.add = function (vector1, vector2) {
 	var newVector = new XEngine.Vector(vector1.x, vector1.y);
 	newVector.x += vector2.x;
@@ -2294,11 +2791,22 @@ XEngine.Vector.add = function (vector1, vector2) {
 	return newVector;
 };
 
+/**
+ * Devuelve la distancia entre dos vectores
+ * @param {XEngine.Vector} vector1
+ * @param {XEngine.Vector} vector2
+ * @returns {Number}
+ */
 XEngine.Vector.distance = function (vector1, vector2) {
 	var difference = XEngine.Vector.sub(vector1, vector2);
 	return difference.length();
 };
 
+/**
+ * Devuelve un vector que es la transformación a coordenadas isommétricas de un vector en coordenadas cartesianas
+ * @param {XEngine.Vector} coordinates
+ * @returns {XEngine.Vector}
+ */
 XEngine.Vector.cartToIsoCoord = function (coordinates) {
 	var outCoordinates = new XEngine.Vector(0, 0);
 	outCoordinates.x = coordinates.x - coordinates.y;
@@ -2307,6 +2815,11 @@ XEngine.Vector.cartToIsoCoord = function (coordinates) {
 	return outCoordinates;
 };
 
+/**
+ * Devuelve un vector que es la transformación a coordenadas cartesianas de un vector en coordenadas isommétricas
+ * @param {XEngine.Vector} coordinates
+ * @returns {XEngine.Vector}
+ */
 XEngine.Vector.isoToCarCoord = function (isoCoord) {
 	var outCoordinates = new XEngine.Vector(0, 0);
 	outCoordinates.x = (isoCoord.x / 2) + isoCoord.y;
@@ -2317,29 +2830,65 @@ XEngine.Vector.isoToCarCoord = function (isoCoord) {
 
 XEngine.Vector.prototype = {
 
+	/**
+	 * Asigna valores al vector
+	 * @method XEngine.Vector#setTo
+	 * 
+	 * @param {Number} x - Valor en la coordenada X
+	 * @param {Number} [y=x] - Valor en la coordenada Y
+	 * @public
+	 */
 	setTo: function (x, y) { //Asigna los valores (solo por comodidad)
 		this.x = x;
 		if (y === undefined) y = x;
 		this.y = y;
 	},
 
+	/**
+	 * Suma a este vector los valores de otro
+	 * @method XEngine.Vector#add
+	 * 
+	 * @param {XEngine.Vector} other - Vector a sumar
+	 * @public
+	 */
 	add: function (other) { //Suma de vectores
 		this.x += other.x;
 		this.y += other.y;
 	},
 
+	/**
+	 * Resta a este vector los valores de otro
+	 * @method XEngine.Vector#sub
+	 * 
+	 * @param {XEngine.Vector} other - Vector a restar
+	 * @public
+	 */
 	sub: function (other) { //Resta de vectores
 		this.x -= other.x;
 		this.y -= other.y;
 		return this;
 	},
 
+	/**
+	 * Multiplica a este vector los valores de otro
+	 * @method XEngine.Vector#multiply
+	 * 
+	 * @param {XEngine.Vector} other - Vector a multiplicar
+	 * @public
+	 */
 	multiply: function (other) { //Multiplicación de vectores
 		this.x *= other.x;
 		this.y *= other.y;
 		return this;
 	},
 
+	/**
+	 * Rota el vector tantos angulos como se le indique (angulos en radianes)
+	 * @method XEngine.Vector#rotate
+	 * 
+	 * @param {Number} angle - Angulos a rotar
+	 * @public
+	 */
 	rotate: function (angle) { //Rotar el vector
 		var x = this.x;
 		var y = this.y;
@@ -2348,6 +2897,11 @@ XEngine.Vector.prototype = {
 		return this;
 	},
 
+	/**
+	 * Normaliza el Vector (Ajusta las coordenadas para que la longitud del vector sea 1)
+	 * @method XEngine.Vector#normalize
+	 * @public
+	 */
 	normalize: function () { //Normalizar el vector
 		var d = this.len();
 		if (d > 0) {
@@ -2357,6 +2911,14 @@ XEngine.Vector.prototype = {
 		return this;
 	},
 
+	/**
+	 * Proyecta este vector en otro
+	 * @method XEngine.Vector#project
+	 * 
+	 * @param {XEngine.Vector} other - Vector en el que proyectar
+	 * @return {XEngine.Vector}
+	 * @public
+	 */
 	project: function (other) { //Projectar el vector en otro
 		var amt = this.dot(other) / other.len2();
 		this.x = amt * other.x;
@@ -2364,16 +2926,40 @@ XEngine.Vector.prototype = {
 		return this;
 	},
 
+	/**
+	 * Retorna el producto escalar del vector con otro vector
+	 * @method XEngine.Vector#dot
+	 * 
+	 * @param {XEngine.Vector} other - Vector con el que hacer la operación
+	 * @return {Number}
+	 * @public
+	 */
 	dot: function (other) { //Producto escalar
 		return this.x * other.x + this.y * other.y;
 	},
 
+	/**
+	 * Escala el vector
+	 * @method XEngine.Vector#scale
+	 * 
+	 * @param {Number} x - Valor en la coordenada X
+	 * @param {Number} [y=x] - Valor en la coordenada Y
+	 * @public
+	 */
 	scale: function (x, y) { //Escala del vector
 		this.x *= x;
 		this.y *= y || x;
 		return this;
 	},
 
+	/**
+	 * Refleja el vector dado un eje
+	 * @method XEngine.Vector#reflect
+	 * 
+	 * @param {XEngine.Vector} axis - Eje en el que refleja el vector
+	 * @returns {XEngine.Vector}
+	 * @public
+	 */
 	reflect: function (axis) { //Reflejar el vector en un eje (Vector)
 		var x = this.x;
 		var y = this.y;
@@ -2383,10 +2969,24 @@ XEngine.Vector.prototype = {
 		return this;
 	},
 
+	/**
+	 * Longitud del vector
+	 * @method XEngine.Vector#length
+	 * 
+	 * @returns {Number}
+	 * @public
+	 */
 	length: function () { //Longitud de un vector
 		return Math.sqrt(this.len2());
 	},
 
+	/**
+	 * Devuelve el cuadrado de la longitud
+	 * @method XEngine.Vector#len2
+	 * 
+	 * @returns {Number}
+	 * @public
+	 */
 	len2: function () { //Cuadrado de la longitud de un vector
 		return this.dot(this);
 	}
@@ -2396,17 +2996,65 @@ XEngine.Vector.prototype.constructor = XEngine.Vector;
 
 // -------------------------------------------- INPUT--------------------------------------------//
 
+/**
+ * Manager que se encarga de manejar el input
+ * 
+ * @class XEngine.InputManager
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ */
 XEngine.InputManager = function (game) { //Esto se explica solo
 	this.game = game;
+	/**
+	 * @property {Array.<Boolean>} keysPressed - array en el que se almacenan si las teclas están pulsadas o no
+	 * @readonly
+	 */
 	this.keysPressed = new Array();
+	/**
+	 * @property {XEngine.Signal} onKeyDown - evento que se llama cuando se aprieta una tecla. Se envía el objeto de evento de JS por defecto
+	 * @readonly
+	 */
 	this.onKeyDown = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onKeyUp - evento que se llama cuando se levanta una tecla. Se envía el objeto de evento de JS por defecto
+	 * @readonly
+	 */
 	this.onKeyUp = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onKeyPressed - evento que se llama cuando está apretada una tecla. Se envía el objeto de evento de JS por defecto
+	 * @readonly
+	 */
 	this.onKeyPressed = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onClick - evento que se llama cuando se hace click. Se envía un objeto con una propiedad 'position' que contiene x e y
+	 * @readonly
+	 */
 	this.onClick = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onInputDown - evento que se llama cuando se aprieta se baja el input (botón izquierdo de ratón). Se envía un objeto con una propiedad 'position' que contiene x e y
+	 * @readonly
+	 */
 	this.onInputDown = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onInputUp - evento que se llama cuando se suelta se baja el input (botón izquierdo de ratón). Se envía un objeto con una propiedad 'position' que contiene x e y
+	 * @readonly
+	 */
 	this.onInputUp = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onInputMove - evento que se llama cuando se mueve el input. Se envía un objeto con una propiedad 'position' que contiene x e y
+	 * @readonly
+	 */
 	this.onInputMove = new XEngine.Signal();
+	/**
+	 * @property {Boolean} isDown - Determina si el input está apretado o no
+	 * @readonly
+	 */
 	this.isDown = false;
+	/**
+	 * @property {XEngine.Vector} pointer - posición en la que se encuentra el input
+	 * @readonly
+	 */
 	this.pointer = new XEngine.Vector(0, 0);
 	var _this = this;
 	document.addEventListener('keydown', function (event) {
@@ -2447,35 +3095,83 @@ XEngine.InputManager = function (game) { //Esto se explica solo
 };
 
 XEngine.InputManager.prototype = {
+	
+	/**
+	 * Inicializa el array de teclas apretadas
+	 * @method XEngine.InputManager#_initializeKeys
+	 * @private
+	 */
 	_initializeKeys: function () {
 		for (var i = 0; i <= 222; i++) {
 			this.keysPressed.push(false);
 		}
 	},
-
+	/**
+	 * Devuelve si una tecla está apretada
+	 * @method XEngine.InputManager#isPressed
+	 * 
+	 * @param {Number} keyCode - Valor númerico de la tecla
+	 * @returns {Boolean}
+	 * @public
+	 */
 	isPressed: function (keyCode) {
 		return this.keysPressed[keyCode];
 	},
 
+	/**
+	 * callback interno que captura el evento de keydown
+	 * @method XEngine.InputManager#keyDownHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	keyDownHandler: function (event) {
 		this.keysPressed[event.keyCode] = true;
 		this.onKeyDown.dispatch(event);
 	},
 
+	/**
+	 * callback interno que captura el evento de keyup
+	 * @method XEngine.InputManager#keyUpHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	keyUpHandler: function (event) {
 		this.keysPressed[event.keyCode] = false;
 		this.onKeyUp.dispatch(event);
 	},
 
+	/**
+	 * callback interno que captura el evento de keyPressed
+	 * @method XEngine.InputManager#keyPressedHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	keyPressedHandler: function (event) {
 		this.onKeyPressed.dispatch(event);
 	},
 
+	/**
+	 * callback interno que captura el evento de click
+	 * @method XEngine.InputManager#clickHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	clickHandler: function (event) {
 		var inputPos = this.getInputPosition(event);
 		this.clickDispatcher(inputPos);
 	},
 
+	/**
+	 * callback interno que captura el evento de inputDown
+	 * @method XEngine.InputManager#inputDownHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	inputDownHandler: function (event) {
 		this.isDown = true;
 		var inputPos = this.getInputPosition(event);
@@ -2507,6 +3203,13 @@ XEngine.InputManager.prototype = {
 		loop(this.game.gameObjects);
 	},
 
+	/**
+	 * callback interno que captura el evento de inputMove
+	 * @method XEngine.InputManager#inputMoveHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	inputMoveHandler: function (event) {
 
 		var inputPos = this.getInputPosition(event);
@@ -2546,6 +3249,13 @@ XEngine.InputManager.prototype = {
 		loop(this.game.gameObjects);
 	},
 
+	/**
+	 * Dado un evento optiene la posición del puntero dentro del objeto canvas
+	 * @method XEngine.InputManager#getInputPosition
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	getInputPosition: function (event) {
 		var rect = this.game.reference.getBoundingClientRect();
 		var newEvent = {
@@ -2568,6 +3278,13 @@ XEngine.InputManager.prototype = {
 		return newEvent;
 	},
 
+	/**
+	 * callback interno que captura el evento de inputUp
+	 * @method XEngine.InputManager#inputUpHandler
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	inputUpHandler: function (event) {
 		this.isDown = false;
 		var newEvent = {
@@ -2607,6 +3324,13 @@ XEngine.InputManager.prototype = {
 		loop(this.game.gameObjects);
 	},
 
+	/**
+	 * Dispatcher para lanzar el evento onClick tanto con pc como en Movil
+	 * @method XEngine.InputManager#clickDispatcher
+	 * 
+	 * @param {JSInputEvent} event - evento de JS para el input
+	 * @private
+	 */
 	clickDispatcher: function (event) {
 		this.onClick.dispatch(event);
 		var _this = this;
@@ -2633,6 +3357,13 @@ XEngine.InputManager.prototype = {
 		loop(this.game.gameObjects);
 	},
 
+	/**
+	 * Comprueba si el puntero está dentro del objeto que se le pasa por parámetro
+	 * @method XEngine.InputManager#_pointerInsideBounds
+	 * 
+	 * @param {XEngine.BaseObject} gameObject - objeto a comprobar
+	 * @private
+	 */
 	_pointerInsideBounds: function (gameObject) { //Obtenemos si el puntero está dentro del area de un objeto
 		if (gameObject.getBounds != undefined) {
 			var bounds = gameObject.getBounds();
@@ -2654,39 +3385,132 @@ XEngine.InputManager.prototype = {
 		}
 	},
 
+	/**
+	 * Hace un resset de los eventos
+	 * @method XEngine.InputManager#reset
+	 * 
+	 * @public
+	 */
 	reset: function () {
 		this.onKeyUp._destroy();
 		this.onKeyDown._destroy();
 		this.onKeyPressed._destroy();
+		this.onClick._destroy();
+		this.onInputDown._destroy();
+		this.onInputUp._destroy();
+		this.onInputMove._destroy();
 		this._initializeKeys();
 	},
 };
 
 // ----------------------------------------- GAME OBJECTS ------------------------------------------//
 
+/**
+ * Objeto Básico del juego, todos los demás objetos que están en el juego heredan de este (Excepto el Audio)
+ * 
+ * @class XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ */
 XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos que se pueden poner en el juego
 	var _this = this;
 	_this.game = game; //Referencia al juego
+	/**
+	 * @property {Boolean} isPendingDestroy - determina si el objeto va a ser destruido en el siguiente frame
+	 * @readonly
+	 */
 	_this.isPendingDestroy = false;
+	/**
+	 * @property {Boolean} alive - determina si el está vivo. En caso de que no lo esté, no se renderiza
+	 * @readonly
+	 */
 	_this.alive = true;
+	/**
+	 * @property {Number} alpha - Ajusta el alpha con el que se pinta el objeto. 1 es opaco y 0 es transparente
+	 * @public
+	 */
 	_this.alpha = 1.0;
+	/**
+	 * @property {XEngine.Vector} scale - Scala del objeto. 1 quiere decir que no se escala
+	 * @public
+	 */
 	_this.scale = new XEngine.Vector(1, 1);
+	/**
+	 * @property {XEngine.Vector} anchor - Punto de anclaje. (0,0) = Arriba a la izquierda, (0,1) = Arriba a la derecha
+	 * @public
+	 */
 	_this.anchor = new XEngine.Vector(0, 0); //Ancla del objeto (0,0) = Arriba a la izquierda
+	/**
+	 * @property {Number} rotation - Rotación (en grados) que tiene el objeto.
+	 * @public
+	 */
 	_this.rotation = 0;
+	/**
+	 * @property {XEngine.Vector} position - Posición local del objeto
+	 * @public
+	 */
 	_this.position = new XEngine.Vector(0, 0);
+	/**
+	 * @property {XEngine.Signal} onClick - Evento de click que se llama al hacer click sobre el objeto
+	 * @reandonly
+	 */
 	_this.onClick = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onClick - Evento de input down
+	 * @reandonly
+	 */
 	_this.onInputDown = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onClick - Evento de input up
+	 * @reandonly
+	 */
 	_this.onInputUp = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onClick - Evento de input over
+	 * @reandonly
+	 */
 	_this.onInputOver = new XEngine.Signal();
+	/**
+	 * @property {XEngine.Signal} onClick - Evento de input left
+	 * @reandonly
+	 */
 	_this.onInputLeft = new XEngine.Signal();
-	_this.inputEnabled = false; //No estoy seguro de que el input funcione con todos los objetos y menos todavía con los grupos
+	/**
+	 * @property {Boolean} inputEnabled - determina si el objeto tiene que recibir input
+	 * @public
+	 */
+	_this.inputEnabled = false;
+	/**
+	 * @property {Boolean} render - determina si el objeto se tiene que renderizar
+	 * @public
+	 */
 	_this.render = true;
+	/**
+	 * @property {Boolean} render - determina si el objeto está fijo en la cámara
+	 * @public
+	 */
 	_this.fixedToCamera = false;
+	/**
+	 * @property {Boolean} render - determina si el objeto tiene que estár dentro de coordenadas isometricas
+	 * @public
+	 */
 	_this.isometric = false;
+	/**
+	 * @property {Boolean} isInputDown - determina si el objeto está siendo apretado
+	 * @private
+	 */
 	_this.isInputDown = false;
 };
 
 XEngine.BaseObject.prototype = {
+	
+	/**
+	 * Destruye el objeto
+	 * @method XEngine.BaseObject#destroy
+	 * 
+	 * @public
+	 */
 	destroy: function () {
 		this.kill();
 		this.isPendingDestroy = true;
@@ -2695,16 +3519,37 @@ XEngine.BaseObject.prototype = {
 		}
 	},
 
+	/**
+	 * Mata el objeto pero no deja de existir en el juego (se puede "revivir")
+	 * @method XEngine.BaseObject#kill
+	 * 
+	 * @public
+	 */
 	kill: function () {
 		this.alive = false;
 	},
 
+	/**
+	 * Devuelve este objeto al juego.
+	 * @method XEngine.BaseObject#restore
+	 * 
+	 * @param {Number} posX - nueva posición en la coordenada X
+	 * @param {Number} posY - nueva posición en la coordenada Y
+	 * @public
+	 */
 	restore: function (posX, posY) {
 		this.position.x = posX;
 		this.position.x = posY;
 		this.alive = true;
 	},
 
+	/**
+	 * Devuelve la posición del objeto en coordenadas del mundo (tiene en cuenta la posición de los padres)
+	 * @method XEngine.BaseObject#getWorldPos
+	 * 
+	 * @return {Number}
+	 * @public
+	 */
 	getWorldPos: function () { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
 		var _this = this;
 		var parentPos = _this.parent.getWorldPos();
@@ -2716,15 +3561,36 @@ XEngine.BaseObject.prototype = {
 		};
 	},
 
+	/**
+	 * Devuelve la rotación total del objeto (tiene en cuenta la rotación de los padres)
+	 * @method XEngine.BaseObject#getWorldPos
+	 * 
+	 * @return {Number}
+	 * @public
+	 */
 	getTotalRotation: function () { //Obtiene la rotación teniendo en cuenta la rotación de los padres
 		var parentRot = this.parent.getTotalRotation();
 		return parentRot + this.rotation;
 	},
 
+	/**
+	 * Renderiza el objeto en el canvas
+	 * @method XEngine.BaseObject#_renderToCanvas
+	 * 
+	 * @param {CanvasRenderingContext2D} canvas - contexto 2D de canvas en el que pintar
+	 * @private
+	 */
 	_renderToCanvas: function (canvas) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 
 	},
 
+	/**
+	 * Aplica la rotación del objeto al canvas
+	 * @method XEngine.BaseObject#applyRotationAndPos
+	 * 
+	 * @param {CanvasRenderingContext2D} canvas - contexto 2D de canvas al que se le aplica la rotación
+	 * @private
+	 */
 	applyRotationAndPos: function (canvas) { //Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
 		var _this = this;
 		var pos = new XEngine.Vector(0, 0);
@@ -2745,6 +3611,17 @@ XEngine.BaseObject.prototype = {
 	}
 };
 
+/**
+ * Grupo de objetos. Es un contenedor donde poder controlar varios objetos a la vez
+ * 
+ * @class XEngine.Group
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} x - posición en x
+ * @param {Number} y - posición en y
+ */
 XEngine.Group = function (game, x, y) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -2825,6 +3702,18 @@ XEngine.Group.prototypeExtends = {
 XEngine.Group.prototype = Object.create(XEngine.BaseObject.prototype);
 Object.assign(XEngine.Group.prototype, XEngine.Group.prototypeExtends); //Se le añade el prototypeExtends al prototype original
 
+/**
+ * Objeto que pinta una imagen y que puede tener un physic body
+ * 
+ * @class XEngine.Sprite
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición en x
+ * @param {Number} posY - posición en y
+ * @param {String} sprite - nombre del sprite guardado en cache
+ */
 XEngine.Sprite = function (game, posX, posY, sprite) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -2924,20 +3813,17 @@ XEngine.Sprite.prototypeExtends = {
 
 Object.assign(XEngine.Sprite.prototype, XEngine.Sprite.prototypeExtends);
 
-
-XEngine.Animation = function (game, sprite, frames, rate) { //Objeto que almacena la información de una animación y la ejecuta
-	var _this = this;
-	_this.sprite = sprite;
-	_this.game = game; //guardamos una referencia al juego
-	_this.currentFrame = 0;
-	_this.maxFrames = frames.length - 1;
-	_this.frames = frames;
-	_this.rate = rate;
-	_this.frameTime = 0;
-	_this.loop = false;
-	_this.playing = false;
-};
-
+/**
+ * Objeto que almacena los datos de una animación
+ * 
+ * @class XEngine.Animation
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {XEngine.Sprite} sprite - objeto sprite que controla
+ * @param {Array.<Number>|Array.<String>} frames - array con los frames que muestra la animación
+ * @param {Number} rate - tiempo de refresco en milisegundos
+ */
 XEngine.Animation = function (game, sprite, frames, rate) { //Objeto que almacena la información de una animación y la ejecuta
 	var _this = this;
 	_this.sprite = sprite;
@@ -2982,6 +3868,15 @@ XEngine.Animation.prototype = {
 	},
 };
 
+/**
+ * Objeto que controla las animaciones de un Sprite
+ * 
+ * @class XEngine.AnimationManager
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {XEngine.Sprite} sprite - objeto sprite que controla
+ */
 XEngine.AnimationManager = function (game, sprite) { //Manager para manejar el uso de las animaciones de los sprites
 	var _this = this;
 	_this.sprite = sprite;
@@ -3026,7 +3921,21 @@ XEngine.AnimationManager.prototype = {
 	}
 };
 
-
+/**
+ * Objeto que define un rectangulo en el juego
+ * 
+ * @class XEngine.Rect
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición X del objeto
+ * @param {Number} posY - posición Y del objeto
+ * @param {Number} width - ancho del rectángulo
+ * @param {Number} height - alto del rectángulo
+ * @param {String} color - string con el valor del color en hexadecimal o en rgb
+ * 
+ */
 XEngine.Rect = function (game, posX, posY, width, height, color) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -3066,6 +3975,25 @@ XEngine.Rect.prototypeExtends = {
 
 Object.assign(XEngine.Rect.prototype, XEngine.Rect.prototypeExtends);
 
+/**
+ * Objeto que define un circulo
+ * 
+ * @class XEngine.Circle
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición X del objeto
+ * @param {Number} posY - posición Y del objeto
+ * @param {Number} radius - radio del circulo
+ * @param {String} color - string con el valor del color en hexadecimal o en rgb
+ * @param {Number} stroke - ancho del borde
+ * @param {String} strokeColor - string con el valor del color del borde en hexadecimal o en rgb
+ * @param {Boolean} fill - determina si se rellena o se deja solo el borde
+ * @param {Number} startAngle - angulo en el que empieza a pintar
+ * @param {Number} endAngle - angulo en el que termina a pintar
+ * 
+ */
 XEngine.Circle = function (game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -3123,6 +4051,21 @@ XEngine.Circle.prototypeExtends = {
 
 Object.assign(XEngine.Circle.prototype, XEngine.Circle.prototypeExtends);
 
+/**
+ * Objeto que define una imagen que se repite
+ * 
+ * @class XEngine.TilledImage
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición en x
+ * @param {Number} posY - posición en y
+ * @param {String} sprite - nombre del sprite guardado en cache
+ * @param {Number} widht - ancho de la imagen
+ * @param {Number} height - alto de la imagen
+ * 
+ */
 XEngine.TilledImage = function (game, posX, posY, sprite, widht, height) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -3184,11 +4127,27 @@ XEngine.TilledImage.prototypeExtends = {
 
 Object.assign(XEngine.TilledImage.prototype, XEngine.TilledImage.prototypeExtends);
 
+
+/**
+ * Objeto que define un texto
+ * 
+ * @class XEngine.Text
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición en x
+ * @param {Number} posY - posición en y
+ * @param {String} [text=""] - texto a mostrar
+ * @param {object} [textStyle] - objeto que contiene los valores de estilo
+ * 
+ */
 XEngine.Text = function (game, posX, posY, text, textStyle) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.game = game; //guardamos una referencia al juego
 	_this.text = text || ""; //Set de los atributos del texto
+	textStyle = textStyle || {};
 	_this.font = textStyle.font || 'Arial';
 	_this.size = textStyle.font_size || 12;
 	_this.color = textStyle.font_color || 'white';
@@ -3249,6 +4208,22 @@ XEngine.Text.prototypeExtends = {
 
 Object.assign(XEngine.Text.prototype, XEngine.Text.prototypeExtends);
 
+/**
+ * Objeto que define un boton
+ * 
+ * @class XEngine.Button
+ * @extends XEngine.BaseObject
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {Number} posX - posición en x
+ * @param {Number} posY - posición en y
+ * @param {String} sprite - nombre del sprite guardado en cache
+ * @param {String} [spriteDown] - nombre del sprite guardado en cache para cuando se aprieta
+ * @param {String} [spriteOver] - nombre del sprite guardado en cache ara cuando se pasa el ratón por encima
+ * @param {String} [spriteUp] - nombre del sprite guardado en cache para cuando se suelta
+ * 
+ */
 XEngine.Button = function (game, posX, posY, sprite, spriteDown, spriteOver, spriteUp) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
@@ -3324,9 +4299,22 @@ XEngine.Button.prototypeExtends = {
 	},
 };
 
+
 Object.assign(XEngine.Button.prototype, XEngine.Button.prototypeExtends);
 
 
+/**
+ * Objeto que define un sonido
+ * 
+ * @class XEngine.Audio
+ * @constructor
+ * 
+ * @param {XEngine.Game} game - referencia el objeto del juego
+ * @param {String} audioName - nombre del sonido guardado en cache
+ * @param {Boolean} [autoStart=false] - define si el sonido debe empezar al crearse
+ * @param {Number} [volume=1] - define el volumen del audio
+ * 
+ */
 XEngine.Audio = function (game, audioName, autoStart, volume) {
 	var _this = this;
 	_this.game = game;
@@ -3399,102 +4387,194 @@ XEngine.Audio.prototype = {
 	}
 };
 
+/**
+* Un KeyCode representa un botón físico del teclado
+*
+* @class XEngine.KeyCode
+*/
 XEngine.KeyCode = {
+	/** @static */
 	BACKSPACE: 8,
+	/** @static */
 	TAB: 9,
+	/** @static */
 	ENTER: 13,
 
+	/** @static */
 	SHIFT: 16,
+	/** @static */
 	CTRL: 17,
+	/** @static */
 	ALT: 18,
 
+	/** @static */
 	PAUSE: 19,
+	/** @static */
 	CAPS_LOCK: 20,
+	/** @static */
 	ESC: 27,
+	/** @static */
 	SPACE: 32,
 
+	/** @static */
 	PAGE_UP: 33,
+	/** @static */
 	PAGE_DOWN: 34,
+	/** @static */
 	END: 35,
+	/** @static */
 	HOME: 36,
 
+	/** @static */
 	LEFT: 37,
+	/** @static */
 	UP: 38,
+	/** @static */
 	RIGHT: 39,
+	/** @static */
 	DOWN: 40,
 
+	/** @static */
 	PRINT_SCREEN: 42,
+	/** @static */
 	INSERT: 45,
+	/** @static */
 	DELETE: 46,
 
+	/** @static */
 	ZERO: 48,
+	/** @static */
 	ONE: 49,
+	/** @static */
 	TWO: 50,
+	/** @static */
 	THREE: 51,
+	/** @static */
 	FOUR: 52,
+	/** @static */
 	FIVE: 53,
+	/** @static */
 	SIX: 54,
+	/** @static */
 	SEVEN: 55,
+	/** @static */
 	EIGHT: 56,
+	/** @static */
 	NINE: 57,
 
+	/** @static */
 	A: 65,
+	/** @static */
 	B: 66,
+	/** @static */
 	C: 67,
+	/** @static */
 	D: 68,
+	/** @static */
 	E: 69,
+	/** @static */
 	F: 70,
+	/** @static */
 	G: 71,
+	/** @static */
 	H: 72,
+	/** @static */
 	I: 73,
+	/** @static */
 	J: 74,
+	/** @static */
 	K: 75,
+	/** @static */
 	L: 76,
+	/** @static */
 	M: 77,
+	/** @static */
 	N: 78,
+	/** @static */
 	O: 79,
+	/** @static */
 	P: 80,
+	/** @static */
 	Q: 81,
+	/** @static */
 	R: 82,
+	/** @static */
 	S: 83,
+	/** @static */
 	T: 84,
+	/** @static */
 	U: 85,
+	/** @static */
 	V: 86,
+	/** @static */
 	W: 87,
+	/** @static */
 	X: 88,
+	/** @static */
 	Y: 89,
+	/** @static */
 	Z: 90,
-
+	
+	/** @static */
 	PAD0: 96,
+	/** @static */
 	PAD1: 97,
+	/** @static */
 	PAD2: 98,
+	/** @static */
 	PAD3: 99,
+	/** @static */
 	PAD4: 100,
+	/** @static */
 	PAD5: 101,
+	/** @static */
 	PAD6: 102,
+	/** @static */
 	PAD7: 103,
+	/** @static */
 	PAD8: 104,
+	/** @static */
 	PAD9: 105,
 
+	/** @static */
 	F1: 112,
+	/** @static */
 	F2: 113,
+	/** @static */
 	F3: 114,
+	/** @static */
 	F4: 115,
+	/** @static */
 	F5: 116,
+	/** @static */
 	F6: 117,
+	/** @static */
 	F7: 118,
+	/** @static */
 	F8: 119,
+	/** @static */
 	F9: 120,
+	/** @static */
 	F10: 121,
+	/** @static */
 	F11: 122,
+	/** @static */
 	F12: 123,
 
+	/** @static */
 	SEMICOLON: 186,
+	/** @static */
 	PLUS: 187,
+	/** @static */
 	COMMA: 188,
+	/** @static */
 	MINUS: 189,
+	/** @static */
 	PERIOD: 190,
+	/** @static */
 	FORWAD_SLASH: 191,
+	/** @static */
 	BACK_SLASH: 220,
+	/** @static */
 	QUOTES: 222
 };
