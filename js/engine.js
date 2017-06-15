@@ -2,10 +2,7 @@
  * @author Francisco Ferrer <xisco@xiscoferrer.com>
  * @license
  * Copyright © 2017 Francisco Ferrer Fernandez <http://www.xiscoferrer.com>
- * 
- * Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
- * 
- * Complete Licence definition: https://www.gnu.org/licenses/lgpl.html
+ * https://opensource.org/licenses/MIT
  */
 
 
