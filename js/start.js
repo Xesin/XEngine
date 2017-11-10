@@ -8,7 +8,7 @@ function initGame(){
    game.state.add('space', Start);
    game.state.start('space');
    
-   game.setBackgroundColor('white');
+   game.setBackgroundColor('rgb(100,100,100)');
 }
 
 var Start = function (game) {
@@ -18,6 +18,7 @@ var Start = function (game) {
 Start.prototype = {
 	
 	preload: function () {
+		
 		//this.game.load.image('candy', 'img/candy0.png');
 	},
 	
@@ -34,6 +35,7 @@ Start.prototype = {
 		text.anchor.setTo(0.5);
 		this.angle = this.game.add.text(0,0, '0', 20);
 		this.angle.color = 'red';*/
+		this.game.add.rect(0,0,10,10);
 	},
 	
 	update : function (deltaTime) {

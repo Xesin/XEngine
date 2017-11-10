@@ -28,7 +28,7 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @property {HTMLElement} reference - Referencia al elemento canvas
 	 * @readonly
 	 */
-	this.reference = document.getElementById(idContainer);
+	this.canvas = document.getElementById(idContainer);
 	/**
 	 * @property {XEngine.Vector} position - Posición por defecto del juego
 	 * @readonly
@@ -56,14 +56,14 @@ XEngine.Game = function (width, height, idContainer) {
 	 */
 	this.worldHeight = height;
 
-	this.reference.setAttribute('width', width + 'px'); //asignamos el ancho del canvas
-	this.reference.setAttribute('height', height + 'px'); //asignamos el alto del canvas
+	this.canvas.setAttribute('width', width + 'px'); //asignamos el ancho del canvas
+	this.canvas.setAttribute('height', height + 'px'); //asignamos el alto del canvas
 
 	/**
 	 * @property {CanvasRenderingContext2D} canvas - Contexto 2D del canvas
 	 * @readonly
 	 */
-	this.canvas = this.reference.getContext('2d');
+	this.context = this.canvas.getContext('2d');
 
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -224,7 +224,7 @@ XEngine.Game.prototype = {
 		_this.cache = new XEngine.Cache(_this);
 		_this.load = new XEngine.Loader(_this);
 		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);
-		_this.renderer = new XEngine.Renderer(_this, _this.canvas);
+		_this.renderer = new XEngine.Renderer(_this, _this.context);
 		_this.scale = new XEngine.ScaleManager(_this);
 		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil
@@ -239,7 +239,7 @@ XEngine.Game.prototype = {
 	 * @param {String} color - El color a poner de fondo
 	 */
 	setBackgroundColor: function (color) {
-		this.reference.style.backgroundColor = color;
+		this.canvas.style.backgroundColor = color;
 	},
 
 	/**
@@ -974,7 +974,7 @@ XEngine.Cache.prototype = {
  * @class XEngine.Renderer
  * @constructor
  * @param {XEngine.Game} game - referencia al objeto del juego
- * @param {CanvasRenderingContext2D} context - contexto en el que pinta este renderer
+ * @param {CanvasRenderingContextWebGl} context - contexto en el que pinta este renderer
  */
 XEngine.Renderer = function (game, context) {
 	this.game = game;
@@ -1160,8 +1160,8 @@ XEngine.ScaleManager.prototype = {
 	 * @param {Number} newHeight - nuevo alto del canvas
 	 */
 	resizeCanvas: function (newWidth, newHeight) {
-		this.game.reference.setAttribute('width', newWidth);
-		this.game.reference.setAttribute('height', newHeight);
+		this.game.canvas.setAttribute('width', newWidth);
+		this.game.canvas.setAttribute('height', newHeight);
 		this.game.renderer.setScale(newWidth / this.game.width, newHeight / this.game.height);
 	},
 };
@@ -3065,27 +3065,27 @@ XEngine.InputManager = function (game) { //Esto se explica solo
 	});
 
 	if (this.game.isMobile) {
-		this.game.reference.addEventListener('touchstart', function (event) {
+		this.game.canvas.addEventListener('touchstart', function (event) {
 			_this.inputDownHandler.call(_this, event);
 		});
-		this.game.reference.addEventListener('touchend', function (event) {
+		this.game.canvas.addEventListener('touchend', function (event) {
 			_this.inputUpHandler.call(_this, event);
 		});
-		this.game.reference.addEventListener('touchmove', function (event) {
+		this.game.canvas.addEventListener('touchmove', function (event) {
 			_this.inputMoveHandler.call(_this, event);
 		});
 	}
 	else {
-		this.game.reference.addEventListener('mousedown', function (event) {
+		this.game.canvas.addEventListener('mousedown', function (event) {
 			_this.inputDownHandler.call(_this, event);
 		});
-		this.game.reference.addEventListener('mouseup', function (event) {
+		this.game.canvas.addEventListener('mouseup', function (event) {
 			_this.inputUpHandler.call(_this, event);
 		});
-		this.game.reference.addEventListener('mousemove', function (event) {
+		this.game.canvas.addEventListener('mousemove', function (event) {
 			_this.inputMoveHandler.call(_this, event);
 		});
-		this.game.reference.addEventListener('click', function (event) {
+		this.game.canvas.addEventListener('click', function (event) {
 			_this.clickHandler.call(_this, event);
 		});
 	}
@@ -3254,7 +3254,7 @@ XEngine.InputManager.prototype = {
 	 * @private
 	 */
 	getInputPosition: function (event) {
-		var rect = this.game.reference.getBoundingClientRect();
+		var rect = this.game.canvas.getBoundingClientRect();
 		var newEvent = {
 			position: {
 				x: event.pageX - (document.documentElement.scrollLeft || document.body.scrollLeft) - rect.left,
@@ -4151,7 +4151,7 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 	_this.style = '';
 	_this.strokeWidth = textStyle.stroke_width || 0;
 	_this.strokeColor = textStyle.stroke_color || 'black';
-	var canvas = game.canvas; //Ponemos los valores al canvas para objeter el width del texto
+	var canvas = game.context; //Ponemos los valores al canvas para objeter el width del texto
 	canvas.save();
 	canvas.font = _this.size + 'px ' + _this.font;
 	var textSize = canvas.measureText(_this.text);
