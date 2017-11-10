@@ -3,11 +3,13 @@
 
 function initGame(){
    console.log('Arrancando El juego');
-   var game = new XEngine.Game(800, 800, 'contenedor');							//iniciamos el juego
+   var game = new XEngine.Game(1200, 720, 'contenedor');							//iniciamos el juego
    game.frameLimit = 120;
+   game.scale.scaleType = XEngine.Scale.SHOW_ALL;
    game.state.add('space', Start);
    game.state.start('space');
-   
+
+
    game.setBackgroundColor('rgb(100,100,100)');
 }
 
@@ -35,7 +37,7 @@ Start.prototype = {
 		text.anchor.setTo(0.5);
 		this.angle = this.game.add.text(0,0, '0', 20);
 		this.angle.color = 'red';*/
-		this.game.add.rect(0,0,10,10);
+		//this.game.add.rect(0,0,10,10);
 	},
 	
 	update : function (deltaTime) {

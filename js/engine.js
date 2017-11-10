@@ -63,7 +63,7 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @property {CanvasRenderingContext2D} canvas - Contexto 2D del canvas
 	 * @readonly
 	 */
-	this.context = this.canvas.getContext('2d');
+	this.context;
 
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -224,7 +224,8 @@ XEngine.Game.prototype = {
 		_this.cache = new XEngine.Cache(_this);
 		_this.load = new XEngine.Loader(_this);
 		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);
-		_this.renderer = new XEngine.Renderer(_this, _this.context);
+		_this.renderer = new XEngine.Renderer(_this, _this.canvas);
+		_this.context = _this.renderer.context;
 		_this.scale = new XEngine.ScaleManager(_this);
 		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil
@@ -516,7 +517,9 @@ XEngine.StateManager.prototype = {
 		if (_this.currentState.preload != undefined) { //Si el estado tiene preload, lo llamamos
 			_this.currentState.preload();
 		}
+		_this.game.scale.updateScale();
 		_this.game.load._startPreload(); //Una vez se ha llamado al preload del estado, podemos proceder a cargar los assets
+
 	},
 
 	/**
@@ -974,15 +977,25 @@ XEngine.Cache.prototype = {
  * @class XEngine.Renderer
  * @constructor
  * @param {XEngine.Game} game - referencia al objeto del juego
- * @param {CanvasRenderingContextWebGl} context - contexto en el que pinta este renderer
+ * @param {HTMLElement} canvas - contexto en el que pinta este renderer
  */
-XEngine.Renderer = function (game, context) {
+XEngine.Renderer = function (game, canvas) {
 	this.game = game;
 	this.scale = {
 		x: 1,
 		y: 1
 	};
-	this.context = context;
+	try {
+		// Tratar de tomar el contexto estandar. Si falla, retornar al experimental.
+		this.context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+	  }
+	  catch(e) {}
+	  
+	  // Si no tenemos ningun contexto GL, date por vencido ahora
+	  if (!this.context) {
+		alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
+		this.context = null;
+	  }
 };
 
 XEngine.Renderer.prototype = {
@@ -992,11 +1005,11 @@ XEngine.Renderer.prototype = {
 	 * @private
 	 */
 	render: function () {
-		this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y); //Limpiamos el canvas
-		this.context.save();
-		this.context.scale(this.scale.x, this.scale.y);
+		//this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y); //Limpiamos el canvas
+		//this.context.save();
+		//this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.gameObjects);
-		this.context.restore();
+		//this.context.restore();
 	},
 
 	/**
@@ -1163,6 +1176,7 @@ XEngine.ScaleManager.prototype = {
 		this.game.canvas.setAttribute('width', newWidth);
 		this.game.canvas.setAttribute('height', newHeight);
 		this.game.renderer.setScale(newWidth / this.game.width, newHeight / this.game.height);
+		this.game.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 	},
 };
 
