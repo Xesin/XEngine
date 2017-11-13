@@ -97,6 +97,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 
 	_this.vertexBuffer = game.context.createBuffer();
 	_this.verColorBuffer = game.context.createBuffer();
+	_this.uvBuffer = game.context.createBuffer();
 
 	this.mvMatrix = mat4.create();
 	

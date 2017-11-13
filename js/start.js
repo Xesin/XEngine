@@ -39,10 +39,12 @@ Start.prototype = {
 		this.angle.color = 'red';*/
 		this.stats = new Stats()
 		document.body.appendChild(this.stats.dom)
-		for(var i = 0; i< 2000; i++){
+		/*for(var i = 0; i< 2000; i++){
 			var rect = this.game.add.rect(XEngine.Mathf.randomRange(0, 1200),XEngine.Mathf.randomRange(0, 720),30, 30);
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
-		}
+		}*/
+
+		this.game.add.rect(0,0,300, 300);
 	},
 	
 	update : function (deltaTime) {

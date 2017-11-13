@@ -20,12 +20,19 @@ XEngine.Rect = function (game, posX, posY, width, height) {
 	_this.width = width;
 	_this.height = height;
 	_this.position.setTo(posX, posY); //set de la posición
-	_this.shader = XEngine.ShaderLib.SimpleColorShader.shader;
+	_this.shader = XEngine.ShaderLib.CircleColor.shader;
 	_this.vertColors = [
 		0.0, 1.0, 0.6, 1.0,
 		0.0, 1.0, 0.6, 1.0,
 		0.0, 1.0, 0.6, 1.0,
 		0.0, 1.0, 0.6, 1.0
+	  ];
+
+	  _this.uv = [
+		0.0, 0.0,
+		0.0, 0.0,
+		0.0, 0.0,
+		0.0, 0.0,
 	  ];
 };
 
@@ -57,9 +64,12 @@ XEngine.Rect.prototypeExtends = {
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 		context.vertexAttribPointer(this.shader.vertPostAtt, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
 		
+
 		context.bindBuffer(context.ARRAY_BUFFER, this.verColorBuffer);
 		
 		context.vertexAttribPointer(this.shader.vertColAtt, this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.vertexAttribPointer(this.vertUvAtt, this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
 
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
@@ -68,23 +78,33 @@ XEngine.Rect.prototypeExtends = {
 		if(!this.shader.compiled){
 			this.shader.initializeShader(this.game.context);
 		}
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
+
+		this.vertUvAtt = this.game.context.getAttribLocation(this.shader.shaderProgram, "vUv");
+		this.game.context.enableVertexAttribArray(this.vertUvAtt);
 
 		var vertices = [
-			this.width, this.height, -1.0,
 			0, this.height, -1.0,
+			-0, -0, -1.0,
+			this.width, this.height, -1.0,
 			this.width, -0, -1.0,
-			-0, -0, -1.0
 		]
 
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(vertices), this.game.context.STATIC_DRAW);
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this.vertColors), this.game.context.STATIC_DRAW);
 		this.vertexBuffer.itemSize = 3;
 		this.vertexBuffer.numItems = 4;
 
+
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this.vertColors), this.game.context.STATIC_DRAW);
 		this.verColorBuffer.itemSize = 4;
 		this.verColorBuffer.numItems = 4;
+
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this.uv), this.game.context.STATIC_DRAW);
+		this.uvBuffer.itemSize = 2;
+		this.uvBuffer.numItems = 4;
+
 	},
 
 	getBounds: function () {
