@@ -1,9 +1,9 @@
 //Para quitar warnings por las cosas que están en otro js
 /* global XEngine*/
-
+var game;
 function initGame(){
    console.log('Arrancando El juego');
-   var game = new XEngine.Game(1200, 720, 'contenedor');							//iniciamos el juego
+   game = new XEngine.Game(1200, 720, 'contenedor');							//iniciamos el juego
    game.frameLimit = 120;
    game.scale.scaleType = XEngine.Scale.SHOW_ALL;
    game.state.add('space', Start);
@@ -37,12 +37,14 @@ Start.prototype = {
 		text.anchor.setTo(0.5);
 		this.angle = this.game.add.text(0,0, '0', 20);
 		this.angle.color = 'red';*/
-		//this.game.add.rect(0,0,10,10);
+		this.rectangle = this.game.add.rect(250,250,60,60);
+		this.rectangle.anchor.setTo(0.5);
 	},
 	
 	update : function (deltaTime) {
 		/*var angle = XEngine.Mathf.angleBetween(100, 160, this.game.input.pointer.x, this.game.input.pointer.y);
 		this.angle.text = Math.cos(angle);*/
+		this.rectangle.rotation += 20 * deltaTime;
 	},
 	
 	fin: function () {

@@ -208,7 +208,6 @@ XEngine.Game.prototype = {
 	 */
 	init: function () {
 		var _this = this;
-		console.log('Game engine ' + XEngine.version + ' arrancado con canvas!!!');
 		_this._startTime = Date.now();
 		_this._elapsedTime = 0;
 		_this.frameTime = 0;
@@ -226,10 +225,12 @@ XEngine.Game.prototype = {
 		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);
 		_this.renderer = new XEngine.Renderer(_this, _this.canvas);
 		_this.context = _this.renderer.context;
+		initShaders(_this.context);
 		_this.scale = new XEngine.ScaleManager(_this);
 		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil
 		_this.input = new XEngine.InputManager(_this);
+		console.log('Game engine ' + XEngine.version + ' arrancado con webgl!!!');
 		this.update(); //Iniciamos el loop
 	},
 
@@ -240,7 +241,7 @@ XEngine.Game.prototype = {
 	 * @param {String} color - El color a poner de fondo
 	 */
 	setBackgroundColor: function (color) {
-		this.canvas.style.backgroundColor = color;
+		//this.canvas.style.backgroundColor = color;
 	},
 
 	/**
@@ -986,16 +987,25 @@ XEngine.Renderer = function (game, canvas) {
 		y: 1
 	};
 	try {
-		// Tratar de tomar el contexto estandar. Si falla, retornar al experimental.
-		this.context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-	  }
-	  catch(e) {}
-	  
-	  // Si no tenemos ningun contexto GL, date por vencido ahora
-	  if (!this.context) {
+		// Tratar de tomar el contexto estandar. Si falla, probar otros.
+		this.context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl") || canvas.getContext("moz-webgl") || canvas.getContext("webkit-3d");
+	}
+	catch(e) {}
+	
+	// Si no tenemos ningun contexto GL, date por vencido ahora
+	if (!this.context) {
 		alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
 		this.context = null;
-	  }
+	}else{
+		//this.context.viewportWidth = this.game.canvas.width;
+		//this.context.viewportHeight = this.game.canvas.height;
+		this.context.clearColor(0.0, 0.0, 0.0, 1.0);                      // Establecer el color base en negro, totalmente opaco
+		this.context.enable(this.context.DEPTH_TEST);                               // Habilitar prueba de profundidad
+		this.context.depthFunc(this.context.LEQUAL);                                // Objetos cercanos opacan objetos lejanos
+		this.context.clear(this.context.COLOR_BUFFER_BIT|this.context.DEPTH_BUFFER_BIT);      // Limpiar el buffer de color asi como el de profundidad
+		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
+		console.log(this.context);
+	}
 };
 
 XEngine.Renderer.prototype = {
@@ -1005,6 +1015,8 @@ XEngine.Renderer.prototype = {
 	 * @private
 	 */
 	render: function () {
+		this.context.clear(this.context.COLOR_BUFFER_BIT|this.context.DEPTH_BUFFER_BIT);
+		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 		//this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y); //Limpiamos el canvas
 		//this.context.save();
 		//this.context.scale(this.scale.x, this.scale.y);
@@ -1203,6 +1215,7 @@ XEngine.ObjectFactory.prototype = {
 	existing: function (gameObject) { //Añade un objeto que ya ha sido creado
 		this.game.gameObjects.push(gameObject); //Añadimos el objeto al array de objetos
 		gameObject.parent = this.game; //Asignamos el padre del objeto
+		gameObject._onInitialize();
 		if (gameObject.start != undefined) {
 			gameObject.start();
 		}
@@ -3033,11 +3046,6 @@ XEngine.InputManager = function (game) { //Esto se explica solo
 	 */
 	this.onKeyUp = new XEngine.Signal();
 	/**
-	 * @property {XEngine.Signal} onKeyPressed - evento que se llama cuando está apretada una tecla. Se envía el objeto de evento de JS por defecto
-	 * @readonly
-	 */
-	this.onKeyPressed = new XEngine.Signal();
-	/**
 	 * @property {XEngine.Signal} onClick - evento que se llama cuando se hace click. Se envía un objeto con una propiedad 'position' que contiene x e y
 	 * @readonly
 	 */
@@ -3073,9 +3081,6 @@ XEngine.InputManager = function (game) { //Esto se explica solo
 	});
 	document.addEventListener('keyup', function (event) {
 		_this.keyUpHandler.call(_this, event);
-	});
-	document.addEventListener('keypressed', function (event) {
-		_this.keyPressedHandler.call(_this, event);
 	});
 
 	if (this.game.isMobile) {
@@ -3137,8 +3142,10 @@ XEngine.InputManager.prototype = {
 	 * @private
 	 */
 	keyDownHandler: function (event) {
-		this.keysPressed[event.keyCode] = true;
-		this.onKeyDown.dispatch(event);
+		if(!this.keysPressed[event.keyCode]){
+			this.keysPressed[event.keyCode] = true;
+			this.onKeyDown.dispatch(event);
+		}
 	},
 
 	/**
@@ -3151,17 +3158,6 @@ XEngine.InputManager.prototype = {
 	keyUpHandler: function (event) {
 		this.keysPressed[event.keyCode] = false;
 		this.onKeyUp.dispatch(event);
-	},
-
-	/**
-	 * callback interno que captura el evento de keyPressed
-	 * @method XEngine.InputManager#keyPressedHandler
-	 * 
-	 * @param {JSInputEvent} event - evento de JS para el input
-	 * @private
-	 */
-	keyPressedHandler: function (event) {
-		this.onKeyPressed.dispatch(event);
 	},
 
 	/**
@@ -3405,7 +3401,6 @@ XEngine.InputManager.prototype = {
 	reset: function () {
 		this.onKeyUp._destroy();
 		this.onKeyDown._destroy();
-		this.onKeyPressed._destroy();
 		this.onClick._destroy();
 		this.onInputDown._destroy();
 		this.onInputUp._destroy();
@@ -3512,6 +3507,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	 * @private
 	 */
 	_this.isInputDown = false;
+
+	_this.vertexBuffer = game.context.createBuffer();
 };
 
 XEngine.BaseObject.prototype = {
@@ -3528,6 +3525,10 @@ XEngine.BaseObject.prototype = {
 		if (this.onDestroy != undefined) {
 			this.onDestroy();
 		}
+	},
+
+	_onInitialize: function(){
+
 	},
 
 	/**
@@ -3960,17 +3961,111 @@ XEngine.Rect = function (game, posX, posY, width, height, color) {
 XEngine.Rect.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Rect.constructor = XEngine.Rect;
 
+function getShader(gl, id) {
+	var shaderScript = document.getElementById(id);
+	if (!shaderScript) {
+		return null;
+	}
+
+	var str = "";
+	var k = shaderScript.firstChild;
+	while (k) {
+		if (k.nodeType == 3)
+			str += k.textContent;
+		k = k.nextSibling;
+	}
+
+	var shader;
+	if (shaderScript.type == "x-shader/x-fragment") {
+		shader = gl.createShader(gl.FRAGMENT_SHADER);
+	} else if (shaderScript.type == "x-shader/x-vertex") {
+		shader = gl.createShader(gl.VERTEX_SHADER);
+	} else {
+		return null;
+	}
+
+	gl.shaderSource(shader, str);
+	gl.compileShader(shader);
+
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		alert(gl.getShaderInfoLog(shader));
+		return null;
+	}
+
+	return shader;
+}
+
+var shaderProgram;
+function initShaders(gl) {
+  var fragmentShader = getShader(gl, "shader-fs");
+  var vertexShader = getShader(gl, "shader-vs");
+
+  shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+
+  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+	alert("Could not initialise shaders");
+  }
+
+  gl.useProgram(shaderProgram);
+
+  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+
+  gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+  shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+  shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+
+}
+
+var mvMatrix = mat4.create();
+var pMatrix = mat4.create();
+
+mat4.identity(mvMatrix);
+mat4.ortho(pMatrix, 0, 1280 , 720, 0, 0.1, 100);
+
 XEngine.Rect.prototypeExtends = {
-	_renderToCanvas: function (canvas) {
-		var _this = this;
+	_renderToCanvas: function (context) {
+		/*var _this = this;
 		canvas.save();
 		this.applyRotationAndPos(canvas);
 		canvas.fillStyle = _this.color;
 		canvas.globalAlpha = _this.alpha;
-		var posX = Math.round(-(_this.width * _this.anchor.x));
-		var posY = Math.round(-(_this.height * _this.anchor.y));
+		
 		canvas.fillRect(posX, posY, _this.width, _this.height);
-		canvas.restore();
+		canvas.restore();*/
+		mat4.identity(mvMatrix);
+		var posX = Math.round(-(this.width * this.anchor.x));
+		var posY = Math.round(-(this.height * this.anchor.y));
+		mat4.translate(mvMatrix, mvMatrix, [this.position.x, this.position.y, 0.0]);
+		mat4.rotateZ(mvMatrix, mvMatrix, this.rotation * Math.PI / 180);
+		mat4.translate(mvMatrix, mvMatrix, [posX, posY, 0.0]);
+		mat4.scale(mvMatrix, mvMatrix, [this.scale.x, this.scale.y, 1.0]);
+
+		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
+		context.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+		context.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
+		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
+	},
+
+	_onInitialize: function(){
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
+
+		var vertices = [
+			this.width, this.height, -1.0,
+			0, this.height, -1.0,
+			this.width, -0, -1.0,
+			-0, -0, -1.0
+		]
+
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(vertices), this.game.context.STATIC_DRAW);
+		this.vertexBuffer.itemSize = 3;
+		this.vertexBuffer.numItems = 4;
 	},
 
 	getBounds: function () {
