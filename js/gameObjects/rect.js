@@ -13,13 +13,12 @@
  * @param {String} color - string con el valor del color en hexadecimal o en rgb
  * 
  */
-XEngine.Rect = function (game, posX, posY, width, height, color) {
+XEngine.Rect = function (game, posX, posY, width, height) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.game = game; //guardamos una referencia al juego
 	_this.width = width;
 	_this.height = height;
-	_this.color = color;
 	_this.position.setTo(posX, posY); //set de la posición
 	_this.shader = XEngine.ShaderLib.SimpleColorShader.shader;
 	_this.vertColors = [
@@ -97,6 +96,17 @@ XEngine.Rect.prototypeExtends = {
 			height: height
 		};
 	},
+
+	setColor:function(r, g, b, a = 1.0){
+		this.vertColors = [
+			r, g, b, a,
+			r, g, b, a,
+			r, g, b, a,
+			r, g, b, a
+		  ];
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this.vertColors), this.game.context.STATIC_DRAW);
+	}
 };
 
 Object.assign(XEngine.Rect.prototype, XEngine.Rect.prototypeExtends);
