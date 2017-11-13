@@ -225,7 +225,6 @@ XEngine.Game.prototype = {
 		_this.camera = new XEngine.Camera(_this, _this.width, _this.height);
 		_this.renderer = new XEngine.Renderer(_this, _this.canvas);
 		_this.context = _this.renderer.context;
-		initShaders(_this.context);
 		_this.scale = new XEngine.ScaleManager(_this);
 		_this.scale.init();
 		_this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //Obtiene si se está ejecutando en un dispositivo móvil

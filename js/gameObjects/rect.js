@@ -21,69 +21,11 @@ XEngine.Rect = function (game, posX, posY, width, height, color) {
 	_this.height = height;
 	_this.color = color;
 	_this.position.setTo(posX, posY); //set de la posición
+	_this.shader = XEngine.ShaderLib.SimpleColorShader.shader;
 };
 
 XEngine.Rect.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Rect.constructor = XEngine.Rect;
-
-function getShader(gl, id) {
-	var shaderScript = document.getElementById(id);
-	if (!shaderScript) {
-		return null;
-	}
-
-	var str = "";
-	var k = shaderScript.firstChild;
-	while (k) {
-		if (k.nodeType == 3)
-			str += k.textContent;
-		k = k.nextSibling;
-	}
-
-	var shader;
-	if (shaderScript.type == "x-shader/x-fragment") {
-		shader = gl.createShader(gl.FRAGMENT_SHADER);
-	} else if (shaderScript.type == "x-shader/x-vertex") {
-		shader = gl.createShader(gl.VERTEX_SHADER);
-	} else {
-		return null;
-	}
-
-	gl.shaderSource(shader, str);
-	gl.compileShader(shader);
-
-	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		alert(gl.getShaderInfoLog(shader));
-		return null;
-	}
-
-	return shader;
-}
-
-var shaderProgram;
-function initShaders(gl) {
-  var fragmentShader = getShader(gl, "shader-fs");
-  var vertexShader = getShader(gl, "shader-vs");
-
-  shaderProgram = gl.createProgram();
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
-  gl.linkProgram(shaderProgram);
-
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-	alert("Could not initialise shaders");
-  }
-
-  gl.useProgram(shaderProgram);
-
-  shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-
-  gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-  shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-  shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  shaderProgram.color = gl.getUniformLocation(shaderProgram, "color");
-}
 
 XEngine.Rect.prototypeExtends = {
 	_renderToCanvas: function (context) {
@@ -95,6 +37,7 @@ XEngine.Rect.prototypeExtends = {
 		
 		canvas.fillRect(posX, posY, _this.width, _this.height);
 		canvas.restore();*/
+
 		mat4.identity(this.mvMatrix);
 		var posX = Math.round(-(this.width * this.anchor.x));
 		var posY = Math.round(-(this.height * this.anchor.y));
@@ -102,18 +45,21 @@ XEngine.Rect.prototypeExtends = {
 		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
 		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
 		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
+		this.shader.uniforms.mvMatrix.value = this.mvMatrix;
+		this.shader.uniforms.pMatrix.value = this.game.camera.pMatrix;
+		this.shader.uniforms.color.value = [0.0, 1.0, 0.6, 1.0];
+		this.shader.updateUniforms(context);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
-		context.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, this.game.camera.pMatrix);
-		context.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, this.mvMatrix);
-		context.uniform4fv(shaderProgram.color, [0.0, 1.0, 0.6, 1.0]);
-		shaderProgram.color
+		context.vertexAttribPointer(this.shader.vertPostAtt, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+		
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
 
 	_onInitialize: function(){
+		if(!this.shader.compiled){
+			this.shader.initializeShader(this.game.context);
+		}
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 
 		var vertices = [
