@@ -90,5 +90,6 @@ XEngine.Camera.prototype = {
 				}
 			}
 		}
+		mat4.ortho(this.pMatrix, _this.position.x , game.width + _this.position.x, game.height + _this.position.y, _this.position.y, 0.1, 100);
 	},
 };

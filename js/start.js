@@ -49,6 +49,7 @@ Start.prototype = {
 		/*var angle = XEngine.Mathf.angleBetween(100, 160, this.game.input.pointer.x, this.game.input.pointer.y);
 		this.angle.text = Math.cos(angle);*/
 		this.stats.update();
+		//this.game.camera.position.y += 1.0;
 	},
 	
 	fin: function () {
