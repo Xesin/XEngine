@@ -39,6 +39,7 @@ Start.prototype = {
 		this.angle.color = 'red';*/
 		this.rectangle = this.game.add.rect(250,250,60,60);
 		this.rectangle.anchor.setTo(0.5);
+		this.rectangle.scale.setTo(2)
 	},
 	
 	update : function (deltaTime) {

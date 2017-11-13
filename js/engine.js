@@ -408,6 +408,9 @@ XEngine.Camera = function (game) {
 	 * @property {XEngine.AXIS} axis - Ejes en los que se puede mover la cámara
 	 */
 	this.axis = XEngine.AXIS.BOTH;
+
+	this.pMatrix = mat4.create();
+	mat4.ortho(this.pMatrix, 0, game.width , game.height, 0, 0.1, 100);
 };
 
 XEngine.Camera.prototype = {
@@ -3509,6 +3512,10 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.isInputDown = false;
 
 	_this.vertexBuffer = game.context.createBuffer();
+
+	this.mvMatrix = mat4.create();
+	
+	mat4.identity(this.mvMatrix);
 };
 
 XEngine.BaseObject.prototype = {
@@ -4017,14 +4024,8 @@ function initShaders(gl) {
 
   shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-
+  shaderProgram.color = gl.getUniformLocation(shaderProgram, "color");
 }
-
-var mvMatrix = mat4.create();
-var pMatrix = mat4.create();
-
-mat4.identity(mvMatrix);
-mat4.ortho(pMatrix, 0, 1280 , 720, 0, 0.1, 100);
 
 XEngine.Rect.prototypeExtends = {
 	_renderToCanvas: function (context) {
@@ -4036,20 +4037,21 @@ XEngine.Rect.prototypeExtends = {
 		
 		canvas.fillRect(posX, posY, _this.width, _this.height);
 		canvas.restore();*/
-		mat4.identity(mvMatrix);
+		mat4.identity(this.mvMatrix);
 		var posX = Math.round(-(this.width * this.anchor.x));
 		var posY = Math.round(-(this.height * this.anchor.y));
-		mat4.translate(mvMatrix, mvMatrix, [this.position.x, this.position.y, 0.0]);
-		mat4.rotateZ(mvMatrix, mvMatrix, this.rotation * Math.PI / 180);
-		mat4.translate(mvMatrix, mvMatrix, [posX, posY, 0.0]);
-		mat4.scale(mvMatrix, mvMatrix, [this.scale.x, this.scale.y, 1.0]);
+		mat4.translate(this.mvMatrix, this.mvMatrix, [this.position.x, this.position.y, 0.0]);
+		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
+		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
+		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 		context.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
 
-		context.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-		context.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-
+		context.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, this.game.camera.pMatrix);
+		context.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+		context.uniform4fv(shaderProgram.color, [0.0, 1.0, 0.6, 1.0]);
+		shaderProgram.color
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
 
