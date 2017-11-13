@@ -37,17 +37,17 @@ Start.prototype = {
 		text.anchor.setTo(0.5);
 		this.angle = this.game.add.text(0,0, '0', 20);
 		this.angle.color = 'red';*/
-		this.rectangle = this.game.add.rect(250,250,60,60);
-		this.rectangle.anchor.setTo(0.5);
-		this.rectangle.scale.setTo(3);
-
-		this.game.add.rect(450,250,90,60);
+		this.stats = new Stats()
+		document.body.appendChild(this.stats.dom)
+		for(var i = 0; i< 2000; i++){
+			this.game.add.rect(XEngine.Mathf.randomRange(0, 1200),XEngine.Mathf.randomRange(0, 720),30, 30);
+		}
 	},
 	
 	update : function (deltaTime) {
 		/*var angle = XEngine.Mathf.angleBetween(100, 160, this.game.input.pointer.x, this.game.input.pointer.y);
 		this.angle.text = Math.cos(angle);*/
-		this.rectangle.rotation += 20 * deltaTime;
+		this.stats.update();
 	},
 	
 	fin: function () {

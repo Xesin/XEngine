@@ -3,12 +3,12 @@ XEngine.ShaderLib = {}
 XEngine.ShaderLib.SimpleColorShader = {
 	vertexShader:[
 		"#XBaseParams",
-		"uniform vec4 color;",
 		"varying lowp vec4 vColor;",
 	  
 		"void main(void) {",
 		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
-		  "vColor = color;",
+		  "vec4 asdf = aVertexColor;",
+		  "vColor = aVertexColor;",
 		"}"
 	],
 	fragmentShader:[
@@ -21,9 +21,6 @@ XEngine.ShaderLib.SimpleColorShader = {
 	],
 
 	uniforms: {
-		color:{
-			value: null
-		}
 	}
 }
 

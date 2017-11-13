@@ -1,6 +1,7 @@
 XEngine.Shader = function(vertexCode, fragmentCode, uniforms = XEngine.Shader.baseUniforms){
 	this.uniforms = uniforms;
 	this.vertPostAtt = null;
+	this.vertColAtt = null;
 	this.shaderProgram = null;
 	this.compiled = false;
 	this.vertexCode = vertexCode;
@@ -70,8 +71,9 @@ XEngine.Shader.prototype = {
 		gl.useProgram(this.shaderProgram);
 
 		this.vertPostAtt = gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
-
+		this.vertColAtt = gl.getAttribLocation(this.shaderProgram, "aVertexColor");
 		gl.enableVertexAttribArray(this.vertPostAtt);
+		gl.enableVertexAttribArray(this.vertColAtt);
 		for (var property in this.uniforms) {
 			if (this.uniforms.hasOwnProperty(property)) {
 				this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);

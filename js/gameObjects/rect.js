@@ -22,6 +22,12 @@ XEngine.Rect = function (game, posX, posY, width, height, color) {
 	_this.color = color;
 	_this.position.setTo(posX, posY); //set de la posición
 	_this.shader = XEngine.ShaderLib.SimpleColorShader.shader;
+	_this.vertColors = [
+		0.0, 1.0, 0.6, 1.0,
+		0.0, 1.0, 0.6, 1.0,
+		0.0, 1.0, 0.6, 1.0,
+		0.0, 1.0, 0.6, 1.0
+	  ];
 };
 
 XEngine.Rect.prototype = Object.create(XEngine.BaseObject.prototype);
@@ -47,12 +53,15 @@ XEngine.Rect.prototypeExtends = {
 		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
 		this.shader.uniforms.mvMatrix.value = this.mvMatrix;
 		this.shader.uniforms.pMatrix.value = this.game.camera.pMatrix;
-		this.shader.uniforms.color.value = [0.0, 1.0, 0.6, 1.0];
 		this.shader.updateUniforms(context);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 		context.vertexAttribPointer(this.shader.vertPostAtt, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
 		
+		context.bindBuffer(context.ARRAY_BUFFER, this.verColorBuffer);
+		
+		context.vertexAttribPointer(this.shader.vertColAtt, this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
+
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
 
@@ -70,8 +79,13 @@ XEngine.Rect.prototypeExtends = {
 		]
 
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(vertices), this.game.context.STATIC_DRAW);
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this.vertColors), this.game.context.STATIC_DRAW);
 		this.vertexBuffer.itemSize = 3;
 		this.vertexBuffer.numItems = 4;
+
+		this.verColorBuffer.itemSize = 4;
+		this.verColorBuffer.numItems = 4;
 	},
 
 	getBounds: function () {
