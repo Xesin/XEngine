@@ -8,6 +8,7 @@
  */
 XEngine.Renderer = function (game, canvas) {
 	this.game = game;
+	this.clearColor = {r:0.0 ,g: 0.0,b: 0.0,a: 0.0}
 	this.scale = {
 		x: 1,
 		y: 1
@@ -25,7 +26,7 @@ XEngine.Renderer = function (game, canvas) {
 	}else{
 		//this.context.viewportWidth = this.game.canvas.width;
 		//this.context.viewportHeight = this.game.canvas.height;
-		this.context.clearColor(0.0, 0.0, 0.0, 1.0);                      // Establecer el color base en negro, totalmente opaco
+		this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);                      // Establecer el color base en negro, totalmente opaco
 		this.context.enable(this.context.DEPTH_TEST);                               // Habilitar prueba de profundidad
 		this.context.depthFunc(this.context.LEQUAL);                                // Objetos cercanos opacan objetos lejanos
 		this.context.clear(this.context.COLOR_BUFFER_BIT|this.context.DEPTH_BUFFER_BIT);      // Limpiar el buffer de color asi como el de profundidad
@@ -51,6 +52,14 @@ XEngine.Renderer.prototype = {
 		//this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.gameObjects);
 		//this.context.restore();
+	},
+
+	setClearColor: function(r, g, b, a){
+		this.clearColor.r = r;
+		this.clearColor.g = g;
+		this.clearColor.b = b;
+		this.clearColor.a = a;
+		this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);                      // Establecer el color base en negro, totalmente opaco
 	},
 
 	/**

@@ -7,7 +7,7 @@
 
 
 var XEngine = {
-	version: '1.0'
+	version: '2.0'
 };
 
 
@@ -239,8 +239,9 @@ XEngine.Game.prototype = {
 	 * @method XEngine.Game#setBackgroundColor
 	 * @param {String} color - El color a poner de fondo
 	 */
-	setBackgroundColor: function (color) {
+	setBackgroundColor: function (r, g, b, a) {
 		//this.canvas.style.backgroundColor = color;
+		this.renderer.setClearColor(r/255, g/255, b/255, a/255);
 	},
 
 	/**

@@ -10,7 +10,7 @@ function initGame(){
    game.state.start('space');
 
 
-   game.setBackgroundColor('rgb(100,100,100)');
+   game.setBackgroundColor(100,100,100, 255);
 }
 
 var Start = function (game) {
@@ -46,9 +46,10 @@ Start.prototype = {
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
 		}*/
 
-		this.game.add.sprite(50,50, 'test');
-		this.game.add.sprite(150,50, 'test');
-		this.game.add.sprite(250,50, 'test');
+		this.sprite = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'test');
+		this.sprite.scale.setTo(2);
+		this.sprite.rotation = 90;
+		this.sprite.anchor.setTo(0.5);
 	},
 	
 	update : function (deltaTime) {
@@ -56,6 +57,7 @@ Start.prototype = {
 		this.angle.text = Math.cos(angle);*/
 		this.stats.update();
 		//this.game.camera.position.y += 1.0;
+		this.sprite.rotation += 1;
 	},
 	
 	fin: function () {
