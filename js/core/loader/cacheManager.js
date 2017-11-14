@@ -16,6 +16,7 @@ XEngine.Cache = function (game) {
 	this.game = game;
 	this.images = new Array(); //Cache de imagenes
 	this.audios = new Array(); //Cache de audios
+	this.json = new Array();
 };
 
 XEngine.Cache.prototype = {
@@ -49,6 +50,10 @@ XEngine.Cache.prototype = {
 		}
 	},
 
+	getJson: function(jsonName){
+		return this.json[jsonName];
+	},
+
 	/**
 	 * Borra toda la cache
 	 * @method XEngine.Cache#clearChache
@@ -56,7 +61,9 @@ XEngine.Cache.prototype = {
 	clearCache: function () {
 		delete this.images;
 		delete this.audios;
+		delete this.json;
 		this.images = new Array();
 		this.audios = new Array();
+		this.json = new Array();
 	}
 };

@@ -24,16 +24,18 @@ XEngine.Sprite = function (game, posX, posY, sprite) {
 	_this._columns = Math.floor(cache_image.image.width / _this.width);
 	_this._rows = Math.floor(cache_image.image.height / _this.height);
 	_this.tilled = false;
-	if(_this._columns > 1 || _this._rows > 1){
-		_this.tilled = true;
-	}
-	/*}
-	else {
+	
+	if(_this.game.cache.getJson(sprite) != undefined) {
 		_this.json = _this.game.cache.getJson(sprite);
 		var frameInfo = _this.json.frames[_this.frame];
 		_this.width = frameInfo.frame.w;
 		_this.height = frameInfo.frame.h;
-	}*/
+	}
+
+	if(_this._columns > 1 || _this._rows > 1 || _this.json != undefined){
+		_this.tilled = true;
+	}
+
 	_this.position.setTo(posX, posY);
 	_this.shader = XEngine.ShaderLib.Sprite.shader;
 	_this.animation = new XEngine.AnimationManager(game, this);
@@ -60,31 +62,54 @@ XEngine.Sprite.prototypeExtends = {
 		_this.shader.baseUniforms.pMatrix.value = _this.game.camera.pMatrix;
 		_this.shader.updateUniforms(context);
 
-		if(_this.width !== _this._prevWidth || _this.height !== _this._prevHeight){
-			_this._prevWidth = _this.width;
-			_this._prevHeight = _this.height;
-			_this._setVertices(_this.width, _this.height);
-		}
 
 		if(_this.tilled){
-			var column = _this.frame;
+			var startUvX=0;
+			var startUvY=0;
+			var endUvX =1;
+			var endUvY =1;
+			var startX = 0;
+			var startY = 0;
+			var endX = 0;
+			var endY = 0;
+			if(_this.json){
+				var frameInfo = {};
+				if (typeof _this.frame === 'string') {
+					frameInfo = _this.json[_this.frame];
+				}
+				else {
+					frameInfo = _this.json.frames[_this.frame];
+				}
+				var width = frameInfo.frame.w;
+				var height = frameInfo.frame.h;
 
-			if (column > _this._columns - 1) {
-				column = _this.frame % _this._columns;
+				startX = frameInfo.frame.x;
+				startY = frameInfo.frame.y;
+
+				endX = startX + width;
+				endY = startY + height;
+
+			}else{
+				var column = _this.frame;
+				
+				if (column > _this._columns - 1) {
+					column = _this.frame % _this._columns;
+				}
+	
+				var row = Math.floor(_this.frame / _this._columns);
+
+				startX = column * cache_image.frameWidth;
+				startY = row * cache_image.frameHeight;
+	
+				endX = startX + cache_image.frameWidth;
+				endY = startY + cache_image.frameHeight;
 			}
 
-			var row = Math.floor(_this.frame / _this._columns);
-			var startX = column * cache_image.frameWidth;
-			var startY = row * cache_image.frameHeight;
+			startUvX = startX / cache_image.image.width;
+			startUvY = startY / cache_image.image.height;
 
-			var startUvX = startX / cache_image.image.width;
-			var startUvY = startY / cache_image.image.height;
-
-			var endX = startX + cache_image.frameWidth;
-			var endY = startY + cache_image.frameHeight;
-
-			var endUvX = endX / cache_image.image.width;
-			var endUvY = endY / cache_image.image.height;
+			endUvX = endX / cache_image.image.width;
+			endUvY = endY / cache_image.image.height;
 
 			var uv = [
 				startUvX, startUvY,
@@ -94,6 +119,12 @@ XEngine.Sprite.prototypeExtends = {
 			];
 
 			this._setUVs(uv);
+		}
+
+		if(_this.width !== _this._prevWidth || _this.height !== _this._prevHeight){
+			_this._prevWidth = _this.width;
+			_this._prevHeight = _this.height;
+			_this._setVertices(_this.width, _this.height);
 		}
 
 		context.bindBuffer(context.ARRAY_BUFFER, _this.vertexBuffer);
