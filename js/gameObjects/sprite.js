@@ -17,67 +17,63 @@ XEngine.Sprite = function (game, posX, posY, sprite) {
 	_this.game = game; //guardamos una referencia al juego
 	_this.frame = 0;
 	var cache_image = _this.game.cache.image(sprite);
-	if (cache_image.type == "sprite") {
+	//if (cache_image.type == "sprite") {
 		_this.width = cache_image.frameWidth || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
 		_this.height = cache_image.frameHeight || 10;
 		_this._columns = Math.floor(cache_image.image.width / _this.width);
 		_this._rows = Math.floor(cache_image.image.height / _this.height);
-	}
+	/*}
 	else {
 		_this.json = _this.game.cache.getJson(sprite);
 		var frameInfo = _this.json.frames[_this.frame];
 		_this.width = frameInfo.frame.w;
 		_this.height = frameInfo.frame.h;
-	}
+	}*/
 	_this.position.setTo(posX, posY);
-
+	_this.shader = XEngine.ShaderLib.Sprite.shader;
 	_this.animation = new XEngine.AnimationManager(game, this);
 };
 
 XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.Sprite.prototypeExtends = {
-	_renderToCanvas: function (canvas) { //Sobreescribimos el mÃ©todo render	
+	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
+		if(this.shader == null) return;
 		var _this = this;
-		canvas.save(); //Guardamos el estado actual del canvas
 		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
-		this.applyRotationAndPos(canvas);
-		canvas.globalAlpha = _this.alpha;
+		_this.shader._setTexture(cache_image._texture);
+		_this.shader._beginRender(context);
+		
+		mat4.identity(_this.mvMatrix);
+		var posX = Math.round(-(_this.width * _this.anchor.x));
+		var posY = Math.round(-(_this.height * _this.anchor.y));
+		mat4.translate(_this.mvMatrix, _this.mvMatrix, [_this.position.x, _this.position.y, 0.0]);
+		mat4.rotateZ(_this.mvMatrix, _this.mvMatrix, _this.rotation * Math.PI / 180);
+		mat4.scale(_this.mvMatrix, _this.mvMatrix, [_this.scale.x, _this.scale.y, 1.0]);
+		mat4.translate(_this.mvMatrix, _this.mvMatrix, [posX, posY, 0.0]);
+		_this.shader.baseUniforms.mvMatrix.value = _this.mvMatrix;
+		_this.shader.baseUniforms.pMatrix.value = _this.game.camera.pMatrix;
+		_this.shader.updateUniforms(context);
 
-		//Aplicamos el alpha del objeto
-		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		if (cache_image.type == "sprite") {
-			var width = Math.round(_this.width);
-			var height = Math.round(_this.height);
-			var posX = Math.round(-(width * _this.anchor.x));
-			var posY = Math.round(-(height * _this.anchor.y));
-			var column = _this.frame;
-
-			if (column > _this._columns - 1) {
-				column = _this.frame % _this._columns;
-			}
-
-			var row = Math.floor(_this.frame / _this._columns);
-			if (_this.frame > 0) {
-				console.log('Hola');
-			}
-			canvas.drawImage(cache_image.image, column * cache_image.frameWidth, row * cache_image.frameHeight, cache_image.frameWidth, cache_image.frameHeight, posX, posY, width, height);
+		if(_this.width !== _this._prevWidth || _this.height !== _this._prevHeight){
+			_this._prevWidth = _this.width;
+			_this._prevHeight = _this.height;
+			_this._setVertices(_this.width, _this.height);
 		}
-		else {
-			var frameInfo = {};
-			if (typeof _this.frame === 'string') {
-				frameInfo = _this.json[_this.frame];
-			}
-			else {
-				frameInfo = _this.json.frames[_this.frame];
-			}
-			var width = frameInfo.frame.w;
-			var height = frameInfo.frame.h;
-			var posX = Math.round(-(width * _this.anchor.x));
-			var posY = Math.round(-(height * _this.anchor.y));
-			canvas.drawImage(cache_image.image, frameInfo.frame.x, frameInfo.frame.y, frameInfo.frame.w, frameInfo.frame.h, posX, posY, width, height);
-		}
-		canvas.restore(); //Restauramos el estado del canvas
+
+		context.bindBuffer(context.ARRAY_BUFFER, _this.vertexBuffer);
+
+		context.vertexAttribPointer(_this.shader.vertPostAtt, _this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.bindBuffer(context.ARRAY_BUFFER, _this.verColorBuffer);
+		
+		context.vertexAttribPointer(_this.shader.vertColAtt, _this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.bindBuffer(context.ARRAY_BUFFER, _this.uvBuffer);
+
+		context.vertexAttribPointer(_this.shader.vertUvAtt, _this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.drawArrays(context.TRIANGLE_STRIP, 0, _this.vertexBuffer.numItems);
 	},
 
 	getBounds: function () {

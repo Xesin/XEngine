@@ -33,14 +33,8 @@ XEngine.ImageLoader.prototype = {
 	 */
 	load: function () {
 		var _this = this;
-		var newImage = { //Creamos el objeto a guardar en cache
-			imageName: _this.imageName, //Nombre de la imagen
-			image: null, //Referencia de la imagen
-			frameWidth: _this.frameWidth,
-			frameHeight: _this.frameHeight,
-			data: new Array(),
-			type: "sprite"
-		};
+		var newImage = new XEngine.Texture2D(_this.imageName, _this.frameWidth, _this.frameHeight);
+
 		var img1 = new Image(); //Creamos el objeto Image
 		var handler = function () { //Creamos el handler de cuando se completa o da error
 			var imageRef = _this.loader.game.cache.images[_this.imageName]; //Obtenemos la imagen de cache
@@ -81,12 +75,12 @@ XEngine.ImageLoader.prototype = {
 
 				imageRef.data.push(rgba);
 			}
-
+			imageRef.createTexture(_this.loader.game.context);
 			_this.loader._notifyCompleted(); //Notificamos de que la carga se ha completado
 		};
 		img1.onload = handler; //Asignamos los handlers
 		img1.onerror = handler;
 		img1.src = _this.imageUrl; //Asignamos la url al objeto imagen
-		_this.loader.game.cache.images[_this.imageName] = newImage; //Guardamos nuesto objeto de imagen en cache para luego recogerlo
+		_this.loader.game.cache.images[newImage.imageName] = newImage; //Guardamos nuesto objeto de imagen en cache para luego recogerlo
 	}
 };

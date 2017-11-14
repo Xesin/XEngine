@@ -99,7 +99,11 @@ XEngine.Shader.prototype = {
 	_setUniform(uniform, gl){
 		var valueType = uniform.value.constructor
 		if(valueType === Number){
-			gl.uniform1f(uniform.gpuPosition, uniform.value);
+			if(uniform.value % 1 === 0){
+				gl.uniform1i(uniform.gpuPosition, uniform.value);
+			}else{
+				gl.uniform1f(uniform.gpuPosition, uniform.value);
+			}
 		}else if(valueType === Array){
 			var length = uniform.value.length;
 			switch(length){

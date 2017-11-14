@@ -23,7 +23,7 @@ Start.prototype = {
 	
 	preload: function () {
 		
-		//this.game.load.image('candy', 'img/candy0.png');
+		this.game.load.image('test', 'img/angry_unicorn.png');
 	},
 	
 	start: function () {
@@ -46,8 +46,9 @@ Start.prototype = {
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
 		}*/
 
-		circle = this.game.add.circle(100,100,300, 300);
-		var rect = this.game.add.rect(100,400,300, 300);
+		this.game.add.sprite(50,50, 'test');
+		this.game.add.sprite(150,50, 'test');
+		this.game.add.sprite(250,50, 'test');
 	},
 	
 	update : function (deltaTime) {
