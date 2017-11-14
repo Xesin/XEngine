@@ -2,8 +2,6 @@ XEngine.ShaderLib.CircleColor = {
 	vertexShader:[
 		"#XBaseParams",
 
-		"attribute vec2 vUv;",
-
 		"varying lowp vec4 vColor;",
 		"varying highp vec2 uv;",
 	  
@@ -18,9 +16,12 @@ XEngine.ShaderLib.CircleColor = {
 		"precision mediump float;",
 		"varying lowp vec4 vColor;",
 		"varying highp vec2 uv;",
-
+		
 		"void main(void) {",
-			"gl_FragColor = vec4(uv.y, uv.y, 0.0, 1.0);",
+			"vec2 uvOffset = uv - 0.5;",
+			"float res = 1.0 - floor(sqrt(dot(uvOffset, uvOffset)) + 0.51);",
+			"if(res < 1.0) discard;",
+			"gl_FragColor = vec4(res, res, res, 1.0) * vColor;",
 		"}"
 	],
 

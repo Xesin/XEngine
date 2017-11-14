@@ -95,6 +95,28 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	 */
 	_this.isInputDown = false;
 
+	_this.width = 0;
+	_this.height = 0;
+	_this._prevWidth = 0;
+	_this._prevHeight = 0;
+	_this.shader = null;
+
+	_this._vertices = [];
+
+	_this._vertColors = [
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0
+	  ];
+
+	_this._uv = [
+		0.0, 0.0,
+		0.0, 1.0,
+		1.0, 0.0,
+		1.0, 1.0,
+	];
+
 	_this.vertexBuffer = game.context.createBuffer();
 	_this.verColorBuffer = game.context.createBuffer();
 	_this.uvBuffer = game.context.createBuffer();
@@ -122,6 +144,33 @@ XEngine.BaseObject.prototype = {
 
 	_onInitialize: function(){
 
+	},
+
+	_setBuffers: function(){
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
+		this.vertexBuffer.itemSize = 3;
+		this.vertexBuffer.numItems = 4;
+
+
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertColors), this.game.context.STATIC_DRAW);
+		this.verColorBuffer.itemSize = 4;
+		this.verColorBuffer.numItems = 4;
+
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._uv), this.game.context.STATIC_DRAW);
+		this.uvBuffer.itemSize = 2;
+		this.uvBuffer.numItems = 4;
+	},
+
+	_setVertices: function(width, height){
+		this._vertices = [
+			0, 0, -1.0,
+			-0, this.height, -1.0,
+			this.width, -0, -1.0,
+			this.width, this.height, -1.0,
+		]
 	},
 
 	/**
@@ -185,8 +234,38 @@ XEngine.BaseObject.prototype = {
 	 * @param {CanvasRenderingContext2D} canvas - contexto 2D de canvas en el que pintar
 	 * @private
 	 */
-	_renderToCanvas: function (canvas) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
+	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
+		if(this.shader == null) return;
+		mat4.identity(this.mvMatrix);
+		var posX = Math.round(-(this.width * this.anchor.x));
+		var posY = Math.round(-(this.height * this.anchor.y));
+		mat4.translate(this.mvMatrix, this.mvMatrix, [this.position.x, this.position.y, 0.0]);
+		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
+		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
+		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
+		this.shader.uniforms.mvMatrix.value = this.mvMatrix;
+		this.shader.uniforms.pMatrix.value = this.game.camera.pMatrix;
+		this.shader.updateUniforms(context);
 
+		if(this.width === this._prevWidth || this.height === this._prevHeight){
+			this._prevWidth = this.width;
+			this._prevHeight = this.height;
+			this._setVertices(this.width, this.height);
+		}
+
+		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
+
+		context.vertexAttribPointer(this.shader.vertPostAtt, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.bindBuffer(context.ARRAY_BUFFER, this.verColorBuffer);
+		
+		context.vertexAttribPointer(this.shader.vertColAtt, this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.bindBuffer(context.ARRAY_BUFFER, this.uvBuffer);
+
+		context.vertexAttribPointer(this.shader.vertUvAtt, this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
+
+		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
 
 	/**
@@ -213,5 +292,16 @@ XEngine.BaseObject.prototype = {
 		}
 		canvas.rotate(this.getTotalRotation() * Math.PI / 180);
 		canvas.scale(this.scale.x, this.scale.y);
+	},
+
+	setColor:function(r, g, b, a = 1.0){
+		this._vertColors = [
+			r, g, b, a,
+			r, g, b, a,
+			r, g, b, a,
+			r, g, b, a
+		  ];
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertColors), this.game.context.STATIC_DRAW);
 	}
 };

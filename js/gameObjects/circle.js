@@ -17,54 +17,32 @@
  * @param {Number} endAngle - angulo en el que termina a pintar
  * 
  */
-XEngine.Circle = function (game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle) {
+XEngine.Circle = function (game, posX, posY, width, height) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.game = game; //guardamos una referencia al juego
-	_this.radius = radius;
-	_this.color = color;
+	_this.height = height;
+	_this.width = width;
 	_this.position.setTo(posX, posY); //set de la posición
-	_this.stroke = stroke || 0;
-	_this.fill = fill;
-	if (fill == undefined) {
-		_this.fill = true;
-	}
-	_this.strokeColor = strokeColor || 'white';
-	_this.startAngle = startAngle || 0;
-	_this.endAngle = endAngle || 360;
+	_this.shader = XEngine.ShaderLib.CircleColor.shader;
 };
 
 XEngine.Circle.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Circle.constructor = XEngine.Circle;
 
 XEngine.Circle.prototypeExtends = {
-	_renderToCanvas: function (canvas) {
-		var _this = this;
-		canvas.save();
-		this.applyRotationAndPos(canvas);
-		canvas.globalAlpha = _this.alpha;
-		var posX = Math.round(-(_this.radius * 2) * _this.anchor.x);
-		var posY = Math.round(-(_this.radius * 2) * _this.anchor.y);
-		canvas.beginPath();
-		var startAntle = _this.startAngle * (Math.PI / 180);
-		var endAngle = _this.endAngle * (Math.PI / 180);
-		canvas.arc(posX, posY, _this.radius, startAntle, endAngle);
-		if (_this.fill) {
-			canvas.fillStyle = _this.color;
-			canvas.fill();
+	_onInitialize: function(){
+		if(!this.shader.compiled){
+			this.shader.initializeShader(this.game.context);
 		}
-		if (_this.stroke > 0) {
-			canvas.lineWidth = 5;
-			canvas.strokeStyle = _this.strokeColor;
-			canvas.stroke();
-		}
-		canvas.restore();
+		this._setVertices(this.width, this.height);
+		this._setBuffers();
 	},
 
 	getBounds: function () {
 		var _this = this;
-		var width = (_this.radius * 2) * _this.scale.x;
-		var height = (_this.radius * 2) * _this.scale.y;
+		var width = _this.width * _this.scale.x;
+		var height = _this.height * _this.scale.y;
 		return {
 			width: width,
 			height: height

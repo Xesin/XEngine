@@ -1,13 +1,13 @@
 XEngine.ShaderLib = {}
 
-XEngine.ShaderLib.SimpleColorShader = {
+XEngine.ShaderLib.SimpleColor = {
 	vertexShader:[
 		"#XBaseParams",
 		"varying lowp vec4 vColor;",
 	  
 		"void main(void) {",
 		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
-		  "vec4 asdf = aVertexColor;",
+		  "vec2 uv = vUv;",
 		  "vColor = aVertexColor;",
 		"}"
 	],
@@ -24,6 +24,6 @@ XEngine.ShaderLib.SimpleColorShader = {
 	}
 }
 
-Object.assign(XEngine.ShaderLib.SimpleColorShader.uniforms, XEngine.Shader.baseUniforms);
+Object.assign(XEngine.ShaderLib.SimpleColor.uniforms, XEngine.Shader.baseUniforms);
 
-XEngine.ShaderLib.SimpleColorShader.shader = new XEngine.Shader(XEngine.ShaderLib.SimpleColorShader.vertexShader, XEngine.ShaderLib.SimpleColorShader.fragmentShader, XEngine.ShaderLib.SimpleColorShader.uniforms);
+XEngine.ShaderLib.SimpleColor.shader = new XEngine.Shader(XEngine.ShaderLib.SimpleColor.vertexShader, XEngine.ShaderLib.SimpleColor.fragmentShader, XEngine.ShaderLib.SimpleColor.uniforms);

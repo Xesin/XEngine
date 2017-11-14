@@ -44,7 +44,7 @@ Start.prototype = {
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
 		}*/
 
-		this.game.add.rect(0,0,300, 300);
+		this.game.add.circle(100,100,300, 300);
 	},
 	
 	update : function (deltaTime) {
