@@ -23,7 +23,7 @@ Start.prototype = {
 	
 	preload: function () {
 		
-		this.game.load.image('test', 'img/angry_unicorn.png');
+		this.game.load.spriteSheet('test', 'img/animations.png', 136, 204);
 	},
 	
 	start: function () {
@@ -47,9 +47,14 @@ Start.prototype = {
 		}*/
 
 		this.sprite = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'test');
-		this.sprite.scale.setTo(2);
-		this.sprite.rotation = 90;
 		this.sprite.anchor.setTo(0.5);
+		this.sprite.scale.setTo(2);
+		this.sprite.animation.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 75, true);
+		//Set de la animaci?n de saltar
+		this.sprite.animation.add('jump', [10, 11, 12, 13], 120, false);
+		//Set de la animaci?n de andar
+		this.sprite.animation.add('walk', [21, 22, 23, 24, 25, 26, 27, 28], 100, true);
+		this.sprite.animation.play('idle');                                                //Arrancamos el idle
 	},
 	
 	update : function (deltaTime) {
@@ -57,7 +62,20 @@ Start.prototype = {
 		this.angle.text = Math.cos(angle);*/
 		this.stats.update();
 		//this.game.camera.position.y += 1.0;
-		this.sprite.rotation += 1;
+		if(this.game.input.isPressed(XEngine.KeyCode.D)){
+			this.sprite.position.x += 200 * deltaTime;
+			this.sprite.animation.play('walk');
+		}
+		if(this.game.input.isPressed(XEngine.KeyCode.A)){
+			this.sprite.position.x -= 200 * deltaTime;
+			this.sprite.animation.play('walk');
+		}
+		if(this.game.input.isPressed(XEngine.KeyCode.W)){
+			this.sprite.position.y -= 200 * deltaTime;
+		}
+		if(this.game.input.isPressed(XEngine.KeyCode.S)){
+			this.sprite.position.y += 200 * deltaTime;
+		}
 	},
 	
 	fin: function () {

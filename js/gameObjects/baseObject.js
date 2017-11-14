@@ -153,8 +153,7 @@ XEngine.BaseObject.prototype = {
 
 	_setBuffers: function(){
 		this.game.context.useProgram(this.shader.shaderProgram);
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
+		this._setVertices(this.width, this.height);
 		this.vertexBuffer.itemSize = 3;
 		this.vertexBuffer.numItems = 4;
 
@@ -164,8 +163,7 @@ XEngine.BaseObject.prototype = {
 		this.verColorBuffer.itemSize = 4;
 		this.verColorBuffer.numItems = 4;
 
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._uv), this.game.context.STATIC_DRAW);
+		this._setUVs(this._uv);
 		this.uvBuffer.itemSize = 2;
 		this.uvBuffer.numItems = 4;
 	},
@@ -179,6 +177,12 @@ XEngine.BaseObject.prototype = {
 		]
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
+	},
+
+	_setUVs: function(uvs){
+		this._uv = uvs;
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._uv), this.game.context.STATIC_DRAW);
 	},
 
 	/**

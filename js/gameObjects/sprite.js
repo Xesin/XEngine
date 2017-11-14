@@ -18,10 +18,15 @@ XEngine.Sprite = function (game, posX, posY, sprite) {
 	_this.frame = 0;
 	var cache_image = _this.game.cache.image(sprite);
 	//if (cache_image.type == "sprite") {
-		_this.width = cache_image.frameWidth || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
-		_this.height = cache_image.frameHeight || 10;
-		_this._columns = Math.floor(cache_image.image.width / _this.width);
-		_this._rows = Math.floor(cache_image.image.height / _this.height);
+	_this.width = cache_image.frameWidth || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
+	_this.height = cache_image.frameHeight || 10;
+
+	_this._columns = Math.floor(cache_image.image.width / _this.width);
+	_this._rows = Math.floor(cache_image.image.height / _this.height);
+	_this.tilled = false;
+	if(_this._columns > 1 || _this._rows > 1){
+		_this.tilled = true;
+	}
 	/*}
 	else {
 		_this.json = _this.game.cache.getJson(sprite);
@@ -59,6 +64,36 @@ XEngine.Sprite.prototypeExtends = {
 			_this._prevWidth = _this.width;
 			_this._prevHeight = _this.height;
 			_this._setVertices(_this.width, _this.height);
+		}
+
+		if(_this.tilled){
+			var column = _this.frame;
+
+			if (column > _this._columns - 1) {
+				column = _this.frame % _this._columns;
+			}
+
+			var row = Math.floor(_this.frame / _this._columns);
+			var startX = column * cache_image.frameWidth;
+			var startY = row * cache_image.frameHeight;
+
+			var startUvX = startX / cache_image.image.width;
+			var startUvY = startY / cache_image.image.height;
+
+			var endX = startX + cache_image.frameWidth;
+			var endY = startY + cache_image.frameHeight;
+
+			var endUvX = endX / cache_image.image.width;
+			var endUvY = endY / cache_image.image.height;
+
+			var uv = [
+				startUvX, startUvY,
+				startUvX, endUvY,
+				endUvX, startUvY,
+				endUvX, endUvY,
+			];
+
+			this._setUVs(uv);
 		}
 
 		context.bindBuffer(context.ARRAY_BUFFER, _this.vertexBuffer);

@@ -24,7 +24,7 @@ XEngine.AnimationManager.prototype = {
 	},
 
 	play: function (animName) { //Ejecuta una animación
-		if (this.currentAnim) { //Si ya hay una en marcha, la paramos
+		if (this.currentAnim && this.animations[animName] != this.currentAnim) { //Si ya hay una en marcha, la paramos
 			this.currentAnim._stop();
 		}
 		var anim = this.animations[animName];
