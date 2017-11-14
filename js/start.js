@@ -17,6 +17,8 @@ var Start = function (game) {
 	
 };
 
+var circle;
+
 Start.prototype = {
 	
 	preload: function () {
@@ -44,7 +46,8 @@ Start.prototype = {
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
 		}*/
 
-		this.game.add.circle(100,100,300, 300);
+		circle = this.game.add.circle(100,100,300, 300);
+		var rect = this.game.add.rect(100,400,300, 300);
 	},
 	
 	update : function (deltaTime) {

@@ -40,14 +40,6 @@ XEngine.Rect.prototypeExtends = {
 		canvas.restore();
 },*/
 
-	_onInitialize: function(){
-		if(!this.shader.compiled){
-			this.shader.initializeShader(this.game.context);
-		}
-		this._setVertices(this.width, this.height);
-		this._setBuffers();
-	},
-
 	getBounds: function () {
 		var _this = this;
 		var width = _this.width * _this.scale.x;

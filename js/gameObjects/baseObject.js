@@ -143,10 +143,16 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_onInitialize: function(){
-
+		if(!this.shader.compiled){
+			this.shader.initializeShader(this.game.context);
+		}
+		this.game.context.useProgram(this.shader.shaderProgram);
+		this._setVertices(this.width, this.height);
+		this._setBuffers();
 	},
 
 	_setBuffers: function(){
+		this.game.context.useProgram(this.shader.shaderProgram);
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
 		this.vertexBuffer.itemSize = 3;
@@ -171,6 +177,8 @@ XEngine.BaseObject.prototype = {
 			this.width, -0, -1.0,
 			this.width, this.height, -1.0,
 		]
+		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
 	},
 
 	/**
@@ -236,6 +244,7 @@ XEngine.BaseObject.prototype = {
 	 */
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 		if(this.shader == null) return;
+		this.shader._beginRender(context);
 		mat4.identity(this.mvMatrix);
 		var posX = Math.round(-(this.width * this.anchor.x));
 		var posY = Math.round(-(this.height * this.anchor.y));
@@ -243,11 +252,11 @@ XEngine.BaseObject.prototype = {
 		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
 		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
 		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
-		this.shader.uniforms.mvMatrix.value = this.mvMatrix;
-		this.shader.uniforms.pMatrix.value = this.game.camera.pMatrix;
+		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
+		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);
 
-		if(this.width === this._prevWidth || this.height === this._prevHeight){
+		if(this.width !== this._prevWidth || this.height !== this._prevHeight){
 			this._prevWidth = this.width;
 			this._prevHeight = this.height;
 			this._setVertices(this.width, this.height);
@@ -268,33 +277,8 @@ XEngine.BaseObject.prototype = {
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
 	},
 
-	/**
-	 * Aplica la rotación del objeto al canvas
-	 * @method XEngine.BaseObject#applyRotationAndPos
-	 * 
-	 * @param {CanvasRenderingContext2D} canvas - contexto 2D de canvas al que se le aplica la rotación
-	 * @private
-	 */
-	applyRotationAndPos: function (canvas) { //Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
-		var _this = this;
-		var pos = new XEngine.Vector(0, 0);
-		if (_this.isometric) {
-			pos = XEngine.Vector.cartToIsoCoord(_this.getWorldPos());
-		}
-		else {
-			pos = _this.getWorldPos();
-		}
-		if (_this.fixedToCamera) {
-			canvas.translate(pos.x, pos.y);
-		}
-		else {
-			canvas.translate(pos.x - this.game.camera.position.x, pos.y - this.game.camera.position.y);
-		}
-		canvas.rotate(this.getTotalRotation() * Math.PI / 180);
-		canvas.scale(this.scale.x, this.scale.y);
-	},
-
 	setColor:function(r, g, b, a = 1.0){
+		context.useProgram(this.shader.shaderProgram);
 		this._vertColors = [
 			r, g, b, a,
 			r, g, b, a,

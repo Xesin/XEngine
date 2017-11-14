@@ -19,16 +19,27 @@ XEngine.ShaderLib.CircleColor = {
 		
 		"void main(void) {",
 			"vec2 uvOffset = uv - 0.5;",
-			"float res = 1.0 - floor(sqrt(dot(uvOffset, uvOffset)) + 0.51);",
-			"if(res < 1.0) discard;",
+			"float distance = length(uvOffset);",
+			"float res = smoothstep(distance,distance+0.003,0.5);",
 			"gl_FragColor = vec4(res, res, res, 1.0) * vColor;",
 		"}"
 	],
-
-	uniforms: {
-	}
 }
 
-Object.assign(XEngine.ShaderLib.CircleColor.uniforms, XEngine.Shader.baseUniforms);
 
-XEngine.ShaderLib.CircleColor.shader = new XEngine.Shader(XEngine.ShaderLib.CircleColor.vertexShader, XEngine.ShaderLib.CircleColor.fragmentShader, XEngine.ShaderLib.CircleColor.uniforms);
+
+XEngine.CircleColorShader = function(){
+	this.uniforms = {};
+	XEngine.Shader.call(this, XEngine.ShaderLib.CircleColor.vertexShader, XEngine.ShaderLib.CircleColor.fragmentShader, this.uniforms);
+}
+
+XEngine.CircleColorShader.prototype = Object.create(XEngine.Shader.prototype);
+XEngine.CircleColorShader.constructor = XEngine.CircleColorShader;
+
+XEngine.CircleColorShader.prototypeExtends = {
+	
+}
+
+Object.assign(XEngine.CircleColorShader.prototype, XEngine.CircleColorShader.prototypeExtends);
+
+XEngine.ShaderLib.CircleColor.shader = new XEngine.CircleColorShader();

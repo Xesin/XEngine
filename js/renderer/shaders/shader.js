@@ -1,5 +1,15 @@
-XEngine.Shader = function(vertexCode, fragmentCode, uniforms = XEngine.Shader.baseUniforms){
-	this.uniforms = uniforms;
+XEngine.ShaderUniforms ={
+	mvMatrix:{ 
+		value: null,
+	},
+	pMatrix:{
+		value: null
+	},
+}
+
+XEngine.Shader = function(vertexCode, fragmentCode, uniforms){
+	this.uniforms = uniforms || {};
+	this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
 	this.vertPostAtt = null;
 	this.vertColAtt = null;
 	this.shaderProgram = null;
@@ -8,14 +18,6 @@ XEngine.Shader = function(vertexCode, fragmentCode, uniforms = XEngine.Shader.ba
 	this.fragmentCode = fragmentCode;
 }
 
-XEngine.Shader.baseUniforms ={
-	mvMatrix:{ 
-		value: null,
-	},
-	pMatrix:{
-		value: null
-	}
-}
 
 XEngine.Shader.prototype = {
 	initializeShader: function(gl) {
@@ -82,47 +84,65 @@ XEngine.Shader.prototype = {
 				this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 			}
 		}
+
+		for (var property in this.baseUniforms) {
+			if (this.baseUniforms.hasOwnProperty(property)) {
+				this.baseUniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
+			}
+		}
+	},
+
+	_beginRender: function(gl){
+		gl.useProgram(this.shaderProgram);
+	},
+
+	_setUniform(uniform, gl){
+		var valueType = uniform.value.constructor
+		if(valueType === Number){
+			gl.uniform1f(uniform.gpuPosition, uniform.value);
+		}else if(valueType === Array){
+			var length = uniform.value.length;
+			switch(length){
+				case 2:
+					gl.uniform2fv(uniform.gpuPosition, uniform.value);
+				break;
+				case 3:
+					gl.uniform3fv(uniform.gpuPosition, uniform.value);
+				break;
+				case 4:
+					gl.uniform4fv(uniform.gpuPosition, uniform.value);
+				break;
+			}
+		}else if(valueType === Float32Array){
+			var length = uniform.value.length;
+			switch(length){
+			case 5:
+				var value = new Array(4);
+				for(var i = 0; i < 4; i++){
+					value[i] = uniform.value[i];
+				}
+				gl.uniformMatrix2fv(uniform.gpuPosition, false, value);
+				break;
+			case 9:
+				gl.uniformMatrix3fv(uniform.gpuPosition, false, uniform.value);
+				break;
+			case 16:
+				gl.uniformMatrix4fv(uniform.gpuPosition, false, uniform.value);
+				break;
+			}
+			
+		}
 	},
 
 	updateUniforms: function(gl){
-		gl.useProgram(this.shaderProgram);
 		for (var property in this.uniforms) {
 			if (this.uniforms.hasOwnProperty(property)) {
-				var valueType = this.uniforms[property].value.constructor
-				if(valueType === Number){
-					gl.uniform1f(this.uniforms[property].gpuPosition, this.uniforms[property].value);
-				}else if(valueType === Array){
-					var length = this.uniforms[property].value.length;
-					switch(length){
-						case 2:
-							gl.uniform2fv(this.uniforms[property].gpuPosition, this.uniforms[property].value);
-						break;
-						case 3:
-							gl.uniform3fv(this.uniforms[property].gpuPosition, this.uniforms[property].value);
-						break;
-						case 4:
-							gl.uniform4fv(this.uniforms[property].gpuPosition, this.uniforms[property].value);
-						break;
-					}
-				}else if(valueType === Float32Array){
-					var length = this.uniforms[property].value.length;
-					switch(length){
-					case 5:
-						var value = new Array(4);
-						for(var i = 0; i < 4; i++){
-							value[i] = this.uniforms[property].value[i];
-						}
-						gl.uniformMatrix2fv(this.uniforms[property].gpuPosition, false, value);
-						break;
-					case 9:
-						gl.uniformMatrix3fv(this.uniforms[property].gpuPosition, false, this.uniforms[property].value);
-						break;
-					case 16:
-						gl.uniformMatrix4fv(this.uniforms[property].gpuPosition, false, this.uniforms[property].value);
-						break;
-					}
-					
-				}
+				this._setUniform(this.uniforms[property], gl);
+			}
+		}
+		for (var property in this.baseUniforms) {
+			if (this.baseUniforms.hasOwnProperty(property)) {
+				this._setUniform(this.baseUniforms[property], gl);
 			}
 		}
 	}
