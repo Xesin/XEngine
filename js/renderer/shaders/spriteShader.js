@@ -18,6 +18,7 @@ XEngine.ShaderLib.Sprite = {
 
 		"void main(void) {",
 			"vec4 texCol = texture2D(texSampler, uv);",
+			"texCol.rgb *= texCol.w;",
 			"gl_FragColor = texCol*vColor;",
 		"}"
 	],

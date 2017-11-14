@@ -48,7 +48,7 @@ Start.prototype = {
 
 		this.sprite = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'test');
 		this.sprite.anchor.setTo(0.5);
-		this.sprite.scale.setTo(2);
+		this.sprite.scale.setTo(1.5);
 		this.sprite.animation.add('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 75, true);
 		//Set de la animaci?n de saltar
 		this.sprite.animation.add('jump', [10, 11, 12, 13], 120, false);
