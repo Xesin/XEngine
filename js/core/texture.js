@@ -3,7 +3,6 @@ XEngine.Texture2D = function(name, width, height){
 	this.image = null;
 	this.frameWidth = width;
 	this.frameHeight = height;
-	this.data = new Array();
 	this._texture = null;
 	this.ready = false;
 }
