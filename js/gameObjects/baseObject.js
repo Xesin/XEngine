@@ -216,15 +216,21 @@ XEngine.BaseObject.prototype = {
 	 * @return {Number}
 	 * @public
 	 */
-	getWorldPos: function () { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
+	getWorldPos: function (childMatrix) { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
 		var _this = this;
-		var parentPos = _this.parent.getWorldPos();
-		var x = _this.position.x + parentPos.x;
-		var y = _this.position.y + parentPos.y;
-		return {
-			x: x,
-			y: y
-		};
+		_this.parent.getWorldPos(childMatrix);
+		var translation = [this.position.x, this.position.y, 0.0];
+		var posX = Math.round(-(this.width * this.anchor.x));
+		var posY = Math.round(-(this.height * this.anchor.y));
+		if(this.fixedToCamera){
+			translation[0] += this.game.camera.position.x;
+			translation[1] += this.game.camera.position.y;
+		}
+		mat4.translate(childMatrix, childMatrix, translation);
+		mat4.rotateZ(childMatrix, childMatrix, this.rotation * Math.PI / 180);
+		mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
+		mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
+		return childMatrix;
 	},
 
 	/**
@@ -249,18 +255,7 @@ XEngine.BaseObject.prototype = {
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 		if(this.shader == null) return;
 		this.shader._beginRender(context);
-		mat4.identity(this.mvMatrix);
-		var posX = Math.round(-(this.width * this.anchor.x));
-		var posY = Math.round(-(this.height * this.anchor.y));
-		var translation = [this.position.x, this.position.y, 0.0];
-		if(this.fixedToCamera){
-			translation[0] += this.game.camera.position.x;
-			translation[1] += this.game.camera.position.y;
-		}
-		mat4.translate(this.mvMatrix, this.mvMatrix, translation);
-		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
-		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
-		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);
+		this.getWorldPos(this.mvMatrix);
 		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);

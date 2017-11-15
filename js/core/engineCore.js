@@ -34,7 +34,7 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @readonly
 	 * @private
 	 */
-	this.position = new XEngine.Vector(0, 0);
+	this.position = mat4.create();
 	/**
 	 * @property {Number} width - Ancho del juego
 	 * @public
@@ -344,8 +344,8 @@ XEngine.Game.prototype = {
 	 * @private
 	 * @returns {XEngine.Vector}
 	 */
-	getWorldPos: function () {
-		return this.position;
+	getWorldPos: function (childMatrix) {
+		mat4.identity(childMatrix);
 	},
 
 
