@@ -3602,32 +3602,6 @@ XEngine.BaseObject.prototype = {
 	_renderToCanvas: function (canvas) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 
 	},
-
-	/**
-	 * Aplica la rotación del objeto al canvas
-	 * @method XEngine.BaseObject#applyRotationAndPos
-	 * 
-	 * @param {CanvasRenderingContext2D} canvas - contexto 2D de canvas al que se le aplica la rotación
-	 * @private
-	 */
-	applyRotationAndPos: function (canvas) { //Aplica, al canvas, la rotación y posición del objeto para que se renderice como toca
-		var _this = this;
-		var pos = new XEngine.Vector(0, 0);
-		if (_this.isometric) {
-			pos = XEngine.Vector.cartToIsoCoord(_this.getWorldPos());
-		}
-		else {
-			pos = _this.getWorldPos();
-		}
-		if (_this.fixedToCamera) {
-			canvas.translate(pos.x, pos.y);
-		}
-		else {
-			canvas.translate(pos.x - this.game.camera.position.x, pos.y - this.game.camera.position.y);
-		}
-		canvas.rotate(this.getTotalRotation() * Math.PI / 180);
-		canvas.scale(this.scale.x, this.scale.y);
-	}
 };
 
 /**

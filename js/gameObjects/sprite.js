@@ -50,24 +50,8 @@ XEngine.Sprite.prototypeExtends = {
 		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
 		_this.shader._setTexture(cache_image._texture);
 		_this.shader._beginRender(context);
-		
-		mat4.identity(_this.mvMatrix);
-		var posX = Math.round(-(_this.width * _this.anchor.x));
-		var posY = Math.round(-(_this.height * _this.anchor.y));
-		mat4.translate(_this.mvMatrix, _this.mvMatrix, [_this.position.x, _this.position.y, 0.0]);
-		mat4.rotateZ(_this.mvMatrix, _this.mvMatrix, _this.rotation * Math.PI / 180);
-		mat4.scale(_this.mvMatrix, _this.mvMatrix, [_this.scale.x, _this.scale.y, 1.0]);
-		mat4.translate(_this.mvMatrix, _this.mvMatrix, [posX, posY, 0.0]);
-		_this.shader.baseUniforms.mvMatrix.value = _this.mvMatrix;
-		_this.shader.baseUniforms.pMatrix.value = _this.game.camera.pMatrix;
-		_this.shader.updateUniforms(context);
-
 
 		if(_this.tilled){
-			var startUvX=0;
-			var startUvY=0;
-			var endUvX =1;
-			var endUvY =1;
 			var startX = 0;
 			var startY = 0;
 			var endX = 0;
@@ -105,11 +89,11 @@ XEngine.Sprite.prototypeExtends = {
 				endY = startY + cache_image.frameHeight;
 			}
 
-			startUvX = startX / cache_image.image.width;
-			startUvY = startY / cache_image.image.height;
+			var startUvX = startX / cache_image.image.width;
+			var startUvY = startY / cache_image.image.height;
 
-			endUvX = endX / cache_image.image.width;
-			endUvY = endY / cache_image.image.height;
+			var endUvX = endX / cache_image.image.width;
+			var endUvY = endY / cache_image.image.height;
 
 			var uv = [
 				startUvX, startUvY,
@@ -121,25 +105,7 @@ XEngine.Sprite.prototypeExtends = {
 			this._setUVs(uv);
 		}
 
-		if(_this.width !== _this._prevWidth || _this.height !== _this._prevHeight){
-			_this._prevWidth = _this.width;
-			_this._prevHeight = _this.height;
-			_this._setVertices(_this.width, _this.height);
-		}
-
-		context.bindBuffer(context.ARRAY_BUFFER, _this.vertexBuffer);
-
-		context.vertexAttribPointer(_this.shader.vertPostAtt, _this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.bindBuffer(context.ARRAY_BUFFER, _this.verColorBuffer);
-		
-		context.vertexAttribPointer(_this.shader.vertColAtt, _this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.bindBuffer(context.ARRAY_BUFFER, _this.uvBuffer);
-
-		context.vertexAttribPointer(_this.shader.vertUvAtt, _this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.drawArrays(context.TRIANGLE_STRIP, 0, _this.vertexBuffer.numItems);
+		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 
 	getBounds: function () {

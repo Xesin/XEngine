@@ -25,6 +25,7 @@ XEngine.Button = function (game, posX, posY, sprite, spriteDown, spriteOver, spr
 	_this._swapSprite(sprite);
 	_this.position.setTo(posX, posY);
 	_this.inputEnabled = true;
+	_this.shader = XEngine.ShaderLib.Sprite.shader;
 
 	_this.onClick = new XEngine.Signal();
 
@@ -65,17 +66,12 @@ XEngine.Button.prototypeExtends = {
 		_this.height = new_image.height || 10;
 	},
 
-	_renderToCanvas: function (canvas) { //Sobreescribimos el método render	
+	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
+		if(this.shader == null) return;
 		var _this = this;
-		canvas.save(); //Guardamos el estado actual del canvas
-		var image = _this.game.cache.image(_this.sprite).image; //Obtenemos la imagen a renderizar
-		this.applyRotationAndPos(canvas);
-		canvas.globalAlpha = _this.alpha; //Aplicamos el alpha del objeto
-		var posX = Math.round(-(_this.width * _this.anchor.x));
-		var posY = Math.round(-(_this.height * _this.anchor.y));
-		//Renderizamos la imagen teniendo en cuenta el punto de anclaje
-		canvas.drawImage(image, posX, posY, _this.width, _this.height);
-		canvas.restore(); //Restauramos el estado del canvas
+		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
+		_this.shader._setTexture(cache_image._texture);
+		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 
 	getBounds: function () {

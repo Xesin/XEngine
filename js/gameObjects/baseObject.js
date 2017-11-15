@@ -252,7 +252,12 @@ XEngine.BaseObject.prototype = {
 		mat4.identity(this.mvMatrix);
 		var posX = Math.round(-(this.width * this.anchor.x));
 		var posY = Math.round(-(this.height * this.anchor.y));
-		mat4.translate(this.mvMatrix, this.mvMatrix, [this.position.x, this.position.y, 0.0]);
+		var translation = [this.position.x, this.position.y, 0.0];
+		if(this.fixedToCamera){
+			translation[0] += this.game.camera.position.x;
+			translation[1] += this.game.camera.position.y;
+		}
+		mat4.translate(this.mvMatrix, this.mvMatrix, translation);
 		mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation * Math.PI / 180);
 		mat4.scale(this.mvMatrix, this.mvMatrix, [this.scale.x, this.scale.y, 1.0]);
 		mat4.translate(this.mvMatrix, this.mvMatrix, [posX, posY, 0.0]);

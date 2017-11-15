@@ -41,7 +41,7 @@ Start.prototype = {
 		this.angle = this.game.add.text(0,0, '0', 20);
 		this.angle.color = 'red';*/
 		this.stats = new Stats()
-		document.body.appendChild(this.stats.dom)
+		//document.body.appendChild(this.stats.dom)
 		/*for(var i = 0; i< 2000; i++){
 			var rect = this.game.add.rect(XEngine.Mathf.randomRange(0, 1200),XEngine.Mathf.randomRange(0, 720),30, 30);
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
@@ -56,7 +56,12 @@ Start.prototype = {
 		this.sprite.animation.add('jump', ['manJump.0002', 'manJump.0003', 'manJump.0004', 'manJump.0005'], 120, false);
 		//Set de la animaci?n de andar
 		this.sprite.animation.add('walk',['manWalk.0001', 'manWalk.0002', 'manWalk.0003', 'manWalk.0004', 'manWalk.0005', 'manWalk.0006', 'manWalk.0007', 'manWalk.0008'], 100, true);
-		this.sprite.animation.play('idle');                                                //Arrancamos el idle
+		this.sprite.animation.play('idle');
+
+
+		var button = this.game.add.button(80, 80, 'test2', 'player', 'test2', 'test2');
+		button.fixedToCamera = true;
+		button.onClick.addOnce(function(){console.log("Click!")}, this);
 	},
 	
 	update : function (deltaTime) {
