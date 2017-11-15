@@ -73,16 +73,6 @@ XEngine.Button.prototypeExtends = {
 		_this.shader._setTexture(cache_image._texture);
 		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
-
-	getBounds: function () {
-		var _this = this;
-		var width = _this.width * _this.scale.x;
-		var height = _this.height * _this.scale.y;
-		return {
-			width: width,
-			height: height
-		};
-	},
 };
 
 

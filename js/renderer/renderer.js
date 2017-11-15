@@ -78,10 +78,13 @@ XEngine.Renderer.prototype = {
 			}
 			else if (!XEngine.Audio.prototype.isPrototypeOf(object)) { //Si no es un audio, renderizamos
 				if (!object.alive) continue;
+				if(this.game.autoCulling && !object.isInsideCamera()) return;
+
 				object._renderToCanvas(_this.context);
 				if (object.body != undefined) {
 					object.body._renderBounds(_this.context); //Si tiene un body, llamamos al render de los bounds
 				}
+				
 			}
 		}
 	},

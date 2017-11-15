@@ -288,7 +288,7 @@ XEngine.BaseObject.prototype = {
 	},
 
 	setColor:function(r, g, b, a = 1.0){
-		context.useProgram(this.shader.shaderProgram);
+		this.game.context.useProgram(this.shader.shaderProgram);
 		this._vertColors = [
 			r, g, b, a,
 			r, g, b, a,
@@ -297,5 +297,28 @@ XEngine.BaseObject.prototype = {
 		  ];
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertColors), this.game.context.STATIC_DRAW);
+	},
+
+	getBounds: function () {
+		var _this = this;
+		var width = _this.width * _this.scale.x;
+		var height = _this.height * _this.scale.y;
+		return {
+			width: width,
+			height: height
+		};
+	},
+
+	isInsideCamera: function(){
+		var bounds = this.getBounds();
+		var worldPos = this.getWorldPos();
+		var cameraPos = this.game.camera.position;
+		var viewRect = {width: this.game.width, height: this.game.height};
+		if(worldPos.x + bounds.width * this.anchor.x < cameraPos.x) return false;
+		if(worldPos.y + bounds.height * this.anchor.y < cameraPos.y) return false;
+		if(worldPos.x - bounds.width * this.anchor.x> cameraPos.x + viewRect.width) return false;
+		if(worldPos.y - bounds.height * this.anchor.y> cameraPos.y + viewRect.height) return false;
+
+		return true;
 	}
 };

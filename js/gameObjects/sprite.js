@@ -108,16 +108,6 @@ XEngine.Sprite.prototypeExtends = {
 		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 
-	getBounds: function () {
-		var _this = this;
-		var width = _this.width * _this.scale.x;
-		var height = _this.height * _this.scale.y;
-		return {
-			width: width,
-			height: height
-		};
-	},
-
 	reset: function (x, y) { //Reseteamos el sprite
 		this.position.x = x;
 		this.position.y = y;

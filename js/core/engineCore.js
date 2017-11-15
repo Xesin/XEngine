@@ -188,16 +188,14 @@ XEngine.Game = function (width, height, idContainer) {
 	 */
 	this.ISO_TILE_HEIGHT = 32;
 
+	this.autoCulling = false;
+
 	this.init(); //iniciamos el juego
 
 	XEngine.Game._ref = this;
 };
 
 XEngine.Game.prototype.constructor = XEngine.Game;
-
-XEngine.Game._updateCaller = function () {
-	XEngine.Game._ref.update();
-};
 
 XEngine.Game.prototype = {
 	/**
@@ -253,7 +251,7 @@ XEngine.Game.prototype = {
 	update: function () {
 		var _this = this;
 		if (window.requestAnimationFrame) {
-			window.requestAnimationFrame(XEngine.Game._updateCaller);
+			window.requestAnimationFrame(function(){_this.update()});
 		}
 		else {
 			clearTimeout(_this.timer); //limpiamos el timer para que no se quede en memoria
