@@ -22,6 +22,7 @@ var fragmentCode = [
  * "Seascape" by Alexander Alekseev aka TDM - 2014
  * License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
  * Contact: tdmaav@gmail.com
+ * https://www.shadertoy.com/view/Ms2SD1
  */
         "precision highp float;",
         "varying highp vec2 uv;",
