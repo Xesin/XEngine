@@ -50,7 +50,7 @@ Start.prototype = {
 		this.unicorn = this.game.add.sprite(200, 200, 'test2');
 		this.sprite = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'player');
 		this.sprite.anchor.setTo(0.5);
-		this.sprite.scale.setTo(0.5);
+		this.sprite.scale.setTo(1.5);
 		this.sprite.animation.add('idle', ['manIdle.0000', 'manIdle.0001', 'manIdle.0002', 'manIdle.0003', 'manIdle.0004', 'manIdle.0005', 'manIdle.0006', 'manIdle.0007', 'manIdle.0008', 'manIdle.0009'], 75, true);
 		//Set de la animaci?n de saltar
 		this.sprite.animation.add('jump', ['manJump.0002', 'manJump.0003', 'manJump.0004', 'manJump.0005'], 120, false);
@@ -63,6 +63,8 @@ Start.prototype = {
 		var button = this.game.add.button(80, 80, 'test2', 'player', 'test2', 'test2');
 		button.fixedToCamera = true;
 		button.onClick.addOnce(function(){console.log("Click!")}, this);
+
+		this.game.add.circle(300, 300, 50, 50);
 	},
 	
 	update : function (deltaTime) {
@@ -85,6 +87,8 @@ Start.prototype = {
 			this.sprite.position.y += 200 * deltaTime;
 		}
 		//this.game.camera.position.x += 100 * deltaTime;
+		this.unicorn.rotation += 45 * deltaTime; 
+		this.sprite.rotation += 45 * deltaTime; 
 	},
 	
 	fin: function () {

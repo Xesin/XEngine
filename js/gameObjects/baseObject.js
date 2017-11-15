@@ -210,15 +210,15 @@ XEngine.BaseObject.prototype = {
 	},
 
 	/**
-	 * Devuelve la posición del objeto en coordenadas del mundo (tiene en cuenta la posición de los padres)
-	 * @method XEngine.BaseObject#getWorldPos
+	 * Devuelve el matrix de transormacion del objeto en coordenadas del mundo (tiene en cuenta la posición de los padres)
+	 * @method XEngine.BaseObject#getWorldMatrix
 	 * 
 	 * @return {Number}
 	 * @public
 	 */
-	getWorldPos: function (childMatrix) { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
+	getWorldMatrix: function (childMatrix) { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
 		var _this = this;
-		_this.parent.getWorldPos(childMatrix);
+		_this.parent.getWorldMatrix(childMatrix);
 		var translation = [this.position.x, this.position.y, 0.0];
 		var posX = Math.round(-(this.width * this.anchor.x));
 		var posY = Math.round(-(this.height * this.anchor.y));
@@ -234,15 +234,21 @@ XEngine.BaseObject.prototype = {
 	},
 
 	/**
-	 * Devuelve la rotación total del objeto (tiene en cuenta la rotación de los padres)
+	 * Devuelve la posición del objeto en coordenadas del mundo (tiene en cuenta la posición de los padres)
 	 * @method XEngine.BaseObject#getWorldPos
 	 * 
 	 * @return {Number}
 	 * @public
 	 */
-	getTotalRotation: function () { //Obtiene la rotación teniendo en cuenta la rotación de los padres
-		var parentRot = this.parent.getTotalRotation();
-		return parentRot + this.rotation;
+	getWorldPos: function () { //Obtiene la posición del objeto en el mundo teniendo en cuenta la posición local y la posición del mundo del padre
+		var _this = this;
+		var parentPos = _this.parent.getWorldPos();
+		var x = _this.position.x + parentPos.x;
+		var y = _this.position.y + parentPos.y;
+		return {
+			x: x,
+			y: y
+		};
 	},
 
 	/**
@@ -255,7 +261,7 @@ XEngine.BaseObject.prototype = {
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 		if(this.shader == null) return;
 		this.shader._beginRender(context);
-		this.getWorldPos(this.mvMatrix);
+		this.getWorldMatrix(this.mvMatrix);
 		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);
