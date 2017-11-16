@@ -25,50 +25,45 @@ XEngine.TilledImage = function (game, posX, posY, sprite, widht, height) {
 	_this.height = height;
 	_this.position.setTo(posX, posY);
 	_this.offSet = new XEngine.Vector(0, 0); //Offset para poder mover la posición del tilling
+	_this.shader = XEngine.ShaderLib.Sprite.shader;
 };
 
 XEngine.TilledImage.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.TilledImage.prototypeExtends = {
-	_renderToCanvas: function (canvas) {
+	_renderToCanvas: function (context) {
+		if(this.shader == null) return;
 		var _this = this;
-		canvas.save();
-		var pos = _this.getWorldPos();
+		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
+		_this.shader._setTexture(cache_image._texture);
+		_this.shader._beginRender(context);
 
-		if (_this.offSet.x > _this.imageWidht) { //Evitamos que el offset llegue a ser un número demasiado grande
-			_this.offSet.x = _this.offSet.x - _this.imageWidht;
-		}
-		else if (_this.offSet.x < -_this.imageWidth) {
-			_this.offSet.x = _this.offSet.x + _this.imageWidht;
-		}
+		var startX = 0;
+		var startY = 0;
+		var endX = 0;
+		var endY = 0;
 
-		if (_this.offSet.y > _this.imageHeigh) {
-			_this.offSet.y = _this.offSet.y - _this.imageHeigh;
-		}
-		else if (_this.offSet.y < -_this.imageHeigh) {
-			_this.offSet.y = _this.offSet.y + _this.imageHeigh;
-		}
+		var row = Math.floor(_this.frame / _this._columns);
 
-		var image = _this.game.cache.image(_this.sprite).image
-		var pattern = canvas.createPattern(image, "repeat"); //Creamos el patron en modo repetición
+		if(_this.offSet.x > cache_image.image.widht) _this.offSet.x = _this.offSet.x - cache_image.image.widht;
+		if(_this.offSet.y > cache_image.image.height) _this.offSet.y = _this.offSet.y - cache_image.image.height;
 
-		var rectX = Math.round(-(pos.x + _this.offSet.x));
-		var rectY = Math.round(-(pos.y + _this.offSet.y));
+		var startUvX = (_this.offSet.x) / cache_image.image.width;
+		var startUvY = (_this.offSet.y) / cache_image.image.height;
 
-		this.applyRotationAndPos(canvas, {
-			x: rectX,
-			y: rectY
-		});
+		var endUvX = (_this.width + _this.offSet.x) / cache_image.image.width;
+		var endUvY = (_this.height + _this.offSet.y) / cache_image.image.height;
 
-		var rectWidht = Math.round(_this.width * _this.scale.x);
-		var rectHeigth = Math.round(_this.height * _this.scale.y);
+		var uv = [
+			startUvX, startUvY,
+			startUvX, endUvY,
+			endUvX, startUvY,
+			endUvX, endUvY,
+		];
 
-		canvas.beginPath();
-		canvas.rect(rectX, rectY, rectWidht, rectHeigth); //Creamos el rect donde se va pintar nuestra imagen
-		canvas.fillStyle = pattern; //Asignamos el patrón que hemos creado antes
-		canvas.globalAlpha = _this.alpha;
-		canvas.fill();
-		canvas.restore();
+		this._setUVs(uv);
+
+		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 };
 

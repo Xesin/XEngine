@@ -16,6 +16,9 @@ AnimScene.prototype = {
 		this.sprite.animation.add('jump', ['manJump.0002', 'manJump.0003', 'manJump.0004', 'manJump.0005'], 120, false);
 		this.sprite.animation.add('walk',['manWalk.0001', 'manWalk.0002', 'manWalk.0003', 'manWalk.0004', 'manWalk.0005', 'manWalk.0006', 'manWalk.0007', 'manWalk.0008'], 100, true);
 		this.sprite.animation.play('idle');
+
+		this.tilled = this.game.add.tilled(0,0,'player', 400,400);
+
         this.game.input.onKeyUp.add(function(event){
             if(event.keyCode == XEngine.KeyCode.TWO){
                 this.game.input.onKeyUp._destroy();
@@ -38,6 +41,8 @@ AnimScene.prototype = {
 	
 	update : function (deltaTime) {
 		//this.game.camera.position.y += 1.0;
+		this.tilled.offSet.x += 200 * deltaTime;
+		this.tilled.offSet.y += 200 * deltaTime;
         var walk = false;
 		if(this.game.input.isPressed(XEngine.KeyCode.D)){
 			this.sprite.position.x += 200 * deltaTime;

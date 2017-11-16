@@ -44,7 +44,7 @@ XEngine.Sprite = function (game, posX, posY, sprite) {
 XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.Sprite.prototypeExtends = {
-	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
+	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este mï¿½todo segï¿½n la necesidad
 		if(this.shader == null) return;
 		var _this = this;
 		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
