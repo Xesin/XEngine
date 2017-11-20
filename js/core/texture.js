@@ -25,6 +25,8 @@ XEngine.Texture2D.prototype = {
 			var ctx = canvas.getContext("2d");
 			ctx.drawImage(this.image, 0, 0, this.image.width, this.image.height);
 			this.image = canvas;
+			this.textWidth = canvas.width;
+			this.textHeight = canvas.height;
 		}
 
 		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);

@@ -153,7 +153,6 @@ XEngine.BaseObject.prototype = {
 
 	_setBuffers: function(){
 		this.game.context.useProgram(this.shader.shaderProgram);
-		this._setVertices(this.width, this.height);
 		this.vertexBuffer.itemSize = 3;
 		this.vertexBuffer.numItems = 4;
 
@@ -171,9 +170,9 @@ XEngine.BaseObject.prototype = {
 	_setVertices: function(width, height){
 		this._vertices = [
 			0, 0, -1.0,
-			-0, this.height, -1.0,
-			this.width, -0, -1.0,
-			this.width, this.height, -1.0,
+			-0, height, -1.0,
+			width, -0, -1.0,
+			width, height, -1.0,
 		]
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);

@@ -1,3 +1,5 @@
+var text_ref;
+
 /**
  * Objeto que define un texto
  * 
@@ -24,14 +26,18 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 	_this.style = '';
 	_this.strokeWidth = textStyle.stroke_width || 0;
 	_this.strokeColor = textStyle.stroke_color || 'black';
-	var canvas = game.context; //Ponemos los valores al canvas para objeter el width del texto
-	canvas.save();
-	canvas.font = _this.size + 'px ' + _this.font;
-	var textSize = canvas.measureText(_this.text);
-	canvas.restore(); //Restauramos los valores previos
+	_this.canvas = document.createElement("canvas"); //Ponemos los valores al canvas para objeter el width del texto
+	_this.context = _this.canvas.getContext("2d");
+	_this.context.save();
+	_this.context.font = _this.size + 'px ' + _this.font;
+	var textSize = _this.context.measureText(_this.text);
+	_this.context.restore(); //Restauramos los valores previos
 	_this.width = textSize.width;
 	_this.height = _this.size;
 	_this.position.setTo(posX, posY);
+	_this.shader = XEngine.ShaderLib.Sprite.shader;
+	_this._updateText();
+	text_ref =  this;
 };
 
 //TODO pendiente de comentar a partir de aquí
@@ -39,30 +45,46 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 XEngine.Text.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.Text.prototypeExtends = {
-	_renderToCanvas: function (canvas) {
+	_renderToCanvas: function (context) {
+		if(this.shader == null) return;
 		var _this = this;
-		canvas.save();
-		_this.applyRotationAndPos(canvas, _this.offSet);
-		canvas.globalAlpha = _this.alpha;
+		
+		_this.shader._setTexture(_this.texture);
+		_this.shader._beginRender(context);
+
+		this._setUVs(_this._uv);
+
+		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
+	},
+
+	_updateText: function(){
+		var _this = this;
+		_this.context.globalAlpha = _this.alpha;
 		var font = font = _this.style + ' ' + _this.size + 'px ' + _this.font;
-		canvas.font = font.trim();
-		var textSize = canvas.measureText(_this.text);
+		_this.context.font = font.trim();
+		var textSize = _this.context.measureText(_this.text);
 		_this.width = textSize.width;
-		_this.height = _this.size * 1.5;
-		var posX = Math.round(-(_this.width * _this.anchor.x));
-		var posY = Math.round(-(_this.height * _this.anchor.y));
-		var pos = {
-			x: posX,
-			y: posY + _this.size
-		};
+		_this.height = _this.size;
+		_this.canvas.width = textSize.width;
+		_this.canvas.height = _this.height;
+		_this.context.font = font.trim();
 		if (_this.strokeWidth > 0) {
-			canvas.strokeStyle = _this.strokeColor;
-			canvas.lineWidth = _this.strokeWidth;
-			canvas.strokeText(_this.text, pos.x, pos.y);
+			_this.context.strokeStyle = _this.strokeColor;
+			_this.context.lineWidth = _this.strokeWidth;
+			_this.context.strokeText(_this.text, 0, _this.height);
 		}
-		canvas.fillStyle = _this.color;
-		canvas.fillText(_this.text, pos.x, pos.y);
-		canvas.restore();
+		_this.context.fillStyle = _this.color;
+		_this.context.fillText(_this.text, 0, _this.height);
+		var texture = new XEngine.Texture2D('textTexture', _this.width, _this.height);
+		texture.image = _this.context.canvas;
+		texture.createTexture(_this.game.context);
+		_this.texture = texture._texture;
+		_this._setVertices(_this.width, _this.height);
+	},
+
+	setText:function(text){
+		this.text = text;
+		this._updateText();
 	},
 
 	getBounds: function () {
