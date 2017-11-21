@@ -33,7 +33,7 @@ XEngine.ImageLoader.prototype = {
 	 */
 	load: function () {
 		var _this = this;
-		var newImage = new XEngine.Texture2D(_this.imageName, _this.frameWidth, _this.frameHeight);
+		var newImage = new XEngine.Texture2D(_this.imageName, _this.frameWidth, _this.frameHeight, 1);
 
 		var img1 = new Image(); //Creamos el objeto Image
 		var handler = function () { //Creamos el handler de cuando se completa o da error
@@ -43,6 +43,7 @@ XEngine.ImageLoader.prototype = {
 
 			if (_this.frameWidth == 0) {
 				imageRef.frameWidth = this.width;
+				newImage.wrapMode = XEngine.Texture2D.WRAP_MODES.CLAMP;
 			}
 			else {
 				imageRef.frameWidth = _this.frameWidth;
@@ -50,6 +51,7 @@ XEngine.ImageLoader.prototype = {
 
 			if (_this.frameHeight == 0) {
 				imageRef.frameHeight = this.height;
+				newImage.wrapMode = XEngine.Texture2D.WRAP_MODES.CLAMP;
 			}
 			else {
 				imageRef.frameHeight = _this.frameHeight;

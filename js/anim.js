@@ -37,10 +37,15 @@ AnimScene.prototype = {
 			this.game.input.onClick._destroy();
 			this.game.state.start('unicorns');
 		},this);
+
 		
 		this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
 		this.text.anchor.setTo(0.5);
-		this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
+		var rect = this.game.add.rect(200 - this.text.width /2,200 - this.text.height / 2,0,this.text.height);
+		rect.render = false;
+		//this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
+		this.text.mask = rect;
+		this.game.tween.add(rect).to({width:this.text.width}, 2000, XEngine.Easing.ExpoInOut, true, 0, -1, true)
 	},
 	
 	update : function (deltaTime) {

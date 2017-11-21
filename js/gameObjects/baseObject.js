@@ -121,6 +121,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.verColorBuffer = game.context.createBuffer();
 	_this.uvBuffer = game.context.createBuffer();
 
+	_this.mask = null;
+
 	this.mvMatrix = mat4.create();
 	
 	mat4.identity(this.mvMatrix);
@@ -250,6 +252,27 @@ XEngine.BaseObject.prototype = {
 		};
 	},
 
+	_beginRender:function(context){
+		if(this.mask != null){
+			// disable color (u can also disable here the depth buffers)
+			context.colorMask(false, false, false, false);
+		
+			// Replacing the values at the stencil buffer to 1 on every pixel we draw
+			context.stencilFunc(context.ALWAYS, 1, 1);
+			context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE);
+		
+			context.enable(context.STENCIL_TEST);
+		
+			this.mask._renderToCanvas(context);
+		
+			// Telling the stencil now to draw/keep only pixels that equals 1 - which we set earlier
+			context.stencilFunc(context.EQUAL, 1, 1);
+			context.stencilOp(context.ZERO, context.ZERO, context.ZERO);
+			// enabling back the color buffer
+			context.colorMask(true, true, true, true);
+		}
+	},
+
 	/**
 	 * Renderiza el objeto en el canvas
 	 * @method XEngine.BaseObject#_renderToCanvas
@@ -258,7 +281,6 @@ XEngine.BaseObject.prototype = {
 	 * @private
 	 */
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
-		if(this.shader == null) return;
 		this.shader._beginRender(context);
 		this.getWorldMatrix(this.mvMatrix);
 		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
@@ -284,6 +306,10 @@ XEngine.BaseObject.prototype = {
 		context.vertexAttribPointer(this.shader.vertUvAtt, this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
 
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
+
+		if(this.mask != null){
+			context.disable(context.STENCIL_TEST);
+		}
 	},
 
 	setColor:function(r, g, b, a = 1.0){

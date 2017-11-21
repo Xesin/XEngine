@@ -42,13 +42,14 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 XEngine.Text.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.Text.prototypeExtends = {
+	_beginRender:function(context){
+		XEngine.BaseObject.prototype._beginRender.call(this, context);
+		this.shader._setTexture(this.texture);
+	},
+
 	_renderToCanvas: function (context) {
 		if(this.shader == null) return;
 		var _this = this;
-		
-		_this.shader._setTexture(_this.texture);
-		_this.shader._beginRender(context);
-
 		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 
