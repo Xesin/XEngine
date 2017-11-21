@@ -1,5 +1,3 @@
-var text_ref;
-
 /**
  * Objeto que define un texto
  * 
@@ -37,7 +35,6 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 	_this.position.setTo(posX, posY);
 	_this.shader = XEngine.ShaderLib.Sprite.shader;
 	_this._updateText();
-	text_ref =  this;
 };
 
 //TODO pendiente de comentar a partir de aquí
@@ -52,8 +49,6 @@ XEngine.Text.prototypeExtends = {
 		_this.shader._setTexture(_this.texture);
 		_this.shader._beginRender(context);
 
-		this._setUVs(_this._uv);
-
 		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
 	},
 
@@ -64,7 +59,7 @@ XEngine.Text.prototypeExtends = {
 		_this.context.font = font.trim();
 		var textSize = _this.context.measureText(_this.text);
 		_this.width = textSize.width;
-		_this.height = _this.size;
+		_this.height = _this.size * 0.8;
 		_this.canvas.width = textSize.width;
 		_this.canvas.height = _this.height;
 		_this.context.font = font.trim();
@@ -75,7 +70,7 @@ XEngine.Text.prototypeExtends = {
 		}
 		_this.context.fillStyle = _this.color;
 		_this.context.fillText(_this.text, 0, _this.height);
-		var texture = new XEngine.Texture2D('textTexture', _this.width, _this.height);
+		var texture = new XEngine.Texture2D('textTexture', _this.width, _this.height, XEngine.Texture2D.WRAP_MODES.CLAMP);
 		texture.image = _this.context.canvas;
 		texture.createTexture(_this.game.context);
 		_this.texture = texture._texture;

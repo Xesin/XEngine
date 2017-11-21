@@ -19,7 +19,11 @@ XEngine.ShaderLib.Sprite = {
 		"void main(void) {",
 			"vec4 texCol = texture2D(texSampler, uv);",
 			"texCol.rgb *= texCol.w;",
-			"gl_FragColor = texCol*vColor;",
+			//"if(texCol.a >= 0.8){",
+				"gl_FragColor = texCol*vColor;",
+			//"}else{",
+			//	"gl_FragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
+			//"}",
 		"}"
 	],
 
