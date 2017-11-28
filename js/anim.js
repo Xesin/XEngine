@@ -6,6 +6,9 @@ AnimScene.prototype = {
 	
 	preload: function () {
 		this.game.load.jsonSpriteSheet('player', 'img/animations.png', 'img/man.json');
+		this.game.load.image('back1', 'img/back1.jpg');
+		this.game.load.image('back2', 'img/back2.jpg');
+		this.game.load.image('test2', 'img/angry_unicorn.png');
 	},
 	
 	start: function () {
@@ -39,13 +42,19 @@ AnimScene.prototype = {
 		},this);
 
 		
-		this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
-		this.text.anchor.setTo(0.5);
-		var rect = this.game.add.rect(200 - this.text.width /2,200 - this.text.height / 2,0,this.text.height);
-		rect.render = false;
-		//this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
-		this.text.mask = rect;
-		this.game.tween.add(rect).to({width:this.text.width}, 2000, XEngine.Easing.ExpoInOut, true, 0, -1, true)
+		// this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
+		// this.text.anchor.setTo(0.5);
+		this.rect = this.game.add.sprite(0,0, 'test2');
+		this.rect.anchor.setTo(0.5);
+		this.rect.render = false;
+		// //this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
+		// this.text.mask = this.rect;
+		//this.game.tween.add(rect).to({width:this.text.width}, 2000, XEngine.Easing.ExpoInOut, true, 0, -1, true)
+
+
+		this.back1 = this.game.add.sprite(0,0,'back1');
+		this.back2 = this.game.add.sprite(0,0,'back2');
+		this.back2.mask = this.rect;
 	},
 	
 	update : function (deltaTime) {
@@ -53,6 +62,8 @@ AnimScene.prototype = {
 		// this.tilled.offSet.x += 200 * deltaTime;
 		// this.tilled.offSet.y += 200 * deltaTime;
 		//this.text.rotation += 45*deltaTime;
+		this.rect.position.x = this.game.input.pointer.x;
+		this.rect.position.y = this.game.input.pointer.y;
         // var walk = false;
 		// if(this.game.input.isPressed(XEngine.KeyCode.D)){
 		// 	this.sprite.position.x += 200 * deltaTime;

@@ -21,6 +21,7 @@ XEngine.ShaderLib.CircleColor = {
 			"vec2 uvOffset = uv - 0.5;",
 			"float distance = length(uvOffset);",
 			"float res = smoothstep(distance,distance+0.04,0.5);",
+			"if(res < 0.1) discard;",
 			"gl_FragColor = vec4(1.0, 1.0, 1.0, res) * res * vColor;",
 		"}"
 	],

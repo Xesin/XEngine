@@ -93,17 +93,12 @@ XEngine.ObjectFactory.prototype = {
 	 * @method XEngine.ObjectFacory#circle
 	 * @param {Number} posX - Posición X del objeto
 	 * @param {Number} posY - Posición Y del objeto
-	 * @param {Number} radius - radio del circulo
-	 * @param {Number} stroke - ancho del borde
-	 * @param {String} color - color de relleno en hexadecimal con formato rgb
-	 * @param {String} strokeColor - color del borde en hexadecimal con formato rgb
-	 * @param {Boolean} fill - define si se rellena el circulo o se deja transparente
-	 * @param {Number} startAngle - angulo de comienzo
-	 * @param {Number} endAngle - angulo en el que termina
+	 * @param {Number} width - ancho del circulo
+	 * @param {Number} height - alto del circulo
 	 * @return {XEngine.Circe}
 	 */
-	circle: function (posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle) { //Creamos un rectangulo a partir de los datos proporcionados
-		var gameObject = new XEngine.Circle(this.game, posX, posY, radius, color, stroke, strokeColor, fill, startAngle, endAngle);
+	circle: function (posX, posY, width, height) { //Creamos un rectangulo a partir de los datos proporcionados
+		var gameObject = new XEngine.Circle(this.game, posX, posY, width, height);
 		return this.existing(gameObject);
 	},
 

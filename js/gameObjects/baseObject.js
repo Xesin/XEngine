@@ -328,9 +328,20 @@ XEngine.BaseObject.prototype = {
 		var _this = this;
 		var width = _this.width * _this.scale.x;
 		var height = _this.height * _this.scale.y;
+		var worldPos = this.getWorldPos();
+		var widthAnchor = width * _this.anchor.x;
+		var heightAnchor = height * _this.anchor.y;
+		var minX = worldPos.x - widthAnchor;
+		var maxX = worldPos.x + width - widthAnchor;
+		var minY = worldPos.y - heightAnchor;
+		var maxY = worldPos.y + height - heightAnchor;
 		return {
 			width: width,
-			height: height
+			height: height,
+			minX: minX,
+			maxX: maxX,
+			minY: minY,
+			maxY: maxY,
 		};
 	},
 
@@ -339,10 +350,10 @@ XEngine.BaseObject.prototype = {
 		var worldPos = this.getWorldPos();
 		var cameraPos = this.game.camera.position;
 		var viewRect = {width: this.game.width, height: this.game.height};
-		if(worldPos.x + bounds.width * this.anchor.x < cameraPos.x) return false;
-		if(worldPos.y + bounds.height * this.anchor.y < cameraPos.y) return false;
-		if(worldPos.x - bounds.width * this.anchor.x> cameraPos.x + viewRect.width) return false;
-		if(worldPos.y - bounds.height * this.anchor.y> cameraPos.y + viewRect.height) return false;
+		if(bounds.maxX < cameraPos.x) return false;
+		if(bounds.maxY < cameraPos.y) return false;
+		if(bounds.minX > cameraPos.x + viewRect.width) return false;
+		if(bounds.minY > cameraPos.y + viewRect.height) return false;
 
 		return true;
 	}

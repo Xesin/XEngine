@@ -28,9 +28,13 @@ Start.prototype = {
 	},
 	
 	start: function () {
-		for(var i = 0; i< 200; i++){
-			var rect = this.game.add.sprite(XEngine.Mathf.randomRange(-100, 1200),XEngine.Mathf.randomRange(-100, 720),'test2');
+		this.game.autoCulling = false;
+		for(var i = 0; i< 1000; i++){
+			var rect = this.game.add.sprite(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
+			rect.__proto__.update = function(deltaTime){
+				this.rotation += deltaTime * 45;
+			}
 		}
 
 		this.game.input.onKeyUp.add(function(event){

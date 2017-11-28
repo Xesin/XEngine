@@ -2543,7 +2543,7 @@ XEngine.Physics.PhysicsBody.prototype = {
 		_this.updateBounds(); //Actualizamos los bounds una vez se ha calculado la nueva posición
 		if (_this.collideWithWorld) { //Si tiene que colisionar con el mundo, evitamos que se salga
 			if (_this.min.x < 0) { //Izquierda
-				_this.position.x = (_this.bounds.width * _this._contObject.anchor.x);
+				_this.position.x = (_this.bounds.widthAnchor);
 				_this.velocity.x = (-this.velocity.x * _this.restitution);
 			}
 			else if (_this.max.x > _this.game.worldWidth) { //Derecha
