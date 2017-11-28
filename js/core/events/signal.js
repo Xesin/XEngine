@@ -62,11 +62,22 @@ XEngine.Signal.prototype = {
 	 * @param {Object} args[] - sequencia de todos los parametros a ser enviados
 	 */
 	dispatch: function () {
+		this._cleanup();
+		for (var i = 0 ; i < this.bindings.length; i++) {
+			this.bindings[i].dispatch.apply(this.bindings[i], arguments);
+		}
+	},
+
+	/**
+	 * Lanza el evento a todos los listeners
+	 * @method XEngine.Signal#dispatch
+	 * @param {Object} args[] - sequencia de todos los parametros a ser enviados
+	 */
+	_cleanup: function () {
 		for (var i = this.bindings.length - 1; i >= 0; i--) {
 			if (this.bindings[i] == null || this.bindings[i] == undefined) { //Si el binding ha dejado de existir, lo quitamos del array
 				this.bindings.splice(i, 1);
 			}
-			this.bindings[i].dispatch.apply(this.bindings[i], arguments);
 		}
 	}
 };

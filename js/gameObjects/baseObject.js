@@ -145,12 +145,14 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_onInitialize: function(){
-		if(!this.shader.compiled){
-			this.shader.initializeShader(this.game.context);
+		if(this.shader){
+			if(!this.shader.compiled){
+				this.shader.initializeShader(this.game.context);
+			}
+			this.game.context.useProgram(this.shader.shaderProgram);
+			this._setVertices(this.width, this.height);
+			this._setBuffers();
 		}
-		this.game.context.useProgram(this.shader.shaderProgram);
-		this._setVertices(this.width, this.height);
-		this._setBuffers();
 	},
 
 	_setBuffers: function(){
@@ -306,7 +308,9 @@ XEngine.BaseObject.prototype = {
 		context.vertexAttribPointer(this.shader.vertUvAtt, this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
 
 		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
+	},
 
+	_endRender(context){
 		if(this.mask != null){
 			context.disable(context.STENCIL_TEST);
 		}

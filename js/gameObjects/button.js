@@ -14,15 +14,15 @@
  * @param {String} [spriteUp] - nombre del sprite guardado en cache para cuando se suelta
  * 
  */
-XEngine.Button = function (game, posX, posY, sprite, spriteDown, spriteOver, spriteUp) {
-	XEngine.BaseObject.call(this, game);
+XEngine.Button = function (game, posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp) {
+	XEngine.Sprite.call(this, game, posX, posY, sprite, frameIdle);
 	var _this = this;
-	_this.spriteNormal = sprite;
-	_this.spriteDown = spriteDown || sprite;
-	_this.spriteOver = spriteOver || sprite;
-	_this.spriteUp = spriteUp || sprite;
+	_this.spriteNormal = frameIdle || sprite;
+	_this.spriteDown = spriteDown || _this.spriteNormal;
+	_this.spriteOver = spriteOver || _this.spriteNormal;
+	_this.spriteUp = spriteUp || _this.spriteNormal;
 	_this.game = game; //guardamos una referencia al juego
-	_this._swapSprite(sprite);
+	_this._swapSprite(frameIdle);
 	_this.position.setTo(posX, posY);
 	_this.inputEnabled = true;
 	_this.shader = XEngine.ShaderLib.Sprite.shader;
@@ -54,24 +54,32 @@ XEngine.Button = function (game, posX, posY, sprite, spriteDown, spriteOver, spr
 	}, this);
 };
 
-XEngine.Button.prototype = Object.create(XEngine.BaseObject.prototype);
+XEngine.Button.prototype = Object.create(XEngine.Sprite.prototype);
 
 XEngine.Button.prototypeExtends = {
 
 	_swapSprite: function (sprite) {
 		var _this = this;
-		_this.sprite = sprite;
-		var new_image = _this.game.cache.image(_this.sprite).image;
-		_this.width = new_image.width || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
-		_this.height = new_image.height || 10;
-	},
-
-	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
-		if(this.shader == null) return;
-		var _this = this;
-		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
-		_this.shader._setTexture(cache_image._texture);
-		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
+		if(!_this.tilled){
+			_this.sprite = sprite;
+			var new_image = _this.game.cache.image(_this.sprite).image;
+			_this.width = new_image.width || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
+			_this.height = new_image.height || 10;
+		}else{
+			_this.frame = sprite;
+			if(_this.game.cache.getJson(sprite) != undefined) {
+				_this.json = _this.game.cache.getJson(sprite);
+				var frameInfo = {};
+				if (typeof _this.frame === 'string') {
+					frameInfo = _this.json[_this.frame];
+				}
+				else {
+					frameInfo = _this.json.frames[_this.frame];
+				}
+				_this.width = frameInfo.frame.w;
+				_this.height = frameInfo.frame.h;
+			}
+		}
 	},
 };
 

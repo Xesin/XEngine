@@ -20,6 +20,7 @@ XEngine.Animation = function (game, sprite, frames, rate) { //Objeto que almacen
 	_this.frameTime = 0;
 	_this.loop = false;
 	_this.playing = false;
+	_this.onComplete = new XEngine.Signal();
 };
 
 XEngine.Animation.prototype = {
@@ -35,6 +36,7 @@ XEngine.Animation.prototype = {
 				}
 				else {
 					_this._stop();
+					_this.onComplete.dispatch();
 					return;
 				}
 			}

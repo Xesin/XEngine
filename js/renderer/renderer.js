@@ -74,7 +74,9 @@ XEngine.Renderer.prototype = {
 			var object = arrayObjects[i];
 			if (!object.render) continue;
 			if (XEngine.Group.prototype.isPrototypeOf(object)) { //Si es un grupo, llamamos al render pasando los objetos que contiene
+				object._beginRender(_this.context);
 				_this.renderLoop(object.children);
+				object._endRender(_this.context);
 			}
 			else if (!XEngine.Audio.prototype.isPrototypeOf(object)) { //Si no es un audio, renderizamos
 				if (!object.alive) continue;
@@ -84,6 +86,7 @@ XEngine.Renderer.prototype = {
 				if (object.body != undefined) {
 					object.body._renderBounds(_this.context); //Si tiene un body, llamamos al render de los bounds
 				}
+				object._endRender(_this.context);
 				
 			}
 		}

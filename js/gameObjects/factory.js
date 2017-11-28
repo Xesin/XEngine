@@ -66,8 +66,8 @@ XEngine.ObjectFactory.prototype = {
 	 * @param {String} spriteUp - keyName de la imagen cuando se levanta el input
 	 * @return {XEngine.Button}
 	 */
-	button: function (posX, posY, sprite, spriteDown, spriteOver, spriteUp) {
-		var gameObject = new XEngine.Button(this.game, posX, posY, sprite, spriteDown, spriteOver, spriteUp);
+	button: function (posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp) {
+		var gameObject = new XEngine.Button(this.game, posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp);
 		return this.existing(gameObject);
 	},
 

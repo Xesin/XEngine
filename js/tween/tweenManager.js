@@ -26,12 +26,13 @@ XEngine.TweenManager.prototype = {
 
 	_update: function (deltaTimeMillis) {
 		var _this = this;
-		for (var i = _this.tweens.length - 1; i >= 0; i--) //Recorremos todos los tweens que han sido creados
+		for (var i = 0; i < _this.tweens.length; i++) //Recorremos todos los tweens que han sido creados
 		{
 			var tween = _this.tweens[i];
 			if (tween.isPendingDestroy) { //Si el tween está marcado para destruir, liberamos memoria y lo quitamos del array
 				delete _this.tweens[i];
 				_this.tweens.splice(i, 1);
+				i--;
 			}
 			else if (tween.isRunning) { //Si está en marcha, lo actualizamos
 				tween._update(deltaTimeMillis);

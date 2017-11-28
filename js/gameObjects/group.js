@@ -31,9 +31,14 @@ XEngine.Group.prototypeExtends = {
 				delete this.children[i];
 				this.children.splice(i, 1);
 			}
-			else if (gameObject.update != undefined && gameObject.alive) //En caso contrario miramos si contiene el método update y lo ejecutamos
+			else if (gameObject.alive) //En caso contrario miramos si contiene el método update y lo ejecutamos
 			{
-				gameObject.update(deltaTime);
+				if(gameObject.update != undefined){
+					gameObject.update(deltaTime);
+				}
+				if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
+					gameObject._updateAnims(this.game.deltaMillis);
+				}
 			}
 		}
 	},
@@ -68,6 +73,7 @@ XEngine.Group.prototypeExtends = {
 				delete this.children[i];
 			}
 		}
+		this.children = [];
 		if (this.onDestroy != undefined) {
 			this.onDestroy();
 		}
@@ -85,6 +91,20 @@ XEngine.Group.prototypeExtends = {
 		gameObject.parent = this;
 		return gameObject;
 	},
+
+	setAll:function(property, value){
+		for (var i = this.children.length - 1; i >= 0; i--) //Recorremos los objetos del grupo para hacer su update
+		{
+			this.children[i][property] = value;
+		}
+	},
+
+	callAll:function(funct){
+		for (var i = this.children.length - 1; i >= 0; i--) //Recorremos los objetos del grupo para hacer su update
+		{
+			this.children[i][funct]();
+		}
+	}
 };
 XEngine.Group.prototype = Object.create(XEngine.BaseObject.prototype);
 Object.assign(XEngine.Group.prototype, XEngine.Group.prototypeExtends); //Se le añade el prototypeExtends al prototype original

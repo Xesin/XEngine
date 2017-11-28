@@ -33,6 +33,7 @@ XEngine.AnimationManager.prototype = {
 		}
 		this.currentAnim = anim;
 		anim._start();
+		return this.currentAnim;
 	},
 
 	_stop: function (animName) {

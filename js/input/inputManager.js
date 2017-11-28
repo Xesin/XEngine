@@ -168,7 +168,7 @@ XEngine.InputManager.prototype = {
 			for (var i = array.length - 1; i >= 0; i--) {
 				var gameObject = array[i];
 				if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
-					return loop(gameObject.children); //Si éste loop ha encontrado un objeto que hacer el input down, terminamos 
+					if(loop(gameObject.children)) return true;
 				}
 				else {
 					if (!gameObject.inputEnabled) continue;
@@ -181,8 +181,8 @@ XEngine.InputManager.prototype = {
 						return true;
 					}
 				}
-
 			}
+			return false;
 		};
 
 		loop(this.game.gameObjects);
