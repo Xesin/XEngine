@@ -34,8 +34,8 @@ XEngine.ObjectFactory.prototype = {
 	 * @param {String} sprite - keyName del sprite
 	 * @return {XEngine.Sprite}
 	 */
-	sprite: function (posX, posY, sprite) { //Creamos y añadimos un sprite a partir de los datos proporcionados
-		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite);
+	sprite: function (posX, posY, sprite, frame) { //Creamos y añadimos un sprite a partir de los datos proporcionados
+		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite, frame);
 		return this.existing(gameObject);
 	},
 

@@ -10,12 +10,12 @@
  * @param {Number} posY - posición en y
  * @param {String} sprite - nombre del sprite guardado en cache
  */
-XEngine.Sprite = function (game, posX, posY, sprite) {
+XEngine.Sprite = function (game, posX, posY, sprite, frame) {
 	XEngine.BaseObject.call(this, game);
 	var _this = this;
 	_this.sprite = sprite;
 	_this.game = game; //guardamos una referencia al juego
-	_this.frame = 0;
+	_this.frame = frame || 0;
 	var cache_image = _this.game.cache.image(sprite);
 	//if (cache_image.type == "sprite") {
 	_this.width = cache_image.frameWidth || 10; //Si la imagen no se ha cargado bien, ponemos valor por defecto
@@ -27,7 +27,13 @@ XEngine.Sprite = function (game, posX, posY, sprite) {
 	
 	if(_this.game.cache.getJson(sprite) != undefined) {
 		_this.json = _this.game.cache.getJson(sprite);
-		var frameInfo = _this.json.frames[_this.frame];
+		var frameInfo = {};
+		if (typeof _this.frame === 'string') {
+			frameInfo = _this.json[_this.frame];
+		}
+		else {
+			frameInfo = _this.json.frames[_this.frame];
+		}
 		_this.width = frameInfo.frame.w;
 		_this.height = frameInfo.frame.h;
 	}

@@ -52,7 +52,7 @@ XEngine.Camera = function (game) {
 	this.axis = XEngine.AXIS.BOTH;
 
 	this.pMatrix = mat4.create();
-	mat4.ortho(this.pMatrix, 0, game.width , game.height, 0, 0.1, 100);
+	mat4.ortho(this.pMatrix, 0, this.game.width , this.game.height, 0, 0.1, 100);
 };
 
 XEngine.Camera.prototype = {
@@ -90,6 +90,6 @@ XEngine.Camera.prototype = {
 				}
 			}
 		}
-		mat4.ortho(this.pMatrix, _this.position.x , game.width + _this.position.x, game.height + _this.position.y, _this.position.y, 0.1, 100);
+		mat4.ortho(this.pMatrix, _this.position.x , _this.game.width + _this.position.x, _this.game.height + _this.position.y, _this.position.y, 0.1, 100);
 	},
 };
