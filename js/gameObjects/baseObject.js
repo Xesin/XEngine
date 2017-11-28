@@ -313,6 +313,7 @@ XEngine.BaseObject.prototype = {
 	_endRender(context){
 		if(this.mask != null){
 			context.disable(context.STENCIL_TEST);
+			context.clear(context.STENCIL_BUFFER_BIT);
 		}
 	},
 

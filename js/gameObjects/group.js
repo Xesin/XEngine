@@ -102,7 +102,8 @@ XEngine.Group.prototypeExtends = {
 	callAll:function(funct){
 		for (var i = this.children.length - 1; i >= 0; i--) //Recorremos los objetos del grupo para hacer su update
 		{
-			this.children[i][funct]();
+			if(this.children[i][funct] != undefined)
+				this.children[i][funct]();
 		}
 	}
 };
