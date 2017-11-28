@@ -55,6 +55,6 @@ XEngine.SignalBinding.prototype = {
 	 * @method XEngine.SignalBinding#detach
 	 */
 	detach: function () {
-		this.signal._unBind(this);
+		this.signal.unbind(this);
 	}
 };

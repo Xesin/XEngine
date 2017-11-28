@@ -22,7 +22,9 @@ XEngine.Signal.prototype = {
 	 * @return {XEngine.Signal}
 	 */
 	add: function (listener, listenerContext) { //Añade un listener que siempre se ejecuta
-		this.bindings.push(new XEngine.SignalBinding(this, listener, listenerContext, false));
+		var newBinding = new XEngine.SignalBinding(this, listener, listenerContext, false);
+		this.bindings.push(newBinding);
+		return newBinding;
 	},
 
 	/**
@@ -33,7 +35,9 @@ XEngine.Signal.prototype = {
 	 * @return {XEngine.Signal}
 	 */
 	addOnce: function (listener, listenerContext) {
-		this.bindings.push(new XEngine.SignalBinding(this, listener, listenerContext, true));
+		var newBinding = new XEngine.SignalBinding(this, listener, listenerContext, true);
+		this.bindings.push(newBinding);
+		return newBinding;
 	},
 
 	/**
@@ -41,7 +45,7 @@ XEngine.Signal.prototype = {
 	 * @method XEngine.Signal#add
 	 * @param {XEngine.SignalBinding} signalBinding - binding a eliminar
 	 */
-	_unBind: function (signalBinding) {
+	unbind: function (signalBinding) {
 		var index = this.bindings.indexOf(signalBinding);
 		delete this.bindings[index]; //Liberamos memoria
 		this.bindings.splice(index, 1);
