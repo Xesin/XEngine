@@ -16,7 +16,7 @@ XEngine.Renderer = function (game, canvas) {
 	try {
 		// Tratar de tomar el contexto estandar. Si falla, probar otros.
 		var options = {stencil:true};
-		this.context = canvas.getContext("webgl2", options) || canvas.getContext("webgl2", options) || canvas.getContext("experimental-webgl", options) || canvas.getContext("moz-webgl", options) || canvas.getContext("webkit-3d", options);
+		this.context = canvas.getContext("webgl2", options);
 	}
 	catch(e) {}
 	

@@ -1,8 +1,9 @@
 XEngine.ShaderLib.Sprite = {
 	vertexShader:[
+		'#version 300 es',
 		"#XBaseParams",
-		"varying lowp vec4 vColor;",
-		"varying highp vec2 uv;",
+		"out lowp vec4 vColor;",
+		"out highp vec2 uv;",
 
 		"void main(void) {",
 		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
@@ -11,17 +12,19 @@ XEngine.ShaderLib.Sprite = {
 		"}"
 	],
 	fragmentShader:[
+		'#version 300 es',
 		"precision mediump float;",
 		"uniform sampler2D texSampler;",
-		"varying lowp vec4 vColor;",
-		"varying highp vec2 uv;",
+		"in lowp vec4 vColor;",
+		"in highp vec2 uv;",
+		"out vec4 fragColor;",
 
 		"void main(void) {",
-			"vec4 texCol = texture2D(texSampler, uv);",
+			"vec4 texCol = texture(texSampler, uv);",
 			"texCol.rgb *= texCol.w;",
 			//"if(texCol.a >= 0.8){",
 			"if(texCol.a <= 0.05) discard;",
-			"gl_FragColor = texCol*vColor;",
+			"fragColor = texCol*vColor;",
 			//"}else{",
 			//	"gl_FragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
 			//"}",

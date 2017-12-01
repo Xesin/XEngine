@@ -3,11 +3,12 @@ var CustomShader = function (game) {
 };
 
 var vertexCode = [
+        '#version 300 es',
         "precision highp float;",
 		"#XBaseParams",
-		"varying lowp vec4 vColor;",
-        "varying highp vec2 uv;",
-        "varying highp float iTime;",
+		"out lowp vec4 vColor;",
+        "out highp vec2 uv;",
+        "out highp float iTime;",
         "uniform float time;",
 
 		"void main(void) {",
@@ -18,6 +19,7 @@ var vertexCode = [
 		"}"
 	];
 var fragmentCode = [
+        '#version 300 es',
 		/*
  * "Seascape" by Alexander Alekseev aka TDM - 2014
  * License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -25,12 +27,13 @@ var fragmentCode = [
  * https://www.shadertoy.com/view/Ms2SD1
  */
         "precision highp float;",
-        "varying highp vec2 uv;",
-        "varying highp float iTime;",
+        "in highp vec2 uv;",
+        "in highp float iTime;",
         "const int NUM_STEPS = 8;",
         "const float PI	 	= 3.141592;",
         "const float EPSILON	= 1e-3;",
         "#define EPSILON_NRM (0.1 / 1200.0)",
+        "out vec4 fragColor;",
 
         // sea
         "const int ITER_GEOMETRY = 6;",
@@ -198,7 +201,7 @@ var fragmentCode = [
                 "pow(smoothstep(0.0,-0.05,dir.y),0.3));",
 
             "// post",
-            "gl_FragColor = vec4(pow(color,vec3(0.75)), 1.0);",
+            "fragColor = vec4(pow(color,vec3(0.75)), 1.0);",
         "}",
 	];
 
