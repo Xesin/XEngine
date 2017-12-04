@@ -185,7 +185,7 @@ XEngine.InputManager.prototype = {
 			return false;
 		};
 
-		loop(this.game.gameObjects);
+		loop(this.game.updateQueue);
 	},
 
 	/**
@@ -231,7 +231,7 @@ XEngine.InputManager.prototype = {
 		};
 
 		this.onInputMove.dispatch(inputPos);
-		loop(this.game.gameObjects);
+		loop(this.game.updateQueue);
 	},
 
 	/**
@@ -306,7 +306,7 @@ XEngine.InputManager.prototype = {
 			}
 		};
 
-		loop(this.game.gameObjects);
+		loop(this.game.updateQueue);
 	},
 
 	/**
@@ -339,7 +339,7 @@ XEngine.InputManager.prototype = {
 			}
 			return false;
 		};
-		loop(this.game.gameObjects);
+		loop(this.game.updateQueue);
 	},
 
 	/**

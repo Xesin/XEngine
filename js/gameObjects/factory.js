@@ -16,8 +16,11 @@ XEngine.ObjectFactory.prototype = {
 	 * @param {XEngine.BaseObject} gameObject - Objeto a añadir
 	 * @return {Object}
 	 */
-	existing: function (gameObject) { //Añade un objeto que ya ha sido creado
-		this.game.gameObjects.push(gameObject); //Añadimos el objeto al array de objetos
+	existing: function (gameObject, update = true, render = true) { //Añade un objeto que ya ha sido creado
+		if(update)
+			this.game.updateQueue.push(gameObject); //Añadimos el objeto al array de objetos
+		if(render)
+			this.game.renderQueue.push(gameObject);
 		gameObject.parent = this.game; //Asignamos el padre del objeto
 		gameObject._onInitialize();
 		if (gameObject.start != undefined) {
@@ -36,7 +39,20 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	sprite: function (posX, posY, sprite, frame) { //Creamos y añadimos un sprite a partir de los datos proporcionados
 		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite, frame);
-		return this.existing(gameObject);
+		return this.existing(gameObject, true, true);
+	},
+
+	/**
+	 * Crea y añade una imagen al juego
+	 * @method XEngine.ObjectFacory#sprite
+	 * @param {Number} posX - Posición X del objeto
+	 * @param {Number} posY - Posición Y del objeto
+	 * @param {String} sprite - keyName del sprite
+	 * @return {XEngine.Sprite}
+	 */
+	sprite: function (posX, posY, sprite, frame) { //Creamos y añadimos un sprite a partir de los datos proporcionados
+		var gameObject = new XEngine.Sprite(this.game, posX, posY, sprite, frame);
+		return this.existing(gameObject, false, true);
 	},
 
 	/**
@@ -51,7 +67,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	tilled: function (posX, posY, sprite, width, height) { //Creamos y añadimos una imagen que se puede tilear
 		var gameObject = new XEngine.TilledImage(this.game, posX, posY, sprite, width, height);
-		return this.existing(gameObject);
+		return this.existing(gameObject, false, true);
 	},
 
 
@@ -68,7 +84,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	button: function (posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp) {
 		var gameObject = new XEngine.Button(this.game, posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp);
-		return this.existing(gameObject);
+		return this.existing(gameObject, false, true);
 	},
 
 
@@ -84,7 +100,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	rect: function (posX, posY, width, height, color) { //Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Rect(this.game, posX, posY, width, height, color);
-		return this.existing(gameObject);
+		return this.existing(gameObject, false, true);
 	},
 
 
@@ -99,7 +115,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	circle: function (posX, posY, width, height) { //Creamos un rectangulo a partir de los datos proporcionados
 		var gameObject = new XEngine.Circle(this.game, posX, posY, width, height);
-		return this.existing(gameObject);
+		return this.existing(gameObject, false, true);
 	},
 
 	/**
@@ -113,7 +129,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	text: function (posX, posY, text, textStyle) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
-		return this.existing(gameObject);
+		return this.existing(gameObject, false, true);
 	},
 
 	/**
@@ -126,7 +142,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	audio: function (audio, autoStart, volume) {
 		var audioObject = new XEngine.Audio(this.game, audio, autoStart, volume);
-		return this.existing(audioObject);
+		return this.existing(audioObject, true, false);
 	},
 
 	/**
@@ -140,6 +156,6 @@ XEngine.ObjectFactory.prototype = {
 		var x = posX || 0;
 		var y = posY || 0;
 		var gameObject = new XEngine.Group(this.game, x, y);
-		return this.existing(gameObject);
+		return this.existing(gameObject, true, false);
 	}
 };

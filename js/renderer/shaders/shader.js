@@ -140,13 +140,15 @@ XEngine.Shader.prototype = {
 
 	updateUniforms: function(gl){
 		for (var property in this.uniforms) {
-			if (this.uniforms.hasOwnProperty(property)) {
+			if(this.uniforms[property].value != this.uniforms[property].prevVal){
 				this._setUniform(this.uniforms[property], gl);
+				this.uniforms[property].prevVal = this.uniforms[property].value;
 			}
 		}
 		for (var property in this.baseUniforms) {
-			if (this.baseUniforms.hasOwnProperty(property)) {
+			if(this.baseUniforms[property].value != this.baseUniforms[property].prevVal){
 				this._setUniform(this.baseUniforms[property], gl);
+				this.baseUniforms[property].prevVal = this.baseUniforms[property].value;
 			}
 		}
 	}

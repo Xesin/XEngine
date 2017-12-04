@@ -51,7 +51,7 @@ XEngine.Renderer.prototype = {
 		//this.context.clearRect(0, 0, this.game.width * this.scale.x, this.game.height * this.scale.y); //Limpiamos el canvas
 		//this.context.save();
 		//this.context.scale(this.scale.x, this.scale.y);
-		this.renderLoop(this.game.gameObjects);
+		this.renderLoop(this.game.renderQueue);
 		//this.context.restore();
 	},
 

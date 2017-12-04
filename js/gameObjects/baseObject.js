@@ -230,7 +230,7 @@ XEngine.BaseObject.prototype = {
 			translation[1] += this.game.camera.position.y;
 		}
 		mat4.translate(childMatrix, childMatrix, translation);
-		mat4.rotateZ(childMatrix, childMatrix, this.rotation * Math.PI / 180);
+		mat4.rotateZ(childMatrix, childMatrix, this.rotation * 0.0174532925199432957);
 		mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
 		mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
 		return childMatrix;
@@ -361,5 +361,7 @@ XEngine.BaseObject.prototype = {
 		if(bounds.minY > cameraPos.y + viewRect.height) return false;
 
 		return true;
-	}
+	},
+
+	update:function(deltaTime){}
 };

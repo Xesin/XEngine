@@ -5,6 +5,19 @@
  * https://opensource.org/licenses/MIT
  */
 
+Array.prototype.removePending = function() {
+    var i = this.length;
+    while (i--) {
+        if (this[i].isPendingDestroy) //Si es un objeto destruido lo eliminamos del array
+		{
+			if (this[i].body != undefined) { //Si tiene un body, también lo destruimos
+				this[i].body.destroy();
+			}
+			delete this[i]; //Liberamos memoria
+			this.splice(i, 1);
+		}
+    }
+};
 
 var XEngine = {
 	version: '2.0'
@@ -115,10 +128,10 @@ XEngine.Game = function (width, height, idContainer) {
 	this.pause = false;
 
 	/**
-	 * @property {Array.<XEngine.BaseObject>} gameObjects - Array con las referencias de todos los objetos añadidos directamente al juego
+	 * @property {Array.<XEngine.BaseObject>} updateQueue - Array con las referencias de todos los objetos añadidos directamente al juego
 	 * @readonly
 	 */
-	this.gameObjects = null;
+	this.updateQueue = null;
 	/**
 	 * @property {XEngine.StateManager} state - Acceso al StateManager
 	 * @readonly
@@ -212,7 +225,8 @@ XEngine.Game.prototype = {
 		_this.previousFrameTime = 0;
 		_this.deltaTime = 0;
 		_this.deltaMillis = 0;
-		_this.gameObjects = new Array();
+		_this.updateQueue = new Array();
+		_this.renderQueue = new Array();
 		_this.pause = false;
 		_this.state = new XEngine.StateManager(_this);
 		_this.add = new XEngine.ObjectFactory(_this);
@@ -267,44 +281,30 @@ XEngine.Game.prototype = {
 		if (_this.pause) return;
 		if (_this.state.currentState == null) return; //Si no hay arrancado ningún estado, saltamos el update
 		if (!this.load.preloading) { //Si no estamos precargando los assets, ejecutamos el update
-			for (var i = _this.gameObjects.length - 1; i >= 0; i--) //Recorremos los objetos del juego para hacer su update
+			_this.updateQueue.removePending();
+			for (var i = _this.updateQueue.length - 1; i >= 0; i--) //Recorremos los objetos del juego para hacer su update
 			{
-				var gameObject = _this.gameObjects[i];
-				if (gameObject.isPendingDestroy) //Si es un objeto destruido lo eliminamos del array
+				var gameObject = _this.updateQueue[i];
+				if (gameObject.alive) //En caso contrario miramos si contiene el método update y está vivo, lo ejecutamos
 				{
-					if (gameObject.body != undefined) { //Si tiene un body, también lo destruimos
-						gameObject.body.destroy();
-						delete _this.gameObjects[i].body; //Liberamos memoria
-					}
-					delete _this.gameObjects[i]; //Liberamos memoria
-					_this.gameObjects.splice(i, 1);
-				}
-				else if (gameObject.alive) //En caso contrario miramos si contiene el método update y está vivo, lo ejecutamos
-				{
-					if (gameObject.update != undefined) {
-						gameObject.update(_this.deltaTime);
-					}
+					gameObject.update(_this.deltaTime);
 					if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
 						gameObject._updateAnims(_this.deltaMillis);
 					}
 				}
 			}
-
-			if (_this.state.currentState.update != undefined) {
-				_this.state.currentState.update(_this.deltaTime); //Llamamos al update del estado actual
-			}
-
+			_this.state.currentState.update(_this.deltaTime); //Llamamos al update del estado actual
 			_this.camera.update(_this.deltaTime); //Actualizamos la cámara
 			_this.tween._update(_this.deltaMillis); //Actualizamos el tween manager
 
 			if (_this.physics.systemEnabled) {
 				_this.physics.update(_this.deltaTime); //Actualizamos el motor de físicas
-				if (_this.state.currentState.physicsUpdate != undefined) {
-					_this.state.currentState.physicsUpdate();
-				}
+				_this.state.currentState.physicsUpdate();
 			} //Llamamos al handler de condición de fin;
+			_this.renderQueue.removePending();
+			_this.renderer.render(); //Renderizamos la escena
 		}
-		_this.renderer.render(); //Renderizamos la escena
+		
 	},
 
 	/**
@@ -314,20 +314,32 @@ XEngine.Game.prototype = {
 	 * @private
 	 */
 	destroy: function () { //Este paso se llama cuando se cambia de un estado a otro
-		for (var i = this.gameObjects.length - 1; i >= 0; i--) //Destruimos todos los objetos del juego
+		for (var i = this.updateQueue.length - 1; i >= 0; i--) //Destruimos todos los objetos del juego
 		{
-			var gameObject = this.gameObjects[i];
-			if (gameObject.destroy != undefined) {
-				if (!gameObject.persist) {
-					gameObject.destroy();
-					if (gameObject.body != undefined) { //Si tienen un body, lo destruimos también
-						gameObject.body.destroy();
-						delete this.gameObjects[i].body; //Liberamos memoria
-					}
-					delete this.gameObjects[i]; //Liberamos memoria
-					this.gameObjects.splice(i, 1);
+			var gameObject = this.updateQueue[i];
+			if (!gameObject.persist) {
+				gameObject.destroy();
+				if (gameObject.body != undefined) { //Si tienen un body, lo destruimos también
+					gameObject.body.destroy();
 				}
+				this.updateQueue.splice(i, 1);
 			}
+			var renderIndex = this.renderQueue.indexOf(gameObject);
+			if(renderIndex != -1){
+				this.renderQueue.splice(renderIndex, 1);
+			}
+		}
+		for (var i = this.renderQueue.length - 1; i >= 0; i--) //Destruimos todos los objetos del juego
+		{
+			var gameObject = this.renderQueue[i];
+			if (!gameObject.persist) {
+				gameObject.destroy();
+				if (gameObject.body != undefined) { //Si tienen un body, lo destruimos también
+					gameObject.body.destroy();
+				}
+				this.renderQueue.splice(i, 1);
+			}
+			
 		}
 		this.physics._destroy(); //Llamamos a los destroy de los distintos componentes
 		this.tween._destroy();

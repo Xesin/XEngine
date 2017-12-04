@@ -20,22 +20,13 @@ XEngine.Group = function (game, x, y) {
 
 XEngine.Group.prototypeExtends = {
 	update: function (deltaTime) {
+		this.children.removePending();
 		for (var i = this.children.length - 1; i >= 0; i--) //Recorremos los objetos del grupo para hacer su update
 		{
 			var gameObject = this.children[i];
-			if (gameObject.isPendingDestroy) //Si es un objeto destruido lo eliminamos del array y liberamos memoria
+			if (gameObject.alive) //En caso contrario miramos si contiene el método update y lo ejecutamos
 			{
-				if (gameObject.body != undefined) {
-					gameObject.body.destroy();
-				}
-				delete this.children[i];
-				this.children.splice(i, 1);
-			}
-			else if (gameObject.alive) //En caso contrario miramos si contiene el método update y lo ejecutamos
-			{
-				if(gameObject.update != undefined){
-					gameObject.update(deltaTime);
-				}
+				gameObject.update(deltaTime);
 				if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
 					gameObject._updateAnims(this.game.deltaMillis);
 				}
