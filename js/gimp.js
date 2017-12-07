@@ -30,7 +30,7 @@ Gimp.prototype = {
 			    this.game.input.onClick._destroy();
                 this.game.state.start('shader');
             }
-        },this);
+		},this);
 
         this.game.input.onClick.add(function(){
 			this.game.input.onKeyUp._destroy();
@@ -40,7 +40,6 @@ Gimp.prototype = {
 
 		this.back = this.game.add.sprite(0,0,'back');
 		this.back.shader = XEngine.ShaderLib.Gimp.shader;
-		this.back.shader.initializeShader(this.game.context);
 		this.time = 0;
 
 		var gui = new dat.GUI();

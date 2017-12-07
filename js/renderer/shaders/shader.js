@@ -93,6 +93,7 @@ XEngine.Shader.prototype = {
 	},
 
 	_beginRender: function(gl){
+		if(!this.compiled) this.initializeShader(gl);
 		gl.useProgram(this.shaderProgram);
 	},
 

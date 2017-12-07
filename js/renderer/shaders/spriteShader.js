@@ -51,7 +51,7 @@ XEngine.SpriteShader.prototypeExtends = {
 	},
 
 	_beginRender: function(gl){
-		gl.useProgram(this.shaderProgram);
+		XEngine.Shader.prototype._beginRender.call(this, gl);
 		// Tell WebGL we want to affect texture unit 0
 		gl.activeTexture(gl.TEXTURE0);
 		

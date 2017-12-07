@@ -255,6 +255,7 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_beginRender:function(context){
+		this.shader._beginRender(context);
 		if(this.mask != null){
 			// disable color (u can also disable here the depth buffers)
 			context.colorMask(false, false, false, false);
@@ -283,7 +284,6 @@ XEngine.BaseObject.prototype = {
 	 * @private
 	 */
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
-		this.shader._beginRender(context);
 		this.getWorldMatrix(this.mvMatrix);
 		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
