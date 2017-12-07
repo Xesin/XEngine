@@ -126,6 +126,9 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	this.mvMatrix = mat4.create();
 	
 	mat4.identity(this.mvMatrix);
+
+	_this.pickeable = false;
+	_this.downPos = new XEngine.Vector();
 };
 
 XEngine.BaseObject.prototype = {
@@ -232,7 +235,7 @@ XEngine.BaseObject.prototype = {
 		mat4.translate(childMatrix, childMatrix, translation);
 		mat4.rotateZ(childMatrix, childMatrix, this.rotation * 0.0174532925199432957);
 		mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
-		mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
+		//mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
 		return childMatrix;
 	},
 

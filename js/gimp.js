@@ -32,13 +32,15 @@ Gimp.prototype = {
             }
 		},this);
 
-        this.game.input.onClick.add(function(){
-			this.game.input.onKeyUp._destroy();
-			this.game.input.onClick._destroy();
-			this.game.state.start('unicorns');
-		},this);
+        // this.game.input.onClick.add(function(){
+		// 	this.game.input.onKeyUp._destroy();
+		// 	this.game.input.onClick._destroy();
+		// 	this.game.state.start('unicorns');
+		// },this);
 
-		this.back = this.game.add.sprite(0,0,'back');
+		this.back = this.game.add.sprite(50,50,'back');
+		this.back.inputEnabled = true;
+		this.back.pickeable = true;
 		this.back.shader = XEngine.ShaderLib.Gimp.shader;
 		this.time = 0;
 

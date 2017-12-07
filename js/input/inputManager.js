@@ -225,6 +225,9 @@ XEngine.InputManager.prototype = {
 						gameObject.onInputLeft.dispatch(event);
 						gameObject.isInputOver = false;
 					}
+					if(gameObject.pickeable && gameObject.isInputDown){
+						gameObject.position.setTo(inputPos.position.x - (gameObject.downPos.x - inputPos.position.x), inputPos.position.y)
+					}
 				}
 
 			}
@@ -299,6 +302,7 @@ XEngine.InputManager.prototype = {
 						}
 						gameObject.onInputUp.dispatch(event);
 						gameObject.isInputDown = false;
+						gameObject.downPos.setTo(newEvent.position.x, newEvent.position.y);
 						return true;
 					}
 				}
