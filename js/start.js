@@ -9,7 +9,8 @@ function initGame(){
    game.state.add('unicorns', Start);
    game.state.add('anim', AnimScene);
    game.state.add('shader', CustomShader);
-   game.state.start('anim');
+   game.state.add('gimp', Gimp);
+   game.state.start('gimp');
 
 
    game.setBackgroundColor(100,100,100, 255);
@@ -28,13 +29,10 @@ Start.prototype = {
 	},
 	
 	start: function () {
-		this.game.autoCulling = false;
-		for(var i = 0; i< 1000; i++){
-			var rect = this.game.add.sprite(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
+		this.game.autoCulling = true;
+		for(var i = 0; i< 20000; i++){
+			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
 			rect.setColor(XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1), XEngine.Mathf.randomRange(0, 1));
-			rect.__proto__.update = function(deltaTime){
-				this.rotation += deltaTime * 45;
-			}
 		}
 
 		this.game.input.onKeyUp.add(function(event){
