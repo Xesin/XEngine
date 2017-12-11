@@ -101,7 +101,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this._prevHeight = 0;
 	_this.shader = null;
 
-	_this._vertDataBuffer = new XEngine.DataBuffer(12 * 4);
+	_this._vertDataBuffer = new XEngine.DataBuffer(28 * 4);
 	_this._vertColorsBuffer = new XEngine.DataBuffer(16 * 4);
 
 	_this._uv = [
@@ -126,6 +126,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.pickeable = false;
 	_this.downPos = new XEngine.Vector(0,0);
 	_this.posWhenDown = new XEngine.Vector(0,0);
+	_this.color = [1.0,1.0,1.0,1.0];
 };
 
 XEngine.BaseObject.prototype = {
@@ -150,41 +151,64 @@ XEngine.BaseObject.prototype = {
 				this.shader.initializeShader(this.game.context);
 			}
 			this.game.context.useProgram(this.shader.shaderProgram);
-			this._setVertices(this.width, this.height);
+			this._setVertices(this.width, this.height, this.color);
 			this._setBuffers();
 		}
 	},
 
 	_setBuffers: function(){
 		this.game.context.useProgram(this.shader.shaderProgram);
-		this.vertexBuffer.itemSize = 3;
+		this.vertexBuffer.itemSize = 3 + 4;
 		this.vertexBuffer.numItems = 4;
-
-
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
-		this.setColor(1.0, 1.0, 1.0, 1.0);
-		this.verColorBuffer.itemSize = 4;
-		this.verColorBuffer.numItems = 4;
 
 		this._setUVs(this._uv);
 		this.uvBuffer.itemSize = 2;
 		this.uvBuffer.numItems = 4;
 	},
 
-	_setVertices: function(width, height){
+	setColor: function(r,g,b,a = 1.0){
+		_this.color[0] = r;
+		_this.color[1] = g;
+		_this.color[2] = b;
+		_this.color[3] = a;
+		this._setVertices(this.width, this.height, [r,g,b,a]);
+	},
+
+	_setVertices: function(width, height, color){
 		var floatBuffer = this._vertDataBuffer.floatView;
-		floatBuffer[0] = 0.0;
-		floatBuffer[1] = 0.0;
-		floatBuffer[2] = -1.0;
-		floatBuffer[3] = 0.0;
-		floatBuffer[4] = height;
-		floatBuffer[5] = -1.0;
-		floatBuffer[6] = width;
-		floatBuffer[7] = 0.0;
-		floatBuffer[8] = -1.0;
-		floatBuffer[9] =width;
-		floatBuffer[10] = height;
-		floatBuffer[11] = -1.0;
+		var index = 0;
+		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = -1.0;
+		floatBuffer[index++] = color[0];
+		floatBuffer[index++] = color[1];
+		floatBuffer[index++] = color[2];
+		floatBuffer[index++] = color[3];
+
+		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = height;
+		floatBuffer[index++] = -1.0;
+		floatBuffer[index++] = color[0];
+		floatBuffer[index++] = color[1];
+		floatBuffer[index++] = color[2];
+		floatBuffer[index++] = color[3];
+
+		floatBuffer[index++] = width;
+		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = -1.0;
+		floatBuffer[index++] = color[0];
+		floatBuffer[index++] = color[1];
+		floatBuffer[index++] = color[2];
+		floatBuffer[index++] = color[3];
+
+		floatBuffer[index++] =width;
+		floatBuffer[index++] = height;
+		floatBuffer[index++] = -1.0;
+		floatBuffer[index++] = color[0];
+		floatBuffer[index++] = color[1];
+		floatBuffer[index++] = color[2];
+		floatBuffer[index++] = color[3];
+
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
 		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
 	},
@@ -308,16 +332,13 @@ XEngine.BaseObject.prototype = {
 		if(this.width !== this._prevWidth || this.height !== this._prevHeight){
 			this._prevWidth = this.width;
 			this._prevHeight = this.height;
-			this._setVertices(this.width, this.height);
+			this._setVertices(this.width, this.height, this.color);
 		}
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 
-		context.vertexAttribPointer(this.shader.vertPostAtt, this.vertexBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.bindBuffer(context.ARRAY_BUFFER, this.verColorBuffer);
-		
-		context.vertexAttribPointer(this.shader.vertColAtt, this.verColorBuffer.itemSize, context.FLOAT, false, 0, 0);
+		context.vertexAttribPointer(this.shader.vertPostAtt, 3, context.FLOAT, false, 28, 0);		
+		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 28, 8);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.uvBuffer);
 
@@ -331,29 +352,6 @@ XEngine.BaseObject.prototype = {
 			context.disable(context.STENCIL_TEST);
 			context.clear(context.STENCIL_BUFFER_BIT);
 		}
-	},
-
-	setColor:function(r, g, b, a = 1.0){
-		this.game.context.useProgram(this.shader.shaderProgram);
-		  var floatBuffer = this._vertColorsBuffer.floatView;
-		  floatBuffer[0] = r;
-		  floatBuffer[1] = g;
-		  floatBuffer[2] = b;
-		  floatBuffer[3] = a;
-		  floatBuffer[4] = r;
-		  floatBuffer[5] = g;
-		  floatBuffer[6] = b;
-		  floatBuffer[7] = a;
-		  floatBuffer[8] = r;
-		  floatBuffer[9] = g;
-		  floatBuffer[10] = b;
-		  floatBuffer[11] = a;
-		  floatBuffer[12] = r;
-		  floatBuffer[13] = g;
-		  floatBuffer[14] = b;
-		  floatBuffer[15] = a;
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
 	},
 
 	getBounds: function () {
