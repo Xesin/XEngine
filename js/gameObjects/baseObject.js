@@ -101,14 +101,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this._prevHeight = 0;
 	_this.shader = null;
 
-	_this._vertices = [];
-
-	_this._vertColors = [
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0
-	  ];
+	_this._vertDataBuffer = new XEngine.DataBuffer(12 * 4);
+	_this._vertColorsBuffer = new XEngine.DataBuffer(16 * 4);
 
 	_this._uv = [
 		0.0, 0.0,
@@ -116,6 +110,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 		1.0, 0.0,
 		1.0, 1.0,
 	];
+
+	_this._uvDataBuffer = new XEngine.DataBuffer(8 * 4);
 
 	_this.vertexBuffer = game.context.createBuffer();
 	_this.verColorBuffer = game.context.createBuffer();
@@ -128,7 +124,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	mat4.identity(this.mvMatrix);
 
 	_this.pickeable = false;
-	_this.downPos = new XEngine.Vector();
+	_this.downPos = new XEngine.Vector(0,0);
+	_this.posWhenDown = new XEngine.Vector(0,0);
 };
 
 XEngine.BaseObject.prototype = {
@@ -165,7 +162,7 @@ XEngine.BaseObject.prototype = {
 
 
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertColors), this.game.context.STATIC_DRAW);
+		this.setColor(1.0, 1.0, 1.0, 1.0);
 		this.verColorBuffer.itemSize = 4;
 		this.verColorBuffer.numItems = 4;
 
@@ -175,20 +172,36 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_setVertices: function(width, height){
-		this._vertices = [
-			0, 0, -1.0,
-			-0, height, -1.0,
-			width, -0, -1.0,
-			width, height, -1.0,
-		]
+		var floatBuffer = this._vertDataBuffer.floatView;
+		floatBuffer[0] = 0.0;
+		floatBuffer[1] = 0.0;
+		floatBuffer[2] = -1.0;
+		floatBuffer[3] = 0.0;
+		floatBuffer[4] = height;
+		floatBuffer[5] = -1.0;
+		floatBuffer[6] = width;
+		floatBuffer[7] = 0.0;
+		floatBuffer[8] = -1.0;
+		floatBuffer[9] =width;
+		floatBuffer[10] = height;
+		floatBuffer[11] = -1.0;
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertices), this.game.context.STATIC_DRAW);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
 	},
 
 	_setUVs: function(uvs){
 		this._uv = uvs;
+		var floatBuffer = this._uvDataBuffer.floatView;
+		floatBuffer[0] = uvs[0];
+		floatBuffer[1] = uvs[1];
+		floatBuffer[2] = uvs[2];
+		floatBuffer[3] = uvs[3];
+		floatBuffer[4] = uvs[4];
+		floatBuffer[5] = uvs[5];
+		floatBuffer[6] = uvs[6];
+		floatBuffer[7] = uvs[7];
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._uv), this.game.context.STATIC_DRAW);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
 	},
 
 	/**
@@ -322,14 +335,25 @@ XEngine.BaseObject.prototype = {
 
 	setColor:function(r, g, b, a = 1.0){
 		this.game.context.useProgram(this.shader.shaderProgram);
-		this._vertColors = [
-			r, g, b, a,
-			r, g, b, a,
-			r, g, b, a,
-			r, g, b, a
-		  ];
+		  var floatBuffer = this._vertColorsBuffer.floatView;
+		  floatBuffer[0] = r;
+		  floatBuffer[1] = g;
+		  floatBuffer[2] = b;
+		  floatBuffer[3] = a;
+		  floatBuffer[4] = r;
+		  floatBuffer[5] = g;
+		  floatBuffer[6] = b;
+		  floatBuffer[7] = a;
+		  floatBuffer[8] = r;
+		  floatBuffer[9] = g;
+		  floatBuffer[10] = b;
+		  floatBuffer[11] = a;
+		  floatBuffer[12] = r;
+		  floatBuffer[13] = g;
+		  floatBuffer[14] = b;
+		  floatBuffer[15] = a;
 		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.verColorBuffer)
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, new Float32Array(this._vertColors), this.game.context.STATIC_DRAW);
+		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
 	},
 
 	getBounds: function () {
