@@ -1,4 +1,16 @@
 
+XEngine.Uniforms = {
+	FLOAT: 0,
+	INTEGER: 1,
+	MAT2X2: 2,
+	MAT3X3: 3,
+	MAT4X4: 4,
+	VECTOR2: 5,
+	VECTOR3: 6,
+	VECTOR4: 7,
+	SAMPLER: 8,
+}
+
 XEngine.ShaderCompiler = {
 
 	vertexBaseParams:[

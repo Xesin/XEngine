@@ -130,47 +130,56 @@ XEngine.ShaderLib.Gimp = {
 
 XEngine.GimpShader = function(){
 	this.uniforms = {
-		texSampler:{
-			value:0
-		},
 		brightness:{
-			value:0.5
+			value:0.5,
+			type: XEngine.Uniforms.FLOAT,
 		},
 
 		contrast:{
-			value:0.5
+			value:0.5,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		hue:{
-			value:0.0001
+			value:0.0001,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		saturation:{
-			value:0.5
+			value:0.5,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		inGamma:{
-			value:1.00001
+			value:1.00001,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		inMax:{
-			value:1.01
+			value:1.01,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		inMin:{
-			value:0.0001
+			value:0.0001,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		outMax:{
-			value:1.01
+			value:1.01,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		outMin:{
-			value:0.0001
+			value:0.0001,
+			type: XEngine.Uniforms.FLOAT,
 		},
 
 		time:{
-			value:0
+			value:0,
+			type: XEngine.Uniforms.FLOAT,
 		},
 
 		distorsion:{
-			value:0.00001
+			value:0.00001,
+			type: XEngine.Uniforms.FLOAT,
 		},
 		blurAmount:{
-			value:0.00001
+			value:0.00001,
+			type: XEngine.Uniforms.FLOAT,
 		}
 	};
 	XEngine.Shader.call(this, XEngine.ShaderLib.Gimp.vertexShader, XEngine.ShaderLib.Gimp.fragmentShader, this.uniforms);

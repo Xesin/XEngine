@@ -27,11 +27,6 @@ XEngine.ShaderLib.Sprite = {
 }
 
 XEngine.SpriteShader = function(){
-	this.uniforms = {
-		texSampler:{
-			value:0
-		}
-	};
 	XEngine.Shader.call(this, XEngine.ShaderLib.Sprite.vertexShader, XEngine.ShaderLib.Sprite.fragmentShader, this.uniforms);
 }
 
