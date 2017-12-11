@@ -75,7 +75,7 @@ XEngine.Text.prototypeExtends = {
 		texture.image = _this.context.canvas;
 		texture.createTexture(_this.game.context);
 		_this.texture = texture._texture;
-		_this._setVertices(_this.width, _this.height);
+		_this._setVertices(_this.width, _this.height, _this.color);
 	},
 
 	setText:function(text){

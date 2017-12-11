@@ -69,6 +69,7 @@ XEngine.StateManager.prototype = {
 		}
 
 		_this.currentState = new state(_this.game); //Creamos el nuevo estado y lo ponemos como actual
+		if(_this.currentState.update == undefined) _this.currentState.update = function(){}
 		_this.currentState.game = _this.game; //Asignamos la referencia de game al estado
 		_this.currentState.stateName = stateName; //Asignamos el propio nombre del estado
 		if (_this.currentState.preload != undefined) { //Si el estado tiene preload, lo llamamos

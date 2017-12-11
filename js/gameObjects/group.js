@@ -71,9 +71,13 @@ XEngine.Group.prototypeExtends = {
 	},
 
 	add: function (gameObject) {
-		if (this.game.gameObjects.indexOf(gameObject) >= 0) {
-			var index = this.game.gameObjects.indexOf(gameObject);
-			this.game.gameObjects.splice(index, 1);
+		if (this.game.updateQueue.indexOf(gameObject) >= 0) {
+			var index = this.game.updateQueue.indexOf(gameObject);
+			this.game.updateQueue.splice(index, 1);
+		}
+		if (this.game.updateQueue.indexOf(gameObject) >= 0) {
+			var index = this.game.renderQueue.indexOf(gameObject);
+			this.game.renderQueue.splice(index, 1);
 		}
 		this.children.push(gameObject);
 		if (gameObject.start != undefined) {

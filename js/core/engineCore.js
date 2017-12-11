@@ -289,6 +289,7 @@ XEngine.Game.prototype = {
 		if (_this.state.currentState == null) return; //Si no hay arrancado ningún estado, saltamos el update
 		if (!this.load.preloading) { //Si no estamos precargando los assets, ejecutamos el update
 			_this.updateQueue.removePending();
+			_this.tween._update(_this.deltaMillis); //Actualizamos el tween manager
 			for (var i = _this.updateQueue.length - 1; i >= 0; i--) //Recorremos los objetos del juego para hacer su update
 			{
 				var gameObject = _this.updateQueue[i];
@@ -302,7 +303,6 @@ XEngine.Game.prototype = {
 			}
 			_this.state.currentState.update(_this.deltaTime); //Llamamos al update del estado actual
 			_this.camera.update(_this.deltaTime); //Actualizamos la cámara
-			_this.tween._update(_this.deltaMillis); //Actualizamos el tween manager
 
 			if (_this.physics.systemEnabled) {
 				_this.physics.update(_this.deltaTime); //Actualizamos el motor de físicas

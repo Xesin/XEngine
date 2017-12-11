@@ -287,7 +287,8 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_beginRender:function(context){
-		this.shader._beginRender(context);
+		if(this.shader)
+			this.shader._beginRender(context);
 		if(this.mask != null){
 			// disable color (u can also disable here the depth buffers)
 			context.colorMask(false, false, false, false);
