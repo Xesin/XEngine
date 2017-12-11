@@ -2,21 +2,14 @@ XEngine.ShaderLib.Gimp = {
 	vertexShader:[
 		'#version 300 es',
 		'#XBaseParams',
-		'out lowp vec4 vColor;',
-		'out highp vec2 uv;',
-		"out highp float iTime;",
-        "uniform float time;",
 
-		'void main(void) {',
-		  'gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);',
-		  'uv = vUv;',
-		  'vColor = aVertexColor;',
-		  "iTime = time;",
+		'void mainPass() {',
 		'}'
 	],
 	fragmentShader:[
 		'#version 300 es',
 		'precision mediump float;',
+		"#XBaseParams",
 		'uniform sampler2D texSampler;',
 		'uniform float brightness;',
 		'uniform float contrast;',
@@ -29,10 +22,7 @@ XEngine.ShaderLib.Gimp = {
 		'uniform float inGamma;',
 		'uniform float distorsion;',
 		'uniform float blurAmount;',
-		'in lowp vec4 vColor;',
-		'in highp vec2 uv;',
-		"in highp float iTime;",
-		'out vec4 fragColor;',
+		"uniform float time;",
 
 		'#define BLUR_IT 32.0',
 		'#define BLUR_DISTANCE 0.0005',
@@ -124,7 +114,7 @@ XEngine.ShaderLib.Gimp = {
 
 		'void main(void) {',
 			'vec2 uvF = uv;',
-			'uvF.x += cos((uvF.y + iTime / 3.0) * 11.0) / 10.0 * distorsion;',
+			'uvF.x += cos((uvF.y + time / 3.0) * 11.0) / 10.0 * distorsion;',
 			'vec4 texCol = texture(texSampler, uvF) * vColor;',
 			'texCol.rgb *= texCol.w;',
 			'if(texCol.a <= 0.05) discard;',

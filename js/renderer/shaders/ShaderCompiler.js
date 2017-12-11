@@ -1,6 +1,41 @@
 
 XEngine.ShaderCompiler = {
+
+	vertexBaseParams:[
+		"in vec2 aVertexPosition;",
+		"in vec4 aVertexColor;",
+		"in vec2 vUv;",
+		"uniform mat4 mvMatrix;",
+		"uniform mat4 pMatrix;",
+		"out highp vec2 uv;",
+		"vec4 vertPos;",
+		"out lowp vec4 vColor;",
+	],
+
+	fragmentBaseParams:[
+		"in lowp vec4 vColor;",
+		"in highp vec2 uv;",
+		"out vec4 fragColor;",
+	],
+
+	vertexMain: [
+		"void main(void) {",
+			"vertPos = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
+			"uv = vUv;",
+			"vColor = aVertexColor;",
+			"mainPass();",
+			"gl_Position = vertPos;",
+		"}"
+	],
+
 	compileVertexShader: function(verxtexString){
-		return verxtexString.replace("#XBaseParams", "in vec2 aVertexPosition;\nin vec4 aVertexColor;\nin vec2 vUv;\nuniform mat4 mvMatrix;\nuniform mat4 pMatrix;\n",)
+		var verxtexString = verxtexString.replace("#XBaseParams", this.vertexBaseParams.join("\n"));
+		verxtexString += this.vertexMain.join("\n");
+		return verxtexString;
+	},
+
+	compileFragmentShader: function(fragmentString){
+		var fragmentString = fragmentString.replace("#XBaseParams", this.fragmentBaseParams.join("\n"));
+		return fragmentString;
 	}
 }

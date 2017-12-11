@@ -33,6 +33,8 @@ XEngine.Shader.prototype = {
 		for(var j = 0; j < this.fragmentCode.length; j++){
 			fragmentString += this.fragmentCode[j]+"\n";
 		}
+
+		fragmentString = XEngine.ShaderCompiler.compileFragmentShader(fragmentString);
 	
 		var vertexShader;
 		var fragmentShader

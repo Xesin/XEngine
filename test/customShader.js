@@ -6,16 +6,8 @@ var vertexCode = [
         '#version 300 es',
         "precision highp float;",
 		"#XBaseParams",
-		"out lowp vec4 vColor;",
-        "out highp vec2 uv;",
-        "out highp float iTime;",
-        "uniform float time;",
 
-		"void main(void) {",
-		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
-		  "uv = vUv;",
-		  "vColor = aVertexColor;",
-          "iTime = time;",
+		"void mainPass(void) {",
 		"}"
 	];
 var fragmentCode = [
@@ -27,13 +19,12 @@ var fragmentCode = [
  * https://www.shadertoy.com/view/Ms2SD1
  */
         "precision highp float;",
-        "in highp vec2 uv;",
-        "in highp float iTime;",
+        "#XBaseParams",
+        "uniform float time;",
         "const int NUM_STEPS = 8;",
         "const float PI	 	= 3.141592;",
         "const float EPSILON	= 1e-3;",
         "#define EPSILON_NRM (0.1 / 1200.0)",
-        "out vec4 fragColor;",
 
         // sea
         "const int ITER_GEOMETRY = 6;",
@@ -44,7 +35,7 @@ var fragmentCode = [
         "const float SEA_FREQ = 0.16;",
         "const vec3 SEA_BASE = vec3(0.1,0.19,0.22);",
         "const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6);",
-        "#define SEA_TIME (1.0 + iTime * SEA_SPEED)",
+        "#define SEA_TIME (1.0 + time * SEA_SPEED)",
         "const mat2 octave_m = mat2(1.6,1.2,-1.2,1.6);",
 
         "// math",
@@ -179,7 +170,7 @@ var fragmentCode = [
             "vec2 fUv = uv;",
             "fUv = uv * 2.0 - 1.0;",
             "fUv.y = 1.0 - fUv.y;",
-            "float time = iTime * 0.3;",
+            "float time = time * 0.3;",
             
             "// ray",
             "vec3 ang = vec3(sin(time*3.0)*0.1,sin(time)*0.2+0.3,time);    ",

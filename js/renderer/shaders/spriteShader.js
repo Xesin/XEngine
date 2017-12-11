@@ -2,22 +2,15 @@ XEngine.ShaderLib.Sprite = {
 	vertexShader:[
 		'#version 300 es',
 		"#XBaseParams",
-		"out lowp vec4 vColor;",
-		"out highp vec2 uv;",
 
-		"void main(void) {",
-		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
-		  "uv = vUv;",
-		  "vColor = aVertexColor;",
+		"void mainPass() {",
 		"}"
 	],
 	fragmentShader:[
 		'#version 300 es',
 		"precision mediump float;",
 		"uniform sampler2D texSampler;",
-		"in lowp vec4 vColor;",
-		"in highp vec2 uv;",
-		"out vec4 fragColor;",
+		"#XBaseParams",
 
 		"void main(void) {",
 			"vec4 texCol = texture(texSampler, uv);",
