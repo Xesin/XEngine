@@ -102,7 +102,6 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.shader = null;
 
 	_this._vertDataBuffer = new XEngine.DataBuffer(28 * 4);
-	_this._vertColorsBuffer = new XEngine.DataBuffer(16 * 4);
 
 	_this._uv = [
 		0.0, 0.0,
@@ -114,7 +113,6 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this._uvDataBuffer = new XEngine.DataBuffer(8 * 4);
 
 	_this.vertexBuffer = game.context.createBuffer();
-	_this.verColorBuffer = game.context.createBuffer();
 	_this.uvBuffer = game.context.createBuffer();
 
 	_this.mask = null;
