@@ -42,6 +42,13 @@ XEngine.Game = function (width, height, idContainer) {
 	 * @readonly
 	 */
 	this.canvas = document.getElementById(idContainer);
+
+	if(!this.canvas){
+		this.canvas = document.body.appendChild(document.createElement("canvas"));
+		this.canvas.width = width;
+		this.canvas.height = height;
+	}
+
 	/**
 	 * @property {XEngine.Vector} position - Posición por defecto del juego
 	 * @readonly

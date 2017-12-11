@@ -49,32 +49,9 @@
         <script type="text/javascript" src="test/gimp.js"></script>
         <script type="text/javascript" src="lib/stats.min.js"></script>
         <link rel="stylesheet" href="css/myStyle.css" type="text/css" />
-        <script id="shader-fs" type="x-shader/x-fragment">
-            precision mediump float;
-            varying lowp vec4 vColor;
-
-            void main(void) {
-              gl_FragColor = vColor;
-            }
-          </script>
-          
-          <script id="shader-vs" type="x-shader/x-vertex">
-
-            attribute vec3 aVertexPosition;
-            uniform mat4 uMVMatrix;
-            uniform mat4 uPMatrix;
-            uniform vec4 color;
-            varying lowp vec4 vColor;
-          
-            void main(void) {
-              gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-              vColor = color;
-            }
-          </script>
     </head>
     <body>
-        <canvas id="contenedor">
-        </canvas>
+       
     </body>
     <script type="text/javascript">
         initGame();
