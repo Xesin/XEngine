@@ -6,7 +6,7 @@ XEngine.ShaderLib.Sprite = {
 		"out highp vec2 uv;",
 
 		"void main(void) {",
-		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
+		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
 		  "uv = vUv;",
 		  "vColor = aVertexColor;",
 		"}"

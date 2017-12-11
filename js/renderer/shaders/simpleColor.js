@@ -7,7 +7,7 @@ XEngine.ShaderLib.SimpleColor = {
 		"out lowp vec4 vColor;",
 	  
 		"void main(void) {",
-		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
+		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
 		  "vec2 uv = vUv;",
 		  "vColor = aVertexColor;",
 		"}"

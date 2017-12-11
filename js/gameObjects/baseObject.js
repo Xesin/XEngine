@@ -101,7 +101,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this._prevHeight = 0;
 	_this.shader = null;
 
-	_this._vertDataBuffer = new XEngine.DataBuffer(28 * 4);
+	_this._vertDataBuffer = new XEngine.DataBuffer(24 * 4);
 
 	_this._uv = [
 		0.0, 0.0,
@@ -177,7 +177,6 @@ XEngine.BaseObject.prototype = {
 		var index = 0;
 		floatBuffer[index++] = 0.0;
 		floatBuffer[index++] = 0.0;
-		floatBuffer[index++] = -1.0;
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -185,7 +184,6 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] = 0.0;
 		floatBuffer[index++] = height;
-		floatBuffer[index++] = -1.0;
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -193,7 +191,6 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] = width;
 		floatBuffer[index++] = 0.0;
-		floatBuffer[index++] = -1.0;
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -201,7 +198,6 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] =width;
 		floatBuffer[index++] = height;
-		floatBuffer[index++] = -1.0;
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -335,8 +331,8 @@ XEngine.BaseObject.prototype = {
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 
-		context.vertexAttribPointer(this.shader.vertPostAtt, 3, context.FLOAT, false, 28, 0);		
-		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 28, 12);
+		context.vertexAttribPointer(this.shader.vertPostAtt, 3, context.FLOAT, false, 24, 0);		
+		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 24, 8);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.uvBuffer);
 

@@ -7,7 +7,7 @@ XEngine.ShaderLib.CircleColor = {
 		"out highp vec2 uv;",
 	  
 		"void main(void) {",
-		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, 1.0);",
+		  "gl_Position = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
 		  "vec4 asdf = aVertexColor;",
 		  "vColor = aVertexColor;",
 		  "uv = vUv;",
