@@ -112,6 +112,8 @@ XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 	return angle;
 };
 
+XEngine.Mathf.TO_RADIANS = 0.0174532925199432957;
+XEngine.Mathf.TO_DEGREES = 57,2957795130823208767;
 
 /**
  * Objeto vector que almacena coordenadas

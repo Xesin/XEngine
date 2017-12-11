@@ -148,8 +148,6 @@ XEngine.BaseObject.prototype = {
 			if(!this.shader.compiled){
 				this.shader.initializeShader(this.game.context);
 			}
-			this.game.context.useProgram(this.shader.shaderProgram);
-			this._setVertices(this.width, this.height, this.color);
 			this._setBuffers();
 		}
 	},
@@ -158,7 +156,7 @@ XEngine.BaseObject.prototype = {
 		this.game.context.useProgram(this.shader.shaderProgram);
 		this.vertexBuffer.itemSize = 3 + 4;
 		this.vertexBuffer.numItems = 4;
-
+		this._setVertices(this.width, this.height, this.color);
 		this._setUVs(this._uv);
 		this.uvBuffer.itemSize = 2;
 		this.uvBuffer.numItems = 4;
@@ -264,7 +262,7 @@ XEngine.BaseObject.prototype = {
 			translation[1] += this.game.camera.position.y;
 		}
 		mat4.translate(childMatrix, childMatrix, translation);
-		mat4.rotateZ(childMatrix, childMatrix, this.rotation * 0.0174532925199432957);
+		mat4.rotateZ(childMatrix, childMatrix, this.rotation * XEngine.Mathf.TO_RADIANS);
 		mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
 		//mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
 		return childMatrix;
