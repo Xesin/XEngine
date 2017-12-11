@@ -165,11 +165,11 @@ XEngine.BaseObject.prototype = {
 	},
 
 	setColor: function(r,g,b,a = 1.0){
-		_this.color[0] = r;
-		_this.color[1] = g;
-		_this.color[2] = b;
-		_this.color[3] = a;
-		this._setVertices(this.width, this.height, [r,g,b,a]);
+		this.color[0] = r;
+		this.color[1] = g;
+		this.color[2] = b;
+		this.color[3] = a;
+		this._setVertices(this.width, this.height, this.color);
 	},
 
 	_setVertices: function(width, height, color){
@@ -336,7 +336,7 @@ XEngine.BaseObject.prototype = {
 		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
 
 		context.vertexAttribPointer(this.shader.vertPostAtt, 3, context.FLOAT, false, 28, 0);		
-		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 28, 8);
+		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 28, 12);
 
 		context.bindBuffer(context.ARRAY_BUFFER, this.uvBuffer);
 
