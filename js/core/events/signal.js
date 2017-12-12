@@ -9,7 +9,7 @@ XEngine.Signal = function () {
 	 * @property {Map.<XEngine.SignalBinding>} bindings - Almacena todos los bindings que tiene el evento
 	 * @readonly
 	 */
-	this.bindings = {}; //Listener que tiene la señal
+	this.bindings = new Array(); //Listener que tiene la señal
 };
 
 XEngine.Signal.prototype = {
@@ -23,7 +23,7 @@ XEngine.Signal.prototype = {
 	 */
 	add: function (listener, listenerContext) { //Añade un listener que siempre se ejecuta
 		var newBinding = new XEngine.SignalBinding(this, listener, listenerContext, false);
-		this.bindings[listenerContext] = newBinding;
+		this.bindings.push(newBinding);
 		return newBinding;
 	},
 
@@ -36,7 +36,7 @@ XEngine.Signal.prototype = {
 	 */
 	addOnce: function (listener, listenerContext) {
 		var newBinding = new XEngine.SignalBinding(this, listener, listenerContext, true);
-		this.bindings[listenerContext] = newBinding;
+		this.bindings.push(newBinding);
 		return newBinding;
 	},
 
@@ -46,12 +46,16 @@ XEngine.Signal.prototype = {
 	 * @param {XEngine.SignalBinding} signalBinding - binding a eliminar
 	 */
 	remove: function (listenerContext) {
-		delete this.bindings[listenerContext]; //Liberamos memoria
+		for(var i = 0; i < this.bindings.length; i++){
+			if(this.bindings[i].listenerContext === listenerContext){
+				this.bindings.splice(i,1);
+			}
+		}
 	},
 
 	_destroy: function () { //Libera memoria
 		delete this.bindings;
-		this.bindings = {};
+		this.bindings = new Array();
 	},
 
 	/**
@@ -61,8 +65,8 @@ XEngine.Signal.prototype = {
 	 */
 	dispatch: function () {
 		this._cleanup();
-		for (var listenerContext in this.bindings) {
-			this.bindings[listenerContext].dispatch.apply(this.bindings[listenerContext], arguments);
+		for(var i = 0; i < this.bindings.length; i++){
+			this.bindings[i].dispatch(this.bindings[i], arguments);
 		}
 	},
 
