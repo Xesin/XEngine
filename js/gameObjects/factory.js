@@ -129,7 +129,7 @@ XEngine.ObjectFactory.prototype = {
 	 */
 	text: function (posX, posY, text, textStyle) {
 		var gameObject = new XEngine.Text(this.game, posX, posY, text, textStyle);
-		return this.existing(gameObject, false, true);
+		return this.existing(gameObject, true, true);
 	},
 
 	/**

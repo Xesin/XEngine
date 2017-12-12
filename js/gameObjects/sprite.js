@@ -63,7 +63,7 @@ XEngine.Sprite.prototypeExtends = {
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este m�todo seg�n la necesidad
 		if(this.shader == null) return;
 		var _this = this;
-		
+		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
 		if(_this.tilled){
 			var startX = 0;
 			var startY = 0;

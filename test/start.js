@@ -10,7 +10,7 @@ function initGame(){
    game.state.add('anim', AnimScene);
    game.state.add('shader', CustomShader);
    game.state.add('gimp', Gimp);
-   game.state.start('gimp');
+   game.state.start('anim');
 
 
    game.setBackgroundColor(100,100,100, 255);

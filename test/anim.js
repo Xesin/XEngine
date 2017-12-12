@@ -42,25 +42,25 @@ AnimScene.prototype = {
 		},this);
 
 		
-		// this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
-		// this.text.anchor.setTo(0.5);
-		this.rect = this.game.add.rect(0,0, 0, this.game.height);
-		this.rect.render = false;
+		this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
+		this.text.anchor.setTo(0.5);
+		// this.rect = this.game.add.rect(0,0, 0, this.game.height);
+		// this.rect.render = false;
 
 
-		this.unicorn = this.game.add.sprite(0,0, 'test2');
-		this.unicorn.anchor.setTo(0.5);
-		this.unicorn.render = false;
+		// this.unicorn = this.game.add.sprite(0,0, 'test2');
+		// this.unicorn.anchor.setTo(0.5);
+		// this.unicorn.render = false;
 
-		// //this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
-		// this.text.mask = this.rect;
-		this.game.tween.add(this.rect).to({width:this.game.width}, 2000, XEngine.Easing.ExpoInOut, true, 0, -1, true)
+		// // //this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
+		// // this.text.mask = this.rect;
+		// this.game.tween.add(this.rect).to({width:this.game.width}, 2000, XEngine.Easing.ExpoInOut, true, 0, -1, true)
 
 
-		this.back2 = this.game.add.sprite(0,0,'back2');
-		this.back2.mask = this.rect;
-		this.back1 = this.game.add.sprite(0,0,'back1');
-		this.back1.mask = this.unicorn;
+		// this.back2 = this.game.add.sprite(0,0,'back2');
+		// this.back2.mask = this.rect;
+		// this.back1 = this.game.add.sprite(0,0,'back1');
+		// this.back1.mask = this.unicorn;
 	},
 	
 	update : function (deltaTime) {
@@ -68,8 +68,8 @@ AnimScene.prototype = {
 		// this.tilled.offSet.x += 200 * deltaTime;
 		// this.tilled.offSet.y += 200 * deltaTime;
 		//this.text.rotation += 45*deltaTime;
-		this.unicorn.position.x = this.game.input.pointer.x;
-		this.unicorn.position.y = this.game.input.pointer.y;
+		// this.unicorn.position.x = this.game.input.pointer.x;
+		// this.unicorn.position.y = this.game.input.pointer.y;
         // var walk = false;
 		// if(this.game.input.isPressed(XEngine.KeyCode.D)){
 		// 	this.sprite.position.x += 200 * deltaTime;

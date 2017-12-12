@@ -20,7 +20,7 @@ XEngine.Text = function (game, posX, posY, text, textStyle) {
 	textStyle = textStyle || {};
 	_this.font = textStyle.font || 'Arial';
 	_this.size = textStyle.font_size || 12;
-	_this.color = textStyle.font_color || 'white';
+	_this.textColor = textStyle.font_color || 'white';
 	_this.style = '';
 	_this.strokeWidth = textStyle.stroke_width || 0;
 	_this.strokeColor = textStyle.stroke_color || 'black';
@@ -45,6 +45,7 @@ XEngine.Text.prototypeExtends = {
 	_beginRender:function(context){
 		XEngine.BaseObject.prototype._beginRender.call(this, context);
 		this.shader._setTexture(this.texture);
+		this.shader._beginRender(context);
 	},
 
 	_renderToCanvas: function (context) {
@@ -69,7 +70,7 @@ XEngine.Text.prototypeExtends = {
 			_this.context.lineWidth = _this.strokeWidth;
 			_this.context.strokeText(_this.text, 0, _this.height);
 		}
-		_this.context.fillStyle = _this.color;
+		_this.context.fillStyle = _this.textColor;
 		_this.context.fillText(_this.text, 0, _this.height);
 		var texture = new XEngine.Texture2D('textTexture', _this.width, _this.height, XEngine.Texture2D.WRAP_MODES.CLAMP);
 		texture.image = _this.context.canvas;
