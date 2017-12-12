@@ -264,7 +264,7 @@ XEngine.BaseObject.prototype = {
 		mat4.translate(childMatrix, childMatrix, translation);
 		mat4.rotateZ(childMatrix, childMatrix, this.rotation * XEngine.Mathf.TO_RADIANS);
 		mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
-		//mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
+		mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
 		return childMatrix;
 	},
 
