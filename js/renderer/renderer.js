@@ -73,7 +73,7 @@ XEngine.Renderer.prototype = {
 	renderLoop: function (arrayObjects) { //Renderizamos el array de objetos que le pasamos por parametro
 		var _this = this;
 		for (var i = 0; i < arrayObjects.length; i++) {
-			var object = arrayObjects[i];
+			let object = arrayObjects[i];
 			if (!object.render) continue;
 			if (XEngine.Group.prototype.isPrototypeOf(object)) { //Si es un grupo, llamamos al render pasando los objetos que contiene
 				object._beginRender(_this.context);

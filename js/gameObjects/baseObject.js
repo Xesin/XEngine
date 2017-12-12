@@ -287,8 +287,6 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_beginRender:function(context){
-		if(this.shader)
-			this.shader._beginRender(context);
 		if(this.mask != null){
 			// disable color (u can also disable here the depth buffers)
 			context.colorMask(false, false, false, false);
@@ -299,6 +297,7 @@ XEngine.BaseObject.prototype = {
 		
 			context.enable(context.STENCIL_TEST);
 		
+			this.mask._beginRender(context);
 			this.mask._renderToCanvas(context);
 		
 			// Telling the stencil now to draw/keep only pixels that equals 1 - which we set earlier
@@ -307,6 +306,8 @@ XEngine.BaseObject.prototype = {
 			// enabling back the color buffer
 			context.colorMask(true, true, true, true);
 		}
+		if(this.shader)
+			this.shader._beginRender(context);
 	},
 
 	/**

@@ -156,6 +156,6 @@ XEngine.ObjectFactory.prototype = {
 		var x = posX || 0;
 		var y = posY || 0;
 		var gameObject = new XEngine.Group(this.game, x, y);
-		return this.existing(gameObject, true, false);
+		return this.existing(gameObject, true, true);
 	}
 };

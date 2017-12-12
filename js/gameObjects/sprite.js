@@ -50,13 +50,20 @@ XEngine.Sprite = function (game, posX, posY, sprite, frame) {
 XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 
 XEngine.Sprite.prototypeExtends = {
+
+	_beginRender:function(context){
+		XEngine.BaseObject.prototype._beginRender.call(this, context);
+		if(this.shader){
+			var cache_image = this.game.cache.image(this.sprite); //Obtenemos la imagen a renderizar
+			this.shader._setTexture(cache_image._texture);
+			this.shader._beginRender(context);
+		}
+	},
+
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este m�todo seg�n la necesidad
 		if(this.shader == null) return;
 		var _this = this;
-		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
-		_this.shader._setTexture(cache_image._texture);
-		_this.shader._beginRender(context);
-
+		
 		if(_this.tilled){
 			var startX = 0;
 			var startY = 0;
