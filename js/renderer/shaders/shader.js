@@ -1,8 +1,4 @@
 XEngine.ShaderUniforms ={
-	mvMatrix:{ 
-		value: null,
-		type: XEngine.Uniforms.MAT4X4
-	},
 	pMatrix:{
 		value: null,
 		type: XEngine.Uniforms.MAT4X4

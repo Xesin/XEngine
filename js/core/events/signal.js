@@ -66,7 +66,7 @@ XEngine.Signal.prototype = {
 	dispatch: function () {
 		this._cleanup();
 		for(var i = 0; i < this.bindings.length; i++){
-			this.bindings[i].dispatch(this.bindings[i], arguments);
+			this.bindings[i].dispatch.apply(this.bindings[i], arguments);
 		}
 	},
 

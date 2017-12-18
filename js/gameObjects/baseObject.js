@@ -9,6 +9,7 @@
 XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos que se pueden poner en el juego
 	var _this = this;
 	_this.game = game; //Referencia al juego
+	_this.parent = game;
 	/**
 	 * @property {Boolean} isPendingDestroy - determina si el objeto va a ser destruido en el siguiente frame
 	 * @readonly
@@ -171,31 +172,33 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_setVertices: function(width, height, color){
+		this.getWorldMatrix(this.mvMatrix);
+		var pos = XEngine.Vector.Zero.multiplyMatrix(this.mvMatrix);
 		var floatBuffer = this._vertDataBuffer.floatView;
 		var index = 0;
-		floatBuffer[index++] = 0.0;
-		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = pos[0];
+		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
 		floatBuffer[index++] = color[3];
 
-		floatBuffer[index++] = 0.0;
-		floatBuffer[index++] = height;
+		floatBuffer[index++] = pos[0];
+		floatBuffer[index++] = height + pos[1];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
 		floatBuffer[index++] = color[3];
 
-		floatBuffer[index++] = width;
-		floatBuffer[index++] = 0.0;
+		floatBuffer[index++] = width + pos[0];
+		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
 		floatBuffer[index++] = color[3];
 
-		floatBuffer[index++] =width;
-		floatBuffer[index++] = height;
+		floatBuffer[index++] = width + pos[0];
+		floatBuffer[index++] = height + pos[1];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -280,10 +283,7 @@ XEngine.BaseObject.prototype = {
 		var parentPos = _this.parent.getWorldPos();
 		var x = _this.position.x + parentPos.x;
 		var y = _this.position.y + parentPos.y;
-		return {
-			x: x,
-			y: y
-		};
+		return new XEngine.Vector(x, y);
 	},
 
 	_beginRender:function(context){
@@ -318,8 +318,6 @@ XEngine.BaseObject.prototype = {
 	 * @private
 	 */
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
-		this.getWorldMatrix(this.mvMatrix);
-		this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);
 

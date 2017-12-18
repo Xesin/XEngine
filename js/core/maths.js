@@ -264,6 +264,25 @@ XEngine.Vector.prototype = {
 		return this;
 	},
 
+		/**
+	 * Multiplica a este vector los valores de otro
+	 * @method XEngine.Vector#multiply
+	 * 
+	 * @param {Array} other - Vector a multiplicar
+	 * @public
+	 */
+	multiplyMatrix: function (matrix) { //Multiplicación de vectores
+		var x = this.x,
+			y = this.y,
+			z = 1.0;
+			w = 1.0;
+		var out = new Array(3);
+		out[0] = x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12];
+		out[1] = x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13];
+		out[2] = x * matrix[2] + y * matrix[6] + z * matrix[10] + matrix[14];
+		return out;
+	},
+
 	/**
 	 * Rota el vector tantos angulos como se le indique (angulos en radianes)
 	 * @method XEngine.Vector#rotate
@@ -375,3 +394,5 @@ XEngine.Vector.prototype = {
 };
 
 XEngine.Vector.prototype.constructor = XEngine.Vector;
+
+XEngine.Vector.Zero = new XEngine.Vector(0,0);

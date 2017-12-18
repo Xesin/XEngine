@@ -42,14 +42,14 @@ AnimScene.prototype = {
 		},this);
 
 		
-		this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
-		this.text.anchor.setTo(0.5);
+		// this.text = this.game.add.text(200,200,'Hola Mundo', {font_size: 60});
+		// this.text.anchor.setTo(0.5);
 		// this.rect = this.game.add.rect(0,0, 0, this.game.height);
 		// this.rect.render = false;
 
 
-		// this.unicorn = this.game.add.sprite(0,0, 'test2');
-		// this.unicorn.anchor.setTo(0.5);
+		this.unicorn = this.game.add.sprite(200,200, 'test2');
+		this.unicorn.anchor.setTo(0.5);
 		// this.unicorn.render = false;
 
 		// // //this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)

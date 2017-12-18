@@ -32,7 +32,7 @@ XEngine.ShaderCompiler = {
 
 	vertexMain: [
 		"void main(void) {",
-			"vertPos = pMatrix * mvMatrix * vec4(aVertexPosition, -1.0, 1.0);",
+			"vertPos = pMatrix * vec4(aVertexPosition, -1.0, 1.0);",
 			"uv = vUv;",
 			"vColor = aVertexColor;",
 			"mainPass();",
