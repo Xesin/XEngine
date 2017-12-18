@@ -68,8 +68,8 @@ AnimScene.prototype = {
 		// this.tilled.offSet.x += 200 * deltaTime;
 		// this.tilled.offSet.y += 200 * deltaTime;
 		//this.text.rotation += 45*deltaTime;
-		// this.unicorn.position.x = this.game.input.pointer.x;
-		// this.unicorn.position.y = this.game.input.pointer.y;
+		this.unicorn.position.x = this.game.input.pointer.x;
+		this.unicorn.position.y = this.game.input.pointer.y;
         // var walk = false;
 		// if(this.game.input.isPressed(XEngine.KeyCode.D)){
 		// 	this.sprite.position.x += 200 * deltaTime;

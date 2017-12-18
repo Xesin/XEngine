@@ -47,6 +47,7 @@ XEngine.Game = function (width, height, idContainer) {
 		this.canvas = document.body.appendChild(document.createElement("canvas"));
 		this.canvas.width = width;
 		this.canvas.height = height;
+		this.canvas.id = idContainer;
 	}
 
 	/**
