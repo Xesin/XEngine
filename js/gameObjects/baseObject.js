@@ -113,7 +113,24 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 
 	_this._uvDataBuffer = new XEngine.DataBuffer(8 * 4);
 
+	var indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
 	_this.vertexBuffer = new XEngine.VertexBuffer(game.context, game.context.createBuffer());
+	_this.indexBuffer = new XEngine.IndexBuffer(game.context, game.context.createBuffer());
+	game.context.bindBuffer(game.context.ELEMENT_ARRAY_BUFFER, _this.indexBuffer.buffer);
+	game.context.bufferData(game.context.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), game.context.STATIC_DRAW);
+	var indexBuffer = indexDataBuffer.uintView;
+	for (var indexA = 0, indexB = 0; indexA < 6; indexA += 6, indexB += 4)
+	{
+		indexBuffer[indexA + 0] = indexB + 0;
+		indexBuffer[indexA + 1] = indexB + 1;
+		indexBuffer[indexA + 2] = indexB + 2;
+		indexBuffer[indexA + 3] = indexB + 1;
+		indexBuffer[indexA + 4] = indexB + 3;
+		indexBuffer[indexA + 5] = indexB + 2;
+	}
+
+	_this.indexBuffer.updateResource(indexBuffer, 0);
+
 	_this.uvBuffer =new XEngine.VertexBuffer(game.context, game.context.createBuffer());
 
 	_this.mask = null;
@@ -321,8 +338,9 @@ XEngine.BaseObject.prototype = {
 		
 		this.uvBuffer.bind();
 		this.vertexBuffer.bind();
+		this.indexBuffer.bind();
 
-		context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
+		context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
 	},
 
 	_endRender(context){
