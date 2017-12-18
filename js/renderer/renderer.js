@@ -37,6 +37,7 @@ XEngine.Renderer = function (game, canvas) {
 		this.context.enable(this.context.BLEND);
 		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 		console.log(this.context);
+		this.resourceManager = new XEngine.ResourceManager(this.context);
 	}
 };
 

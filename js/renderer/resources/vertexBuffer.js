@@ -19,7 +19,7 @@ XEngine.VertexBuffer.prototype = {
 		});
 	},
 
-	updateResource: function(bufferData){
+	updateResource: function(bufferData, offset){
 		var gl = this.gl;
 		
 		if (CurrentVertexBuffer !== this)
@@ -27,7 +27,7 @@ XEngine.VertexBuffer.prototype = {
 			CurrentVertexBuffer = this;
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 		}
-		gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+		gl.bufferSubData(gl.ARRAY_BUFFER, offset, bufferData);
 	},
 
 	bind:function(){
@@ -36,7 +36,7 @@ XEngine.VertexBuffer.prototype = {
 		var attributes = this.attributes;
 		var attributesLength = attributes.length;
 
-		if(CurrentVertexBuffer !== this){
+		//if(CurrentVertexBuffer !== this){
 			CurrentVertexBuffer = this;
 			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
@@ -57,7 +57,7 @@ XEngine.VertexBuffer.prototype = {
                     );
                 }
             }
-		}
+		//}
 	}
 }
 

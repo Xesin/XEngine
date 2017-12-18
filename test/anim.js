@@ -6,8 +6,8 @@ AnimScene.prototype = {
 	
 	preload: function () {
 		this.game.load.jsonSpriteSheet('player', 'img/animations.png', 'img/man.json');
-		this.game.load.image('back1', 'img/back1.jpg');
-		this.game.load.image('back2', 'img/back2.jpg');
+		// this.game.load.image('back1', 'img/back1.jpg');
+		// this.game.load.image('back2', 'img/back2.jpg');
 		this.game.load.image('test2', 'img/angry_unicorn.png');
 	},
 	

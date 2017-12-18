@@ -10,7 +10,7 @@ XEngine.IndexBuffer.prototype = {
 	updateResource: function(bufferData, offset){
 		var gl = this.gl;
 		
-		if (CurrentIndexBuffer !== this)
+		//if (CurrentIndexBuffer !== this)
 		{
 			CurrentIndexBuffer = this;
 			gl.bindBuffer(this.bufferType, this.buffer);
@@ -22,7 +22,8 @@ XEngine.IndexBuffer.prototype = {
 		var gl = this.gl;
 		var buffer = this.buffer;
 
-		if(CurrentIndexBuffer !== this){
+		//if(CurrentIndexBuffer !== this)
+		{
 			CurrentIndexBuffer = this;
 			gl.bindBuffer(this.bufferType, buffer);
 		}

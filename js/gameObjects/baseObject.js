@@ -100,9 +100,10 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.height = 0;
 	_this._prevWidth = 0;
 	_this._prevHeight = 0;
+	_this._prevPos = {x: 0, y: 0}
 	_this.shader = null;
 
-	_this._vertDataBuffer = new XEngine.DataBuffer(24 * 4);
+	_this._vertDataBuffer = new XEngine.DataBuffer(32 * 4);
 
 	_this._uv = [
 		0.0, 0.0,
@@ -111,13 +112,11 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 		1.0, 1.0,
 	];
 
-	_this._uvDataBuffer = new XEngine.DataBuffer(8 * 4);
+	var gl = this.game.context;
 
 	var indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
-	_this.vertexBuffer = new XEngine.VertexBuffer(game.context, game.context.createBuffer());
-	_this.indexBuffer = new XEngine.IndexBuffer(game.context, game.context.createBuffer());
-	game.context.bindBuffer(game.context.ELEMENT_ARRAY_BUFFER, _this.indexBuffer.buffer);
-	game.context.bufferData(game.context.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), game.context.STATIC_DRAW);
+	_this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(gl.ARRAY_BUFFER, _this._vertDataBuffer.getByteCapacity(), gl.STATIC_DRAW);
+	_this.indexBuffer = this.game.renderer.resourceManager.createBuffer(gl.ELEMENT_ARRAY_BUFFER, _this._vertDataBuffer.getByteCapacity(), gl.STATIC_DRAW);
 	var indexBuffer = indexDataBuffer.uintView;
 	for (var indexA = 0, indexB = 0; indexA < 6; indexA += 6, indexB += 4)
 	{
@@ -173,10 +172,9 @@ XEngine.BaseObject.prototype = {
 	_setBuffers: function(){
 		var context = this.game.context;
 		context.useProgram(this.shader.shaderProgram);
-		this.vertexBuffer.addAttribute(this.shader.vertPostAtt, 3, context.FLOAT, false, 24, 0);
-		this.vertexBuffer.addAttribute(this.shader.vertColAtt, 4, context.FLOAT, false, 24, 8);
-		this.uvBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 0, 0);
-		this._setUVs(this._uv);
+		this.vertexBuffer.addAttribute(this.shader.vertPostAtt, 2, context.FLOAT, false, 32, 0);
+		this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 32, 8);
+		this.vertexBuffer.addAttribute(this.shader.vertColAtt, 4, context.FLOAT, false, 32, 16);
 	},
 
 	setColor: function(r,g,b,a = 1.0){
@@ -184,15 +182,19 @@ XEngine.BaseObject.prototype = {
 		this.color[1] = g;
 		this.color[2] = b;
 		this.color[3] = a;
+
+		this._setVertices(this.width, this.height, this.color, this._uv);
 	},
 
-	_setVertices: function(width, height, color){
+	_setVertices: function(width, height, color, uv){
 		this.getWorldMatrix(this.mvMatrix);
 		var pos = XEngine.Vector.Zero.multiplyMatrix(this.mvMatrix);
 		var floatBuffer = this._vertDataBuffer.floatView;
 		var index = 0;
 		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = uv[0];
+		floatBuffer[index++] = uv[1];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -200,6 +202,8 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = height + pos[1];
+		floatBuffer[index++] = uv[2];
+		floatBuffer[index++] = uv[3];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -207,6 +211,8 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] = width + pos[0];
 		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = uv[4];
+		floatBuffer[index++] = uv[5];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
@@ -214,26 +220,14 @@ XEngine.BaseObject.prototype = {
 
 		floatBuffer[index++] = width + pos[0];
 		floatBuffer[index++] = height + pos[1];
+		floatBuffer[index++] = uv[6];
+		floatBuffer[index++] = uv[7];
 		floatBuffer[index++] = color[0];
 		floatBuffer[index++] = color[1];
 		floatBuffer[index++] = color[2];
 		floatBuffer[index++] = color[3];
 
-		this.vertexBuffer.updateResource(floatBuffer);
-	},
-
-	_setUVs: function(uvs){
-		this._uv = uvs;
-		var floatBuffer = this._uvDataBuffer.floatView;
-		floatBuffer[0] = uvs[0];
-		floatBuffer[1] = uvs[1];
-		floatBuffer[2] = uvs[2];
-		floatBuffer[3] = uvs[3];
-		floatBuffer[4] = uvs[4];
-		floatBuffer[5] = uvs[5];
-		floatBuffer[6] = uvs[6];
-		floatBuffer[7] = uvs[7];
-		this.uvBuffer.updateResource(floatBuffer);
+		this.vertexBuffer.updateResource(floatBuffer, 0);
 	},
 
 	/**
@@ -333,14 +327,20 @@ XEngine.BaseObject.prototype = {
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);
+
+		if(this._prevHeight != this.height || this._prevWidth != this.width || this._prevPos.x != this.position.x || this._prevPos.y != this.position.y){
+			this._setVertices(this.width, this.height, this.color, this._uv);
+			this._prevHeight = this.height;
+			this._prevWidth = this.width;
+			this._prevPos.x = this.position.x;
+			this._prevPos.y = this.position.y;
+		}
 		
-		this._setVertices(this.width, this.height, this.color);
 		
-		this.uvBuffer.bind();
 		this.vertexBuffer.bind();
 		this.indexBuffer.bind();
 
-		context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
+		context.drawElements(context.TRIANGLES, 8, context.UNSIGNED_SHORT, 0);
 	},
 
 	_endRender(context){

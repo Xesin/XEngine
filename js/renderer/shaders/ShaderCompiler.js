@@ -15,9 +15,8 @@ XEngine.ShaderCompiler = {
 
 	vertexBaseParams:[
 		"in vec2 aVertexPosition;",
-		"in vec4 aVertexColor;",
 		"in vec2 vUv;",
-		"uniform mat4 mvMatrix;",
+		"in vec4 aVertexColor;",
 		"uniform mat4 pMatrix;",
 		"out highp vec2 uv;",
 		"vec4 vertPos;",

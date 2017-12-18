@@ -76,9 +76,6 @@ XEngine.Shader.prototype = {
 		this.vertColAtt = gl.getAttribLocation(this.shaderProgram, "aVertexColor");
 		this.vertUvAtt = gl.getAttribLocation(this.shaderProgram, "vUv");
 		
-		gl.enableVertexAttribArray(this.vertPostAtt);
-		gl.enableVertexAttribArray(this.vertColAtt);
-		gl.enableVertexAttribArray(this.vertUvAtt);
 		for (var property in this.uniforms) {
 			if (this.uniforms.hasOwnProperty(property)) {
 				this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
