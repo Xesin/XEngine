@@ -113,8 +113,8 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 
 	_this._uvDataBuffer = new XEngine.DataBuffer(8 * 4);
 
-	_this.vertexBuffer = game.context.createBuffer();
-	_this.uvBuffer = game.context.createBuffer();
+	_this.vertexBuffer = new XEngine.VertexBuffer(game.context, game.context.createBuffer());
+	_this.uvBuffer =new XEngine.VertexBuffer(game.context, game.context.createBuffer());
 
 	_this.mask = null;
 
@@ -154,13 +154,12 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_setBuffers: function(){
-		this.game.context.useProgram(this.shader.shaderProgram);
-		this.vertexBuffer.itemSize = 3 + 4;
-		this.vertexBuffer.numItems = 4;
-		this._setVertices(this.width, this.height, this.color);
+		var context = this.game.context;
+		context.useProgram(this.shader.shaderProgram);
+		this.vertexBuffer.addAttribute(this.shader.vertPostAtt, 3, context.FLOAT, false, 24, 0);
+		this.vertexBuffer.addAttribute(this.shader.vertColAtt, 4, context.FLOAT, false, 24, 8);
+		this.uvBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 0, 0);
 		this._setUVs(this._uv);
-		this.uvBuffer.itemSize = 2;
-		this.uvBuffer.numItems = 4;
 	},
 
 	setColor: function(r,g,b,a = 1.0){
@@ -168,7 +167,6 @@ XEngine.BaseObject.prototype = {
 		this.color[1] = g;
 		this.color[2] = b;
 		this.color[3] = a;
-		this._setVertices(this.width, this.height, this.color);
 	},
 
 	_setVertices: function(width, height, color){
@@ -204,8 +202,7 @@ XEngine.BaseObject.prototype = {
 		floatBuffer[index++] = color[2];
 		floatBuffer[index++] = color[3];
 
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.vertexBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
+		this.vertexBuffer.updateResource(floatBuffer);
 	},
 
 	_setUVs: function(uvs){
@@ -219,8 +216,7 @@ XEngine.BaseObject.prototype = {
 		floatBuffer[5] = uvs[5];
 		floatBuffer[6] = uvs[6];
 		floatBuffer[7] = uvs[7];
-		this.game.context.bindBuffer(this.game.context.ARRAY_BUFFER, this.uvBuffer);
-		this.game.context.bufferData(this.game.context.ARRAY_BUFFER, floatBuffer, this.game.context.STATIC_DRAW);
+		this.uvBuffer.updateResource(floatBuffer);
 	},
 
 	/**
@@ -320,23 +316,13 @@ XEngine.BaseObject.prototype = {
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este método según la necesidad
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 		this.shader.updateUniforms(context);
+		
+		this._setVertices(this.width, this.height, this.color);
+		
+		this.uvBuffer.bind();
+		this.vertexBuffer.bind();
 
-		if(this.width !== this._prevWidth || this.height !== this._prevHeight){
-			this._prevWidth = this.width;
-			this._prevHeight = this.height;
-			this._setVertices(this.width, this.height, this.color);
-		}
-
-		context.bindBuffer(context.ARRAY_BUFFER, this.vertexBuffer);
-
-		context.vertexAttribPointer(this.shader.vertPostAtt, 3, context.FLOAT, false, 24, 0);		
-		context.vertexAttribPointer(this.shader.vertColAtt, 4, context.FLOAT, false, 24, 8);
-
-		context.bindBuffer(context.ARRAY_BUFFER, this.uvBuffer);
-
-		context.vertexAttribPointer(this.shader.vertUvAtt, this.uvBuffer.itemSize, context.FLOAT, false, 0, 0);
-
-		context.drawArrays(context.TRIANGLE_STRIP, 0, this.vertexBuffer.numItems);
+		context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
 	},
 
 	_endRender(context){
