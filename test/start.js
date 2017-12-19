@@ -3,7 +3,7 @@
 var game;
 function initGame(){
    console.log('Arrancando El juego');
-   game = new XEngine.Game(1200, 720, 'contenedor');							//iniciamos el juego
+   game = new XEngine.Game(1280, 720, 'contenedor');							//iniciamos el juego
    game.frameLimit = 120;
    game.scale.scaleType = XEngine.Scale.SHOW_ALL;
    game.state.add('unicorns', Start);

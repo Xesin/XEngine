@@ -185,34 +185,45 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_setVertices: function(width, height, color, uv){
-		this.getWorldMatrix(this.mvMatrix);
-		var pos = XEngine.Vector.Zero.multiplyMatrix(this.mvMatrix);
 		var floatBuffer = this._vertDataBuffer.floatView;
 		var uintBuffer = this._vertDataBuffer.uintView;
 		var index = 0;
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = pos[1];
+		var pos = new XEngine.Vector(0, 0);
+		this.getWorldMatrix(this.mvMatrix);
+		pos = pos.multiplyMatrix(this.mvMatrix);		
+		
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = uv[0];
 		floatBuffer[index++] = uv[1];
 		uintBuffer[index++] = color;
 		floatBuffer[index++] = this.alpha;
 
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = height + pos[1];
+		pos.setTo(0, this.height);
+		pos = pos.multiplyMatrix(this.mvMatrix);
+
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = uv[2];
 		floatBuffer[index++] = uv[3];
 		uintBuffer[index++] = color;
 		floatBuffer[index++] = this.alpha;
 
-		floatBuffer[index++] = width + pos[0];
-		floatBuffer[index++] = pos[1];
+		pos.setTo(this.width, 0);
+		pos = pos.multiplyMatrix(this.mvMatrix);
+
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = uv[4];
 		floatBuffer[index++] = uv[5];
 		uintBuffer[index++] = color;
 		floatBuffer[index++] = this.alpha;
 
-		floatBuffer[index++] = width + pos[0];
-		floatBuffer[index++] = height + pos[1];
+		pos.setTo(this.width, this.height);
+		pos = pos.multiplyMatrix(this.mvMatrix);
+
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = uv[6];
 		floatBuffer[index++] = uv[7];
 		uintBuffer[index++] = color;
@@ -317,7 +328,7 @@ XEngine.BaseObject.prototype = {
 
 	rendermask:function(gl){
 		// disable color (u can also disable here the depth buffers)
-		//gl.colorMask(false, false, false, false);
+		gl.colorMask(false, false, false, false);
 		
 		// Replacing the values at the stencil buffer to 1 on every pixel we draw
 		gl.stencilFunc(gl.ALWAYS, 1, 1);
@@ -354,8 +365,7 @@ XEngine.BaseObject.prototype = {
 
 	_endRender:function(context){
 		if(this.mask != null){
-			context.disable(context.STENCIL_TEST);
-			context.clear(context.STENCIL_BUFFER_BIT);
+			
 		}
 	},
 

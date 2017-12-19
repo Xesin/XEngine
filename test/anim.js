@@ -60,10 +60,11 @@ AnimScene.prototype = {
 
 		// this.back2 = this.game.add.sprite(0,0,'back2');
 		// this.back2.mask = this.rect;
+		var group = this.game.add.group(100,100);
 		this.back1 = this.game.add.sprite(0,0,'back1');
-		this.back1.width = 1200;
-		this.back1.height = 720;
-		//this.back1.scale.setTo(0.5);
+		this.back1.scale.setTo(0.6);
+		//this.back1.anchor.setTo(0.6);
+		group.add(this.back1);
 		//this.back1.mask = this.unicorn;
 	},
 	
@@ -74,6 +75,7 @@ AnimScene.prototype = {
 		//this.text.rotation += 45*deltaTime;
 		this.unicorn.position.x = this.game.input.pointer.x;
 		this.unicorn.position.y = this.game.input.pointer.y;
+		//this.back1.rotation += 20 *deltaTime;
         // var walk = false;
 		// if(this.game.input.isPressed(XEngine.KeyCode.D)){
 		// 	this.sprite.position.x += 200 * deltaTime;

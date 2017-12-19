@@ -118,10 +118,10 @@ XEngine.SpriteBatch.prototype = {
 	},
 
 	addSprite: function(gameObject){
+		if(gameObject.mask !== this.mask){
+			this.flush();
+		}
 		if(gameObject.mask){
-			if(gameObject.mask !== this.mask){
-				this.flush();
-			}
 			this.mask = gameObject.mask;
 		}
 		this.renderer.setRenderer(this, gameObject.sprite);
@@ -130,43 +130,44 @@ XEngine.SpriteBatch.prototype = {
 		var uintBuffer = this.vertexDataBuffer.uintView;
 		var index = this.vertexDataBuffer.allocate(24);
 
-		var pos = new XEngine.Vector(gameObject.position.x, gameObject.position.y);
+		var pos = new XEngine.Vector(0, 0);
 		mat4.identity(gameObject.mvMatrix)
 		gameObject.getWorldMatrix(gameObject.mvMatrix);
 		pos = pos.multiplyMatrix(gameObject.mvMatrix);		
+		
 
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = gameObject._uv[0];
 		floatBuffer[index++] = gameObject._uv[1];
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
-		var pos = new XEngine.Vector(gameObject.position.x, gameObject.position.y + gameObject.height);
+		pos.setTo(0, gameObject.height);
 		pos = pos.multiplyMatrix(gameObject.mvMatrix);
 
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = gameObject._uv[2];
 		floatBuffer[index++] = gameObject._uv[3];
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
-		var pos = new XEngine.Vector(gameObject.position.x + gameObject.width, gameObject.position.y);
+		pos.setTo(gameObject.width, 0);
 		pos = pos.multiplyMatrix(gameObject.mvMatrix);
 
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = gameObject._uv[4];
 		floatBuffer[index++] = gameObject._uv[5];
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
-		var pos = new XEngine.Vector(gameObject.position.x + gameObject.width, gameObject.position.y + gameObject.height);
+		pos.setTo(gameObject.width, gameObject.height);
 		pos = pos.multiplyMatrix(gameObject.mvMatrix);
 
-		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = pos[1];
+		floatBuffer[index++] = pos.x;
+		floatBuffer[index++] = pos.y;
 		floatBuffer[index++] = gameObject._uv[6];
 		floatBuffer[index++] = gameObject._uv[7];
 		uintBuffer[index++] = gameObject.color;

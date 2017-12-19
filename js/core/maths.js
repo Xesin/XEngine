@@ -280,7 +280,7 @@ XEngine.Vector.prototype = {
 		out[0] = x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12];
 		out[1] = x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13];
 		out[2] = x * matrix[2] + y * matrix[6] + z * matrix[10] + matrix[14];
-		return out;
+		return new XEngine.Vector(out[0], out[1]);
 	},
 
 	/**

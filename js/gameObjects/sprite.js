@@ -61,6 +61,7 @@ XEngine.Sprite.prototypeExtends = {
 			var startY = 0;
 			var endX = 0;
 			var endY = 0;
+			var cache_image = this.game.cache.image(this.sprite);
 			if(this.json){
 				var frameInfo = {};
 				if (typeof this.frame === 'string') {
