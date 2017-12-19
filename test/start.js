@@ -26,6 +26,7 @@ Start.prototype = {
 	
 	preload: function () {
 		this.game.load.image('test2', 'img/angry_unicorn.png');
+		this.game.load.image('back1', 'img/back1.jpg');
 	},
 	
 	start: function () {
@@ -35,6 +36,9 @@ Start.prototype = {
 			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
 		}
 
+		var img = this.game.add.image(0, 0, 'back1');
+		img.width /= 4;
+		img.height /= 4;
 		this.game.input.onKeyUp.add(function(event){
             if(event.keyCode == XEngine.KeyCode.ONE){
                	this.game.input.onKeyUp._destroy();

@@ -324,8 +324,10 @@ XEngine.BaseObject.prototype = {
 		gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
 	
 		gl.enable(gl.STENCIL_TEST);
-		var cache_image = this.game.cache.image(this.sprite); //Obtenemos la imagen a renderizar
-		this.shader._setTexture(cache_image._texture);
+		if(this.sprite){
+			var cache_image = this.game.cache.image(this.sprite); //Obtenemos la imagen a renderizar
+			this.shader._setTexture(cache_image._texture);
+		}		
 		this.shader._beginRender(gl);
 		
 		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;

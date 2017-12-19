@@ -49,7 +49,7 @@ AnimScene.prototype = {
 
 
 		this.unicorn = this.game.add.sprite(200,200, 'test2');
-		this.unicorn.anchor.setTo(0.5);
+		//this.unicorn.anchor.setTo(0.5);
 		//this.unicorn.setColor(0xffffff);
 		this.unicorn.render = false;
 
@@ -61,6 +61,9 @@ AnimScene.prototype = {
 		// this.back2 = this.game.add.sprite(0,0,'back2');
 		// this.back2.mask = this.rect;
 		this.back1 = this.game.add.sprite(0,0,'back1');
+		this.back1.width = 1200;
+		this.back1.height = 720;
+		//this.back1.scale.setTo(0.5);
 		//this.back1.mask = this.unicorn;
 	},
 	

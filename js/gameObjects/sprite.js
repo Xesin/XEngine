@@ -56,6 +56,58 @@ XEngine.Sprite.prototypeExtends = {
 	},
 
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este m�todo seg�n la necesidad
+		if(this.tilled){
+			var startX = 0;
+			var startY = 0;
+			var endX = 0;
+			var endY = 0;
+			if(this.json){
+				var frameInfo = {};
+				if (typeof this.frame === 'string') {
+					frameInfo = this.json[this.frame];
+				}
+				else {
+					frameInfo = this.json.frames[this.frame];
+				}
+				var width = frameInfo.frame.w;
+				var height = frameInfo.frame.h;
+
+				startX = frameInfo.frame.x;
+				startY = frameInfo.frame.y;
+
+				endX = startX + width;
+				endY = startY + height;
+
+			}else{
+				var column = this.frame;
+				
+				if (column > this._columns - 1) {
+					column = this.frame % this._columns;
+				}
+	
+				var row = Math.floor(this.frame / this._columns);
+
+				startX = column * cache_image.frameWidth;
+				startY = row * cache_image.frameHeight;
+	
+				endX = startX + cache_image.frameWidth;
+				endY = startY + cache_image.frameHeight;
+			}
+
+			var startUvX = startX / cache_image.image.width;
+			var startUvY = startY / cache_image.image.height;
+
+			var endUvX = endX / cache_image.image.width;
+			var endUvY = endY / cache_image.image.height;
+
+			this._uv = [
+				startUvX, startUvY,
+				startUvX, endUvY,
+				endUvX, startUvY,
+				endUvX, endUvY,
+			];
+
+		}
 		this.game.renderer.spriteBatch.addSprite(this, this.shader);
 	},
 

@@ -124,14 +124,17 @@ XEngine.SpriteBatch.prototype = {
 			}
 			this.mask = gameObject.mask;
 		}
-		gameObject.getWorldMatrix(gameObject.mvMatrix);
-		var pos = XEngine.Vector.Zero.multiplyMatrix(gameObject.mvMatrix);
-
 		this.renderer.setRenderer(this, gameObject.sprite);
 
 		floatBuffer = this.vertexDataBuffer.floatView;
 		var uintBuffer = this.vertexDataBuffer.uintView;
 		var index = this.vertexDataBuffer.allocate(24);
+
+		var pos = new XEngine.Vector(gameObject.position.x, gameObject.position.y);
+		mat4.identity(gameObject.mvMatrix)
+		gameObject.getWorldMatrix(gameObject.mvMatrix);
+		pos = pos.multiplyMatrix(gameObject.mvMatrix);		
+
 		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = gameObject._uv[0];
@@ -139,22 +142,31 @@ XEngine.SpriteBatch.prototype = {
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
+		var pos = new XEngine.Vector(gameObject.position.x, gameObject.position.y + gameObject.height);
+		pos = pos.multiplyMatrix(gameObject.mvMatrix);
+
 		floatBuffer[index++] = pos[0];
-		floatBuffer[index++] = gameObject.height + pos[1];
+		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = gameObject._uv[2];
 		floatBuffer[index++] = gameObject._uv[3];
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
-		floatBuffer[index++] = gameObject.width + pos[0];
+		var pos = new XEngine.Vector(gameObject.position.x + gameObject.width, gameObject.position.y);
+		pos = pos.multiplyMatrix(gameObject.mvMatrix);
+
+		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = gameObject._uv[4];
 		floatBuffer[index++] = gameObject._uv[5];
 		uintBuffer[index++] = gameObject.color;
 		floatBuffer[index++] = gameObject.alpha;
 
-		floatBuffer[index++] = gameObject.width + pos[0];
-		floatBuffer[index++] = gameObject.height + pos[1];
+		var pos = new XEngine.Vector(gameObject.position.x + gameObject.width, gameObject.position.y + gameObject.height);
+		pos = pos.multiplyMatrix(gameObject.mvMatrix);
+
+		floatBuffer[index++] = pos[0];
+		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = gameObject._uv[6];
 		floatBuffer[index++] = gameObject._uv[7];
 		uintBuffer[index++] = gameObject.color;
