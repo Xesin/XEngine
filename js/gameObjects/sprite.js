@@ -52,73 +52,11 @@ XEngine.Sprite.prototype = Object.create(XEngine.BaseObject.prototype);
 XEngine.Sprite.prototypeExtends = {
 
 	_beginRender:function(context){
-		XEngine.BaseObject.prototype._beginRender.call(this, context);
-		if(this.shader){
-			var cache_image = this.game.cache.image(this.sprite); //Obtenemos la imagen a renderizar
-			this.shader._setTexture(cache_image._texture);
-			this.shader._beginRender(context);
-		}
+		
 	},
 
 	_renderToCanvas: function (context) { //Como cada objeto se renderiza distinto, en cada uno se implementa este m�todo seg�n la necesidad
-		if(this.shader == null) return;
-		var _this = this;
-		var cache_image = _this.game.cache.image(_this.sprite); //Obtenemos la imagen a renderizar
-		if(_this.tilled){
-			var startX = 0;
-			var startY = 0;
-			var endX = 0;
-			var endY = 0;
-			if(_this.json){
-				var frameInfo = {};
-				if (typeof _this.frame === 'string') {
-					frameInfo = _this.json[_this.frame];
-				}
-				else {
-					frameInfo = _this.json.frames[_this.frame];
-				}
-				var width = frameInfo.frame.w;
-				var height = frameInfo.frame.h;
-
-				startX = frameInfo.frame.x;
-				startY = frameInfo.frame.y;
-
-				endX = startX + width;
-				endY = startY + height;
-
-			}else{
-				var column = _this.frame;
-				
-				if (column > _this._columns - 1) {
-					column = _this.frame % _this._columns;
-				}
-	
-				var row = Math.floor(_this.frame / _this._columns);
-
-				startX = column * cache_image.frameWidth;
-				startY = row * cache_image.frameHeight;
-	
-				endX = startX + cache_image.frameWidth;
-				endY = startY + cache_image.frameHeight;
-			}
-
-			var startUvX = startX / cache_image.image.width;
-			var startUvY = startY / cache_image.image.height;
-
-			var endUvX = endX / cache_image.image.width;
-			var endUvY = endY / cache_image.image.height;
-
-			var uv = [
-				startUvX, startUvY,
-				startUvX, endUvY,
-				endUvX, startUvY,
-				endUvX, endUvY,
-			];
-
-			this._setUVs(uv);
-		}
-
-		XEngine.BaseObject.prototype._renderToCanvas.call(this, context);
+		this.game.renderer.spriteBatch.addSprite(this, this.shader);
 	},
 
 	reset: function (x, y) { //Reseteamos el sprite

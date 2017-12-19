@@ -39,6 +39,9 @@ XEngine.Renderer = function (game, canvas) {
 		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 		console.log(this.context);
 		this.resourceManager = new XEngine.ResourceManager(this.context);
+		this.spriteBatch = new XEngine.SpriteBatch(this.game, this.context, this);
+		this.renderer = null;
+		this.sprite = undefined;
 	}
 };
 
@@ -55,7 +58,25 @@ XEngine.Renderer.prototype = {
 		//this.context.save();
 		//this.context.scale(this.scale.x, this.scale.y);
 		this.renderLoop(this.game.renderQueue);
+		if(this.renderer){
+			this.renderer.flush();
+			this.renderer = null;
+			this.sprite = null;
+		}
 		//this.context.restore();
+	},
+
+	setRenderer: function(renderer, sprite){
+		if(this.renderer !== renderer || this.sprite !== sprite){
+			if(this.renderer){
+				this.renderer.flush();
+			}
+		}
+		if(renderer.shouldFlush()){
+			renderer.flush();
+		}
+		this.renderer = renderer;
+		this.sprite = sprite;
 	},
 
 	setClearColor: function(r, g, b, a){

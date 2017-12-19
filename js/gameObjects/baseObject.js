@@ -285,25 +285,6 @@ XEngine.BaseObject.prototype = {
 	},
 
 	_beginRender:function(context){
-		if(this.mask != null){
-			// disable color (u can also disable here the depth buffers)
-			context.colorMask(false, false, false, false);
-		
-			// Replacing the values at the stencil buffer to 1 on every pixel we draw
-			context.stencilFunc(context.ALWAYS, 1, 1);
-			context.stencilOp(context.REPLACE, context.REPLACE, context.REPLACE);
-		
-			context.enable(context.STENCIL_TEST);
-		
-			this.mask._beginRender(context);
-			this.mask._renderToCanvas(context);
-		
-			// Telling the stencil now to draw/keep only pixels that equals 1 - which we set earlier
-			context.stencilFunc(context.EQUAL, 1, 1);
-			context.stencilOp(context.ZERO, context.ZERO, context.ZERO);
-			// enabling back the color buffer
-			context.colorMask(true, true, true, true);
-		}
 		if(this.shader)
 			this.shader._beginRender(context);
 	},
@@ -334,7 +315,42 @@ XEngine.BaseObject.prototype = {
 		context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
 	},
 
-	_endRender(context){
+	rendermask:function(gl){
+		// disable color (u can also disable here the depth buffers)
+		//gl.colorMask(false, false, false, false);
+		
+		// Replacing the values at the stencil buffer to 1 on every pixel we draw
+		gl.stencilFunc(gl.ALWAYS, 1, 1);
+		gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+	
+		gl.enable(gl.STENCIL_TEST);
+		var cache_image = this.game.cache.image(this.sprite); //Obtenemos la imagen a renderizar
+		this.shader._setTexture(cache_image._texture);
+		this.shader._beginRender(gl);
+		
+		this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+		this.shader.updateUniforms(gl);
+		
+		this._setVertices(this.width, this.height, this.color, this._uv);		
+		
+		this.vertexBuffer.bind();
+		this.indexBuffer.bind();
+		
+		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+		// enabling back the color buffer
+		// Telling the stencil now to draw/keep only pixels that equals 1 - which we set earlier
+		gl.stencilFunc(gl.EQUAL, 1, 1);
+		gl.stencilOp(gl.ZERO, gl.ZERO, gl.ZERO);
+		gl.colorMask(true, true, true, true);
+		
+	},
+
+	endRendermask:function(gl){
+		gl.disable(gl.STENCIL_TEST);
+		gl.clear(gl.STENCIL_BUFFER_BIT);
+	},
+
+	_endRender:function(context){
 		if(this.mask != null){
 			context.disable(context.STENCIL_TEST);
 			context.clear(context.STENCIL_BUFFER_BIT);

@@ -9,11 +9,11 @@ XEngine.DataBuffer16 = function(byteSize)
 
 XEngine.DataBuffer16.prototype = {
 	clear:function(){
-		this.dwordLenght = 0;
+		this.wordLength = 0;
 	},
 
 	getByteLength:function(){
-		return this.wordLenght * 2;
+		return this.wordLength * 2;
 	},
 
 	getByteCapacity: function(){
@@ -21,7 +21,7 @@ XEngine.DataBuffer16.prototype = {
 	},
 
 	allocate:function(wordSize){
-		var currentLength = this.wordLenght;
+		var currentLength = this.wordLength;
 		this.wordLenght += wordSize;
 		return currentLength;
 	},

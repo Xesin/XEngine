@@ -16,5 +16,11 @@ XEngine.ResourceManager.prototype= {
             case gl.ELEMENT_ARRAY_BUFFER:
                 return new XEngine.IndexBuffer(gl, buffer);
         }
+    },
+
+    createShader: function(shaderClass){
+        var shader = new shaderClass();
+        shader.initializeShader(this.gl);
+        return shader;
     }
 }

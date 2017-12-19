@@ -22,7 +22,7 @@ XEngine.VertexBuffer.prototype = {
 	updateResource: function(bufferData, offset){
 		var gl = this.gl;
 		
-		if (CurrentVertexBuffer !== this)
+		//if (CurrentVertexBuffer !== this)
 		{
 			CurrentVertexBuffer = this;
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);

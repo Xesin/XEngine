@@ -39,6 +39,10 @@ XEngine.SpriteShader.prototypeExtends = {
 		this.texture = texture;
 	},
 
+	bind:function(gl){
+		XEngine.Shader.prototype.bind.call(this, gl);
+	},
+
 	_beginRender: function(gl){
 		XEngine.Shader.prototype._beginRender.call(this, gl);
 		// Tell WebGL we want to affect texture unit 0

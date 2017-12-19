@@ -90,7 +90,16 @@ XEngine.Shader.prototype = {
 		}
 	},
 
+	getAttribLocation:function(gl, attr){
+		return gl.getAttribLocation(this.shaderProgram, attr);
+	},
+
 	_beginRender: function(gl){
+		if(!this.compiled) this.initializeShader(gl);
+		gl.useProgram(this.shaderProgram);
+	},
+
+	bind: function(gl){
 		if(!this.compiled) this.initializeShader(gl);
 		gl.useProgram(this.shaderProgram);
 	},

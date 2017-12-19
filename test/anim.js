@@ -61,7 +61,7 @@ AnimScene.prototype = {
 		// this.back2 = this.game.add.sprite(0,0,'back2');
 		// this.back2.mask = this.rect;
 		this.back1 = this.game.add.sprite(0,0,'back1');
-		this.back1.mask = this.unicorn;
+		//this.back1.mask = this.unicorn;
 	},
 	
 	update : function (deltaTime) {
