@@ -6,7 +6,7 @@ AnimScene.prototype = {
 	
 	preload: function () {
 		this.game.load.jsonSpriteSheet('player', 'img/animations.png', 'img/man.json');
-		// this.game.load.image('back1', 'img/back1.jpg');
+		this.game.load.image('back1', 'img/back1.jpg');
 		// this.game.load.image('back2', 'img/back2.jpg');
 		this.game.load.image('test2', 'img/angry_unicorn.png');
 	},
@@ -50,7 +50,8 @@ AnimScene.prototype = {
 
 		this.unicorn = this.game.add.sprite(200,200, 'test2');
 		this.unicorn.anchor.setTo(0.5);
-		// this.unicorn.render = false;
+		//this.unicorn.setColor(0xffffff);
+		this.unicorn.render = false;
 
 		// // //this.game.tween.add(this.text.scale).to({x:1.2, y:1.2}, 800, XEngine.Easing.QuadInOut, true, 0, -1, true)
 		// // this.text.mask = this.rect;
@@ -59,8 +60,8 @@ AnimScene.prototype = {
 
 		// this.back2 = this.game.add.sprite(0,0,'back2');
 		// this.back2.mask = this.rect;
-		// this.back1 = this.game.add.sprite(0,0,'back1');
-		// this.back1.mask = this.unicorn;
+		this.back1 = this.game.add.sprite(0,0,'back1');
+		this.back1.mask = this.unicorn;
 	},
 	
 	update : function (deltaTime) {

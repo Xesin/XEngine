@@ -14,7 +14,7 @@ XEngine.ShaderLib.SimpleColor = {
 		"#XBaseParams",
 
 		"void main(void) {",
-			"fragColor = vColor;",
+			"fragColor = vec4(vColor, alpha) * alpha;",
 		"}"
 	],
 

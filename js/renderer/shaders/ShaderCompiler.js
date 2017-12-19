@@ -16,16 +16,19 @@ XEngine.ShaderCompiler = {
 	vertexBaseParams:[
 		"in vec2 aVertexPosition;",
 		"in vec2 vUv;",
-		"in vec4 aVertexColor;",
+		"in vec3 aVertexColor;",
+		"in float in_alpha;",
 		"uniform mat4 pMatrix;",
 		"out highp vec2 uv;",
 		"vec4 vertPos;",
-		"out lowp vec4 vColor;",
+		"out lowp vec3 vColor;",
+		"out lowp float alpha;"
 	],
 
 	fragmentBaseParams:[
-		"in lowp vec4 vColor;",
+		"in lowp vec3 vColor;",
 		"in highp vec2 uv;",
+		"in float alpha;",
 		"out vec4 fragColor;",
 	],
 
@@ -34,6 +37,7 @@ XEngine.ShaderCompiler = {
 			"vertPos = pMatrix * vec4(aVertexPosition, -1.0, 1.0);",
 			"uv = vUv;",
 			"vColor = aVertexColor;",
+			"alpha = in_alpha;",
 			"mainPass();",
 			"gl_Position = vertPos;",
 		"}"

@@ -216,7 +216,7 @@ CustomShader.prototype = {
         this.rect.shader = this.custShader;
         this.rect.shader.initializeShader(this.game.context);
 
-        this.rect.setColor(0,0,0);
+        this.rect.setColor(0x000000);
 
         this.game.input.onKeyUp.add(function(event){
             if(event.keyCode == XEngine.KeyCode.TWO){

@@ -35,6 +35,7 @@ XEngine.Renderer = function (game, canvas) {
 		this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
 		this.context.disable(this.context.DEPTH_TEST);
 		this.context.enable(this.context.BLEND);
+		this.context.enable(this.context.CULL_FACE);
 		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 		console.log(this.context);
 		this.resourceManager = new XEngine.ResourceManager(this.context);

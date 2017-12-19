@@ -39,7 +39,7 @@ Gimp.prototype = {
 		// },this);
 
 		this.back = this.game.add.sprite(50,50,'back');
-		this.back.setColor(1.0,1.0,1.0);
+		this.back.setColor(0xffffff);
 		this.back.inputEnabled = true;
 		this.back.pickeable = true;
 		this.back.shader = XEngine.ShaderLib.Gimp.shader;

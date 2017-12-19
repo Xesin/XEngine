@@ -75,6 +75,7 @@ XEngine.Shader.prototype = {
 		this.vertPostAtt = gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
 		this.vertColAtt = gl.getAttribLocation(this.shaderProgram, "aVertexColor");
 		this.vertUvAtt = gl.getAttribLocation(this.shaderProgram, "vUv");
+		this.vertAlphaAtt = gl.getAttribLocation(this.shaderProgram, "in_alpha");
 		
 		for (var property in this.uniforms) {
 			if (this.uniforms.hasOwnProperty(property)) {

@@ -103,7 +103,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this._prevPos = {x: 0, y: 0}
 	_this.shader = null;
 
-	_this._vertDataBuffer = new XEngine.DataBuffer(32 * 4);
+	_this._vertDataBuffer = new XEngine.DataBuffer(24 * 4);
 
 	_this._uv = [
 		0.0, 0.0,
@@ -115,7 +115,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	var gl = this.game.context;
 
 	var indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
-	_this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(gl.ARRAY_BUFFER, _this._vertDataBuffer.getByteCapacity(), gl.STATIC_DRAW);
+	_this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(gl.ARRAY_BUFFER, _this._vertDataBuffer.getByteCapacity(), gl.STREAM_DRAW);
 	_this.indexBuffer = this.game.renderer.resourceManager.createBuffer(gl.ELEMENT_ARRAY_BUFFER, _this._vertDataBuffer.getByteCapacity(), gl.STATIC_DRAW);
 	var indexBuffer = indexDataBuffer.uintView;
 	for (var indexA = 0, indexB = 0; indexA < 6; indexA += 6, indexB += 4)
@@ -141,7 +141,7 @@ XEngine.BaseObject = function (game) { //De este objeto parten todos los objetos
 	_this.pickeable = false;
 	_this.downPos = new XEngine.Vector(0,0);
 	_this.posWhenDown = new XEngine.Vector(0,0);
-	_this.color = [1.0,1.0,1.0,1.0];
+	_this.color = [(0xffffff >> 16) + (0xffffff & 0xff00) + ((0xffffff & 0xff) << 16)];
 };
 
 XEngine.BaseObject.prototype = {
@@ -172,17 +172,15 @@ XEngine.BaseObject.prototype = {
 	_setBuffers: function(){
 		var context = this.game.context;
 		context.useProgram(this.shader.shaderProgram);
-		this.vertexBuffer.addAttribute(this.shader.vertPostAtt, 2, context.FLOAT, false, 32, 0);
-		this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 32, 8);
-		this.vertexBuffer.addAttribute(this.shader.vertColAtt, 4, context.FLOAT, false, 32, 16);
+		this.vertexBuffer.addAttribute(this.shader.vertPostAtt, 2, context.FLOAT, false, 24, 0);
+		this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 24, 8);
+		this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 24, 16);
+		this.vertexBuffer.addAttribute(this.shader.vertAlphaAtt, 1, context.FLOAT, false, 24, 20);
 	},
 
-	setColor: function(r,g,b,a = 1.0){
-		this.color[0] = r;
-		this.color[1] = g;
-		this.color[2] = b;
-		this.color[3] = a;
-
+	setColor: function(value, a = 1.0){
+		this.color = value;
+		this.alpha = a;
 		this._setVertices(this.width, this.height, this.color, this._uv);
 	},
 
@@ -190,42 +188,35 @@ XEngine.BaseObject.prototype = {
 		this.getWorldMatrix(this.mvMatrix);
 		var pos = XEngine.Vector.Zero.multiplyMatrix(this.mvMatrix);
 		var floatBuffer = this._vertDataBuffer.floatView;
+		var uintBuffer = this._vertDataBuffer.uintView;
 		var index = 0;
 		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = uv[0];
 		floatBuffer[index++] = uv[1];
-		floatBuffer[index++] = color[0];
-		floatBuffer[index++] = color[1];
-		floatBuffer[index++] = color[2];
-		floatBuffer[index++] = color[3];
+		uintBuffer[index++] = color;
+		floatBuffer[index++] = this.alpha;
 
 		floatBuffer[index++] = pos[0];
 		floatBuffer[index++] = height + pos[1];
 		floatBuffer[index++] = uv[2];
 		floatBuffer[index++] = uv[3];
-		floatBuffer[index++] = color[0];
-		floatBuffer[index++] = color[1];
-		floatBuffer[index++] = color[2];
-		floatBuffer[index++] = color[3];
+		uintBuffer[index++] = color;
+		floatBuffer[index++] = this.alpha;
 
 		floatBuffer[index++] = width + pos[0];
 		floatBuffer[index++] = pos[1];
 		floatBuffer[index++] = uv[4];
 		floatBuffer[index++] = uv[5];
-		floatBuffer[index++] = color[0];
-		floatBuffer[index++] = color[1];
-		floatBuffer[index++] = color[2];
-		floatBuffer[index++] = color[3];
+		uintBuffer[index++] = color;
+		floatBuffer[index++] = this.alpha;
 
 		floatBuffer[index++] = width + pos[0];
 		floatBuffer[index++] = height + pos[1];
 		floatBuffer[index++] = uv[6];
 		floatBuffer[index++] = uv[7];
-		floatBuffer[index++] = color[0];
-		floatBuffer[index++] = color[1];
-		floatBuffer[index++] = color[2];
-		floatBuffer[index++] = color[3];
+		uintBuffer[index++] = color;
+		floatBuffer[index++] = this.alpha;
 
 		this.vertexBuffer.updateResource(floatBuffer, 0);
 	},
@@ -340,7 +331,7 @@ XEngine.BaseObject.prototype = {
 		this.vertexBuffer.bind();
 		this.indexBuffer.bind();
 
-		context.drawElements(context.TRIANGLES, 8, context.UNSIGNED_SHORT, 0);
+		context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
 	},
 
 	_endRender(context){
