@@ -117,9 +117,10 @@ XEngine.SpriteBatch.prototype = {
 		}
 	},
 
-	addSprite: function(gameObject){
-		if(gameObject.mask !== this.mask){
-			this.flush();
+	addSprite: function(gameObject, shader){
+		if(gameObject.mask !== this.mask || this.shader !== shader){
+			this.flush(this.shader);
+			this.shader = shader;
 		}
 		if(gameObject.mask){
 			this.mask = gameObject.mask;

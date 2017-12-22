@@ -298,6 +298,7 @@ XEngine.BaseObject.prototype = {
 	_beginRender:function(context){
 		if(this.shader)
 			this.shader._beginRender(context);
+		this.game.renderer.setRenderer(null, null);
 	},
 
 	/**

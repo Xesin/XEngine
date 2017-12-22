@@ -17,7 +17,6 @@ XEngine.Renderer = function (game, canvas) {
 		// Tratar de tomar el contexto estandar. Si falla, probar otros.
 		var options = {stencil:true, antialias:false};
 		this.context = canvas.getContext("webgl2", options);
-		console.log(this.context.getContextAttributes());
 	}
 	catch(e) {}
 	
@@ -37,7 +36,6 @@ XEngine.Renderer = function (game, canvas) {
 		this.context.enable(this.context.BLEND);
 		this.context.enable(this.context.CULL_FACE);
 		this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
-		console.log(this.context);
 		this.resourceManager = new XEngine.ResourceManager(this.context);
 		this.spriteBatch = new XEngine.SpriteBatch(this.game, this.context, this);
 		this.renderer = null;
@@ -72,7 +70,7 @@ XEngine.Renderer.prototype = {
 				this.renderer.flush();
 			}
 		}
-		if(renderer.shouldFlush()){
+		if(renderer && renderer.shouldFlush()){
 			renderer.flush();
 		}
 		this.renderer = renderer;

@@ -43,7 +43,7 @@ XEngine.Sprite = function (game, posX, posY, sprite, frame) {
 	}
 
 	_this.position.setTo(posX, posY);
-	_this.shader = XEngine.ShaderLib.Sprite.shader;
+	_this.shader = this.game.renderer.spriteBatch.shader;
 	_this.animation = new XEngine.AnimationManager(game, this);
 };
 

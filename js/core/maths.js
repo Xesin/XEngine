@@ -113,7 +113,7 @@ XEngine.Mathf.angleBetween = function (originX, originY, targetX, targetY) {
 };
 
 XEngine.Mathf.TO_RADIANS = 0.0174532925199432957;
-XEngine.Mathf.TO_DEGREES = 57,2957795130823208767;
+XEngine.Mathf.TO_DEGREES = 57.2957795130823208767;
 
 /**
  * Objeto vector que almacena coordenadas
@@ -277,10 +277,9 @@ XEngine.Vector.prototype = {
 			z = 1.0;
 			w = 1.0;
 		var out = new Array(3);
-		out[0] = x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12];
-		out[1] = x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13];
-		out[2] = x * matrix[2] + y * matrix[6] + z * matrix[10] + matrix[14];
-		return new XEngine.Vector(out[0], out[1]);
+		this.x = x * matrix[0] + y * matrix[4] + matrix[8] + matrix[12];
+		this.y = x * matrix[1] + y * matrix[5] + matrix[9] + matrix[13];
+		return this;
 	},
 
 	/**
