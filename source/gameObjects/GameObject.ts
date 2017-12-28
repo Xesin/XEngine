@@ -31,7 +31,7 @@ namespace XEngine {
 
 		public render: boolean;
 		public fixedToCamera: boolean;
-		public shader: Shader;
+		public shader: Material;
 		public mask: GameObject;
 		public sprite: string;
 		public mvMatrix: Array<number>;
@@ -209,7 +209,7 @@ namespace XEngine {
 			gl.enable(gl.STENCIL_TEST);
 			if (this.sprite) {
 				let cache_image = this.game.cache.image(this.sprite);
-				(this.shader as SpriteShader)._setTexture(cache_image._texture);
+				(this.shader as SpriteMat)._setTexture(cache_image._texture);
 			}
 			this.shader._beginRender(gl);
 

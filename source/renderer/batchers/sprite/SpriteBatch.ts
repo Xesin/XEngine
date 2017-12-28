@@ -2,7 +2,7 @@ namespace XEngine {
 	declare var mat4: any;
 	export namespace SpriteBatcher {
 		export class SpriteBatch {
-			public shader: SpriteShader;
+			public shader: SpriteMat;
 			private gl: WebGLRenderingContext;
 			private game: Game;
 			private renderer: Renderer;
@@ -166,7 +166,7 @@ namespace XEngine {
 				let vertexBufferObject = this.renderer.resourceManager.createBuffer(
 					gl.ARRAY_BUFFER, vertexDataBuffer.getByteCapacity(), gl.STREAM_DRAW) as VertexBuffer;
 
-				let shader = this.renderer.resourceManager.createShader(SpriteShader, "spriteShader") as SpriteShader;
+				let shader = this.renderer.resourceManager.createMaterial(SpriteMat, "spriteShader") as SpriteMat;
 
 				let indexBuffer = indexDataBuffer.uintView;
 				let max = Consts.MAX_SPRITES * Consts.INDEX_COUNT;

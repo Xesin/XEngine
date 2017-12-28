@@ -1,11 +1,10 @@
 namespace XEngine {
-
-	export class SpriteShader extends Shader {
-		public static shader = new SpriteShader();
+	export class SpriteMat extends Material {
+		public static shader = new SpriteMat();
 		public texture: WebGLTexture;
 
 		constructor() {
-			super(XEngine.ShaderLib.Sprite.vertexShader, XEngine.ShaderLib.Sprite.fragmentShader);
+			super(XEngine.MaterialLib.Sprite.vertexShader, XEngine.MaterialLib.Sprite.fragmentShader);
 		}
 
 		public _setTexture(texture: WebGLTexture) {
@@ -13,7 +12,7 @@ namespace XEngine {
 		}
 
 		public _beginRender(gl: WebGLRenderingContext) {
-			XEngine.Shader.prototype._beginRender.call(this, gl);
+			XEngine.Material.prototype._beginRender.call(this, gl);
 			// Tell WebGL we want to affect texture unit 0
 			gl.activeTexture(gl.TEXTURE0);
 

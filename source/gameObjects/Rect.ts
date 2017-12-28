@@ -7,7 +7,7 @@ namespace XEngine {
 			super(game, posX, posY);
 			this.width = width;
 			this.height = height;
-			this.shader = this.game.resourceManager.createShader(SimpleColor, "colorShader");
+			this.shader = this.game.resourceManager.createMaterial(SimpleColorMat, "colorShader");
 			this.setColor(color);
 		}
 

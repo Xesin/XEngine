@@ -2,7 +2,7 @@ namespace XEngine {
 	declare var mat4: any;
 	export namespace RectBatcher {
 		export class RectBatch {
-			public shader: SimpleColor;
+			public shader: SimpleColorMat;
 			private gl: WebGLRenderingContext;
 			private game: Game;
 			private renderer: Renderer;
@@ -157,7 +157,7 @@ namespace XEngine {
 				let vertexBufferObject = this.renderer.resourceManager.createBuffer(
 					gl.ARRAY_BUFFER, vertexDataBuffer.getByteCapacity(), gl.STREAM_DRAW) as VertexBuffer;
 
-				let shader = this.renderer.resourceManager.createShader(SimpleColor, "colorShader") as SimpleColor;
+				let shader = this.renderer.resourceManager.createMaterial(SimpleColorMat, "colorShader") as SimpleColorMat;
 
 				let indexBuffer = indexDataBuffer.uintView;
 				let max = Consts.MAX_RECTS * Consts.INDEX_COUNT;

@@ -7,7 +7,7 @@ namespace XEngine {
 			super(game, posX, posY);
 			this.width = width;
 			this.height = height;
-			this.shader = this.game.resourceManager.createShader(CircleColor, "circleShader");
+			this.shader = this.game.resourceManager.createMaterial(CircleMat, "circleShader");
 		}
 
 		public getBounds(): any {

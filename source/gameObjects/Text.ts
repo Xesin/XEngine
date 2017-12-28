@@ -31,13 +31,13 @@ namespace XEngine {
 			this.context.restore();
 			this.width = textSize.width;
 			this.height = this.size;
-			this.shader = this.game.resourceManager.createShader(SimpleColor, "spriteShader");
+			this.shader = this.game.resourceManager.createMaterial(SimpleColorMat, "spriteShader");
 			this.updateText();
 		}
 
 		public _beginRender(context: WebGLRenderingContext) {
 			super._beginRender(context);
-			(this.shader as SpriteShader)._setTexture(this.texture);
+			(this.shader as SpriteMat)._setTexture(this.texture);
 			this.shader._beginRender(context);
 		}
 

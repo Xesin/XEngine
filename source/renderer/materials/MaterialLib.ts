@@ -1,12 +1,12 @@
 namespace XEngine {
-	export namespace ShaderLib {
-		export class ShaderLibObject {
+	export namespace MaterialLib {
+		export class MaterialLibObject {
 			public static readonly vertexShader: Array<string>;
 			public static readonly fragmentShader: Array<string>;
 			public static readonly uniforms: any;
 		}
 
-		export class Sprite extends ShaderLibObject {
+		export class Sprite extends MaterialLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
@@ -34,7 +34,7 @@ namespace XEngine {
 			];
 		}
 
-		export class SimpleColor extends ShaderLibObject {
+		export class SimpleColor extends MaterialLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
@@ -53,7 +53,7 @@ namespace XEngine {
 			];
 		}
 
-		export class CircleColor extends ShaderLibObject {
+		export class CircleColor extends MaterialLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",

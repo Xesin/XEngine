@@ -31,9 +31,32 @@ Start.prototype = {
 	
 	start: function () {
 		this.game.autoCulling = true;
-		for(var i = 0; i< 20000; i++){
-			// var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
-			// rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		for(var i = 0; i< 5000; i++){
+			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
+			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		}
+
+		for(var i = 0; i< 5000; i++){
+			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
+			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		}
+
+		for(var i = 0; i< 5000; i++){
+			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
+			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		}
+
+		for(var i = 0; i< 5000; i++){
+			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
+			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		}
+
+		for(var i = 0; i< 5000; i++){
+			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
+			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
+		}
+
+		for(var i = 0; i< 5000; i++){
 			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
 			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
 		}

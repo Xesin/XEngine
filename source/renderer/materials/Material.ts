@@ -7,7 +7,7 @@ namespace XEngine {
 		},
 	};
 
-	export class Shader {
+	export class Material {
 
 		public uniforms: any;
 		public baseUniforms: any;
@@ -16,7 +16,7 @@ namespace XEngine {
 		public vertUvAtt: number;
 		public vertAlphaAtt: number;
 		public compiled: boolean;
-		public shader: Shader;
+		public shader: Material;
 
 		private shaderProgram: WebGLProgram;
 		private vertexCode: Array<string>;

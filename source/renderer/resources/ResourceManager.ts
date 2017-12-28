@@ -3,7 +3,7 @@ namespace XEngine {
 	export class ResourceManager {
 
 		private gl: WebGLRenderingContext;
-		private shaderCache: Array<Shader>;
+		private shaderCache: Array<Material>;
 
 		constructor(gl: WebGLRenderingContext) {
 			this.gl = gl;
@@ -25,8 +25,8 @@ namespace XEngine {
 			}
 		}
 
-		public createShader(shaderClass: any, shaderName?: string): Shader {
-			let shader: Shader;
+		public createMaterial(shaderClass: any, shaderName?: string): Material {
+			let shader: Material;
 			if (shaderName !== undefined) {
 				if (!this.shaderCache[shaderName]) {
 					shader = new shaderClass();
