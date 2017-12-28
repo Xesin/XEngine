@@ -7,6 +7,7 @@ namespace XEngine {
 		public context: WebGLRenderingContext;
 		public resourceManager: ResourceManager;
 		public spriteBatch: SpriteBatcher.SpriteBatch;
+		public rectBatch: RectBatcher.RectBatch;
 
 		private game: Game;
 		private renderer: any;
@@ -36,6 +37,7 @@ namespace XEngine {
 				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 				this.resourceManager = this.game.resourceManager;
 				this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
+				this.rectBatch = new RectBatcher.RectBatch(this.game, this.context, this);
 				this.renderer = null;
 				this.sprite = undefined;
 			}

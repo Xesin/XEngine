@@ -11,13 +11,12 @@ namespace XEngine {
 			this.setColor(color);
 		}
 
-		public getBounds(): any {
-			let width = this.width * this.scale.x;
-			let height = this.height * this.scale.y;
-			return {
-				width: width,
-				height: height,
-			};
+		public _beginRender(gl: WebGLRenderingContext) {
+			return;
+		}
+
+		public _renderToCanvas(gl: WebGLRenderingContext) {
+			this.game.renderer.rectBatch.addRect(this, this.shader);
 		}
 	}
 }

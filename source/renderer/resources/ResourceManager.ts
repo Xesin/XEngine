@@ -31,8 +31,9 @@ namespace XEngine {
 				if (!this.shaderCache[shaderName]) {
 					shader = new shaderClass();
 					shader.initializeShader(this.gl);
-				} else {
 					this.shaderCache[shaderName] = shader;
+				} else {
+					shader = this.shaderCache[shaderName];
 				}
 			} else {
 				shader = new shaderClass();
