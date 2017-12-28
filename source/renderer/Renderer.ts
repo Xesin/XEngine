@@ -44,7 +44,7 @@ namespace XEngine {
 		}
 
 		public render() {
-			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+			this.context.clear(this.context.COLOR_BUFFER_BIT);
 			this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 			this.renderLoop(this.game.renderQueue);
 			if (this.renderer) {
