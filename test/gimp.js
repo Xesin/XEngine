@@ -20,12 +20,12 @@ Gimp.prototype = {
 		//this.tilled = this.game.add.tilled(0,0,'player', 400,400);
 
         this.game.input.onKeyUp.add(function(event){
-            if(event.keyCode == XEngine.KeyCode.TWO){
+            if(event.keyCode == XEngine.KEY_CODE.TWO){
                 this.game.input.onKeyUp._destroy();
 			    this.game.input.onClick._destroy();
                 this.game.state.start('unicorns');
             }
-            if(event.keyCode == XEngine.KeyCode.THREE){
+            if(event.keyCode == XEngine.KEY_CODE.THREE){
                 this.game.input.onKeyUp._destroy();
 			    this.game.input.onClick._destroy();
                 this.game.state.start('shader');

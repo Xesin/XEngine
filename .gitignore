@@ -1,4 +1,4 @@
 img/
 **/node_modules
 **/dist
-XEngine.js
+source/**/*.js

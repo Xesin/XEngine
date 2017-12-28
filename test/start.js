@@ -10,7 +10,7 @@ function initGame(){
    game.state.add('anim', AnimScene);
    game.state.add('shader', CustomShader);
    game.state.add('gimp', Gimp);
-   game.state.start('anim');
+   game.state.start('gimp');
 
 
    game.setBackgroundColor(100,100,100, 255);
@@ -40,12 +40,12 @@ Start.prototype = {
 		img.width /= 4;
 		img.height /= 4;
 		this.game.input.onKeyUp.add(function(event){
-            if(event.keyCode == XEngine.KeyCode.ONE){
+            if(event.keyCode == XEngine.KEY_CODE.ONE){
                	this.game.input.onKeyUp._destroy();
 				this.game.input.onClick._destroy();
                 this.game.state.start('anim')
             }
-            if(event.keyCode == XEngine.KeyCode.THREE){
+            if(event.keyCode == XEngine.KEY_CODE.THREE){
                 this.game.input.onKeyUp._destroy();
 				this.game.input.onClick._destroy();
                 this.game.state.start('shader');

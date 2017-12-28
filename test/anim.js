@@ -23,12 +23,12 @@ AnimScene.prototype = {
 		//this.tilled = this.game.add.tilled(0,0,'player', 400,400);
 
         this.game.input.onKeyUp.add(function(event){
-            if(event.keyCode == XEngine.KeyCode.TWO){
+            if(event.keyCode == XEngine.KEY_CODE.TWO){
                 this.game.input.onKeyUp._destroy();
 			    this.game.input.onClick._destroy();
                 this.game.state.start('unicorns');
             }
-            if(event.keyCode == XEngine.KeyCode.THREE){
+            if(event.keyCode == XEngine.KEY_CODE.THREE){
                 this.game.input.onKeyUp._destroy();
 			    this.game.input.onClick._destroy();
                 this.game.state.start('shader');
@@ -77,22 +77,22 @@ AnimScene.prototype = {
 		this.unicorn.position.y = this.game.input.pointer.y;
 		//this.back1.rotation += 20 *deltaTime;
         // var walk = false;
-		// if(this.game.input.isPressed(XEngine.KeyCode.D)){
+		// if(this.game.input.isPressed(XEngine.KEY_CODE.D)){
 		// 	this.sprite.position.x += 200 * deltaTime;
         //     this.sprite.scale.x = 1.5;
 		// 	this.sprite.animation.play('walk');
         //     walk = true;
 		// }
-		// if(this.game.input.isPressed(XEngine.KeyCode.A)){
+		// if(this.game.input.isPressed(XEngine.KEY_CODE.A)){
 		// 	this.sprite.position.x -= 200 * deltaTime;
 		// 	this.sprite.animation.play('walk');
         //     this.sprite.scale.x = -1.5;
         //     walk = true;
 		// }
-		// if(this.game.input.isPressed(XEngine.KeyCode.W)){
+		// if(this.game.input.isPressed(XEngine.KEY_CODE.W)){
 		// 	this.sprite.position.y -= 200 * deltaTime;
 		// }
-		// if(this.game.input.isPressed(XEngine.KeyCode.S)){
+		// if(this.game.input.isPressed(XEngine.KEY_CODE.S)){
 		// 	this.sprite.position.y += 200 * deltaTime;
 		// }
 
