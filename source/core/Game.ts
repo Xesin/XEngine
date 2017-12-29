@@ -117,7 +117,8 @@ namespace XEngine {
 			if (!this.load.preloading) {
 				this.updateQueue.removePending();
 				this.tween.update(this.deltaMillis);
-				for (let i = this.updateQueue.length - 1; i >= 0; i--) {
+				let queueLength = this.updateQueue.length - 1;
+				for (let i = queueLength; i >= 0; i--) {
 					let gameObject = this.updateQueue[i];
 					if (gameObject.alive) {
 						gameObject.update(this.deltaTime);
@@ -126,6 +127,7 @@ namespace XEngine {
 						}
 					}
 				}
+
 				this.state.currentState.update(this.deltaTime);
 				this.camera.update();
 

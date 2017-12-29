@@ -77,7 +77,8 @@ namespace XEngine {
 
 		public renderLoop(arrayObjects) {
 			let _this = this;
-			for (let i = 0; i < arrayObjects.length; i++) {
+			let arrayLenght = arrayObjects.length;
+			for (let i = 0; i < arrayLenght; i++) {
 				let object = arrayObjects[i];
 				if (!object.render) {continue; }
 				if (Group.prototype.isPrototypeOf(object)) {

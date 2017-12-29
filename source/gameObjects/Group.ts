@@ -13,7 +13,8 @@ namespace XEngine {
 
 		public update(deltaTime: number) {
 			this.children.removePending();
-			for (let i = this.children.length - 1; i >= 0; i--) {
+			let childLenght = this.children.length - 1;
+			for (let i = childLenght; i >= 0; i--) {
 				let gameObject = this.children[i];
 				if (gameObject.alive) {
 					gameObject.update(deltaTime);
