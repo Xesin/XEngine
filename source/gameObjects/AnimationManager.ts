@@ -22,22 +22,22 @@ namespace XEngine {
 			if (this.currentAnimation && this.animations[animName] !== this.currentAnimation) {
 				this.currentAnimation.stop();
 			}
-			let anim = this.animations[animName];
+			let anim = this.animations[animName] as Animation;
 			if (!anim) {
 				return;
 			}
 			this.currentAnimation = anim;
-			anim._start();
+			anim.start();
 			return this.currentAnimation;
 		}
 
 		public stop(animName: string) {
-			let anim = this.animations[animName];
+			let anim = this.animations[animName] as Animation;
 			if (!anim) {
 				return;
 			}
 			this.currentAnimation = null;
-			anim._stop();
+			anim.stop();
 		}
 
 		public add(animName: string, frames: Array<number | string>, rate: number, loop = false) {

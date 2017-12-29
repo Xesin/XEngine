@@ -9,13 +9,14 @@ namespace XEngine {
 		public strokeColor: string;
 		public text: string;
 
+		public isDirty: boolean;
+
 		private canvas: HTMLCanvasElement;
 		private context: CanvasRenderingContext2D;
 		private texture: WebGLTexture;
 
 		constructor(game: Game, posX: number, posY: number, text: string, textStyle: any) {
 			super(game, posX, posY);
-			this.text = text || "";
 			textStyle = textStyle || {};
 			this.font = textStyle.font || "Arial";
 			this.size = textStyle.font_size || 12;
@@ -31,11 +32,12 @@ namespace XEngine {
 			this.context.restore();
 			this.width = textSize.width;
 			this.height = this.size;
-			this.shader = this.game.resourceManager.createMaterial(SimpleColorMat, "spriteShader");
-			this.updateText();
+			this.shader = this.game.resourceManager.createMaterial(SpriteMat, "spriteShader");
+			this.setText(text);
 		}
 
 		public _beginRender(context: WebGLRenderingContext) {
+			this.updateText();
 			super._beginRender(context);
 			(this.shader as SpriteMat)._setTexture(this.texture);
 			this.shader._beginRender(context);
@@ -47,8 +49,8 @@ namespace XEngine {
 		}
 
 		public setText(text: string) {
+			this.isDirty = true;
 			this.text = text;
-			this.updateText();
 		}
 
 		public getBounds(): any {

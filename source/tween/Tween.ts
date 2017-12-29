@@ -41,9 +41,10 @@ namespace XEngine {
 
 		public play() {
 			this.started = true;
+			let _this = this;
 			let timer = setTimeout(function () {
 				clearTimeout(timer);
-				this.startTween();
+				_this.startTween();
 			}, this.delay);
 		}
 
