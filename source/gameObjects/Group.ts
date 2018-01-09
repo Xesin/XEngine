@@ -68,7 +68,7 @@ namespace XEngine {
 				let index = this.game.renderQueue.indexOf(gameObject);
 				this.game.renderQueue.splice(index, 1);
 			}
-			if (gameObject.parent.constructor === XEngine.Group && gameObject.parent.indexOf(gameObject) >= 0) {
+			if (gameObject.parent.constructor === XEngine.Group && gameObject.parent.children.indexOf(gameObject) >= 0) {
 				let index = gameObject.parent.children.indexOf(gameObject);
 				gameObject.parent.children.splice(index, 1);
 			}

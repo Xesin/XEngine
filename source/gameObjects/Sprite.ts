@@ -72,6 +72,9 @@ namespace XEngine {
 					endX = startX + width;
 					endY = startY + height;
 
+					this.width = width;
+					this.height = height;
+
 				} else {
 					let column = (this.frame as number);
 

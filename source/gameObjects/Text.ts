@@ -68,7 +68,7 @@ namespace XEngine {
 			this.context.font = font.trim();
 			let textSize = this.context.measureText(this.text);
 			this.width = textSize.width;
-			this.height = this.size * 0.8;
+			this.height = this.size;
 			this.canvas.width = textSize.width;
 			this.canvas.height = this.height;
 			this.context.font = font.trim();
@@ -78,7 +78,9 @@ namespace XEngine {
 				this.context.strokeText(this.text, 0, this.height);
 			}
 			this.context.fillStyle = this.textColor;
-			this.context.fillText(this.text, 0, this.height);
+			this.context.textBaseline = "top";
+			this.context.textAlign = "left";
+			this.context.fillText(this.text, 0, 0);
 			let texture = new XEngine.Texture2D("textTexture", this.width, this.height, WRAP_MODE.CLAMP);
 			texture.image = this.context.canvas;
 			texture.createTexture(this.game.context);
