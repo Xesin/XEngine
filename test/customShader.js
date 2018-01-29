@@ -211,7 +211,7 @@ CustomShader.prototype = {
             }
         }
 
-        this.custShader = new XEngine.Shader(vertexCode, fragmentCode, this.uniforms);
+        this.custShader = new XEngine.Material(vertexCode, fragmentCode, this.uniforms);
 
         this.rect.shader = this.custShader;
         this.rect.shader.initializeShader(this.game.context);

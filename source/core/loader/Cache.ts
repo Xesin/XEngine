@@ -5,6 +5,7 @@ namespace XEngine {
 		public images: Array<Texture2D>;
 		public audios: Array<any>;
 		public json: Array<any>;
+		public bitmapXML: Array<any>;
 		private game: Game;
 
 		constructor (game: Game) {
