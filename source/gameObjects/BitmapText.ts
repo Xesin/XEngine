@@ -31,24 +31,52 @@ namespace XEngine {
 			let charArray = text.split("");
 			this.spriteArrays = new Array<Sprite>(charArray.length);
 			let startX = 0;
-			for (let char of charArray) {
+			let startY = 0;
+			let maxX = 0;
+			for (let i = 0; i < charArray.length; i++) {
+				let char = charArray[i];
 				if (char !== undefined) {
 					let charCode = char.charCodeAt(0);
 					let charData = this.bitmapData.chars[charCode];
 					if (charData != null) {
-						let newSprite = new Sprite(this.game, this.position.x + startX, this.position.y + charData.yoffset, this.sprite, 0);
-						let uvs = [
-							charData.x / this.atlasWidth, charData.y / this.atlasHeight,
-							charData.x / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
-							(charData.x + charData.width) / this.atlasWidth, charData.y / this.atlasHeight,
-							(charData.x + charData.width) / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
-						];
-						newSprite._setVertices(charData.width, charData.height, newSprite.color, uvs);
-						newSprite.shader = this.shader;
-						this.spriteArrays.push(newSprite);
-						startX += charData.width;
+						if (charCode !== 32 && charCode !== 10) {
+							if (i !== 0) {
+								let prevCharCode = charArray[i - 1].charCodeAt(0);
+								if (this.bitmapData.kerning[prevCharCode] !== undefined && this.bitmapData.kerning[prevCharCode][charCode] !== undefined) {
+									startX += this.bitmapData.kerning[prevCharCode][charCode];
+								}
+							}
+							let newSprite = new Sprite(this.game,
+								startX + charData.xoffset,
+								startY + charData.yoffset,
+								this.sprite, 0);
+							let uvs = [
+								charData.x / this.atlasWidth, charData.y / this.atlasHeight,
+								charData.x / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
+								(charData.x + charData.width) / this.atlasWidth, charData.y / this.atlasHeight,
+								(charData.x + charData.width) / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
+							];
+							newSprite._setVertices(charData.width, charData.height, newSprite.color, uvs);
+							newSprite.shader = this.shader;
+							newSprite.parent = this;
+							this.spriteArrays.push(newSprite);
+							startX += charData.xadvance;
+						} else if (charCode === 32) {
+							startX += charData.xadvance;
+						}
+						if (startX > maxX) {
+							maxX = startX;
+						}
+					} else if (charCode === 10) {
+						startY += this.bitmapData.lineHeight;
+						if (startX > startX) {
+							maxX = startX;
+						}
+						startX = 0;
 					}
 				}
+				this.width = maxX;
+				this.height = startY + this.bitmapData.lineHeight;
 			}
 		}
 

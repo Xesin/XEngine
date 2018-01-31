@@ -21,6 +21,7 @@ var Start = function (game) {
 };
 
 var circle;
+var text;
 
 Start.prototype = {
 	
@@ -30,10 +31,12 @@ Start.prototype = {
 	
 	start: function () {
 		this.game.autoCulling = true;
-		this.game.add.bitmapText(100,0,'font1', 'HolaMundoVo');
+		text = this.game.add.bitmapText(500, 420,'font1', 'Lorem ipsum dolor sit amet');
+		text.anchor.setTo(0.5);
 	},
 	
 	update : function (deltaTime) {
+		text.rotation += 20 * deltaTime;
 	},
 	
 	fin: function () {

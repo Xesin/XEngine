@@ -28,13 +28,16 @@ namespace XEngine {
 	export class BitmapData {
 		public chars: IHash<BitmapChar>;
 		public kerning: IHash<IHash<number>>;
+		public lineHeight: number;
 
 		constructor(xmlDoc: XMLDocument) {
 			this.chars = new IHash<BitmapChar>();
 			this.kerning = new IHash<IHash<number>>();
 			let charsNode = xmlDoc.children[0].getElementsByTagName("chars")[0];
+			let commonNode = xmlDoc.children[0].getElementsByTagName("common")[0];
 			let charCount = Number(charsNode.getAttribute("count"));
 			let charsArray = charsNode.children;
+			this.lineHeight = Number(commonNode.getAttribute("lineHeight"));
 			for (let i = 0; i < charCount; i++) {
 				let id = Number(charsArray[i].getAttribute("id"));
 				let x = Number(charsArray[i].getAttribute("x"));
@@ -44,7 +47,6 @@ namespace XEngine {
 				let xoffset = Number(charsArray[i].getAttribute("xoffset"));
 				let yoffset = Number(charsArray[i].getAttribute("yoffset"));
 				let xadvance = Number(charsArray[i].getAttribute("xadvance"));
-
 				this.chars[id] = new BitmapChar(x, y, width, height, xoffset, yoffset, xadvance);
 			}
 
@@ -57,8 +59,8 @@ namespace XEngine {
 				let amount = Number(kerningArray[i].getAttribute("amount"));
 				if ( this.kerning[first] === undefined ) {
 					this.kerning[first] = new IHash<number>();
-					this.kerning[first][second] = amount;
 				}
+				this.kerning[first][second] = amount;
 			}
 		}
 	}
