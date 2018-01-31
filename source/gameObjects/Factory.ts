@@ -43,6 +43,11 @@ namespace XEngine {
 			return this.existing(gameObject, false, true);
 		}
 
+		public bitmapText(posX: number, posY: number, fontName: string, text: string): Sprite {
+			let gameObject = new XEngine.BitmapText(this.game, posX, posY, fontName, text);
+			return this.existing(gameObject, false, true);
+		}
+
 		public button(posX: number, posY: number, sprite: string,
 			frameIdle?: string, spriteDown?: string, spriteOver?: string, spriteUp?: string): Button {
 			let gameObject = new Button(this.game, posX, posY, sprite, frameIdle, spriteDown, spriteOver, spriteUp);

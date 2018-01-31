@@ -276,11 +276,14 @@ namespace XEngine {
 		public start () { return; }
 		public update (deltaTime) { return; }
 
-		protected _setVertices(width, height, color, uv) {
+		public _setVertices(width, height, color, uv) {
 			let floatBuffer = this._vertDataBuffer.floatView;
 			let uintBuffer = this._vertDataBuffer.uintView;
 			let index = 0;
 			let pos = new XEngine.Vector(0, 0);
+			this._uv = uv;
+			this.width = width;
+			this.height = height;
 			this.getWorldMatrix(this.mvMatrix);
 			pos = pos.multiplyMatrix(this.mvMatrix);
 
@@ -291,7 +294,7 @@ namespace XEngine {
 			uintBuffer[index++] = color;
 			floatBuffer[index++] = this.alpha;
 
-			pos.setTo(0, this.height);
+			pos.setTo(0, height);
 			pos = pos.multiplyMatrix(this.mvMatrix);
 
 			floatBuffer[index++] = pos.x;
@@ -301,7 +304,7 @@ namespace XEngine {
 			uintBuffer[index++] = color;
 			floatBuffer[index++] = this.alpha;
 
-			pos.setTo(this.width, 0);
+			pos.setTo(width, 0);
 			pos = pos.multiplyMatrix(this.mvMatrix);
 
 			floatBuffer[index++] = pos.x;
@@ -311,7 +314,7 @@ namespace XEngine {
 			uintBuffer[index++] = color;
 			floatBuffer[index++] = this.alpha;
 
-			pos.setTo(this.width, this.height);
+			pos.setTo(width, height);
 			pos = pos.multiplyMatrix(this.mvMatrix);
 
 			floatBuffer[index++] = pos.x;

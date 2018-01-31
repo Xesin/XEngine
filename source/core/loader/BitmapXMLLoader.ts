@@ -10,10 +10,10 @@ namespace XEngine {
 
 		private loader: Loader;
 
-		constructor (imageName, imageUrl, jsonUrl, loader) {
+		constructor (imageName, imageUrl, xmlUrl, loader) {
 			this.imageName = imageName;
 			this.imageUrl = imageUrl;
-			this.xmlUrl = jsonUrl;
+			this.xmlUrl = xmlUrl;
 			this.completed = false;
 			this.loader = loader;
 			this.frameWidth = 0;
@@ -34,7 +34,7 @@ namespace XEngine {
 				if (request.status === 200) {
 					let returnedXML = request.responseXML;
 
-					_this.loader.game.cache.bitmapXML[_this.imageName] = returnedXML;
+					_this.loader.game.cache.bitmapData[_this.imageName] = new BitmapData(returnedXML);
 				}
 				_this.completed = true;
 				_this.loader._notifyCompleted();

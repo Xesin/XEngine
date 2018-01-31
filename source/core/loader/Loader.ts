@@ -44,6 +44,17 @@ namespace XEngine {
 		}
 
 		/**
+		 * Añade hoja de sprites a la cola de carga
+		 * @method XEngine.Loader#spriteSheet
+		 * @param {String} imageName - KeyName de la imagen
+		 * @param {String} imageUrl - fuente de la imagen
+		 * @param {String} jsonUrl - ruta donde se encuentra el json con la información del spritesheet
+		 */
+		public bitmapFont(fontName, imageUrl, xmlUrl) {
+			this.pendingLoads.push(new XEngine.BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
+		}
+
+		/**
 		 * Añade un audio a la cola de carga
 		 * @method XEngine.Loader#audio
 		 * @param {String} audioName - KeyName del audio

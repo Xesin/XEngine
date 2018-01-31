@@ -1,7 +1,7 @@
 namespace XEngine {
 
-	export interface IHash {
-		[id: number]: BitmapChar;
+	export class IHash<T> {
+		[id: number]: T;
 	}
 
 	export class BitmapChar {
@@ -25,18 +25,13 @@ namespace XEngine {
 
 	}
 
-	export class BitmapKerning {
-		public amount: number;
-
-		constructor(amount: number) {
-			this.amount = amount;
-		}
-	}
 	export class BitmapData {
-		public chars: IHash;
-		public kerning: Array<BitmapKerning>;
+		public chars: IHash<BitmapChar>;
+		public kerning: IHash<IHash<number>>;
 
-		public BitmapData(xmlDoc: XMLDocument) {
+		constructor(xmlDoc: XMLDocument) {
+			this.chars = new IHash<BitmapChar>();
+			this.kerning = new IHash<IHash<number>>();
 			let charsNode = xmlDoc.children[0].getElementsByTagName("chars")[0];
 			let charCount = Number(charsNode.getAttribute("count"));
 			let charsArray = charsNode.children;
@@ -60,6 +55,10 @@ namespace XEngine {
 				let first = Number(kerningArray[i].getAttribute("first"));
 				let second = Number(kerningArray[i].getAttribute("second"));
 				let amount = Number(kerningArray[i].getAttribute("amount"));
+				if ( this.kerning[first] === undefined ) {
+					this.kerning[first] = new IHash<number>();
+					this.kerning[first][second] = amount;
+				}
 			}
 		}
 	}

@@ -25,62 +25,12 @@ var circle;
 Start.prototype = {
 	
 	preload: function () {
-		this.game.load.image('test2', 'img/angry_unicorn.png');
-		this.game.load.image('back1', 'img/back1.jpg');
+		this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
 	},
 	
 	start: function () {
 		this.game.autoCulling = true;
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.image(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),'test2');
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		for(var i = 0; i< 5000; i++){
-			var rect = this.game.add.rect(XEngine.Mathf.randomRange(-5000, 5200),XEngine.Mathf.randomRange(-2000, 2000),50, 50);
-			rect.setColor(XEngine.Mathf.randomRange(0x000000, 0xffffff));
-		}
-
-		var img = this.game.add.image(0, 0, 'back1');
-		img.width /= 4;
-		img.height /= 4;
-		this.game.input.onKeyUp.add(function(event){
-            if(event.keyCode == XEngine.KEY_CODE.ONE){
-               	this.game.input.onKeyUp._destroy();
-				this.game.input.onClick._destroy();
-                this.game.state.start('anim')
-            }
-            if(event.keyCode == XEngine.KEY_CODE.THREE){
-                this.game.input.onKeyUp._destroy();
-				this.game.input.onClick._destroy();
-                this.game.state.start('shader');
-            }
-        },this);
-		this.game.input.onClick.add(function(){
-			this.game.input.onKeyUp._destroy();
-			this.game.input.onClick._destroy();
-			this.game.state.start('shader');
-        },this);
+		this.game.add.bitmapText(100,0,'font1', 'HolaMundoVo');
 	},
 	
 	update : function (deltaTime) {

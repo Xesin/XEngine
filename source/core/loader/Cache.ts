@@ -5,7 +5,7 @@ namespace XEngine {
 		public images: Array<Texture2D>;
 		public audios: Array<any>;
 		public json: Array<any>;
-		public bitmapXML: Array<any>;
+		public bitmapData: Array<BitmapData>;
 		private game: Game;
 
 		constructor (game: Game) {
@@ -13,6 +13,7 @@ namespace XEngine {
 			this.images = new Array();
 			this.audios = new Array();
 			this.json = new Array();
+			this.bitmapData = new Array();
 		}
 
 		public image(imageName: string) {
@@ -43,9 +44,11 @@ namespace XEngine {
 			delete this.images;
 			delete this.audios;
 			delete this.json;
+			delete this.bitmapData;
 			this.images = new Array();
 			this.audios = new Array();
 			this.json = new Array();
+			this.bitmapData = new Array();
 		}
 	}
 }
