@@ -19,7 +19,7 @@ namespace XEngine {
 				if (gameObject.alive) {
 					gameObject.update(deltaTime);
 					if (Sprite.prototype.isPrototypeOf(gameObject)) {
-						(gameObject as Sprite)._updateAnims(this.game.deltaMillis);
+						(gameObject as Sprite)._updateAnims(this.game.time.deltaTime);
 					}
 				}
 			}

@@ -33,6 +33,16 @@ Start.prototype = {
 		this.game.autoCulling = true;
 		text = this.game.add.bitmapText(500, 420,'font1', 'Lorem ipsum dolor sit amet');
 		text.anchor.setTo(0.5);
+		let timer = this.game.time.addTimer(1000, true, true);
+		timer.onCompleted.add(function(){
+			console.log("completed");
+		}, this);
+
+		let timer2 = this.game.time.addTimer(1000, true, true, true);
+		timer2.onCompleted.add(function(){
+			timer2.stop();
+			console.log("completedOnce");
+		}, this);
 	},
 	
 	update : function (deltaTime) {

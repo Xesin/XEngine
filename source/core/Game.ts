@@ -27,13 +27,6 @@ namespace XEngine {
 		public updateQueue: Array<GameObject>;
 		public renderQueue: Array<GameObject>;
 		public pause: boolean;
-		public deltaMillis: number;
-		public deltaTime: number;
-		public previousFrameTime: number;
-		public frameTime: number;
-		public _elapsedTime: number;
-		public _startTime: number;
-		public frameLimit: number;
 		public worldWidth: number;
 		public worldHeight: number;
 		public height: number;
@@ -47,6 +40,7 @@ namespace XEngine {
 		public load: Loader;
 		public scale: ScaleManager;
 		public state: StateManager;
+		public time: TimeManager;
 		public cache: Cache;
 		public tween: TweenManager;
 		public renderer: Renderer;
@@ -80,13 +74,6 @@ namespace XEngine {
 
 			this.audioContext = new AudioContext();
 
-			this.frameLimit = 30;
-			this._startTime = 0;
-			this._elapsedTime = 0;
-			this.frameTime = 0;
-			this.previousFrameTime = 0;
-			this.deltaTime = 0;
-			this.deltaMillis = 0;
 			this.pause = false;
 			this.isMobile = false;
 			this.ISO_TILE_WIDTH = 32;
@@ -104,39 +91,35 @@ namespace XEngine {
 				window.requestAnimationFrame(() => { this.update(); });
 			} else {
 				clearTimeout(this.timer);
-				this.timer = setTimeout(() => { this.update(); }, this.frameLimit / 1);
+				this.timer = setTimeout(() => { this.update(); }, this.time.frameLimit / 1);
 			}
-			this.elapsedTime = Date.now() - this._startTime;
-			this.frameTime = this.elapsedTime;
-			this.deltaMillis = Math.min(400, (this.frameTime - this.previousFrameTime));
-			this.deltaTime = this.deltaMillis / 1000;
-			if (1 / this.frameLimit > this.deltaTime) { return; }
-			this.previousFrameTime = this.frameTime;
-			if (this.pause) { return; }
-			if (this.state.currentState == null) { return; }
-			if (!this.load.preloading) {
-				this.updateQueue.removePending();
-				this.tween.update(this.deltaMillis);
-				let queueLength = this.updateQueue.length - 1;
-				for (let i = queueLength; i >= 0; i--) {
-					let gameObject = this.updateQueue[i];
-					if (gameObject.alive) {
-						gameObject.update(this.deltaTime);
-						if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
-							(gameObject as Sprite)._updateAnims(this.deltaMillis);
+			if (this.time.update()) {
+				if (this.pause) { return; }
+				if (this.state.currentState == null) { return; }
+				if (!this.load.preloading) {
+					this.updateQueue.removePending();
+					this.tween.update(this.time.deltaTimeMillis);
+					let queueLength = this.updateQueue.length - 1;
+					for (let i = queueLength; i >= 0; i--) {
+						let gameObject = this.updateQueue[i];
+						if (gameObject.alive) {
+							gameObject.update(this.time.deltaTime);
+							if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
+								(gameObject as Sprite)._updateAnims(this.time.deltaTimeMillis);
+							}
 						}
 					}
+
+					this.state.currentState.update(this.time.deltaTime);
+					this.camera.update();
+
+					// if (this.physics.systemEnabled) {
+					// 	this.physics.update(this.deltaTime);
+					// 	this.state.currentState.physicsUpdate();
+					// }
+					this.renderQueue.removePending();
+					this.renderer.render();
 				}
-
-				this.state.currentState.update(this.deltaTime);
-				this.camera.update();
-
-				// if (this.physics.systemEnabled) {
-				// 	this.physics.update(this.deltaTime);
-				// 	this.state.currentState.physicsUpdate();
-				// }
-				this.renderQueue.removePending();
-				this.renderer.render();
 			}
 		}
 
@@ -184,12 +167,6 @@ namespace XEngine {
 		}
 
 		private init() {
-			this._startTime = Date.now();
-			this._elapsedTime = 0;
-			this.frameTime = 0;
-			this.previousFrameTime = 0;
-			this.deltaTime = 0;
-			this.deltaMillis = 0;
 			this.updateQueue = new Array();
 			this.renderQueue = new Array();
 			this.pause = false;
@@ -206,6 +183,8 @@ namespace XEngine {
 			this.renderer.init();
 			this.scale = new ScaleManager(this);
 			this.scale.init();
+			this.time = new TimeManager();
+			this.time.init();
 			this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 			this.input = new InputManager(this);
 			console.log("Game engine " + XEngine.version + " arrancado con webgl!!!");
