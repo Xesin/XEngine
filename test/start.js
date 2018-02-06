@@ -31,11 +31,13 @@ Start.prototype = {
 	
 	start: function () {
 		this.game.autoCulling = true;
-		text = this.game.add.bitmapText(500, 420,'font1', 'Lorem ipsum dolor sit amet');
+		text = this.game.add.bitmapText(500, 420,'font1', 'loops: 0');
 		text.anchor.setTo(0.5);
+		var contador = 0;
 		let timer = this.game.time.addTimer(1000, true, true);
 		timer.onCompleted.add(function(){
-			console.log("completed");
+			contador++;
+			text.setText("loops: " + contador);
 		}, this);
 
 		let timer2 = this.game.time.addTimer(1000, true, true, true);
@@ -46,7 +48,7 @@ Start.prototype = {
 	},
 	
 	update : function (deltaTime) {
-		text.rotation += 20 * deltaTime;
+		//text.rotation += 20 * deltaTime;
 	},
 	
 	fin: function () {

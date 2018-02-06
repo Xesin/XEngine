@@ -171,6 +171,14 @@ namespace XEngine {
 			return new XEngine.Vector(x, y);
 		}
 
+		public getTotalAlpha () {
+			let totAlpha = this.alpha;
+			if (this.parent.getTotalAlpha !== undefined) {
+				totAlpha *= this.parent.getTotalAlpha();
+			}
+			return totAlpha;
+		}
+
 		public _beginRender(context: WebGLRenderingContext) {
 			if (this.shader) {
 				this.shader._beginRender(context);
@@ -286,13 +294,14 @@ namespace XEngine {
 			this.height = height;
 			this.getWorldMatrix(this.mvMatrix);
 			pos = pos.multiplyMatrix(this.mvMatrix);
+			let alpha = this.getTotalAlpha();
 
 			floatBuffer[index++] = pos.x;
 			floatBuffer[index++] = pos.y;
 			floatBuffer[index++] = uv[0];
 			floatBuffer[index++] = uv[1];
 			uintBuffer[index++] = color;
-			floatBuffer[index++] = this.alpha;
+			floatBuffer[index++] = alpha;
 
 			pos.setTo(0, height);
 			pos = pos.multiplyMatrix(this.mvMatrix);
@@ -302,7 +311,7 @@ namespace XEngine {
 			floatBuffer[index++] = uv[2];
 			floatBuffer[index++] = uv[3];
 			uintBuffer[index++] = color;
-			floatBuffer[index++] = this.alpha;
+			floatBuffer[index++] = alpha;
 
 			pos.setTo(width, 0);
 			pos = pos.multiplyMatrix(this.mvMatrix);
@@ -312,7 +321,7 @@ namespace XEngine {
 			floatBuffer[index++] = uv[4];
 			floatBuffer[index++] = uv[5];
 			uintBuffer[index++] = color;
-			floatBuffer[index++] = this.alpha;
+			floatBuffer[index++] = alpha;
 
 			pos.setTo(width, height);
 			pos = pos.multiplyMatrix(this.mvMatrix);
@@ -322,7 +331,7 @@ namespace XEngine {
 			floatBuffer[index++] = uv[6];
 			floatBuffer[index++] = uv[7];
 			uintBuffer[index++] = color;
-			floatBuffer[index++] = this.alpha;
+			floatBuffer[index++] = alpha;
 
 			this.vertexBuffer.updateResource(floatBuffer, 0);
 		}

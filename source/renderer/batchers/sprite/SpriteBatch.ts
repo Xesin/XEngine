@@ -107,7 +107,7 @@ namespace XEngine {
 				let floatBuffer = this.vertexDataBuffer.floatView;
 				let uintBuffer = this.vertexDataBuffer.uintView;
 				let index = this.vertexDataBuffer.allocate(24);
-
+				let objectAlpha = gameObject.getTotalAlpha();
 				let pos = new XEngine.Vector(0, 0);
 				mat4.identity(gameObject.mvMatrix);
 				gameObject.getWorldMatrix(gameObject.mvMatrix);
@@ -118,7 +118,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject._uv[0];
 				floatBuffer[index++] = gameObject._uv[1];
 				uintBuffer[index++] = gameObject.color;
-				floatBuffer[index++] = gameObject.alpha;
+				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(0, gameObject.height);
 				pos = pos.multiplyMatrix(gameObject.mvMatrix);
@@ -128,7 +128,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject._uv[2];
 				floatBuffer[index++] = gameObject._uv[3];
 				uintBuffer[index++] = gameObject.color;
-				floatBuffer[index++] = gameObject.alpha;
+				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, 0);
 				pos = pos.multiplyMatrix(gameObject.mvMatrix);
@@ -138,7 +138,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject._uv[4];
 				floatBuffer[index++] = gameObject._uv[5];
 				uintBuffer[index++] = gameObject.color;
-				floatBuffer[index++] = gameObject.alpha;
+				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, gameObject.height);
 				pos = pos.multiplyMatrix(gameObject.mvMatrix);
@@ -148,7 +148,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject._uv[6];
 				floatBuffer[index++] = gameObject._uv[7];
 				uintBuffer[index++] = gameObject.color;
-				floatBuffer[index++] = gameObject.alpha;
+				floatBuffer[index++] = objectAlpha;
 
 				this.currentTexture2D = this.game.cache.image(gameObject.sprite)._texture;
 				this.currentSprite = gameObject.sprite;
