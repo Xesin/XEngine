@@ -51,16 +51,18 @@ namespace XEngine {
 			}
 
 			let kerningNode = xmlDoc.children[0].getElementsByTagName("kernings")[0];
-			let kerningCount = Number(kerningNode.getAttribute("count"));
-			let kerningArray = kerningNode.children;
-			for (let i = 0; i < kerningCount; i++) {
-				let first = Number(kerningArray[i].getAttribute("first"));
-				let second = Number(kerningArray[i].getAttribute("second"));
-				let amount = Number(kerningArray[i].getAttribute("amount"));
-				if ( this.kerning[first] === undefined ) {
-					this.kerning[first] = new IHash<number>();
+			if (kerningNode !== undefined ) {
+				let kerningCount = Number(kerningNode.getAttribute("count"));
+				let kerningArray = kerningNode.children;
+				for (let i = 0; i < kerningCount; i++) {
+					let first = Number(kerningArray[i].getAttribute("first"));
+					let second = Number(kerningArray[i].getAttribute("second"));
+					let amount = Number(kerningArray[i].getAttribute("amount"));
+					if ( this.kerning[first] === undefined ) {
+						this.kerning[first] = new IHash<number>();
+					}
+					this.kerning[first][second] = amount;
 				}
-				this.kerning[first][second] = amount;
 			}
 		}
 	}

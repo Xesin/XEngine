@@ -51,6 +51,9 @@ namespace XEngine {
 		public to(properties: any, duration: number, ease: Function, autoStart: boolean, delay: number, repeat: number, yoyo: boolean) {
 			// tslint:disable-next-line:forin
 			for (let property in properties) {
+				if ( typeof properties[property] === "string" ) {
+					properties[property] = this.target[property] + Number(properties[property]);
+				}
 				this.fromProperties[property] = this.target[property];
 			}
 			this.properties = properties;

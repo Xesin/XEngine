@@ -44,6 +44,15 @@ namespace XEngine {
 			}
 		}
 
+		public addTime(extraTime: number) {
+			this.elapsed -= extraTime;
+			if (this.elapsed -= 0) {
+				this.duration += (this.elapsed * (-1));
+				this.elapsed = 0;
+			}
+			this.remaining = this.duration - this.elapsed;
+		}
+
 		public start() {
 			this.paused = false;
 		}

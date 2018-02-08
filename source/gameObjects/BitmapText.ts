@@ -73,6 +73,8 @@ namespace XEngine {
 							maxX = startX;
 						}
 						startX = 0;
+					} else if (charCode === 32) {
+						startX += 20;
 					}
 				}
 				this.width = maxX;
