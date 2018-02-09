@@ -1,4 +1,4 @@
-/// <reference path="Sprite.ts"/>
+/// <reference path="../Sprite.ts"/>
 namespace XEngine {
 
 	export class Button extends Sprite {

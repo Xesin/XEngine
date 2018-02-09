@@ -36,11 +36,11 @@ namespace XEngine {
 		public sprite: string;
 		public mvMatrix: Array<number>;
 		protected _uv: Array<number>;
-		private _vertDataBuffer: DataBuffer32;
-		private gl: WebGLRenderingContext;
+		protected _vertDataBuffer: DataBuffer32;
+		protected gl: WebGLRenderingContext;
 
-		private indexBuffer: IndexBuffer;
-		private vertexBuffer: VertexBuffer;
+		protected indexBuffer: IndexBuffer;
+		protected vertexBuffer: VertexBuffer;
 
 		private _prevWidth: number;
 		private _prevHeight: number;
@@ -89,7 +89,7 @@ namespace XEngine {
 			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				gl.ARRAY_BUFFER, this._vertDataBuffer.getByteCapacity(), gl.STREAM_DRAW) as VertexBuffer;
 			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
-				gl.ELEMENT_ARRAY_BUFFER, this._vertDataBuffer.getByteCapacity(), gl.STATIC_DRAW) as IndexBuffer;
+				gl.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), gl.STATIC_DRAW) as IndexBuffer;
 			let indexBuffer = indexDataBuffer.uintView;
 			for (let indexA = 0, indexB = 0; indexA < 6; indexA += 6, indexB += 4) {
 				indexBuffer[indexA + 0] = indexB + 0;
@@ -284,7 +284,7 @@ namespace XEngine {
 		public start () { return; }
 		public update (deltaTime) { return; }
 
-		public _setVertices(width, height, color, uv) {
+		public _setVertices(width: number, height: number, color: number, uv: Array<number>) {
 			let floatBuffer = this._vertDataBuffer.floatView;
 			let uintBuffer = this._vertDataBuffer.uintView;
 			let index = 0;

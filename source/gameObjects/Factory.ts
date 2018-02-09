@@ -1,5 +1,5 @@
 /// <reference path="GameObject.ts"/>
-/// <reference path="Audio.ts"/>
+/// <reference path="2D/Audio.ts"/>
 namespace XEngine {
 	export class ObjectFactory {
 		private game: Game;
@@ -62,6 +62,11 @@ namespace XEngine {
 		public audio(audio: string, autoStart: boolean, volume: number): Audio {
 			let audioObject = new XEngine.Audio(this.game, audio, autoStart, volume);
 			return this.existing(audioObject, true, false);
+		}
+
+		public mesh(posX: number, posY: number): Text {
+			let gameObject = new XEngine.Mesh(this.game, posX, posY);
+			return this.existing(gameObject, true, true);
 		}
 
 		public group(posX: number, posY: number): Group {

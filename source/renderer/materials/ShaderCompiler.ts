@@ -15,7 +15,7 @@ namespace XEngine {
 	export class ShaderCompiler {
 
 		public static readonly vertexBaseParams = [
-			"in vec2 aVertexPosition;",
+			"in vec3 aVertexPosition;",
 			"in vec2 vUv;",
 			"in vec3 aVertexColor;",
 			"in float in_alpha;",
@@ -35,7 +35,7 @@ namespace XEngine {
 
 		public static readonly vertexMain = [
 			"void main(void) {",
-				"vertPos = pMatrix * vec4(aVertexPosition, -1.0, 1.0);",
+				"vertPos = pMatrix * vec4(aVertexPosition, 1.0);",
 				"uv = vUv;",
 				"vColor = aVertexColor;",
 				"alpha = in_alpha;",

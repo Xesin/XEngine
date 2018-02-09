@@ -34,6 +34,27 @@ namespace XEngine {
 			];
 		}
 
+		export class SimpleMaterial extends MaterialLibObject {
+			public static readonly vertexShader = [
+				"#version 300 es",
+				"#XBaseParams",
+				"uniform mat4 mvpMatrix;",
+				"void mainPass() {",
+					"vertPos = vertPos * mvpMatrix;",
+				"}",
+			];
+
+			public static readonly fragmentShader = [
+				"#version 300 es",
+				"precision mediump float;",
+				"#XBaseParams",
+
+				"void main(void) {",
+					"fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
+				"}",
+			];
+		}
+
 		export class SimpleColor extends MaterialLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",

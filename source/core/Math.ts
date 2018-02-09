@@ -65,9 +65,12 @@ namespace XEngine {
 			this.zOffset = 0;
 		}
 
-		public setTo(x: number, y = x) {
+		public setTo(x: number, y = x, z?) {
 			this.x = x;
 			this.y = y;
+			if (z) {
+				this.z = z;
+			}
 		}
 
 		public sub(vector: Vector): Vector {
@@ -89,17 +92,19 @@ namespace XEngine {
 		public multiply(vector: Vector): Vector {
 			this.x *= vector.x;
 			this.y *= vector.y;
+			this.z *= vector.z
 			return this;
 		}
 
 		public multiplyMatrix(matrix: Array<number>): Vector {
 			let x = this.x,
 			y = this.y;
+			let z = this.z;
 
 			let out = new Array(3);
-			this.x = x * matrix[0] + y * matrix[4] + matrix[8] + matrix[12];
-			this.y = x * matrix[1] + y * matrix[5] + matrix[9] + matrix[13];
-
+			this.x = x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12];
+			this.y = x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13];
+			this.z = x * matrix[2] + y * matrix[6] + z * matrix[10] + matrix[14];
 			return this;
 		}
 

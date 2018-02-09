@@ -52,7 +52,7 @@ namespace XEngine {
 			}
 			let right = this.game.width + this.position.x;
 			let up = this.game.height + this.position.y;
-			mat4.ortho(this.pMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
+			// mat4.ortho(this.pMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
 			// mat4.identity(this.pMatrix);
 		}
 	}

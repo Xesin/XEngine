@@ -1,4 +1,4 @@
-/// <reference path="GameObject.ts"/>
+/// <reference path="../GameObject.ts"/>
 namespace XEngine {
 	export class Audio extends GameObject {
 
