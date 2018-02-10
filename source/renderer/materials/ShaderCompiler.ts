@@ -16,29 +16,29 @@ namespace XEngine {
 
 		public static readonly vertexBaseParams = [
 			"in vec3 aVertexPosition;",
-			"in vec2 vUv;",
-			"in vec3 aVertexColor;",
-			"in float in_alpha;",
+			// "in vec2 vUv;",
+			// "in vec3 aVertexColor;",
+			// "in float in_alpha;",
 			"uniform mat4 pMatrix;",
-			"out highp vec2 uv;",
+			// "out highp vec2 uv;",
 			"vec4 vertPos;",
-			"out lowp vec3 vColor;",
-			"out lowp float alpha;",
+			// "out lowp vec3 vColor;",
+			// "out lowp float alpha;",
 		];
 
 		public static readonly fragmentBaseParams = [
-			"in lowp vec3 vColor;",
-			"in highp vec2 uv;",
-			"in float alpha;",
+			// "in lowp vec3 vColor;",
+			// "in highp vec2 uv;",
+			// "in float alpha;",
 			"out vec4 fragColor;",
 		];
 
 		public static readonly vertexMain = [
 			"void main(void) {",
 				"vertPos = pMatrix * vec4(aVertexPosition, 1.0);",
-				"uv = vUv;",
-				"vColor = aVertexColor;",
-				"alpha = in_alpha;",
+				// "uv = vUv;",
+				// "vColor = aVertexColor;",
+				// "alpha = in_alpha;",
 				"mainPass();",
 				"gl_Position = vertPos;",
 			"}",

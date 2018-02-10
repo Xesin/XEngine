@@ -1,16 +1,17 @@
+declare var mat4: any;
 namespace XEngine {
 	export class SimpleMaterial extends Material {
 		public static shader = new SimpleMaterial();
 		public texture: WebGLTexture;
 
 		constructor() {
-			let uniforms = {
+			super(XEngine.MaterialLib.SimpleMaterial.vertexShader, XEngine.MaterialLib.SimpleMaterial.fragmentShader, null);
+			this.uniforms = {
 				mvpMatrix: {
-					value: null,
+					value: mat4.create(),
 					type: Uniforms.MAT4X4,
 				},
 			};
-			super(XEngine.MaterialLib.SimpleMaterial.vertexShader, XEngine.MaterialLib.SimpleMaterial.fragmentShader, uniforms);
 		}
 
 		// public _setTexture(texture: WebGLTexture) {

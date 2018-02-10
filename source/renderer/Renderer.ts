@@ -31,20 +31,23 @@ namespace XEngine {
 				this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 				this.context.clear(this.context.COLOR_BUFFER_BIT);      // Limpiar el buffer de color asi como el de profundidad
 				this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
-				this.context.disable(this.context.DEPTH_TEST);
-				this.context.enable(this.context.BLEND);
+
+				this.context.enable(this.context.DEPTH_TEST);                               // Habilitar prueba de profundidad
+				this.context.depthFunc(this.context.LEQUAL);                                // Objetos cercanos opacan objetos lejanos
+				this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+				// this.context.enable(this.context.BLEND);
 				// this.context.enable(this.context.CULL_FACE);
 				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 				this.resourceManager = this.game.resourceManager;
-				this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
-				this.rectBatch = new RectBatcher.RectBatch(this.game, this.context, this);
+				// this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
+				// this.rectBatch = new RectBatcher.RectBatch(this.game, this.context, this);
 				this.renderer = null;
 				this.sprite = undefined;
 			}
 		}
 
 		public render() {
-			this.context.clear(this.context.COLOR_BUFFER_BIT);
+			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 			this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 			this.renderLoop(this.game.renderQueue);
 			if (this.renderer) {

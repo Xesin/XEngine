@@ -40,22 +40,22 @@ namespace XEngine {
 		protected gl: WebGLRenderingContext;
 
 		protected indexBuffer: IndexBuffer;
-		protected vertexBuffer: VertexBuffer;
+		protected myVertexBuffer: VertexBuffer;
 
 		private _prevWidth: number;
 		private _prevHeight: number;
 		private _prevPos: any;
 
-		constructor(game: Game, posX = 0, posY = 0) {
+		constructor(game: Game, posX = 0, posY = 0, posZ = 0) {
 			this.game = game;
 			this.parent = game;
 			this.isPendingDestroy = false;
 			this.alive = true;
 			this.alpha = 1.0;
-			this.scale = new XEngine.Vector(1, 1);
+			this.scale = new XEngine.Vector(1, 1, 1);
 			this.anchor = new XEngine.Vector(0, 0);
 			this.rotation = 0;
-			this.position = new XEngine.Vector(posX, posY);
+			this.position = new XEngine.Vector(posX, posY, posZ);
 			this.onClick = new XEngine.Signal();
 			this.onInputDown = new XEngine.Signal();
 			this.onInputUp = new XEngine.Signal();
@@ -86,7 +86,7 @@ namespace XEngine {
 			this.gl = this.game.context;
 			let gl = this.gl;
 			let indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
-			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
+			this.myVertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				gl.ARRAY_BUFFER, this._vertDataBuffer.getByteCapacity(), gl.STREAM_DRAW) as VertexBuffer;
 			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
 				gl.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), gl.STATIC_DRAW) as IndexBuffer;
@@ -150,9 +150,9 @@ namespace XEngine {
 
 		public getWorldMatrix (childMatrix: Array<number>) {
 			this.parent.getWorldMatrix(childMatrix);
-			let translation = [this.position.x, this.position.y, 0.0];
-			let posX = Math.round(-(this.width * this.anchor.x));
-			let posY = Math.round(-(this.height * this.anchor.y));
+			let translation = [this.position.x, this.position.y, this.position.z];
+			let posX = 0; // Math.round(-(this.width * this.anchor.x));
+			let posY = 0; // Math.round(-(this.height * this.anchor.y));
 			if (this.fixedToCamera) {
 				translation[0] += this.game.camera.position.x;
 				translation[1] += this.game.camera.position.y;
@@ -200,7 +200,7 @@ namespace XEngine {
 				this._prevPos.x = this.position.x;
 				this._prevPos.y = this.position.y;
 			}
-			this.vertexBuffer.bind();
+			this.myVertexBuffer.bind();
 			this.indexBuffer.bind();
 
 			context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
@@ -226,7 +226,7 @@ namespace XEngine {
 
 			this._setVertices(this.width, this.height, this.color, this._uv);
 
-			this.vertexBuffer.bind();
+			this.myVertexBuffer.bind();
 			this.indexBuffer.bind();
 
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
@@ -333,16 +333,16 @@ namespace XEngine {
 			uintBuffer[index++] = color;
 			floatBuffer[index++] = alpha;
 
-			this.vertexBuffer.updateResource(floatBuffer, 0);
+			this.myVertexBuffer.updateResource(floatBuffer, 0);
 		}
 
 		private _setBuffers() {
 			let context = this.gl;
 			this.shader.bind(context);
-			this.vertexBuffer.addAttribute(this.shader.vertPosAtt, 2, context.FLOAT, false, 24, 0);
-			this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 24, 8);
-			this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 24, 16);
-			this.vertexBuffer.addAttribute(this.shader.vertAlphaAtt, 1, context.FLOAT, false, 24, 20);
+			// this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, context.FLOAT, false, 0, 0);
+			// this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 28, 12);
+			// this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 28, 20);
+			// this.vertexBuffer.addAttribute(this.shader.vertAlphaAtt, 1, context.FLOAT, false, 28, 24);
 		}
 	}
 }

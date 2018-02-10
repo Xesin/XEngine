@@ -61,13 +61,13 @@ namespace XEngine {
 			gl.compileShader(fragmentShader);
 
 			if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-				alert(gl.getShaderInfoLog(vertexShader));
+				alert("vertex shader error: " + gl.getShaderInfoLog(vertexShader) + "\n" + vertexShader);
 				this.compiled = true;
 				return null;
 			}
 
 			if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-				alert(gl.getShaderInfoLog(fragmentShader));
+				alert("fragment shader error: " + gl.getShaderInfoLog(fragmentShader) + "\n" + fragmentShader);
 				this.compiled = true;
 				return null;
 			}

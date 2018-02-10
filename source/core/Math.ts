@@ -68,7 +68,7 @@ namespace XEngine {
 		public setTo(x: number, y = x, z?) {
 			this.x = x;
 			this.y = y;
-			if (z) {
+			if (z !== undefined) {
 				this.z = z;
 			}
 		}
