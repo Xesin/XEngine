@@ -39,8 +39,11 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"uniform mat4 mvpMatrix;",
+
 				"void mainPass() {",
-					"vertPos = vertPos * mvpMatrix;",
+					"mat4 matrix = pMatrix * mvpMatrix;",
+					"vertPos = matrix * vertPos;",
+					// "vertPos = pMatrix * vertPos;",
 				"}",
 			];
 
@@ -48,9 +51,11 @@ namespace XEngine {
 				"#version 300 es",
 				"precision mediump float;",
 				"#XBaseParams",
+				"uniform sampler2D texSampler;",
 
 				"void main(void) {",
-					"fragColor = vec4(1.0, 1.0, 0.0, 1.0);",
+					"vec4 texCol = texture(texSampler, uv);",
+					"fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
 				"}",
 			];
 		}

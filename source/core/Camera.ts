@@ -52,20 +52,20 @@ namespace XEngine {
 			}
 			let right = this.game.width + this.position.x;
 			let up = this.game.height + this.position.y;
-			const fieldOfView = 90 * Math.PI / 180;   // in radians
+			const fieldOfView = 45 * Math.PI / 180;   // in radians
 			const aspect = this.game.width / this.game.height;
 			const zNear = 0.1;
 			const zFar = 1000.0;
 
 			// note: glmatrix.js always has the first argument
 			// as the destination to receive the result.
-			// mat4.perspective(this.pMatrix,
-			// 				fieldOfView,
-			// 				aspect,
-			// 				zNear,
-			// 				zFar);
-			mat4.ortho(this.pMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
+			mat4.perspective(this.pMatrix,
+							fieldOfView,
+							aspect,
+							zNear,
+							zFar);
 			// mat4.identity(this.pMatrix);
+			// mat4.ortho(this.pMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
 		}
 	}
 }

@@ -24,29 +24,23 @@ Start.prototype = {
 	
 	preload: function () {
 		//this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
+		this.game.load.image('unicorn', 'img/angry_unicorn.png');
 	},
 	
 	start: function () {
-		text = this.game.add.mesh(0,0,-0.01);
-
-		var vertices = [
-			50.0,  50.0, 0.0,
-			0.0,  50.0, 0.0,
-			50.0, 0.0, 0.0,
-			0.0, 0.0, 0.0
-		]
-
-		var indices = [
-			0, 2, 3,
-			0, 3, 1,
-		];
+		this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);
+		text = this.text;
+		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		
-		text.setVertices(vertices, indices);
-		//mat4.ortho(this.game.camera.pMatrix, 45, 1280/720, 0.1, 1000);
 	},
 	
 	update : function (deltaTime) {
 		//text.rotation += 20 * deltaTime;
+		this.text.rotation3D.x += 45 * deltaTime;
+		this.text.rotation3D.y += 180 * deltaTime;
+		this.text.rotation3D.z += 90 * deltaTime;
+
+		this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
 	},
 	
 	fin: function () {

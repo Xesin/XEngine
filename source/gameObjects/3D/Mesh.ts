@@ -29,12 +29,13 @@ namespace XEngine {
 			this.indexDataBuffer.clear();
 			this.myVertexBuffer.bind();
 			this.indexBuffer.bind();
-			this.vertDataBuffer = new XEngine.DataBuffer32(4 * 16);
-			this.indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
+			this.vertDataBuffer = new XEngine.DataBuffer32(4 * vertices.length + 4 * uv.length);
+			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);
 
 			this.myVertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, this.game.context.FLOAT, false, 0, 0);
+			this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, this.game.context.FLOAT, false, 20, 0);
+			this.myVertexBuffer.addAttribute(this.shader.vertUvAtt, 2, this.game.context.FLOAT, false, 20, 12);
 			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
 				this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
 
@@ -48,17 +49,20 @@ namespace XEngine {
 			// let alpha = this.getTotalAlpha();
 
 			let index = this.vertDataBuffer.allocate(vertices.length);
+			let uvIndex = 0;
 			// tslint:disable-next-line:forin
 			for (let i = 0; i < vertices.length; i++) {
+				floatBuffer[index++] = vertices[i++];
+				floatBuffer[index++] = vertices[i++];
 				floatBuffer[index++] = vertices[i];
-				// let x = 0;
-				// let y = 0;
-				// if (uv !== undefined) {
-				// 	x = uv[vertex].x;
-				// 	y = uv[vertex].y;
-				// }
-				// floatBuffer[index++] = x;
-				// floatBuffer[index++] = y;
+				let x = 0;
+				let y = 0;
+				if (uv !== undefined) {
+					x = uv[uvIndex++];
+					y = uv[uvIndex++];
+				}
+				floatBuffer[index++] = x;
+				floatBuffer[index++] = y;
 				// if (vertColors !== undefined) {
 				// 	uintBuffer[index++] = vertColors[vertex];
 				// } else {
@@ -78,23 +82,17 @@ namespace XEngine {
 
 		public _renderToCanvas(gl) {
 				let vertexDataBuffer = this.vertDataBuffer;
-				// mat4.identity(this.mvMatrix);
-				// mat4.translate(this.mvMatrix,     // destination matrix
-				// 	this.mvMatrix,     // matrix to translate
-				// 	[-0.0, 0.0, -6.0]);  // amount to translate
-				// this.shader.bind(this.gl);
-				// let shader = this.shader as SimpleMaterial;
-				// this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-				// this.shader.uniforms.mvMatrix.value = this.mvMatrix;
-				// this.shader.updateUniforms(this.gl);
-				// this.vertexBuffer.bind();
-				// // this.indexBuffer.bind();
+				this.getWorldMatrix(this.mvMatrix);
+				this.shader.bind(gl);
+				let shader = this.shader as SimpleMaterial;
+				this.myVertexBuffer.bind();
+				this.indexBuffer.bind();
 
-				// // gl.drawElements(gl.TRIANGLES, vertexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
-				// const offset = 0;
-				// const vertexCount = 4;
-				// gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-				this.drawScene(this.gl, this.buffer);
+				shader.uniforms.mvpMatrix.value = this.mvMatrix;
+				shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+				shader.updateUniforms(gl);
+
+				gl.drawElements(gl.TRIANGLES, this.indexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
 		}
 
 		public reset(x: number, y: number) {
@@ -106,39 +104,6 @@ namespace XEngine {
 			}
 			if (this.body) {
 				this.body.velocity = new XEngine.Vector(0, 0);
-			}
-		}
-
-		private drawScene(gl, buffers) {
-			gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-			gl.clearDepth(1.0);                 // Clear everything
-			gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-			gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-
-			// Clear the canvas before we start drawing on it.
-
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-			// this.getWorldMatrix(this.mvMatrix);
-			mat4.identity(this.mvMatrix);
-
-			this.getWorldMatrix(this.mvMatrix);
-
-			// mat4.translate(this.mvMatrix, this.mvMatrix, [0, 1, 0]);
-
-			// Tell WebGL how to pull out the positions from the position
-			// buffer into the vertexPosition attribute.
-			{
-				this.shader.bind(gl);
-				let shader = this.shader as SimpleMaterial;
-				this.myVertexBuffer.bind();
-				this.indexBuffer.bind();
-
-				shader.uniforms.mvpMatrix.value = this.mvMatrix;
-				shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-				shader.updateUniforms(gl);
-				// gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-				gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 			}
 		}
 	}

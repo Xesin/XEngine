@@ -65,12 +65,10 @@ namespace XEngine {
 			this.zOffset = 0;
 		}
 
-		public setTo(x: number, y = x, z?) {
+		public setTo(x: number, y = x, z = x) {
 			this.x = x;
 			this.y = y;
-			if (z !== undefined) {
-				this.z = z;
-			}
+			this.z = z;
 		}
 
 		public sub(vector: Vector): Vector {

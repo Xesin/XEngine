@@ -47,6 +47,11 @@ namespace XEngine {
 		}
 
 		public render() {
+			this.context.clearDepth(1.0);
+			this.context.enable(this.context.DEPTH_TEST);
+			this.context.depthFunc(this.context.LEQUAL);
+
+			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 			this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
 			this.renderLoop(this.game.renderQueue);
@@ -81,6 +86,7 @@ namespace XEngine {
 		public renderLoop(arrayObjects) {
 			let _this = this;
 			let arrayLenght = arrayObjects.length;
+			
 			for (let i = 0; i < arrayLenght; i++) {
 				let object = arrayObjects[i];
 				if (!object.render) {continue; }

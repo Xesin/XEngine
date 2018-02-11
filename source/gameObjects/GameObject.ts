@@ -9,6 +9,7 @@ namespace XEngine {
 		public scale: Vector;
 		public anchor: Vector;
 		public rotation: number;
+		public rotation3D: Vector;
 		public position: Vector;
 		public width: number;
 		public height: number;
@@ -66,6 +67,8 @@ namespace XEngine {
 			this.fixedToCamera = false;
 			this.isometric = false;
 			this.isInputDown = false;
+
+			this.rotation3D = new XEngine.Vector(0, 0, 0);
 
 			this.width = 0;
 			this.height = 0;
@@ -151,16 +154,16 @@ namespace XEngine {
 		public getWorldMatrix (childMatrix: Array<number>) {
 			this.parent.getWorldMatrix(childMatrix);
 			let translation = [this.position.x, this.position.y, this.position.z];
-			let posX = 0; // Math.round(-(this.width * this.anchor.x));
-			let posY = 0; // Math.round(-(this.height * this.anchor.y));
 			if (this.fixedToCamera) {
 				translation[0] += this.game.camera.position.x;
 				translation[1] += this.game.camera.position.y;
+				translation[2] += this.game.camera.position.z;
 			}
 			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateZ(childMatrix, childMatrix, this.rotation * XEngine.Mathf.TO_RADIANS);
-			mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, 1.0]);
-			mat4.translate(childMatrix, childMatrix, [posX, posY, 0.0]);
+			mat4.rotateX(childMatrix, childMatrix, this.rotation3D.x * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateY(childMatrix, childMatrix, this.rotation3D.y * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateZ(childMatrix, childMatrix, this.rotation3D.z * XEngine.Mathf.TO_RADIANS);
+			mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, this.scale.z]);
 			return childMatrix;
 		}
 

@@ -16,7 +16,7 @@ namespace XEngine {
 			this.bitmapData = new Array();
 		}
 
-		public image(imageName: string) {
+		public image(imageName: string): Texture2D {
 			if (this.images[imageName] === undefined) {
 				console.error("No hay imagen para el nombre: " + imageName);
 			} else {
