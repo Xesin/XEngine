@@ -21,10 +21,10 @@ namespace XEngine {
 		public updateResource(bufferData: Uint16Array, offset: number) {
 			let gl = this.gl;
 
-			// if (IndexBuffer.CurrentIndexBuffer !== this) {
+			if (IndexBuffer.CurrentIndexBuffer !== this) {
 				IndexBuffer.CurrentIndexBuffer = this;
 				gl.bindBuffer(this.bufferType, this.buffer);
-			// }
+			}
 			gl.bufferSubData(this.bufferType, offset, bufferData);
 		}
 
@@ -32,10 +32,10 @@ namespace XEngine {
 			let gl = this.gl;
 			let buffer = this.buffer;
 
-			// if (IndexBuffer.CurrentIndexBuffer !== this){
+			if (IndexBuffer.CurrentIndexBuffer !== this){
 				IndexBuffer.CurrentIndexBuffer = this;
 				gl.bindBuffer(this.bufferType, buffer);
-			// }
+			}
 		}
 	}
 }

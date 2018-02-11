@@ -50,7 +50,7 @@ namespace XEngine {
 
 			public bind(shader) {
 				if (!shader) {
-					this.shader.bind(this.gl);
+					this.shader.bind(this.renderer);
 					this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 					this.shader.updateUniforms(this.gl);
 				} else {

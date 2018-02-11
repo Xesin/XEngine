@@ -28,7 +28,9 @@ Start.prototype = {
 	},
 	
 	start: function () {
-		this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);
+		for(var i = 0; i < 200; i++) {
+			this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -500.0, 100), true, true);	
+		}
 		text = this.text;
 		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		

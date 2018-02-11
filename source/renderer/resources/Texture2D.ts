@@ -45,6 +45,8 @@ namespace XEngine {
 
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
+			gl.bindTexture(gl.TEXTURE_2D, null);
+
 			this.ready = true;
 		}
 	}

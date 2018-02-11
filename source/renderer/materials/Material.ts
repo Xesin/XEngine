@@ -18,7 +18,7 @@ namespace XEngine {
 		public compiled: boolean;
 		public shader: Material;
 
-		private shaderProgram: WebGLProgram;
+		public shaderProgram: WebGLProgram;
 		private vertexCode: Array<string>;
 		private fragmentCode: Array<string>;
 
@@ -110,14 +110,9 @@ namespace XEngine {
 			return gl.getAttribLocation(this.shaderProgram, attr);
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
-			if (!this.compiled) { this.initializeShader(gl); }
-			gl.useProgram(this.shaderProgram);
-		}
-
-		public bind(gl) {
-			if (!this.compiled) { this.initializeShader(gl); }
-			gl.useProgram(this.shaderProgram);
+		public bind(renderer: Renderer) {
+			if (!this.compiled) { this.initializeShader(renderer.context); }
+			renderer.bindMaterial(this);
 		}
 
 		public _setUniform(uniform, gl) {

@@ -22,14 +22,10 @@ namespace XEngine {
 			this.texture = texture;
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
-			XEngine.Material.prototype._beginRender.call(this, gl);
+		public bind(renderer: Renderer) {
+			XEngine.Material.prototype.bind.call(this, renderer);
 			if (this.texture) {
-				// Tell WebGL we want to affect texture unit 0
-				gl.activeTexture(gl.TEXTURE0);
-
-				// Bind the texture to texture unit 0
-				gl.bindTexture(gl.TEXTURE_2D, this.texture);
+				renderer.bindTexture(this.texture, renderer.context.TEXTURE0);
 			}
 		}
 	}

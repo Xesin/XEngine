@@ -34,10 +34,10 @@ namespace XEngine {
 		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
 			let gl = this.gl;
 
-			// if (VertexBuffer.CurrentVertexBuffer !== this) {
+			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
 				gl.bindBuffer(this.bufferType, this.buffer);
-			// }
+			}
 			gl.bufferSubData(this.bufferType, offset, bufferData);
 		}
 
@@ -47,7 +47,7 @@ namespace XEngine {
 			let attributes = this.attributes;
 			let attributesLength = attributes.length;
 
-			// if (VertexBuffer.CurrentVertexBuffer !== this) {
+			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
 				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
@@ -66,7 +66,7 @@ namespace XEngine {
 						);
 					}
 				}
-			// }
+			}
 		}
 	}
 }

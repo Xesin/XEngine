@@ -40,7 +40,6 @@ namespace XEngine {
 			this.updateText();
 			super._beginRender(context);
 			(this.shader as SpriteMat)._setTexture(this.texture);
-			this.shader._beginRender(context);
 		}
 
 		public _renderToCanvas(context: WebGLRenderingContext) {

@@ -183,9 +183,6 @@ namespace XEngine {
 		}
 
 		public _beginRender(context: WebGLRenderingContext) {
-			if (this.shader) {
-				this.shader._beginRender(context);
-			}
 			this.game.renderer.setRenderer(null, null);
 		}
 
@@ -222,7 +219,6 @@ namespace XEngine {
 				let cache_image = this.game.cache.image(this.sprite);
 				(this.shader as SpriteMat)._setTexture(cache_image._texture);
 			}
-			this.shader._beginRender(gl);
 
 			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 			this.shader.updateUniforms(gl);
@@ -341,7 +337,7 @@ namespace XEngine {
 
 		private _setBuffers() {
 			let context = this.gl;
-			this.shader.bind(context);
+			this.shader.bind(this.game.renderer);
 			// this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, context.FLOAT, false, 0, 0);
 			// this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 28, 12);
 			// this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 28, 20);

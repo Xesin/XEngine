@@ -12,6 +12,8 @@ namespace XEngine {
 		private game: Game;
 		private renderer: any;
 		private sprite: string;
+		private currentTexture: WebGLTexture;
+		private currentMaterial: Material;
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
@@ -73,6 +75,24 @@ namespace XEngine {
 			}
 			this.renderer = renderer;
 			this.sprite = sprite;
+		}
+
+		public bindTexture(texture: WebGLTexture, position: number) {
+			if (this.currentTexture !== texture) {
+				this.currentTexture = texture;
+
+				this.context.activeTexture(position);
+
+				// Bind the texture to texture unit 0
+				this.context.bindTexture(this.context.TEXTURE_2D, texture);
+			}
+		}
+
+		public bindMaterial(material: Material) {
+			if (this.currentMaterial !== material) {
+				this.currentMaterial = material;
+				this.context.useProgram(material.shaderProgram);
+			}
 		}
 
 		public setClearColor(r, g, b, a) {

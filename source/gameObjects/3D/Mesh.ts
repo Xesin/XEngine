@@ -2,12 +2,16 @@ namespace XEngine {
 
 	export class Mesh extends GameObject {
 
+		private static currentVertices = new Array<number>();
+
 		protected indexDataBuffer = new XEngine.DataBuffer16(2 * 3);
 		protected vertDataBuffer = new XEngine.DataBuffer32(28 * 4);
 		protected indexBuffer: IndexBuffer;
 		protected myVertexBuffer: VertexBuffer;
 		private buffer: any;
 		private programInfo: any;
+		private vertices: Array<number>;
+
 
 		constructor(game: Game, posX: number, posY: number, posZ: number) {
 			super(game, posX, posY, posZ);
@@ -20,11 +24,8 @@ namespace XEngine {
 			this.shader.initializeShader(this.game.context);
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
-			return;
-		}
-
 		public setVertices(vertices: Array<number>, indices: Array<number>, uv?: Array<number>, vertColors?: Array<number>) {
+			this.vertices = vertices;
 			this.vertDataBuffer.clear();
 			this.indexDataBuffer.clear();
 			this.myVertexBuffer.bind();
@@ -83,11 +84,14 @@ namespace XEngine {
 		public _renderToCanvas(gl) {
 				let vertexDataBuffer = this.vertDataBuffer;
 				this.getWorldMatrix(this.mvMatrix);
-				this.shader.bind(gl);
 				let shader = this.shader as SimpleMaterial;
-				this.myVertexBuffer.bind();
-				this.indexBuffer.bind();
+				shader.bind(this.game.renderer);
 
+				if (!Mesh.currentVertices.equals(this.vertices)) {
+					Mesh.currentVertices = this.vertices;
+					this.myVertexBuffer.bind();
+					this.indexBuffer.bind();
+				}
 				shader.uniforms.mvpMatrix.value = this.mvMatrix;
 				shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 				shader.updateUniforms(gl);
