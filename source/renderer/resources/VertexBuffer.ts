@@ -34,10 +34,11 @@ namespace XEngine {
 		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
 			let gl = this.gl;
 
-			if (VertexBuffer.CurrentVertexBuffer !== this) {
-				VertexBuffer.CurrentVertexBuffer = this;
-				gl.bindBuffer(this.bufferType, this.buffer);
-			}
+			// if (VertexBuffer.CurrentVertexBuffer !== this) {
+			// 	VertexBuffer.CurrentVertexBuffer = this;
+			// 	gl.bindBuffer(this.bufferType, this.buffer);
+			// }
+			gl.bindBuffer(this.bufferType, this.buffer);
 			gl.bufferSubData(this.bufferType, offset, bufferData);
 		}
 

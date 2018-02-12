@@ -150,13 +150,13 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property)) {
+				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].prevVal !== this.uniforms[property].value) {
 					this._setUniform(this.uniforms[property], gl);
 					this.uniforms[property].prevVal = this.uniforms[property].value;
 				}
 			}
 			for (let property in this.baseUniforms) {
-				if (this.baseUniforms.hasOwnProperty(property)) {
+				if (this.baseUniforms.hasOwnProperty(property) && this.baseUniforms[property].prevVal !== this.baseUniforms[property].value) {
 					this._setUniform(this.baseUniforms[property], gl);
 					this.baseUniforms[property].prevVal = this.baseUniforms[property].value;
 				}

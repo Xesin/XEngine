@@ -56,6 +56,7 @@ namespace XEngine {
 				"void main(void) {",
 					"vec4 texCol = texture(texSampler, uv);",
 					"fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
+					// "fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
 				"}",
 			];
 		}

@@ -38,7 +38,8 @@ namespace XEngine {
 				this.context.depthFunc(this.context.LEQUAL);                                // Objetos cercanos opacan objetos lejanos
 				this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 				// this.context.enable(this.context.BLEND);
-				// this.context.enable(this.context.CULL_FACE);
+				this.context.enable(this.context.CULL_FACE);
+				this.context.cullFace(this.context.BACK);
 				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 				this.resourceManager = this.game.resourceManager;
 				// this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
@@ -106,7 +107,7 @@ namespace XEngine {
 		public renderLoop(arrayObjects) {
 			let _this = this;
 			let arrayLenght = arrayObjects.length;
-			
+
 			for (let i = 0; i < arrayLenght; i++) {
 				let object = arrayObjects[i];
 				if (!object.render) {continue; }

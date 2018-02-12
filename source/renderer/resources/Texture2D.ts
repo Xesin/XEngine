@@ -32,7 +32,7 @@ namespace XEngine {
 			const srcType = gl.UNSIGNED_BYTE;
 
 			gl.bindTexture(gl.TEXTURE_2D, this._texture);
-
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			if (this.wrapMode === WRAP_MODE.WRAP) {
 				gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
