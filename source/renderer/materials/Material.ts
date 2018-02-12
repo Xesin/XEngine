@@ -1,10 +1,7 @@
 /// <reference path="ShaderCompiler.ts"/>
 namespace XEngine {
 	export let ShaderUniforms = {
-		pMatrix: {
-			value: null,
-			type: Uniforms.MAT4X4,
-		},
+
 	};
 
 	export class Material {
@@ -15,6 +12,7 @@ namespace XEngine {
 		public vertColAtt: number;
 		public vertUvAtt: number;
 		public vertAlphaAtt: number;
+		public normalPosAttr: number;
 		public compiled: boolean;
 		public shader: Material;
 
@@ -26,6 +24,18 @@ namespace XEngine {
 		constructor(vertexCode: Array<string>, fragmentCode: Array<string>, uniforms = {}) {
 			this.uniforms = uniforms;
 			this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
+			this.baseUniforms.pMatrix = {
+				value: mat4.create(),
+				type: Uniforms.MAT4X4,
+			};
+			this.baseUniforms.mvMatrix = {
+				value: mat4.create(),
+				type: Uniforms.MAT4X4,
+			};
+			this.baseUniforms.normalMatrix = {
+				value: mat4.create(),
+				type: Uniforms.MAT4X4,
+			};
 			this.vertColAtt = null;
 			this.vertColAtt = null;
 			this.shaderProgram = null;
@@ -92,15 +102,20 @@ namespace XEngine {
 			this.vertColAtt = gl.getAttribLocation(this.shaderProgram, "aVertexColor");
 			this.vertUvAtt = gl.getAttribLocation(this.shaderProgram, "vUv");
 			this.vertAlphaAtt = gl.getAttribLocation(this.shaderProgram, "in_alpha");
+			this.normalPosAttr = gl.getAttribLocation(this.shaderProgram, "aNormal");
 
 			for (let property in this.uniforms) {
 				if (this.uniforms.hasOwnProperty(property)) {
+					let uniformValue = this.uniforms[property].value;
+					this.uniforms[property].value = uniformValue;
 					this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 				}
 			}
 
 			for (let property in this.baseUniforms) {
 				if (this.baseUniforms.hasOwnProperty(property)) {
+					let uniformValue = this.baseUniforms[property].value;
+					this.baseUniforms[property].value = uniformValue;
 					this.baseUniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 				}
 			}
@@ -150,15 +165,15 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].prevVal !== this.uniforms[property].value) {
+				if (this.uniforms.hasOwnProperty(property)) {
 					this._setUniform(this.uniforms[property], gl);
-					this.uniforms[property].prevVal = this.uniforms[property].value;
+					this.uniforms[property].dirty = false;
 				}
 			}
 			for (let property in this.baseUniforms) {
-				if (this.baseUniforms.hasOwnProperty(property) && this.baseUniforms[property].prevVal !== this.baseUniforms[property].value) {
+				if (this.baseUniforms.hasOwnProperty(property)) {
 					this._setUniform(this.baseUniforms[property], gl);
-					this.baseUniforms[property].prevVal = this.baseUniforms[property].value;
+					this.baseUniforms[property].dirty = false;
 				}
 			}
 		}

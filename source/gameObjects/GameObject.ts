@@ -6,11 +6,10 @@ namespace XEngine {
 		public isPendingDestroy: boolean;
 		public alive: boolean;
 		public alpha: number;
-		public scale: Vector;
+		public transform: Transform;
 		public anchor: Vector;
 		public rotation: number;
-		public rotation3D: Vector;
-		public position: Vector;
+
 		public width: number;
 		public height: number;
 		public isometric: boolean;
@@ -41,7 +40,7 @@ namespace XEngine {
 		protected gl: WebGLRenderingContext;
 
 		protected indexBuffer: IndexBuffer;
-		protected myVertexBuffer: VertexBuffer;
+		protected vertexBuffer: VertexBuffer;
 
 		private _prevWidth: number;
 		private _prevHeight: number;
@@ -53,10 +52,10 @@ namespace XEngine {
 			this.isPendingDestroy = false;
 			this.alive = true;
 			this.alpha = 1.0;
-			this.scale = new XEngine.Vector(1, 1, 1);
+			this.transform = new Transform();
 			this.anchor = new XEngine.Vector(0, 0);
 			this.rotation = 0;
-			this.position = new XEngine.Vector(posX, posY, posZ);
+			this.transform.position.setTo(posX, posY, posZ);
 			this.onClick = new XEngine.Signal();
 			this.onInputDown = new XEngine.Signal();
 			this.onInputUp = new XEngine.Signal();
@@ -67,8 +66,6 @@ namespace XEngine {
 			this.fixedToCamera = false;
 			this.isometric = false;
 			this.isInputDown = false;
-
-			this.rotation3D = new XEngine.Vector(0, 0, 0);
 
 			this.width = 0;
 			this.height = 0;
@@ -89,7 +86,7 @@ namespace XEngine {
 			this.gl = this.game.context;
 			let gl = this.gl;
 			let indexDataBuffer = new XEngine.DataBuffer16(2 * 6);
-			this.myVertexBuffer = this.game.renderer.resourceManager.createBuffer(
+			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				gl.ARRAY_BUFFER, this._vertDataBuffer.getByteCapacity(), gl.STREAM_DRAW) as VertexBuffer;
 			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
 				gl.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), gl.STATIC_DRAW) as IndexBuffer;
@@ -146,31 +143,31 @@ namespace XEngine {
 		}
 
 		public restore (posX: number, posY: number) {
-			this.position.x = posX;
-			this.position.y = posY;
+			this.transform.position.x = posX;
+			this.transform.position.y = posY;
 			this.alive = true;
 		}
 
 		public getWorldMatrix (childMatrix: Array<number>) {
 			this.parent.getWorldMatrix(childMatrix);
-			let translation = [this.position.x, this.position.y, this.position.z];
+			let translation = [this.transform.position.x, this.transform.position.y, this.transform.position.z];
 			if (this.fixedToCamera) {
 				translation[0] += this.game.camera.position.x;
 				translation[1] += this.game.camera.position.y;
 				translation[2] += this.game.camera.position.z;
 			}
 			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateX(childMatrix, childMatrix, this.rotation3D.x * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateY(childMatrix, childMatrix, this.rotation3D.y * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateZ(childMatrix, childMatrix, this.rotation3D.z * XEngine.Mathf.TO_RADIANS);
-			mat4.scale(childMatrix, childMatrix, [this.scale.x, this.scale.y, this.scale.z]);
+			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
+			mat4.scale(childMatrix, childMatrix, [this.transform.scale.x, this.transform.scale.y, this.transform.scale.z]);
 			return childMatrix;
 		}
 
 		public getWorldPos () {
 			let parentPos = this.parent.getWorldPos();
-			let x = this.position.x + parentPos.x;
-			let y = this.position.y + parentPos.y;
+			let x = this.transform.position.x + parentPos.x;
+			let y = this.transform.position.y + parentPos.y;
 			return new XEngine.Vector(x, y);
 		}
 
@@ -188,19 +185,21 @@ namespace XEngine {
 
 		public _renderToCanvas (context: WebGLRenderingContext) {
 			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+			this.getWorldMatrix(this.mvMatrix);
+			this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
 			this.shader.updateUniforms(context);
 
 			if (this._prevHeight !== this.height ||
 				this._prevWidth !== this.width ||
-				this._prevPos.x !== this.position.x ||
-				this._prevPos.y !== this.position.y) {
+				this._prevPos.x !== this.transform.position.x ||
+				this._prevPos.y !== this.transform.position.y) {
 				this._setVertices(this.width, this.height, this.color, this._uv);
 				this._prevHeight = this.height;
 				this._prevWidth = this.width;
-				this._prevPos.x = this.position.x;
-				this._prevPos.y = this.position.y;
+				this._prevPos.x = this.transform.position.x;
+				this._prevPos.y = this.transform.position.y;
 			}
-			this.myVertexBuffer.bind();
+			this.vertexBuffer.bind();
 			this.indexBuffer.bind();
 
 			context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
@@ -225,7 +224,7 @@ namespace XEngine {
 
 			this._setVertices(this.width, this.height, this.color, this._uv);
 
-			this.myVertexBuffer.bind();
+			this.vertexBuffer.bind();
 			this.indexBuffer.bind();
 
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
@@ -248,8 +247,8 @@ namespace XEngine {
 		}
 
 		public getBounds (): any {
-			let width = this.width * this.scale.x;
-			let height = this.height * this.scale.y;
+			let width = this.width * this.transform.scale.x;
+			let height = this.height * this.transform.scale.y;
 			let worldPos = this.getWorldPos();
 			let widthAnchor = width * this.anchor.x;
 			let heightAnchor = height * this.anchor.y;
@@ -332,16 +331,16 @@ namespace XEngine {
 			uintBuffer[index++] = color;
 			floatBuffer[index++] = alpha;
 
-			this.myVertexBuffer.updateResource(floatBuffer, 0);
+			this.vertexBuffer.updateResource(floatBuffer, 0);
 		}
 
 		private _setBuffers() {
 			let context = this.gl;
 			this.shader.bind(this.game.renderer);
-			// this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, context.FLOAT, false, 0, 0);
-			// this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 28, 12);
-			// this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 28, 20);
-			// this.vertexBuffer.addAttribute(this.shader.vertAlphaAtt, 1, context.FLOAT, false, 28, 24);
+			this.vertexBuffer.addAttribute(this.shader.vertPosAtt, 2, context.FLOAT, false, 0, 0);
+			this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 24, 8);
+			this.vertexBuffer.addAttribute(this.shader.vertColAtt, 3, context.UNSIGNED_BYTE, true, 24, 16);
+			this.vertexBuffer.addAttribute(this.shader.vertAlphaAtt, 1, context.FLOAT, false, 24, 20);
 		}
 	}
 }

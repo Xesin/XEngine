@@ -53,8 +53,8 @@ namespace XEngine {
 		}
 
 		public getBounds(): any {
-			let width = this.width * this.scale.x;
-			let height = this.height * this.scale.y;
+			let width = this.width * this.transform.scale.x;
+			let height = this.height * this.transform.scale.y;
 			return {
 				width: width,
 				height: height,

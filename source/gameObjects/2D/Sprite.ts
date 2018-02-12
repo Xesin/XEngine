@@ -40,8 +40,8 @@ namespace XEngine {
 				this.tilled = true;
 			}
 
-			this.position.setTo(posX, posY);
-			this.shader = this.game.renderer.spriteBatch.shader;
+			this.transform.position.setTo(posX, posY);
+			this.shader = XEngine.SimpleMaterial.shader;
 			this.animation = new AnimationManager(game, this);
 		}
 
@@ -105,12 +105,15 @@ namespace XEngine {
 				];
 
 			}
-			this.game.renderer.spriteBatch.addSprite(this, this.shader);
+			this._setVertices(this.width, this.height, this.color, this._uv);
+			gl.bindTexture(this.gl.TEXTURE_2D, this.game.cache.image(this.sprite)._texture);
+			super._renderToCanvas(gl);
+			// this.game.renderer.spriteBatch.addSprite(this, this.shader);
 		}
 
 		public reset(x: number, y: number) {
-			this.position.x = x;
-			this.position.y = y;
+			this.transform.position.x = x;
+			this.transform.position.y = y;
 			this.alive = true;
 			if (this.start !== undefined) {
 				this.start();

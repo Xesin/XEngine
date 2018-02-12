@@ -7,8 +7,10 @@ namespace XEngine {
 
 		protected indexDataBuffer: XEngine.DataBuffer16;
 		protected vertDataBuffer: XEngine.DataBuffer32;
+		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
 		protected indexBuffer: IndexBuffer;
 		protected myVertexBuffer: VertexBuffer;
+		protected vertexNormalsBuffer: VertexBuffer;
 		private buffer: any;
 		private programInfo: any;
 		private vertices: Array<number>;
@@ -79,28 +81,54 @@ namespace XEngine {
 			this.indexBuffer.updateResource(uintIndexBuffer, 0);
 		}
 
+		public setNormals(vertexNormals: Array<number>) {
+			this.vertNormalsDataBuffer = new XEngine.DataBuffer32(4 * vertexNormals.length);
+
+			this.vertexNormalsBuffer = this.game.renderer.resourceManager.createBuffer(
+				this.gl.ARRAY_BUFFER, this.vertNormalsDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
+			this.vertexNormalsBuffer.addAttribute(this.shader.normalPosAttr, 3, this.game.context.FLOAT, false, 12, 0);
+
+			let floatBuffer = this.vertNormalsDataBuffer.floatView;
+
+			let index = this.vertNormalsDataBuffer.allocate(vertexNormals.length);
+			for (let i = 0; i < vertexNormals.length; i++) {
+				floatBuffer[index++] = vertexNormals[i++];
+				floatBuffer[index++] = vertexNormals[i++];
+				floatBuffer[index++] = vertexNormals[i];
+			}
+
+			this.vertexNormalsBuffer.updateResource(floatBuffer, 0);
+		}
+
 		public _renderToCanvas(gl: WebGLRenderingContext) {
-				let vertexDataBuffer = this.vertDataBuffer;
-				this.getWorldMatrix(this.mvMatrix);
-				let shader = this.shader as SimpleMaterial;
-				shader.bind(this.game.renderer);
+			let vertexDataBuffer = this.vertDataBuffer;
+			let shader = this.shader as SimpleMaterial;
+			shader.bind(this.game.renderer);
 
-				if (Mesh.renderVerts !== this.vertices) {
-					Mesh.renderVerts = this.vertices;
-					this.myVertexBuffer.bind();
-					this.indexBuffer.bind();
+			if (Mesh.renderVerts !== this.vertices) {
+				Mesh.renderVerts = this.vertices;
+				this.myVertexBuffer.bind();
+				this.indexBuffer.bind();
+				if (this.vertexNormalsBuffer) {
+					this.vertexNormalsBuffer.bind();
 				}
+			}
+			this.getWorldMatrix(this.mvMatrix);
+			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
+			shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+			let tranposed = shader.baseUniforms.normalMatrix.value;
+			mat4.invert(tranposed, shader.baseUniforms.mvMatrix.value);
+			mat4.transpose(tranposed, tranposed);
+			shader.baseUniforms.normalMatrix.value = tranposed;
 
-				shader.uniforms.mvpMatrix.value = this.mvMatrix;
-				shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-				shader.updateUniforms(gl);
+			shader.updateUniforms(gl);
 
-				gl.drawElements(gl.TRIANGLES, this.indexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
+			gl.drawElements(gl.TRIANGLES, this.indexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
 		}
 
 		public reset(x: number, y: number) {
-			this.position.x = x;
-			this.position.y = y;
+			this.transform.position.x = x;
+			this.transform.position.y = y;
 			this.alive = true;
 			if (this.start !== undefined) {
 				this.start();

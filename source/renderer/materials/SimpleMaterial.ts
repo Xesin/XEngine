@@ -6,12 +6,6 @@ namespace XEngine {
 
 		constructor() {
 			super(XEngine.MaterialLib.SimpleMaterial.vertexShader, XEngine.MaterialLib.SimpleMaterial.fragmentShader, null);
-			this.uniforms = {
-				mvpMatrix: {
-					value: mat4.create(),
-					type: Uniforms.MAT4X4,
-				},
-			};
 		}
 
 		// public _setTexture(texture: WebGLTexture) {

@@ -43,6 +43,44 @@ namespace XEngine {
 				-size,  size, -size,
 			];
 
+			let normals = [
+				// Cara delantera
+				0, 0, 1,
+				0, 0, 1,
+				0, 0, 1,
+				0, 0, 1,
+
+				// Cara trasera
+				0, 0, -1,
+				0, 0, -1,
+				0, 0, -1,
+				0, 0, -1,
+
+				// Top face
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+
+				// Bottom face
+				0, -1, 0,
+				0, -1, 0,
+				0, -1, 0,
+				0, -1, 0,
+
+				// Right face
+				1, 0, 0,
+				1, 0, 0,
+				1, 0, 0,
+				1, 0, 0,
+
+				// Left face
+				-1, 0, 0,
+				-1, 0, 0,
+				-1, 0, 0,
+				-1, 0, 0,
+			];
+
 			let UVs = [
 				// Cara enfrente
 				0, 0,
@@ -91,6 +129,7 @@ namespace XEngine {
 			];
 
 			this.setVertices(vertices, indices, UVs);
+			this.setNormals(normals);
 		}
 	}
 }

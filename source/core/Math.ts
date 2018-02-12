@@ -54,8 +54,13 @@ namespace XEngine {
 		public y: number;
 		public z: number;
 
-		public zOffset = 0;
 
+		public zOffset = 0;
+		public dirty = true;
+
+		private _x: number;
+		private _y: number;
+		private _z: number;
 
 		constructor (x: number, y = x, z = 1.0) {
 			this.x = x;
@@ -90,7 +95,7 @@ namespace XEngine {
 		public multiply(vector: Vector): Vector {
 			this.x *= vector.x;
 			this.y *= vector.y;
-			this.z *= vector.z
+			this.z *= vector.z;
 			return this;
 		}
 
@@ -163,4 +168,43 @@ namespace XEngine {
 			return this.x * vec.x + this.y * vec.y;
 		}
 	}
+
+	Object.defineProperties(Vector.prototype, {
+		x: {
+			enumerable: true,
+
+			get: function () {
+				return this._x;
+			},
+
+			set: function (value) {
+				this._x = value;
+				this.dirty = true;
+			},
+		},
+		y: {
+			enumerable: true,
+
+			get: function () {
+				return this._y;
+			},
+
+			set: function (value) {
+				this._y = value;
+				this.dirty = true;
+			},
+		},
+		z: {
+			enumerable: true,
+
+			get: function () {
+				return this._z;
+			},
+
+			set: function (value) {
+				this._z = value;
+				this.dirty = true;
+			},
+		},
+	});
 }

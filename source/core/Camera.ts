@@ -12,9 +12,11 @@ namespace XEngine {
 		public followedObject: GameObject;
 		public axis: AXIS;
 		public pMatrix: Array<number>;
+		public uiMatrix: Array<number>;
 		public follow: boolean;
 		public offsetLeft: number;
 		public offsetUp: number;
+
 		private game: Game;
 
 		constructor(game: Game) {
@@ -24,6 +26,7 @@ namespace XEngine {
 			this.axis = XEngine.AXIS.BOTH;
 
 			this.pMatrix = mat4.create();
+			this.uiMatrix = mat4.create();
 		}
 
 		public followObject(gameObject: GameObject, offsetLeft: number, offsetUp: number) {
@@ -37,16 +40,16 @@ namespace XEngine {
 			if (this.followedObject != null) {
 				if (this.axis === XEngine.AXIS.BOTH || this.axis === XEngine.AXIS.HORIZONTAL) {
 					if (
-						(this.followedObject.position.x - this.offsetLeft) - this.game.width / 2 > 0 &&
-						(this.followedObject.position.x + this.offsetLeft) + this.game.width / 2 < this.game.worldWidth) {
-						this.position.x = this.followedObject.position.x - this.game.width / 2 - this.offsetLeft;
+						(this.followedObject.transform.position.x - this.offsetLeft) - this.game.width / 2 > 0 &&
+						(this.followedObject.transform.position.x + this.offsetLeft) + this.game.width / 2 < this.game.worldWidth) {
+						this.position.x = this.followedObject.transform.position.x - this.game.width / 2 - this.offsetLeft;
 					}
 				}
 				if (this.axis === XEngine.AXIS.BOTH || this.axis === XEngine.AXIS.VERTICAL) {
 					if (
-						(this.followedObject.position.y - this.offsetUp) - this.game.height / 2 > 0 &&
-						(this.followedObject.position.y + this.offsetUp) + this.game.height / 2 < this.game.worldHeight) {
-						this.position.y = this.followedObject.position.y - this.game.height / 2 - this.offsetUp;
+						(this.followedObject.transform.position.y - this.offsetUp) - this.game.height / 2 > 0 &&
+						(this.followedObject.transform.position.y + this.offsetUp) + this.game.height / 2 < this.game.worldHeight) {
+						this.position.y = this.followedObject.transform.position.y - this.game.height / 2 - this.offsetUp;
 					}
 				}
 			}
@@ -64,8 +67,11 @@ namespace XEngine {
 							aspect,
 							zNear,
 							zFar);
+			// this.pMatrix = this.pMatrix;
 			// mat4.identity(this.pMatrix);
-			// mat4.ortho(this.pMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
+			mat4.identity(this.uiMatrix);
+			mat4.ortho(this.uiMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
 		}
+
 	}
 }

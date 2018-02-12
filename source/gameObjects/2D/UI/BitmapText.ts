@@ -20,7 +20,7 @@ namespace XEngine {
 			let cache_image = this.game.cache.image(fontName);
 			this.atlasWidth = cache_image.frameWidth || 10;
 			this.atlasHeight = cache_image.frameHeight || 10;
-			this.position.setTo(posX, posY);
+			this.transform.position.setTo(posX, posY);
 			this.shader = this.game.renderer.spriteBatch.shader;
 			this.setText(text);
 		}
@@ -95,8 +95,8 @@ namespace XEngine {
 		}
 
 		public reset(x: number, y: number) {
-			this.position.x = x;
-			this.position.y = y;
+			this.transform.position.x = x;
+			this.transform.position.y = y;
 			this.alive = true;
 			if (this.start !== undefined) {
 				this.start();

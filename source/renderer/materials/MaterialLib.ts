@@ -11,6 +11,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
+					"vertPos = mvpMatrix * vertPos;",
 				"}",
 			];
 
@@ -28,7 +29,7 @@ namespace XEngine {
 					"texCol.xyz *= vColor;",
 					"fragColor = texCol*alpha;",
 					// "}else{",
-					// "fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
+					"fragColor = vec4(1.0, 1.0, 0.0, 1.0);",
 					// "}",
 				"}",
 			];
@@ -38,12 +39,10 @@ namespace XEngine {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
-				"uniform mat4 mvpMatrix;",
 
 				"void mainPass() {",
-					"mat4 matrix = pMatrix * mvpMatrix;",
-					"vertPos = matrix * vertPos;",
-					// "vertPos = pMatrix * vertPos;",
+					"vertPos = mvpMatrix * vertPos;",
+					"normal = (normalMatrix * vec4(normal, 1.0)).xyz;",
 				"}",
 			];
 
@@ -56,6 +55,7 @@ namespace XEngine {
 				"void main(void) {",
 					"vec4 texCol = texture(texSampler, uv);",
 					"fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
+					"fragColor = vec4(vec3(dot(normal, vec3(0.3, 0.3, 1.0))) * 0.7, 1.0) * fragColor;",
 					// "fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
 				"}",
 			];
@@ -66,6 +66,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
+					"vertPos = mvpMatrix * vertPos;",
 				"}",
 			];
 
@@ -85,6 +86,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
+					"vertPos = mvpMatrix * vertPos;",
 				"}",
 			];
 
