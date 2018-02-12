@@ -32,14 +32,9 @@ namespace XEngine {
 			} else {
 				this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 				this.context.clear(this.context.COLOR_BUFFER_BIT
-					| this.context.DEPTH_BUFFER_BIT);      // Limpiar el buffer de color asi como el de profundidad
+					| this.context.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
 				this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
-
-				this.context.disable(this.context.DEPTH_TEST);                               // Habilitar prueba de profundidad
-				// this.context.depthFunc(this.context.LEQUAL);                                // Objetos cercanos opacan objetos lejanos
 				// this.context.enable(this.context.BLEND);
-				this.context.disable(this.context.CULL_FACE);
-				// this.context.cullFace(this.context.NONE);
 				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 				this.resourceManager = this.game.resourceManager;
 				this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
@@ -51,8 +46,10 @@ namespace XEngine {
 
 		public render() {
 			this.context.clearDepth(1.0);
-			// this.context.enable(this.context.DEPTH_TEST);
-			// this.context.depthFunc(this.context.LEQUAL);
+			this.context.enable(this.context.DEPTH_TEST);
+			this.context.depthFunc(this.context.LEQUAL);
+			this.context.enable(this.context.CULL_FACE);
+			this.context.cullFace(this.context.BACK);
 
 			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);

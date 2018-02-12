@@ -24,11 +24,13 @@ namespace XEngine {
 		}
 
 		public setVertices(vertices: Array<number>, indices: Array<number>, uv?: Array<number>, vertColors?: Array<number>) {
-			if (!vertices.equals(Mesh.currentVertices)) {
-				this.vertices = vertices;
-				Mesh.currentVertices = vertices;
-			} else {
-				this.vertices = Mesh.currentVertices;
+			if (this.indexBuffer) {
+				this.gl.deleteBuffer(this.indexBuffer.buffer);
+				delete this.indexBuffer;
+			}
+			if (this.myVertexBuffer) {
+				this.gl.deleteBuffer(this.myVertexBuffer.buffer);
+				delete this.myVertexBuffer;
 			}
 			this.vertDataBuffer = new XEngine.DataBuffer32(4 * vertices.length + 4 * uv.length);
 			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);

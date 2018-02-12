@@ -36,14 +36,14 @@ Start.prototype = {
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
 		// this.game.add.sprite(0,0, 'unicorn').transform.position.z = -100;	
 		// text = this.text;
-		// this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
+		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		
 	},
 	
 	update : function (deltaTime) {
 		// text.rotation += 20 * deltaTime;
 		// this.text.transform.rotation.x += 45* deltaTime;
-		// this.text.transform.rotation.y += 90* deltaTime;
+		this.text.transform.rotation.y += 90* deltaTime;
 		// this.text.transform.rotation.z += 20* deltaTime;
 
 		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
