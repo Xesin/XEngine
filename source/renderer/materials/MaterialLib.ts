@@ -26,7 +26,7 @@ namespace XEngine {
 					"texCol.rgb *= texCol.w;",
 					// "if(texCol.a >= 0.8){",
 					// "if(texCol.a <= 0.05) discard;",
-					// "texCol.xyz *= vColor;",
+					"texCol.xyz *= vColor;",
 					"fragColor = texCol;",
 					// "}else{",
 					// "}",

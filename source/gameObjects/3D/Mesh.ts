@@ -5,11 +5,6 @@ namespace XEngine {
 		private static currentVertices = new Array<number>();
 		private static renderVerts = new Array<number>();
 
-		protected indexDataBuffer: XEngine.DataBuffer16;
-		protected vertDataBuffer: XEngine.DataBuffer32;
-		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
-		protected indexBuffer: IndexBuffer;
-		protected vertexNormalsBuffer: VertexBuffer;
 		private buffer: any;
 		private programInfo: any;
 		private vertices: Array<number>;
@@ -20,85 +15,6 @@ namespace XEngine {
 			this.game = game;
 			this.shader = XEngine.SimpleMaterial.shader;
 			this.shader.initializeShader(this.game.context);
-		}
-
-		public setVertices(vertices: Array<number>, indices: Array<number>, uv?: Array<number>, vertColors?: Array<number>) {
-			if (this.indexBuffer) {
-				this.gl.deleteBuffer(this.indexBuffer.buffer);
-				delete this.indexBuffer;
-			}
-			if (this.vertexBuffer) {
-				this.gl.deleteBuffer(this.vertexBuffer.buffer);
-				delete this.vertexBuffer;
-			}
-			this.vertDataBuffer = new XEngine.DataBuffer32(4 * vertices.length + 4 * uv.length);
-			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);
-
-			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
-				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.vertexBuffer.addAttribute(this.shader.vertPosAtt, 3, this.game.context.FLOAT, false, 20, 0);
-			this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, this.game.context.FLOAT, false, 20, 12);
-			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
-				this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
-
-			let floatBuffer = this.vertDataBuffer.floatView;
-			// let uintBuffer = this.vertDataBuffer.uintView;
-			let uintIndexBuffer = this.indexDataBuffer.uintView;
-
-			// let pos = new XEngine.Vector(0, 0);
-			// this.getWorldMatrix(this.mvMatrix);
-			// pos = pos.multiplyMatrix(this.mvMatrix);
-			// let alpha = this.getTotalAlpha();
-
-			let index = this.vertDataBuffer.allocate(vertices.length);
-			let uvIndex = 0;
-			// tslint:disable-next-line:forin
-			for (let i = 0; i < vertices.length; i++) {
-				floatBuffer[index++] = vertices[i++];
-				floatBuffer[index++] = vertices[i++];
-				floatBuffer[index++] = vertices[i];
-				let x = 0;
-				let y = 0;
-				if (uv !== undefined) {
-					x = uv[uvIndex++];
-					y = uv[uvIndex++];
-				}
-				floatBuffer[index++] = x;
-				floatBuffer[index++] = y;
-				// if (vertColors !== undefined) {
-				// 	uintBuffer[index++] = vertColors[vertex];
-				// } else {
-				// 	uintBuffer[index++] = 0xffffff;
-				// }
-				// floatBuffer[index++] = alpha;
-			}
-
-			index = this.indexDataBuffer.allocate(indices.length);
-			for (let i = 0; i < indices.length; i++) {
-				uintIndexBuffer[i] = indices[i];
-			}
-
-			this.vertexBuffer.updateResource(floatBuffer, 0);
-			this.indexBuffer.updateResource(uintIndexBuffer, 0);
-		}
-
-		public setNormals(vertexNormals: Array<number>) {
-			this.vertNormalsDataBuffer = new XEngine.DataBuffer32(4 * vertexNormals.length);
-
-			this.vertexNormalsBuffer = this.game.renderer.resourceManager.createBuffer(
-				this.gl.ARRAY_BUFFER, this.vertNormalsDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.vertexNormalsBuffer.addAttribute(this.shader.normalPosAttr, 3, this.game.context.FLOAT, false, 12, 0);
-
-			let floatBuffer = this.vertNormalsDataBuffer.floatView;
-
-			let index = this.vertNormalsDataBuffer.allocate(vertexNormals.length);
-			for (let i = 0; i < vertexNormals.length; i++) {
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i];
-			}
-
-			this.vertexNormalsBuffer.updateResource(floatBuffer, 0);
 		}
 
 		public _renderToCanvas(gl: WebGLRenderingContext) {
