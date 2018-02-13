@@ -114,7 +114,7 @@ namespace XEngine {
 
 			this.getWorldMatrix(this.mvMatrix);
 			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
-			shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
+			shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 			let tranposed = shader.baseUniforms.normalMatrix.value;
 			mat4.invert(tranposed, shader.baseUniforms.mvMatrix.value);
 			mat4.transpose(tranposed, tranposed);
