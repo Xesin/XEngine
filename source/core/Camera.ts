@@ -68,9 +68,9 @@ namespace XEngine {
 							zNear,
 							zFar);
 			// this.pMatrix = this.pMatrix;
-			// mat4.identity(this.pMatrix);
-			mat4.identity(this.uiMatrix);
-			mat4.ortho(this.uiMatrix, this.position.x , right, up, this.position.y, 0.1, 100);
+			mat4.identity(this.pMatrix);
+
+			mat4.ortho(this.uiMatrix, this.position.x , right, up, this.position.y, 0, 100);
 		}
 
 	}

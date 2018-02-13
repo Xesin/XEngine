@@ -9,7 +9,6 @@ namespace XEngine {
 		protected vertDataBuffer: XEngine.DataBuffer32;
 		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
 		protected indexBuffer: IndexBuffer;
-		protected myVertexBuffer: VertexBuffer;
 		protected vertexNormalsBuffer: VertexBuffer;
 		private buffer: any;
 		private programInfo: any;
@@ -28,17 +27,17 @@ namespace XEngine {
 				this.gl.deleteBuffer(this.indexBuffer.buffer);
 				delete this.indexBuffer;
 			}
-			if (this.myVertexBuffer) {
-				this.gl.deleteBuffer(this.myVertexBuffer.buffer);
-				delete this.myVertexBuffer;
+			if (this.vertexBuffer) {
+				this.gl.deleteBuffer(this.vertexBuffer.buffer);
+				delete this.vertexBuffer;
 			}
 			this.vertDataBuffer = new XEngine.DataBuffer32(4 * vertices.length + 4 * uv.length);
 			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);
 
-			this.myVertexBuffer = this.game.renderer.resourceManager.createBuffer(
+			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.myVertexBuffer.addAttribute(this.shader.vertPosAtt, 3, this.game.context.FLOAT, false, 20, 0);
-			this.myVertexBuffer.addAttribute(this.shader.vertUvAtt, 2, this.game.context.FLOAT, false, 20, 12);
+			this.vertexBuffer.addAttribute(this.shader.vertPosAtt, 3, this.game.context.FLOAT, false, 20, 0);
+			this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, this.game.context.FLOAT, false, 20, 12);
 			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
 				this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
 
@@ -79,7 +78,7 @@ namespace XEngine {
 				uintIndexBuffer[i] = indices[i];
 			}
 
-			this.myVertexBuffer.updateResource(floatBuffer, 0);
+			this.vertexBuffer.updateResource(floatBuffer, 0);
 			this.indexBuffer.updateResource(uintIndexBuffer, 0);
 		}
 
@@ -107,17 +106,15 @@ namespace XEngine {
 			let shader = this.shader as SimpleMaterial;
 			shader.bind(this.game.renderer);
 
-			if (Mesh.renderVerts !== this.vertices) {
-				Mesh.renderVerts = this.vertices;
-				this.myVertexBuffer.bind();
-				this.indexBuffer.bind();
-				if (this.vertexNormalsBuffer) {
-					this.vertexNormalsBuffer.bind();
-				}
+			this.vertexBuffer.bind();
+			this.indexBuffer.bind();
+			if (this.vertexNormalsBuffer) {
+				this.vertexNormalsBuffer.bind();
 			}
+
 			this.getWorldMatrix(this.mvMatrix);
 			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
-			shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+			shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 			let tranposed = shader.baseUniforms.normalMatrix.value;
 			mat4.invert(tranposed, shader.baseUniforms.mvMatrix.value);
 			mat4.transpose(tranposed, tranposed);

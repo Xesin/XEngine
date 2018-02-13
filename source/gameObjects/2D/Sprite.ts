@@ -12,7 +12,7 @@ namespace XEngine {
 		private rows: number;
 
 		constructor(game: Game, posX: number, posY: number, sprite: string, frame: string | number) {
-			super(game, posX, posY);
+			super(game, posX, posY, 0);
 			this.sprite = sprite;
 			this.game = game;
 			this.frame = frame || 0;
@@ -39,9 +39,7 @@ namespace XEngine {
 			if (this.columns > 1 || this.rows > 1 || this.json !== undefined) {
 				this.tilled = true;
 			}
-
-			this.transform.position.setTo(posX, posY);
-			this.shader = XEngine.SimpleMaterial.shader;
+			this.shader = XEngine.SpriteMat.shader;
 			this.animation = new AnimationManager(game, this);
 		}
 
@@ -104,11 +102,11 @@ namespace XEngine {
 					endUvX, endUvY,
 				];
 
+				this._setVertices(this.width, this.height, this.color, this._uv);
 			}
-			this._setVertices(this.width, this.height, this.color, this._uv);
 			gl.bindTexture(this.gl.TEXTURE_2D, this.game.cache.image(this.sprite)._texture);
-			super._renderToCanvas(gl);
-			// this.game.renderer.spriteBatch.addSprite(this, this.shader);
+			// super._renderToCanvas(gl);
+			this.game.renderer.spriteBatch.addSprite(this, this.shader);
 		}
 
 		public reset(x: number, y: number) {

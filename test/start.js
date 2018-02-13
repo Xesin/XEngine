@@ -29,21 +29,22 @@ Start.prototype = {
 	
 	start: function () {
 		// for(var i = 0; i < 200; i++) {
-			this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -500.0, 100), true, true);	
-			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -100.0, 50), true, true);	
+			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -200.0, 10), true, true);	
+			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -1, 100), true, true);	
 		// }
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);	
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
-		// this.game.add.sprite(0,0, 'unicorn').transform.position.z = -100;	
+		this.game.add.sprite(40,0, 'unicorn');	
+		// this.game.add.sprite(100,0, 'unicorn').transform.position.z = -200;	
 		// text = this.text;
-		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
+		// this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		
 	},
 	
 	update : function (deltaTime) {
 		// text.rotation += 20 * deltaTime;
 		// this.text.transform.rotation.x += 45* deltaTime;
-		this.text.transform.rotation.y += 90* deltaTime;
+		// this.text.transform.rotation.y += 90* deltaTime;
 		// this.text.transform.rotation.z += 20* deltaTime;
 
 		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
