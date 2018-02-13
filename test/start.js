@@ -35,7 +35,8 @@ Start.prototype = {
 		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);	
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
-		this.game.add.sprite(400,720/2, 'unicorn').anchor.setTo(0.5);	
+		var sprite = this.game.add.sprite(400,720/2, 'unicorn');
+		sprite.anchor.setTo(0.5);		
 		// this.game.add.sprite(100,0, 'unicorn').transform.position.z = -200;	
 		// text = this.text;
 		

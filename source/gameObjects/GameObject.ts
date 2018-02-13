@@ -143,11 +143,14 @@ namespace XEngine {
 				translation[1] += this.game.camera.position.y;
 				translation[2] += this.game.camera.position.z;
 			}
+			let anchorX = Math.round(-(this.width * this.anchor.x));
+			let anchorY = Math.round(-(this.height * this.anchor.y));
 			mat4.translate(childMatrix, childMatrix, translation);
 			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
 			mat4.scale(childMatrix, childMatrix, [this.transform.scale.x, this.transform.scale.y, this.transform.scale.z]);
+			mat4.translate(childMatrix, childMatrix, [anchorX, anchorY, 0]);
 			return childMatrix;
 		}
 
