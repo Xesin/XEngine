@@ -1,12 +1,12 @@
 namespace XEngine {
-	export namespace MaterialLib {
-		export class MaterialLibObject {
+	export namespace ShaderLib {
+		export class ShaderLibObject {
 			public static readonly vertexShader: Array<string>;
 			public static readonly fragmentShader: Array<string>;
 			public static readonly uniforms: any;
 		}
 
-		export class Sprite extends MaterialLibObject {
+		export class SpriteShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
@@ -34,14 +34,16 @@ namespace XEngine {
 			];
 		}
 
-		export class SimpleMaterial extends MaterialLibObject {
+		export class SimpleShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
+				"in vec3 aNormal;",
+				"out highp vec3 normal;",
 
 				"void mainPass() {",
 					"vertPos = mvpMatrix * vertPos;",
-					"normal = (normalMatrix * vec4(normal, 1.0)).xyz;",
+					"normal = (normalMatrix * vec4(aNormal, 1.0)).xyz;",
 				"}",
 			];
 
@@ -50,6 +52,7 @@ namespace XEngine {
 				"precision mediump float;",
 				"#XBaseParams",
 				"uniform sampler2D texSampler;",
+				"in vec3 normal;",
 
 				"void main(void) {",
 					"vec4 texCol = texture(texSampler, uv);",
@@ -60,7 +63,7 @@ namespace XEngine {
 			];
 		}
 
-		export class SimpleColor extends MaterialLibObject {
+		export class SimpleColorShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
@@ -80,7 +83,7 @@ namespace XEngine {
 			];
 		}
 
-		export class CircleColor extends MaterialLibObject {
+		export class CircleShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",

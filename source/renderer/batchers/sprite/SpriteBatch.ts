@@ -61,7 +61,7 @@ namespace XEngine {
 				} else {
 					shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 					shader._setTexture(this.currentTexture2D);
-					shader.bind(this.gl);
+					shader.bind(this.renderer);
 					shader.updateUniforms(this.gl);
 				}
 				this.vertexBufferObject.bind();

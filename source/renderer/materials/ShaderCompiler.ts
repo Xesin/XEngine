@@ -19,7 +19,6 @@ namespace XEngine {
 			"in vec2 vUv;",
 			"in vec3 aVertexColor;",
 			"in float in_alpha;",
-			"in vec3 aNormal;",
 			"uniform mat4 pMatrix;",
 			"uniform mat4 mvMatrix;",
 			"uniform mat4 normalMatrix;",
@@ -28,7 +27,6 @@ namespace XEngine {
 			"out vec4 vertexPos;",
 			"out highp vec3 vColor;",
 			"out highp float alpha;",
-			"out highp vec3 normal;",
 			"mat4 mvpMatrix;",
 		];
 
@@ -37,7 +35,6 @@ namespace XEngine {
 			"in highp vec2 uv;",
 			"in float alpha;",
 			"in vec4 vertexPos;",
-			"in vec3 normal;",
 			"out vec4 fragColor;",
 		];
 
@@ -45,7 +42,6 @@ namespace XEngine {
 			"void main(void) {",
 				"vertPos = vec4(aVertexPosition, 1.0);",
 				"mvpMatrix = pMatrix * mvMatrix;",
-				"normal = aNormal;",
 				"mainPass();",
 				"uv = vUv;",
 				"vColor = aVertexColor;",

@@ -51,10 +51,10 @@ namespace XEngine {
 								startY + charData.yoffset,
 								this.sprite, 0);
 							let uvs = [
-								charData.x / this.atlasWidth, charData.y / this.atlasHeight,
-								charData.x / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
-								(charData.x + charData.width) / this.atlasWidth, charData.y / this.atlasHeight,
-								(charData.x + charData.width) / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
+								charData.x / this.atlasWidth, 1 - (charData.y / this.atlasHeight),
+								charData.x / this.atlasWidth, 1 - ((charData.y + charData.height) / this.atlasHeight),
+								(charData.x + charData.width) / this.atlasWidth, 1 - (charData.y / this.atlasHeight),
+								(charData.x + charData.width) / this.atlasWidth, 1 - ((charData.y + charData.height) / this.atlasHeight),
 							];
 							newSprite._setVertices(charData.width, charData.height, newSprite.color, uvs);
 							newSprite.shader = this.shader;

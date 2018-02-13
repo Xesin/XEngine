@@ -1,4 +1,4 @@
-XEngine.MaterialLib.Gimp = {
+XEngine.ShaderLib.Gimp = {
 	vertexShader:[
 		'#version 300 es',
 		'#XBaseParams',
@@ -186,7 +186,7 @@ XEngine.GimpShader = function(){
 			type: XEngine.Uniforms.FLOAT,
 		}
 	};
-	XEngine.Material.call(this, XEngine.MaterialLib.Gimp.vertexShader, XEngine.MaterialLib.Gimp.fragmentShader, this.uniforms);
+	XEngine.Material.call(this, XEngine.ShaderLib.Gimp.vertexShader, XEngine.ShaderLib.Gimp.fragmentShader, this.uniforms);
 }
 
 XEngine.GimpShader.prototype = Object.create(XEngine.Material.prototype);
@@ -209,4 +209,4 @@ XEngine.GimpShader.prototypeExtends = {
 
 Object.assign(XEngine.GimpShader.prototype, XEngine.GimpShader.prototypeExtends);
 
-XEngine.MaterialLib.Gimp.shader = new XEngine.GimpShader();
+XEngine.ShaderLib.Gimp.shader = new XEngine.GimpShader();

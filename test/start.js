@@ -23,7 +23,7 @@ var text;
 Start.prototype = {
 	
 	preload: function () {
-		//this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
+		this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
 		this.game.load.image('unicorn', 'img/angry_unicorn.png');
 	},
 	
@@ -35,8 +35,8 @@ Start.prototype = {
 		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);	
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
-		var sprite = this.game.add.sprite(400,720/2, 'unicorn');	
-		// this.game.add.sprite(100,0, 'unicorn').transform.position.z = -200;	
+		var sprite = this.game.add.bitmapText(0,0, 'font1', 'Hola Mundo!');	
+		// this.game.add.sprite(100,0, 'font1');	
 		// text = this.text;
 		
 	},

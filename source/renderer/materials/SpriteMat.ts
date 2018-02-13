@@ -4,7 +4,7 @@ namespace XEngine {
 		public texture: WebGLTexture;
 
 		constructor() {
-			super(XEngine.MaterialLib.Sprite.vertexShader, XEngine.MaterialLib.Sprite.fragmentShader);
+			super(XEngine.ShaderLib.SpriteShader.vertexShader, XEngine.ShaderLib.SpriteShader.fragmentShader);
 		}
 
 		public _setTexture(texture: WebGLTexture) {

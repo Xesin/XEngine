@@ -5,6 +5,9 @@ namespace XEngine {
 		private static currentVertices = new Array<number>();
 		private static renderVerts = new Array<number>();
 
+		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
+		protected vertexNormalsBuffer: VertexBuffer;
+
 		private buffer: any;
 		private programInfo: any;
 		private vertices: Array<number>;
@@ -39,6 +42,29 @@ namespace XEngine {
 			shader.updateUniforms(gl);
 
 			gl.drawElements(gl.TRIANGLES, this.indexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
+		}
+
+		public setNormals(vertexNormals: Array<number>) {
+			this.vertNormalsDataBuffer = new XEngine.DataBuffer32(4 * vertexNormals.length);
+
+			if (this.vertexNormalsBuffer) {
+				this.gl.deleteBuffer(this.vertexNormalsBuffer);
+			}
+
+			this.vertexNormalsBuffer = this.game.renderer.resourceManager.createBuffer(
+				this.gl.ARRAY_BUFFER, this.vertNormalsDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
+			this.vertexNormalsBuffer.addAttribute(this.shader.normalPosAttr, 3, this.game.context.FLOAT, false, 12, 0);
+
+			let floatBuffer = this.vertNormalsDataBuffer.floatView;
+
+			let index = this.vertNormalsDataBuffer.allocate(vertexNormals.length);
+			for (let i = 0; i < vertexNormals.length; i++) {
+				floatBuffer[index++] = vertexNormals[i++];
+				floatBuffer[index++] = vertexNormals[i++];
+				floatBuffer[index++] = vertexNormals[i];
+			}
+
+			this.vertexNormalsBuffer.updateResource(floatBuffer, 0);
 		}
 
 		public reset(x: number, y: number) {

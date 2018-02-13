@@ -43,9 +43,6 @@ namespace XEngine {
 		protected indexBuffer: IndexBuffer;
 		protected vertexBuffer: VertexBuffer;
 
-		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
-		protected vertexNormalsBuffer: VertexBuffer;
-
 		private _prevWidth: number;
 		private _prevHeight: number;
 		private _prevPos: any;
@@ -338,29 +335,6 @@ namespace XEngine {
 
 			this.vertexBuffer.updateResource(floatBuffer, 0);
 			this.indexBuffer.updateResource(uintIndexBuffer, 0);
-		}
-
-		public setNormals(vertexNormals: Array<number>) {
-			this.vertNormalsDataBuffer = new XEngine.DataBuffer32(4 * vertexNormals.length);
-
-			if (this.vertexNormalsBuffer) {
-				this.gl.deleteBuffer(this.vertexNormalsBuffer);
-			}
-
-			this.vertexNormalsBuffer = this.game.renderer.resourceManager.createBuffer(
-				this.gl.ARRAY_BUFFER, this.vertNormalsDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.vertexNormalsBuffer.addAttribute(this.shader.normalPosAttr, 3, this.game.context.FLOAT, false, 12, 0);
-
-			let floatBuffer = this.vertNormalsDataBuffer.floatView;
-
-			let index = this.vertNormalsDataBuffer.allocate(vertexNormals.length);
-			for (let i = 0; i < vertexNormals.length; i++) {
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i];
-			}
-
-			this.vertexNormalsBuffer.updateResource(floatBuffer, 0);
 		}
 
 		public _setVertices(width: number, height: number, color: number, uv: Array<number>) {
