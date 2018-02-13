@@ -101,11 +101,7 @@ namespace XEngine {
 					endUvX, startUvY,
 					endUvX, endUvY,
 				];
-
-				this._setVertices(this.width, this.height, this.color, this._uv);
 			}
-			gl.bindTexture(this.gl.TEXTURE_2D, this.game.cache.image(this.sprite)._texture);
-			// super._renderToCanvas(gl);
 			this.game.renderer.spriteBatch.addSprite(this, this.shader);
 		}
 

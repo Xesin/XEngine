@@ -54,17 +54,16 @@ namespace XEngine {
 
 			public bind(shader) {
 				if (!shader) {
-					this.shader.bind(this.renderer);
 					this.shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 					this.shader._setTexture(this.currentTexture2D);
+					this.shader.bind(this.renderer);
 					this.shader.updateUniforms(this.gl);
 				} else {
-					shader.bind(this.gl);
 					shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 					shader._setTexture(this.currentTexture2D);
+					shader.bind(this.gl);
 					shader.updateUniforms(this.gl);
 				}
-				this.gl.bindTexture(this.gl.TEXTURE_2D, this.currentTexture2D);
 				this.vertexBufferObject.bind();
 				this.indexBufferObject.bind();
 			}
