@@ -43,6 +43,7 @@ namespace XEngine {
 
 				"void mainPass() {",
 					"vertPos = mvpMatrix * vertPos;",
+					"uv = uv * 2.0;",
 					"normal = (normalMatrix * vec4(aNormal, 1.0)).xyz;",
 				"}",
 			];
@@ -55,10 +56,14 @@ namespace XEngine {
 				"in vec3 normal;",
 
 				"void main(void) {",
+					"fragColor.a = 1.0;",
 					"vec4 texCol = texture(texSampler, uv);",
-					"fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
-					"fragColor = vec4(vec3(dot(normal, vec3(0.3, 0.3, 1.0))) * 0.7, 1.0) * fragColor;",
-					// "fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
+					"texCol.xyz = texCol.xyz * texCol.a;",
+					// "fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
+					"vec3 matColor = mix(vColor, texCol.xyz * vColor.xyz, texCol.a);",
+					"float lightColor = pow((dot(normal, vec3(0.3, 0.7, 0.8)) + 1.0) * 0.5, 3.0) * 1.5;",
+					"fragColor.xyz = matColor * lightColor;",
+					// "fragColor = vec4(vec3(dot(normal, vec3(0.3, 0.3, 1.0))), 1.0) * fragColor;",
 				"}",
 			];
 		}

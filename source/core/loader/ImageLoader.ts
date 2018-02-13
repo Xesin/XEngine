@@ -31,14 +31,14 @@ namespace XEngine {
 
 				if (_this.frameWidth === 0) {
 					imageRef.frameWidth = this.width;
-					newImage.wrapMode = WRAP_MODE.CLAMP;
+					newImage.wrapMode = WRAP_MODE.REPEAT;
 				} else {
 					imageRef.frameWidth = _this.frameWidth;
 				}
 
 				if (_this.frameHeight === 0) {
 					imageRef.frameHeight = this.height;
-					newImage.wrapMode = WRAP_MODE.CLAMP;
+					newImage.wrapMode = WRAP_MODE.REPEAT;
 				} else {
 					imageRef.frameHeight = _this.frameHeight;
 				}

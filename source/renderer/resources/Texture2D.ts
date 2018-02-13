@@ -1,7 +1,7 @@
 namespace XEngine {
 	export enum WRAP_MODE {
 		CLAMP,
-		WRAP,
+		REPEAT,
 	}
 
 	export class Texture2D {
@@ -13,7 +13,7 @@ namespace XEngine {
 		public ready: boolean;
 		public wrapMode: WRAP_MODE;
 
-		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.CLAMP) {
+		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT) {
 			this.imageName = name;
 			this.frameWidth = width;
 			this.frameHeight = height;
@@ -33,7 +33,7 @@ namespace XEngine {
 
 			gl.bindTexture(gl.TEXTURE_2D, this._texture);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-			if (this.wrapMode === WRAP_MODE.WRAP) {
+			if (this.wrapMode === WRAP_MODE.REPEAT) {
 				gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);

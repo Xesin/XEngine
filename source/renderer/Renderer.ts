@@ -20,7 +20,7 @@ namespace XEngine {
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
 			this.scale = new Vector(1);
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
-			let options = {stencil: true, antialias: false};
+			let options = {stencil: true, antialias: true};
 			this.context = canvas.getContext("webgl2", options) as WebGLRenderingContext;
 		}
 
@@ -46,7 +46,7 @@ namespace XEngine {
 			this.context.clearDepth(1.0);
 			this.context.enable(this.context.DEPTH_TEST);
 			this.context.depthFunc(this.context.LEQUAL);
-			this.context.disable(this.context.CULL_FACE);
+			this.context.enable(this.context.CULL_FACE);
 			this.context.cullFace(this.context.BACK);
 			this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
 			this.context.enable(this.context.BLEND);

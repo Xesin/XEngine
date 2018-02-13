@@ -30,13 +30,14 @@ Start.prototype = {
 	start: function () {
 		// for(var i = 0; i < 200; i++) {
 			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -200.0, 100), true, true);	
-			this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -20, 3), true, true);	
+			this.text = this.game.add.existing(new XEngine.SphereMesh(this.game, 0, 0, -20, 3, 20, 20, 0x999999), true, true);	
 		// }
 		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
+
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);	
 		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
 		var sprite = this.game.add.bitmapText(0,0, 'font1', 'Hola Mundo!');	
-		// this.game.add.sprite(100,0, 'font1');	
+		this.game.add.sprite(100,0, 'unicorn').color = 0x333333;	
 		// text = this.text;
 		
 	},

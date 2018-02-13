@@ -3,7 +3,7 @@ namespace XEngine {
 
 	export class CubeMesh extends Mesh {
 
-		constructor(game: Game, posX: number, posY: number, posZ: number, size = 1) {
+		constructor(game: Game, posX: number, posY: number, posZ: number, size = 1, color?: Array<number> | number) {
 			super(game, posX, posY, posZ);
 			let vertices = [
 				// Cara delantera
@@ -128,7 +128,7 @@ namespace XEngine {
 				20, 21, 22,	 20, 22, 23,	// izquierda
 			];
 
-			this.setVertices(vertices, indices, UVs);
+			this.setVertices(vertices, indices, UVs, color);
 			this.setNormals(normals);
 		}
 	}

@@ -31,7 +31,7 @@ namespace XEngine {
 		];
 
 		public static readonly fragmentBaseParams = [
-			"in lowp vec3 vColor;",
+			"in highp vec3 vColor;",
 			"in highp vec2 uv;",
 			"in float alpha;",
 			"in vec4 vertexPos;",
