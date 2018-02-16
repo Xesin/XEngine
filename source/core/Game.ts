@@ -4,16 +4,15 @@ interface Array<T> {
 }
 
 Array.prototype.removePending = function () {
-	let i = this.length;
-	while (i--) {
-		if (this[i].isPendingDestroy) {
-			if (this[i].body !== undefined) {
-				this[i].body.destroy();
+	return this.filter(go => {
+		if (go.isPendingDestroy) {
+			if (go.body !== undefined) {
+				go.body.destroy();
 			}
-			delete this[i];
-			this.splice(i, 1);
+			return false;
 		}
-	}
+		return true;
+	});
 };
 
 if ( Array.prototype.equals ) {
@@ -132,7 +131,7 @@ namespace XEngine {
 				if (this.pause) { return; }
 				if (this.state.currentState == null) { return; }
 				if (!this.load.preloading) {
-					this.updateQueue.removePending();
+					this.updateQueue = this.updateQueue.removePending();
 					this.tween.update(this.time.deltaTimeMillis);
 					let queueLength = this.updateQueue.length - 1;
 					for (let i = queueLength; i >= 0; i--) {
@@ -152,7 +151,7 @@ namespace XEngine {
 					// 	this.physics.update(this.deltaTime);
 					// 	this.state.currentState.physicsUpdate();
 					// }
-					this.renderQueue.removePending();
+					this.renderQueue = this.renderQueue.removePending();
 					this.renderer.render();
 				}
 			}

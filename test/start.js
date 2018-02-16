@@ -25,7 +25,7 @@ Start.prototype = {
 	preload: function () {
 		this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
 		this.game.load.image('unicorn', 'img/angry_unicorn.png');
-		this.game.load.image('checker', 'img/checker.jpg');
+		// this.game.load.image('checker', 'img/checker.jpg');
 	},
 	
 	start: function () {
@@ -46,9 +46,9 @@ Start.prototype = {
 	
 	update : function (deltaTime) {
 		// text.rotation += 20 * deltaTime;
-		// this.text.transform.rotation.x += 10* deltaTime;
-		// this.text.transform.rotation.y += 5* deltaTime;
-		// this.text.transform.rotation.z += 2* deltaTime;
+		this.text.transform.rotation.x += 10* deltaTime;
+		this.text.transform.rotation.y += 5* deltaTime;
+		this.text.transform.rotation.z += 2* deltaTime;
 		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
 	},
 	

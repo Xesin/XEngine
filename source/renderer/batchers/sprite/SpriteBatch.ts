@@ -156,9 +156,9 @@ namespace XEngine {
 				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[6];
 				floatBuffer[index++] = gameObject._uv[7];
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
 				floatBuffer[index++] = objectAlpha;
 
 				this.currentTexture2D = this.game.cache.image(gameObject.sprite)._texture;
@@ -191,7 +191,7 @@ namespace XEngine {
 
 				let attributes = shader.getAttributes(this.renderer);
 				let stride = shader.getAttrStride();
-				
+
 				for (const attr in attributes) {
 					if (attributes.hasOwnProperty(attr)) {
 						const element = attributes[attr];

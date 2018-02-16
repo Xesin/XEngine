@@ -19,16 +19,16 @@ namespace XEngine {
 			this.uniforms = uniforms;
 			this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
 			this.baseUniforms.pMatrix = {
-				value: mat4.create(),
 				type: Uniforms.MAT4X4,
+				value: mat4.create(),
 			};
 			this.baseUniforms.mvMatrix = {
-				value: mat4.create(),
 				type: Uniforms.MAT4X4,
+				value: mat4.create(),
 			};
 			this.baseUniforms.normalMatrix = {
-				value: mat4.create(),
 				type: Uniforms.MAT4X4,
+				value: mat4.create(),
 			};
 			this.shaderProgram = null;
 			this.compiled = false;
@@ -91,28 +91,31 @@ namespace XEngine {
 			return 36;
 		}
 
-		public getAttributes(renderer:Renderer): Array<any>{
+		public getAttributes(renderer: Renderer): Array<any> {
 			let attrs = new Array();
 			attrs.push({
-				gpuLoc:this.getAttribLocation(renderer.context, "aVertexPosition"), 
-				items:3,
-				type:renderer.context.FLOAT,
-				normalized:false,
-				offset:0}
+				gpuLoc: this.getAttribLocation(renderer.context, "aVertexPosition"),
+				items: 3,
+				normalized: false,
+				offset: 0,
+				type: renderer.context.FLOAT,
+			},
 			);
 			attrs.push({
-				gpuLoc:this.getAttribLocation(renderer.context, "vUv"), 
-				items:2,
-				type:renderer.context.FLOAT,
-				normalized:false,
-				offset:12}
+				gpuLoc: this.getAttribLocation(renderer.context, "vUv"),
+				items: 2,
+				normalized: false,
+				offset: 12,
+				type: renderer.context.FLOAT,
+				},
 			);
 			attrs.push({
-				gpuLoc:this.getAttribLocation(renderer.context, "aVertexColor"), 
-				items:4,
-				type:renderer.context.FLOAT,
-				normalized:false,
-				offset:20}
+				gpuLoc: this.getAttribLocation(renderer.context, "aVertexColor"),
+				items: 4,
+				normalized: false,
+				offset: 20,
+				type: renderer.context.FLOAT,
+			},
 			);
 
 			return attrs;
@@ -124,8 +127,18 @@ namespace XEngine {
 			for (let property in this.uniforms) {
 				if (this.uniforms.hasOwnProperty(property)) {
 					let uniformValue = this.uniforms[property].value;
+					this.baseUniforms[property].dirty = false;
 					this.uniforms[property].value = undefined;
 					this.uniforms[property]._value = uniformValue;
+					Object.defineProperty(this.uniforms[property], "value", {
+						get: function() {
+							return this._value;
+						},
+						set: function(val) {
+							this._value = val;
+							this.dirty = true;
+						},
+					});
 					this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 				}
 			}
@@ -133,7 +146,18 @@ namespace XEngine {
 			for (let property in this.baseUniforms) {
 				if (this.baseUniforms.hasOwnProperty(property)) {
 					let uniformValue = this.baseUniforms[property].value;
-					this.baseUniforms[property].value = uniformValue;
+					this.baseUniforms[property].dirty = true;
+					this.baseUniforms[property].value = undefined;
+					this.baseUniforms[property]._value = uniformValue;
+					Object.defineProperty(this.baseUniforms[property], "value", {
+						get: function() {
+							return this._value;
+						},
+						set: function(val) {
+							this._value = val;
+							this.dirty = true;
+						},
+					});
 					this.baseUniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 				}
 			}
@@ -182,13 +206,13 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property)) {
+				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].dirty) {
 					this._setUniform(this.uniforms[property], gl);
 					this.uniforms[property].dirty = false;
 				}
 			}
 			for (let property in this.baseUniforms) {
-				if (this.baseUniforms.hasOwnProperty(property)) {
+				if (this.baseUniforms.hasOwnProperty(property) && this.baseUniforms[property].dirty) {
 					this._setUniform(this.baseUniforms[property], gl);
 					this.baseUniforms[property].dirty = false;
 				}

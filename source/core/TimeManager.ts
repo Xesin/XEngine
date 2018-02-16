@@ -45,7 +45,7 @@ namespace XEngine {
 		}
 
 		private updateTimers() {
-			this.timers.removePending();
+			this.timers = this.timers.removePending();
 			let queueLength = this.timers.length - 1;
 			for (let i = queueLength; i >= 0; i--) {
 				let timer = this.timers[i];

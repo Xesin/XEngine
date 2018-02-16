@@ -290,7 +290,7 @@ namespace XEngine {
 
 			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
 				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			
+
 			for (const attr in attributes) {
 				if (attributes.hasOwnProperty(attr)) {
 					const element = attributes[attr];

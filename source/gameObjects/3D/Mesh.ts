@@ -2,12 +2,14 @@ namespace XEngine {
 
 	export class Mesh extends GameObject {
 		public geometry: Geometry;
+		protected transposed = mat4.create();
 
 		constructor(game: Game, posX: number, posY: number, posZ: number, geometry: Geometry, material?: Material) {
 			super(game, posX, posY, posZ);
 			this.game = game;
-			this.shader = material == undefined ? XEngine.SimpleMaterial.shader : material;
+			this.shader = material === undefined ? XEngine.SimpleMaterial.shader : material;
 			this.geometry = geometry;
+			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 			this.shader.initializeShader(this.game.context);
 		}
 
@@ -23,13 +25,14 @@ namespace XEngine {
 
 			this.geometry.bind();
 
-			this.getWorldMatrix(this.mvMatrix);
+			if (this.transform.dirty) {
+				this.getWorldMatrix(this.mvMatrix);
+				mat4.invert(this.transposed, this.mvMatrix);
+				mat4.transpose(this.transposed, this.transposed);
+				this.transform.dirty = false;
+			}
 			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
-			shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-			let tranposed = shader.baseUniforms.normalMatrix.value;
-			mat4.invert(tranposed, shader.baseUniforms.mvMatrix.value);
-			mat4.transpose(tranposed, tranposed);
-			shader.baseUniforms.normalMatrix.value = tranposed;
+			shader.baseUniforms.normalMatrix.value = this.transposed;
 
 			shader.updateUniforms(gl);
 
