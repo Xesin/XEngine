@@ -26,7 +26,8 @@ namespace XEngine {
 					"texCol.rgb *= texCol.w;",
 					// "if(texCol.a >= 0.8){",
 					// "if(texCol.a <= 0.05) discard;",
-					"texCol.xyz *= vColor;",
+					"texCol *= vColor;",
+					"texCol.xyz *= vColor.a;",
 					"fragColor = texCol;",
 					// "}else{",
 					// "}",
@@ -42,7 +43,6 @@ namespace XEngine {
 				"out highp vec3 normal;",
 
 				"void mainPass() {",
-					"vertPos.xyz += aNormal * vec3(30.0,30.0,30.0);",
 					"vertPos = mvpMatrix * vertPos;",
 					"uv = uv;",
 					"normal = (normalMatrix * vec4(aNormal, 1.0)).xyz;",
@@ -60,11 +60,9 @@ namespace XEngine {
 					"fragColor.a = 1.0;",
 					"vec4 texCol = texture(texSampler, uv);",
 					"texCol.xyz = texCol.xyz * texCol.a;",
-					// "fragColor = vec4(texCol.rgb * texCol.a, 1.0);",
-					"vec3 matColor = mix(vColor, texCol.xyz * vColor.xyz, texCol.a);",
-					"float lightColor = pow((dot(normal, vec3(0.3, 0.7, 0.8)) + 1.0) * 0.5, 3.0) * 1.5;",
+					"vec3 matColor = mix(vec3(1.0), texCol.xyz * vec3(1.0), texCol.a);",
+					"float lightColor = pow((dot(normal, vec3(0.3, 0.7, 0.8)) + 1.0) * 0.5, 3.0);",
 					"fragColor.xyz = matColor * lightColor;",
-					// "fragColor = vec4(vec3(dot(normal, vec3(0.3, 0.3, 1.0))), 1.0) * fragColor;",
 				"}",
 			];
 		}
@@ -84,7 +82,7 @@ namespace XEngine {
 				"#XBaseParams",
 
 				"void main(void) {",
-					"fragColor = vec4(vColor, alpha) * alpha;",
+					"fragColor = vColor * alpha;",
 				"}",
 			];
 		}
@@ -109,7 +107,7 @@ namespace XEngine {
 					"float res = smoothstep(distance,distance+0.04,0.5);",
 					"if(res < 0.1) discard;",
 					"fragColor = vec4(1.0, 1.0, 1.0, res) * res * alpha;",
-					"fragColor.xyz *= vColor;",
+					"fragColor.xyz *= vColor.xyz;",
 				"}",
 			];
 		}

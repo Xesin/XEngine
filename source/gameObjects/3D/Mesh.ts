@@ -1,35 +1,27 @@
 namespace XEngine {
 
 	export class Mesh extends GameObject {
+		public geometry: Geometry;
 
-		private static currentVertices = new Array<number>();
-		private static renderVerts = new Array<number>();
-
-		protected vertNormalsDataBuffer: XEngine.DataBuffer32;
-		protected vertexNormalsBuffer: VertexBuffer;
-
-		private buffer: any;
-		private programInfo: any;
-		private vertices: Array<number>;
-
-
-		constructor(game: Game, posX: number, posY: number, posZ: number) {
+		constructor(game: Game, posX: number, posY: number, posZ: number, geometry: Geometry, material?: Material) {
 			super(game, posX, posY, posZ);
 			this.game = game;
-			this.shader = XEngine.SimpleMaterial.shader;
+			this.shader = material == undefined ? XEngine.SimpleMaterial.shader : material;
+			this.geometry = geometry;
 			this.shader.initializeShader(this.game.context);
 		}
 
 		public _renderToCanvas(gl: WebGLRenderingContext) {
+			let renderer = this.game.renderer;
 			let vertexDataBuffer = this.vertDataBuffer;
 			let shader = this.shader as SimpleMaterial;
-			shader.bind(this.game.renderer);
+			renderer.bindMaterial(this.shader);
 
-			this.vertexBuffer.bind();
-			this.indexBuffer.bind();
-			if (this.vertexNormalsBuffer) {
-				this.vertexNormalsBuffer.bind();
+			if (!this.geometry.initialized) {
+				this.geometry.initialize(this.shader, this.game.renderer);
 			}
+
+			this.geometry.bind();
 
 			this.getWorldMatrix(this.mvMatrix);
 			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
@@ -41,30 +33,7 @@ namespace XEngine {
 
 			shader.updateUniforms(gl);
 
-			gl.drawElements(gl.TRIANGLES, this.indexDataBuffer.wordLength, gl.UNSIGNED_SHORT, 0);
-		}
-
-		public setNormals(vertexNormals: Array<number>) {
-			this.vertNormalsDataBuffer = new XEngine.DataBuffer32(4 * vertexNormals.length);
-
-			if (this.vertexNormalsBuffer) {
-				this.gl.deleteBuffer(this.vertexNormalsBuffer);
-			}
-
-			this.vertexNormalsBuffer = this.game.renderer.resourceManager.createBuffer(
-				this.gl.ARRAY_BUFFER, this.vertNormalsDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
-			this.vertexNormalsBuffer.addAttribute(this.shader.normalPosAttr, 3, this.game.context.FLOAT, false, 12, 0);
-
-			let floatBuffer = this.vertNormalsDataBuffer.floatView;
-
-			let index = this.vertNormalsDataBuffer.allocate(vertexNormals.length);
-			for (let i = 0; i < vertexNormals.length; i++) {
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i++];
-				floatBuffer[index++] = vertexNormals[i];
-			}
-
-			this.vertexNormalsBuffer.updateResource(floatBuffer, 0);
+			gl.drawElements(gl.TRIANGLES, this.geometry.vertexCount, gl.UNSIGNED_SHORT, 0);
 		}
 
 		public reset(x: number, y: number) {

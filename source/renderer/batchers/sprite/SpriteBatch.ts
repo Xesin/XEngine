@@ -56,12 +56,12 @@ namespace XEngine {
 				if (!shader) {
 					this.shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 					this.shader._setTexture(this.currentTexture2D);
-					this.shader.bind(this.renderer);
+					this.renderer.bindMaterial(this.shader);
 					this.shader.updateUniforms(this.gl);
 				} else {
 					shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 					shader._setTexture(this.currentTexture2D);
-					shader.bind(this.renderer);
+					this.renderer.bindMaterial(shader);
 					shader.updateUniforms(this.gl);
 				}
 				this.vertexBufferObject.bind();
@@ -114,9 +114,12 @@ namespace XEngine {
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
+				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[0];
 				floatBuffer[index++] = gameObject._uv[1];
-				uintBuffer[index++] = gameObject.color;
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(0, gameObject.height);
@@ -124,9 +127,12 @@ namespace XEngine {
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
+				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[2];
 				floatBuffer[index++] = gameObject._uv[3];
-				uintBuffer[index++] = gameObject.color;
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, 0);
@@ -134,9 +140,12 @@ namespace XEngine {
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
+				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[4];
 				floatBuffer[index++] = gameObject._uv[5];
-				uintBuffer[index++] = gameObject.color;
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, gameObject.height);
@@ -144,9 +153,12 @@ namespace XEngine {
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
+				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[6];
 				floatBuffer[index++] = gameObject._uv[7];
-				uintBuffer[index++] = gameObject.color;
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1
 				floatBuffer[index++] = objectAlpha;
 
 				this.currentTexture2D = this.game.cache.image(gameObject.sprite)._texture;
@@ -177,14 +189,15 @@ namespace XEngine {
 
 				this.shader = shader;
 
-				vertexBufferObject.addAttribute(
-					shader.getAttribLocation(gl, "aVertexPosition"), 2, gl.FLOAT, false, Consts.VERTEX_SIZE, 0);
-				vertexBufferObject.addAttribute(
-					shader.getAttribLocation(gl, "vUv"), 2, gl.FLOAT, false, Consts.VERTEX_SIZE, 8);
-				vertexBufferObject.addAttribute(
-					shader.getAttribLocation(gl, "aVertexColor"), 3, gl.UNSIGNED_BYTE, true, Consts.VERTEX_SIZE, 16);
-				vertexBufferObject.addAttribute(
-					shader.getAttribLocation(gl, "in_alpha"), 1, gl.FLOAT, false, Consts.VERTEX_SIZE, 20);
+				let attributes = shader.getAttributes(this.renderer);
+				let stride = shader.getAttrStride();
+				
+				for (const attr in attributes) {
+					if (attributes.hasOwnProperty(attr)) {
+						const element = attributes[attr];
+						vertexBufferObject.addAttribute(element.gpuLoc, element.items, element.type, element.normalized, stride, element.offset);
+					}
+				}
 
 				// Populate the index buffer only once
 				for (let indexA = 0, indexB = 0; indexA < max; indexA += Consts.INDEX_COUNT, indexB += Consts.VERTEX_COUNT) {

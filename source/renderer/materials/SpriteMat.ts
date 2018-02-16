@@ -12,7 +12,7 @@ namespace XEngine {
 		}
 
 		public bind(renderer: Renderer) {
-			XEngine.Material.prototype.bind.call(this, renderer);
+			super.bind(renderer);
 			// Tell WebGL we want to affect texture unit 0
 			renderer.bindTexture(this.texture, renderer.context.TEXTURE0);
 		}

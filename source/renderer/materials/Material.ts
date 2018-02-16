@@ -15,7 +15,6 @@ namespace XEngine {
 		private vertexCode: Array<string>;
 		private fragmentCode: Array<string>;
 
-
 		constructor(vertexCode: Array<string>, fragmentCode: Array<string>, uniforms = {}) {
 			this.uniforms = uniforms;
 			this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
@@ -89,7 +88,7 @@ namespace XEngine {
 		}
 
 		public getAttrStride(): number {
-			return 32;
+			return 36;
 		}
 
 		public getAttributes(renderer:Renderer): Array<any>{
@@ -112,7 +111,7 @@ namespace XEngine {
 				gpuLoc:this.getAttribLocation(renderer.context, "aVertexColor"), 
 				items:4,
 				type:renderer.context.FLOAT,
-				normalized:true,
+				normalized:false,
 				offset:20}
 			);
 
@@ -125,7 +124,8 @@ namespace XEngine {
 			for (let property in this.uniforms) {
 				if (this.uniforms.hasOwnProperty(property)) {
 					let uniformValue = this.uniforms[property].value;
-					this.uniforms[property].value = uniformValue;
+					this.uniforms[property].value = undefined;
+					this.uniforms[property]._value = uniformValue;
 					this.uniforms[property].gpuPosition = gl.getUniformLocation(this.shaderProgram, property);
 				}
 			}
@@ -145,7 +145,6 @@ namespace XEngine {
 
 		public bind(renderer: Renderer) {
 			if (!this.compiled) { this.initializeShader(renderer.context); }
-			renderer.bindMaterial(this);
 		}
 
 		public _setUniform(uniform, gl) {

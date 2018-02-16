@@ -24,18 +24,19 @@ namespace XEngine {
 		}
 
 		public getAttrStride(): number {
-			return 32;
+			let baseStride = super.getAttrStride();
+			return baseStride + 12;
 		}
 
 		public getAttributes(renderer: Renderer): Array<any>{
-			let attrs = XEngine.Material.prototype.getAttributes.call(this, renderer);
+			let attrs = super.getAttributes(renderer);
+			let baseStride = super.getAttrStride();
 			attrs.push({
 				gpuLoc:this.getAttribLocation(renderer.context, "aNormal"), 
 				items:3,
 				type:renderer.context.FLOAT,
-				stride:32,
 				normalized:false,
-				offset:0}
+				offset:baseStride}
 			);
 
 			return attrs

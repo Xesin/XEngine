@@ -31,23 +31,24 @@ Start.prototype = {
 	start: function () {
 		// for(var i = 0; i < 200; i++) {
 			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -200.0, 100), true, true);	
-		
-		this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -200, 50, 0x003099), true, true);	
+		var boxGeom = new XEngine.BoxGeometry(1, 1, 1);
+		var sphereGeom = new XEngine.SphereGeometry(1, 30, 30);
+		this.text = this.game.add.mesh(0, 0, -20, boxGeom);	
+		this.text = this.game.add.mesh(2, 0, -20, boxGeom);	
+		this.text = this.game.add.mesh(-2, 0, -20, boxGeom);	
+		this.text = this.game.add.mesh(1, 2, -20, boxGeom);	
+		this.text = this.game.add.mesh(0, -2, -20, sphereGeom);	
+		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
+		this.game.add.sprite(10, 10, 'unicorn');
 		// text = this.text;
 		
 	},
 	
 	update : function (deltaTime) {
 		// text.rotation += 20 * deltaTime;
-		this.text.transform.rotation.x += 10* deltaTime;
-		this.text.transform.rotation.y += 5* deltaTime;
-		this.text.transform.rotation.z += 2* deltaTime;
-
-		this.sphere.transform.rotation.x += 20* deltaTime;
-		this.sphere.transform.rotation.y += 10* deltaTime;
-		this.sphere.transform.rotation.z += -32* deltaTime;
-
-		
+		// this.text.transform.rotation.x += 10* deltaTime;
+		// this.text.transform.rotation.y += 5* deltaTime;
+		// this.text.transform.rotation.z += 2* deltaTime;
 		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
 	},
 	

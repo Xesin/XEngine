@@ -2,47 +2,43 @@
 namespace XEngine {
 
 	export class BoxGeometry extends Geometry {
-
-		public normalData: Array<number>;
-
-		constructor(size = 1, color?: number) {
-			
+		constructor(sizeW = 1, sizeH = 1, sizeZ = 1) {
 			let vertices = [
 				// Cara delantera
-				-size, -size,  size, color, 0, 0, 1,
-				size, -size,  size, color, 0, 0, 1,
-				size,  size,  size, color, 0, 0, 1,
-				-size,  size,  size, color, 0, 0, 1,
+				-sizeW, -sizeH, sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH, sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH, sizeZ, 0, 0, 0, 1,
+				-sizeW,  sizeH, sizeZ, 0, 0, 0, 1,
 
 				// Cara trasera
-				-size, -size, -size, color, 0, 0, -1,
-				-size,  size, -size, color, 0, 0, -1,
-				size,  size, -size, color, 0, 0, -1,
-				size, -size, -size, color, 0, 0, -1,
+				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1, 
+				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1, 
 
 				// Top face
-				-size,  size, -size, color, 0, 1, 0,
-				-size,  size,  size, color, 0, 1, 0,
-				size,  size,  size, color, 0, 1, 0,
-				size,  size, -size, color, 0, 1, 0,
+				-sizeW, sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW, sizeH,  sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1, 
+				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1, 
 
 				// Bottom face
-				-size, -size, -size, color, 0, -1, 0,
-				size, -size, -size, color, 0, -1, 0,
-				size, -size,  size, color, 0, -1, 0,
-				-size, -size,  size, color, 0, -1, 0,
+				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1, 
+				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1, 
+				-sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
 
 				// Right face
-				size, -size, -size, color, 1, 0, 0,
-				size,  size, -size, color, 1, 0, 0,
-				size,  size,  size, color, 1, 0, 0,
-				size, -size,  size, color, 1, 0, 0,
+				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
 
 				// Left face
-				-size, -size, -size, color, -1, 0, 0,
-				-size, -size,  size, color, -1, 0, 0,
-				-size,  size,  size, color, -1, 0, 0,
-				-size,  size, -size, color, -1, 0, 0,
+				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
+				-sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
+				-sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
 			];
 
 			let UVs = [
@@ -92,7 +88,39 @@ namespace XEngine {
 				20, 21, 22,	 20, 22, 23,	// izquierda
 			];
 
-			super(vertices, indices, UVs);
+			let normalData = [
+				0, 0, 1,
+				0, 0, 1,
+				0, 0, 1,
+				0, 0, 1,
+
+				0, 0, -1,
+				0, 0, -1,
+				0, 0, -1,
+				0, 0, -1,
+
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+
+				0, -1, 0,
+				0, -1, 0,
+				0, -1, 0,
+				0, -1, 0,
+
+				1, 0, 0,
+				1, 0, 0,
+				1, 0, 0,
+				1, 0, 0,
+
+				-1, 0, 0,
+				-1, 0, 0,
+				-1, 0, 0,
+				-1, 0, 0,
+			];
+
+			super(vertices, indices, UVs, normalData);
 		}
 	}
 }

@@ -48,7 +48,7 @@ namespace XEngine {
 			let attributes = this.attributes;
 			let attributesLength = attributes.length;
 
-			// if (VertexBuffer.CurrentVertexBuffer !== this) {
+			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
 				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
@@ -67,7 +67,7 @@ namespace XEngine {
 						);
 					}
 				}
-			// }
+			}
 		}
 	}
 }

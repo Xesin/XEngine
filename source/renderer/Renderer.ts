@@ -90,6 +90,7 @@ namespace XEngine {
 			if (this.currentMaterial !== material) {
 				this.currentMaterial = material;
 				this.context.useProgram(material.shaderProgram);
+				this.currentMaterial.bind(this);
 			}
 		}
 

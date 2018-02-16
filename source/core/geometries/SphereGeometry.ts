@@ -1,11 +1,8 @@
-/// <reference path="Mesh.ts"/>
+/// <reference path="Geometry.ts"/>
 namespace XEngine {
 
-	export class SphereMesh extends Mesh {
-
-		constructor(game: Game, posX: number, posY: number, posZ: number, radius = 1, horizontalSlices = 4, verticalSlices = 4
-			, color?: Array<number> | number) {
-			super(game, posX, posY, posZ);
+	export class SphereGeometry extends Geometry {
+		constructor(radius = 1, horizontalSlices = 4, verticalSlices = 4) {
 			let vertexPositionData = [];
 			let normalData = [];
 			let textureCoordData = [];
@@ -30,9 +27,15 @@ namespace XEngine {
 					normalData.push(z);
 					textureCoordData.push(u);
 					textureCoordData.push(v);
+					//Position
 					vertexPositionData.push(radius * x);
 					vertexPositionData.push(radius * y);
 					vertexPositionData.push(radius * z);
+					//ColorData
+					vertexPositionData.push(0);
+					vertexPositionData.push(0);
+					vertexPositionData.push(0);
+					vertexPositionData.push(1);
 				}
 			}
 
@@ -51,8 +54,7 @@ namespace XEngine {
 				}
 			}
 
-			this.setVertices(vertexPositionData, indexData, textureCoordData, color);
-			this.setNormals(normalData);
+			super(vertexPositionData, indexData, textureCoordData, normalData);
 		}
 	}
 }

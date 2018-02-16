@@ -3,10 +3,12 @@ namespace XEngine {
 	export class Geometry {
 
 		public initialized = false;
+		public vertexCount = 0;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
 		protected indexData: Array<number>;
+		protected normalData: Array<number>;
 		protected indexDataBuffer: XEngine.DataBuffer16;
 		protected vertDataBuffer: DataBuffer32;
 		protected gl: WebGLRenderingContext;
@@ -14,10 +16,11 @@ namespace XEngine {
 		protected indexBuffer: IndexBuffer;
 		protected vertexBuffer: VertexBuffer;
 
-		constructor(vertexData:Array<number>, indexData:Array<number>, uvData:Array<number>) {
+		constructor(vertexData:Array<number>, indexData:Array<number>, uvData:Array<number>, normalData:Array<number>) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
+			this.normalData = normalData;
 		}
 
 		public destroy () {
@@ -31,9 +34,11 @@ namespace XEngine {
 			}
 		}
 
-		public initialize(renderer: Renderer) {
-			let attributes = renderer.currentMaterial.getAttributes(renderer);
-			let stride = attributes[0].stride;
+		public initialize(material: Material, renderer:Renderer) {
+			this.gl = renderer.context;
+			renderer.bindMaterial(material);
+			let attributes = material.getAttributes(renderer);
+			let stride = material.getAttrStride();
 			this.vertDataBuffer = new DataBuffer32(stride * this.indexData.length);
 			this.indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
 			
@@ -51,8 +56,7 @@ namespace XEngine {
 			for (const attr in attributes) {
 				if (attributes.hasOwnProperty(attr)) {
 					const element = attributes[attr];
-					stride = element.stride;
-					this.vertexBuffer.addAttribute(element.gpuLoc, element.items, element.type, element.normalized, element.stride, element.offset);
+					this.vertexBuffer.addAttribute(element.gpuLoc, element.items, element.type, element.normalized, stride, element.offset);
 				}
 			}
 
@@ -62,10 +66,11 @@ namespace XEngine {
 			let index = this.vertDataBuffer.allocate(this.vertexData.length);
 			let uvIndex = 0;
 			let colorIndex = 0;
+			let normalIndex = 0;
 			let floatBuffer = this.vertDataBuffer.floatView;
-			let uintBuffer = this.vertDataBuffer.uintView;
 			let uintIndexBuffer = this.indexDataBuffer.uintView;
 			let vertices = this.vertexData;
+			let normals = this.normalData;
 			let uv = this.uvData;
 			// tslint:disable-next-line:forin
 			for (let i = 0; i < vertices.length; i++) {
@@ -81,17 +86,26 @@ namespace XEngine {
 				floatBuffer[index++] = x;
 				floatBuffer[index++] = y;
 
-				uintBuffer[index++] = vertices[i];
+				floatBuffer[index++] = vertices[i++]; //COLOR
+				floatBuffer[index++] = vertices[i++]; //COLOR
+				floatBuffer[index++] = vertices[i++]; //COLOR
+				floatBuffer[index++] = vertices[i]; //COLOR
+				floatBuffer[index++] = normals[normalIndex++];
+				floatBuffer[index++] = normals[normalIndex++];
+				floatBuffer[index++] = normals[normalIndex++];
 			}
 
 			let indices = this.indexData;
 			index = this.indexDataBuffer.allocate(indices.length);
 			for (let i = 0; i < indices.length; i++) {
 				uintIndexBuffer[i] = indices[i];
+				this.vertexCount++;
 			}
 
 			this.vertexBuffer.updateResource(floatBuffer, 0);
 			this.indexBuffer.updateResource(uintIndexBuffer, 0);
+ 
+			this.initialized = true;
 		}
 
 		public bind(){
