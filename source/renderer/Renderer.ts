@@ -8,12 +8,12 @@ namespace XEngine {
 		public resourceManager: ResourceManager;
 		public spriteBatch: SpriteBatcher.SpriteBatch;
 		public rectBatch: RectBatcher.RectBatch;
+		public currentMaterial: Material;
 
 		private game: Game;
 		private renderer: any;
 		private sprite: string;
 		private currentTexture: WebGLTexture;
-		private currentMaterial: Material;
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
@@ -46,7 +46,7 @@ namespace XEngine {
 			this.context.clearDepth(1.0);
 			this.context.enable(this.context.DEPTH_TEST);
 			this.context.depthFunc(this.context.LEQUAL);
-			this.context.enable(this.context.CULL_FACE);
+			this.context.disable(this.context.CULL_FACE);
 			this.context.cullFace(this.context.BACK);
 			this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
 			this.context.enable(this.context.BLEND);

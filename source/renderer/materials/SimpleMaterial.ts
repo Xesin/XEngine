@@ -22,5 +22,23 @@ namespace XEngine {
 				renderer.bindTexture(this.texture, renderer.context.TEXTURE0);
 			}
 		}
+
+		public getAttrStride(): number {
+			return 32;
+		}
+
+		public getAttributes(renderer: Renderer): Array<any>{
+			let attrs = XEngine.Material.prototype.getAttributes.call(this, renderer);
+			attrs.push({
+				gpuLoc:this.getAttribLocation(renderer.context, "aNormal"), 
+				items:3,
+				type:renderer.context.FLOAT,
+				stride:32,
+				normalized:false,
+				offset:0}
+			);
+
+			return attrs
+		}
 	}
 }

@@ -8,11 +8,6 @@ namespace XEngine {
 
 		public uniforms: any;
 		public baseUniforms: any;
-		public vertPosAtt: number;
-		public vertColAtt: number;
-		public vertUvAtt: number;
-		public vertAlphaAtt: number;
-		public normalPosAttr: number;
 		public compiled: boolean;
 		public shader: Material;
 
@@ -36,8 +31,6 @@ namespace XEngine {
 				value: mat4.create(),
 				type: Uniforms.MAT4X4,
 			};
-			this.vertColAtt = null;
-			this.vertColAtt = null;
 			this.shaderProgram = null;
 			this.compiled = false;
 			this.vertexCode = vertexCode;
@@ -95,14 +88,39 @@ namespace XEngine {
 			this.setUniforms(gl);
 		}
 
+		public getAttrStride(): number {
+			return 32;
+		}
+
+		public getAttributes(renderer:Renderer): Array<any>{
+			let attrs = new Array();
+			attrs.push({
+				gpuLoc:this.getAttribLocation(renderer.context, "aVertexPosition"), 
+				items:3,
+				type:renderer.context.FLOAT,
+				normalized:false,
+				offset:0}
+			);
+			attrs.push({
+				gpuLoc:this.getAttribLocation(renderer.context, "vUv"), 
+				items:2,
+				type:renderer.context.FLOAT,
+				normalized:false,
+				offset:12}
+			);
+			attrs.push({
+				gpuLoc:this.getAttribLocation(renderer.context, "aVertexColor"), 
+				items:4,
+				type:renderer.context.FLOAT,
+				normalized:true,
+				offset:20}
+			);
+
+			return attrs;
+		}
+
 		public setUniforms(gl: WebGLRenderingContext) {
 			gl.useProgram(this.shaderProgram);
-
-			this.vertPosAtt = gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
-			this.vertColAtt = gl.getAttribLocation(this.shaderProgram, "aVertexColor");
-			this.vertUvAtt = gl.getAttribLocation(this.shaderProgram, "vUv");
-			this.vertAlphaAtt = gl.getAttribLocation(this.shaderProgram, "in_alpha");
-			this.normalPosAttr = gl.getAttribLocation(this.shaderProgram, "aNormal");
 
 			for (let property in this.uniforms) {
 				if (this.uniforms.hasOwnProperty(property)) {

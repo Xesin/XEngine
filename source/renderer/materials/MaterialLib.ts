@@ -22,7 +22,7 @@ namespace XEngine {
 				"#XBaseParams",
 
 				"void main(void) {",
-					"vec4 texCol = texture(texSampler, uv);",
+					"vec4 texCol = textureLod(texSampler, uv, 0.0);",
 					"texCol.rgb *= texCol.w;",
 					// "if(texCol.a >= 0.8){",
 					// "if(texCol.a <= 0.05) discard;",
@@ -42,8 +42,9 @@ namespace XEngine {
 				"out highp vec3 normal;",
 
 				"void mainPass() {",
+					"vertPos.xyz += aNormal * vec3(30.0,30.0,30.0);",
 					"vertPos = mvpMatrix * vertPos;",
-					"uv = uv * 2.0;",
+					"uv = uv;",
 					"normal = (normalMatrix * vec4(aNormal, 1.0)).xyz;",
 				"}",
 			];

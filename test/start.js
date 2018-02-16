@@ -25,29 +25,29 @@ Start.prototype = {
 	preload: function () {
 		this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
 		this.game.load.image('unicorn', 'img/angry_unicorn.png');
+		this.game.load.image('checker', 'img/checker.jpg');
 	},
 	
 	start: function () {
 		// for(var i = 0; i < 200; i++) {
 			// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, XEngine.Mathf.randomIntRange(-100,100), XEngine.Mathf.randomIntRange(-100,100), -200.0, 100), true, true);	
-			this.text = this.game.add.existing(new XEngine.SphereMesh(this.game, 0, 0, -20, 3, 20, 20, 0x999999), true, true);	
-		// }
-		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
-
-		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -500.0, 100), true, true);	
-		// this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 200, 0, -500.0, 100), true, true);	
-		var sprite = this.game.add.bitmapText(0,0, 'font1', 'Hola Mundo!');	
-		this.game.add.sprite(100,0, 'unicorn').color = 0x333333;	
+		
+		this.text = this.game.add.existing(new XEngine.CubeMesh(this.game, 0, 0, -200, 50, 0x003099), true, true);	
 		// text = this.text;
 		
 	},
 	
 	update : function (deltaTime) {
 		// text.rotation += 20 * deltaTime;
-		this.text.transform.rotation.x += 45* deltaTime;
-		this.text.transform.rotation.y += 90* deltaTime;
-		this.text.transform.rotation.z += 20* deltaTime;
+		this.text.transform.rotation.x += 10* deltaTime;
+		this.text.transform.rotation.y += 5* deltaTime;
+		this.text.transform.rotation.z += 2* deltaTime;
 
+		this.sphere.transform.rotation.x += 20* deltaTime;
+		this.sphere.transform.rotation.y += 10* deltaTime;
+		this.sphere.transform.rotation.z += -32* deltaTime;
+
+		
 		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
 	},
 	
