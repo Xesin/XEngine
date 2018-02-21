@@ -166,6 +166,8 @@ namespace XEngine {
 
 		private inputMoveHandler() {
 			let inputPos = this.getInputPosition(event);
+			inputPos.deltaX = this.pointer.x - inputPos.position.x;
+			inputPos.deltaY = this.pointer.y - inputPos.position.y;
 			this.pointer.x = inputPos.position.x;
 			this.pointer.y = inputPos.position.y;
 			let _this = this;
@@ -252,7 +254,7 @@ namespace XEngine {
 			}
 		}
 
-		private getInputPosition(event: any) {
+		private getInputPosition(event: any): any {
 			let rect = this.game.canvas.getBoundingClientRect();
 			let newEvent = {
 				position: {

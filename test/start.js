@@ -41,7 +41,15 @@ Start.prototype = {
 		this.text.shader._setTexture(this.game.cache.image('unicorn')._texture);
 		this.game.add.sprite(10, 10, 'unicorn');
 		// text = this.text;
+		this.game.input.onInputMove.add(this.onMove, this);
 		
+	},
+
+	onMove: function(pointer) {
+		if(this.game.input.pointerDown){
+			this.game.camera.lookAt.x -= pointer.deltaX * this.game.time.deltaTime;
+			this.game.camera.lookAt.y += pointer.deltaY * this.game.time.deltaTime;
+		}
 	},
 	
 	update : function (deltaTime) {
@@ -49,7 +57,26 @@ Start.prototype = {
 		this.text.transform.rotation.x += 10* deltaTime;
 		this.text.transform.rotation.y += 5* deltaTime;
 		this.text.transform.rotation.z += 2* deltaTime;
-		// this.text.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, Math.abs(Math.cos(this.game.time.elapsedTime / 400))));
+		if(this.game.input.isPressed(XEngine.KEY_CODE.W)) {
+			this.game.camera.transform.position.z -= 20*deltaTime;	
+		}else if(this.game.input.isPressed(XEngine.KEY_CODE.S)) {
+			this.game.camera.transform.position.z += 20*deltaTime;	
+		}
+
+		if(this.game.input.isPressed(XEngine.KEY_CODE.A)) {
+			this.game.camera.transform.position.x -= 20*deltaTime;	
+		}else if(this.game.input.isPressed(XEngine.KEY_CODE.D)) {
+			this.game.camera.transform.position.x += 20*deltaTime;	
+		}
+
+		if(this.game.input.isPressed(XEngine.KEY_CODE.R)) {
+			this.game.camera.transform.position.y += 20*deltaTime;	
+		}else if(this.game.input.isPressed(XEngine.KEY_CODE.F)) {
+			this.game.camera.transform.position.y -= 20*deltaTime;	
+		}
+
+		this.text.transform.scale.setTo(XEngine.Mathf.lerp(0.2, 1.2, (Math.cos(this.game.time.elapsedTime / 400) + 1) * 0.5));
+		// this.game.camera.transform.rotation.y += 20*deltaTime;
 	},
 	
 	fin: function () {

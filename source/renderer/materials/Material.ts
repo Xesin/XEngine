@@ -22,7 +22,11 @@ namespace XEngine {
 				type: Uniforms.MAT4X4,
 				value: mat4.create(),
 			};
-			this.baseUniforms.mvMatrix = {
+			this.baseUniforms.modelMatrix = {
+				type: Uniforms.MAT4X4,
+				value: mat4.create(),
+			};
+			this.baseUniforms.viewMatrix = {
 				type: Uniforms.MAT4X4,
 				value: mat4.create(),
 			};

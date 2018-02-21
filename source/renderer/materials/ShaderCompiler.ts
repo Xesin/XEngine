@@ -19,7 +19,8 @@ namespace XEngine {
 			"in vec2 vUv;",
 			"in vec4 aVertexColor;",
 			"uniform mat4 pMatrix;",
-			"uniform mat4 mvMatrix;",
+			"uniform mat4 modelMatrix;",
+			"uniform mat4 viewMatrix;",
 			"uniform mat4 normalMatrix;",
 			"out highp vec2 uv;",
 			"vec4 vertPos;",
@@ -40,7 +41,7 @@ namespace XEngine {
 		public static readonly vertexMain = [
 			"void main(void) {",
 				"vertPos = vec4(aVertexPosition, 1.0);",
-				"mvpMatrix = pMatrix * mvMatrix;",
+				"mvpMatrix = pMatrix * viewMatrix * modelMatrix;",
 				"uv = vUv;",
 				"vColor = aVertexColor;",
 				"alpha = 1.0;//in_alpha;",

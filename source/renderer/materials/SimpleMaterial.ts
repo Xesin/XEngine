@@ -35,7 +35,7 @@ namespace XEngine {
 				gpuLoc:this.getAttribLocation(renderer.context, "aNormal"), 
 				items:3,
 				type:renderer.context.FLOAT,
-				normalized:false,
+				normalized:true,
 				offset:baseStride}
 			);
 

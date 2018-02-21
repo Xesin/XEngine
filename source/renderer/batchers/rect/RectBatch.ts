@@ -102,9 +102,9 @@ namespace XEngine {
 				let index = this.vertexDataBuffer.allocate(24);
 
 				let pos = new XEngine.Vector(0, 0);
-				mat4.identity(gameObject.mvMatrix);
-				gameObject.getWorldMatrix(gameObject.mvMatrix);
-				pos = pos.multiplyMatrix(gameObject.mvMatrix);
+				mat4.identity(gameObject.modelMatrix);
+				gameObject.getWorldMatrix(gameObject.modelMatrix);
+				pos = pos.multiplyMatrix(gameObject.modelMatrix);
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
@@ -117,7 +117,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject.alpha;
 
 				pos.setTo(0, gameObject.height);
-				pos = pos.multiplyMatrix(gameObject.mvMatrix);
+				pos = pos.multiplyMatrix(gameObject.modelMatrix);
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
@@ -130,7 +130,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject.alpha;
 
 				pos.setTo(gameObject.width, 0);
-				pos = pos.multiplyMatrix(gameObject.mvMatrix);
+				pos = pos.multiplyMatrix(gameObject.modelMatrix);
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;
@@ -143,7 +143,7 @@ namespace XEngine {
 				floatBuffer[index++] = gameObject.alpha;
 
 				pos.setTo(gameObject.width, gameObject.height);
-				pos = pos.multiplyMatrix(gameObject.mvMatrix);
+				pos = pos.multiplyMatrix(gameObject.modelMatrix);
 
 				floatBuffer[index++] = pos.x;
 				floatBuffer[index++] = pos.y;

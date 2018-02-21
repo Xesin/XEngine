@@ -11,7 +11,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
-					"vertPos = mvpMatrix * vertPos;",
+					"vertPos = pMatrix * modelMatrix * vertPos;",
 				"}",
 			];
 
@@ -45,7 +45,7 @@ namespace XEngine {
 				"void mainPass() {",
 					"vertPos = mvpMatrix * vertPos;",
 					"uv = uv;",
-					"normal = (normalMatrix * vec4(aNormal, 1.0)).xyz;",
+					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz);",
 				"}",
 			];
 

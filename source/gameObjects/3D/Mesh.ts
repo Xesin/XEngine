@@ -10,6 +10,7 @@ namespace XEngine {
 			this.shader = material === undefined ? XEngine.SimpleMaterial.shader : material;
 			this.geometry = geometry;
 			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+			this.shader.baseUniforms.viewMatrix.value = this.game.camera.viewMatrix;
 			this.shader.initializeShader(this.game.context);
 		}
 
@@ -26,12 +27,16 @@ namespace XEngine {
 			this.geometry.bind();
 
 			if (this.transform.dirty) {
-				this.getWorldMatrix(this.mvMatrix);
-				mat4.invert(this.transposed, this.mvMatrix);
+				this.getWorldMatrix(this.modelMatrix);
+				mat4.invert(this.transposed, this.modelMatrix);
 				mat4.transpose(this.transposed, this.transposed);
 				this.transform.dirty = false;
 			}
-			shader.baseUniforms.mvMatrix.value = this.mvMatrix;
+			if (this.game.camera.dirty) {
+				this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+				this.shader.baseUniforms.viewMatrix.value = this.game.camera.viewMatrix;
+			}
+			shader.baseUniforms.modelMatrix.value = this.modelMatrix;
 			shader.baseUniforms.normalMatrix.value = this.transposed;
 
 			shader.updateUniforms(gl);

@@ -34,7 +34,7 @@ namespace XEngine {
 		public shader: Material;
 		public mask: GameObject;
 		public sprite: string;
-		public mvMatrix: Array<number>;
+		public modelMatrix: Array<number>;
 		protected _uv: Array<number>;
 		protected indexDataBuffer: XEngine.DataBuffer16;
 		protected vertDataBuffer: DataBuffer32;
@@ -91,9 +91,9 @@ namespace XEngine {
 
 			this.mask = null;
 
-			this.mvMatrix = mat4.create();
+			this.modelMatrix = mat4.create();
 
-			mat4.identity(this.mvMatrix);
+			mat4.identity(this.modelMatrix);
 
 			this.pickeable = false;
 			this.downPos = new XEngine.Vector(0, 0);
@@ -140,9 +140,9 @@ namespace XEngine {
 			this.parent.getWorldMatrix(childMatrix);
 			let translation = [this.transform.position.x, this.transform.position.y, this.transform.position.z];
 			if (this.fixedToCamera) {
-				translation[0] += this.game.camera.position.x;
-				translation[1] += this.game.camera.position.y;
-				translation[2] += this.game.camera.position.z;
+				translation[0] += this.game.camera.transform.position.x;
+				translation[1] += this.game.camera.transform.position.y;
+				translation[2] += this.game.camera.transform.position.z;
 			}
 			let anchorX = Math.round(-(this.width * this.anchor.x));
 			let anchorY = Math.round(-(this.height * this.anchor.y));
@@ -177,8 +177,8 @@ namespace XEngine {
 		public _renderToCanvas (context: WebGLRenderingContext) {
 			this.shader.bind(this.game.renderer);
 			this.shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
-			this.getWorldMatrix(this.mvMatrix);
-			this.shader.baseUniforms.mvMatrix.value = this.mvMatrix;
+			this.getWorldMatrix(this.modelMatrix);
+			this.shader.baseUniforms.modelMatrix.value = this.modelMatrix;
 			this.shader.updateUniforms(context);
 
 			if (this._prevHeight !== this.height ||
@@ -247,19 +247,19 @@ namespace XEngine {
 			let minY = worldPos.y - heightAnchor;
 			let maxY = worldPos.y + height - heightAnchor;
 			return {
-				width: width,
 				height: height,
-				minX: minX,
 				maxX: maxX,
-				minY: minY,
 				maxY: maxY,
+				minX: minX,
+				minY: minY,
+				width: width,
 			};
 		}
 
 		public isInsideCamera(): boolean {
 			let bounds = this.getBounds();
 			let worldPos = this.getWorldPos();
-			let cameraPos = this.game.camera.position;
+			let cameraPos = this.game.camera.transform.position;
 			let viewRect = {width: this.game.width, height: this.game.height};
 			if (bounds.maxX < cameraPos.x) { return false; }
 			if (bounds.maxY < cameraPos.y) { return false; }
