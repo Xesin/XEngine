@@ -74,20 +74,8 @@ namespace XEngine {
 								zFar);
 
 				let pos = [this.transform.position.x, this.transform.position.y, this.transform.position.z ];
-				let center = [this.lookAt.x + pos[0], this.lookAt.y + pos[1], this.lookAt.z + pos[2]];
+				let center = [this.lookAt.x, this.lookAt.y, this.lookAt.z];
 				mat4.lookAt(this.viewMatrix, pos, center, [0, 1, 0]);
-
-				let quaternion = quat.create();
-				mat4.getRotation(quaternion, this.viewMatrix);
-				let x = Math.atan2(2 * quaternion[1] * quaternion[3] - 2 * quaternion[0]
-					* quaternion[2] , 1 - 2 * Math.sqrt(quaternion[1]) - 2 * Math.sqrt(quaternion[2]));
-				let y = Math.asin(2* quaternion[0]* quaternion[1] + 2* quaternion[2]* quaternion[3]);
-				let z = Math.atan2(2* quaternion[0]* quaternion[3]-2* quaternion[1]* quaternion[2] ,
-					1 - 2*Math.sqrt(quaternion[0]) - 2*Math.sqrt(quaternion[2]));
-
-				this.transform.rotation.x = x;
-				this.transform.rotation.y = y;
-				this.transform.rotation.z = z;
 
 				mat4.ortho(this.uiMatrix, this.transform.position.x , right, up, this.transform.position.y, 0, 100);
 			}

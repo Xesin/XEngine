@@ -64,6 +64,10 @@ namespace XEngine {
 			this.pendingLoads.push(new XEngine.AudioLoader(audioName, audioUrl, this));
 		}
 
+		public obj(objURL) {
+			this.pendingLoads.push(new XEngine.ObjMtlLoader(objURL, null, this));
+		}
+
 		/**
 		 * Arranca la carga de archivos
 		 * @method XEngine.Loader#startPreload

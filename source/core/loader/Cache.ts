@@ -6,6 +6,7 @@ namespace XEngine {
 		public audios: Array<any>;
 		public json: Array<any>;
 		public bitmapData: Array<BitmapData>;
+		public geometries: IDict<Geometry>;
 		private game: Game;
 
 		constructor (game: Game) {
@@ -13,6 +14,7 @@ namespace XEngine {
 			this.images = new Array();
 			this.audios = new Array();
 			this.json = new Array();
+			this.geometries = new IDict<Geometry>();
 			this.bitmapData = new Array();
 		}
 
@@ -36,6 +38,14 @@ namespace XEngine {
 			return this.json[jsonName];
 		}
 
+		public getGeometry(geoName: string) {
+			if (this.geometries[geoName] === undefined) {
+				console.error("No hay geometria para el nombre: " + geoName);
+			} else {
+				return this.geometries[geoName];
+			}
+		}
+
 		/**
 		 * Borra toda la cache
 		 * @method XEngine.Cache#clearChache
@@ -45,10 +55,12 @@ namespace XEngine {
 			delete this.audios;
 			delete this.json;
 			delete this.bitmapData;
+			delete this.geometries;
 			this.images = new Array();
 			this.audios = new Array();
 			this.json = new Array();
 			this.bitmapData = new Array();
+			this.geometries = new IDict<Geometry>();
 		}
 	}
 }

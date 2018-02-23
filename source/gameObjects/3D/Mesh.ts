@@ -40,8 +40,11 @@ namespace XEngine {
 			shader.baseUniforms.normalMatrix.value = this.transposed;
 
 			shader.updateUniforms(gl);
-
-			gl.drawElements(gl.TRIANGLES, this.geometry.vertexCount, gl.UNSIGNED_SHORT, 0);
+			if (this.geometry.indexed) {
+				gl.drawElements(gl.TRIANGLES, this.geometry.vertexCount, gl.UNSIGNED_SHORT, 0);
+			} else {
+				gl.drawArrays(gl.TRIANGLES, 0, this.geometry.vertexCount);
+			}
 		}
 
 		public reset(x: number, y: number) {

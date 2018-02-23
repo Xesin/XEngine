@@ -28,18 +28,18 @@ namespace XEngine {
 			return baseStride + 12;
 		}
 
-		public getAttributes(renderer: Renderer): Array<any>{
+		public getAttributes(renderer: Renderer): Array<any> {
 			let attrs = super.getAttributes(renderer);
 			let baseStride = super.getAttrStride();
 			attrs.push({
-				gpuLoc:this.getAttribLocation(renderer.context, "aNormal"), 
-				items:3,
-				type:renderer.context.FLOAT,
-				normalized:true,
-				offset:baseStride}
-			);
+				gpuLoc: this.getAttribLocation(renderer.context, "aNormal"),
+				items: 3,
+				type: renderer.context.FLOAT,
+				normalized: true,
+				offset: baseStride,
+			});
 
-			return attrs
+			return attrs;
 		}
 	}
 }

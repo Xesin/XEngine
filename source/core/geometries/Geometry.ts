@@ -4,6 +4,7 @@ namespace XEngine {
 
 		public initialized = false;
 		public vertexCount = 0;
+		public indexed = true;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
@@ -16,11 +17,12 @@ namespace XEngine {
 		protected indexBuffer: IndexBuffer;
 		protected vertexBuffer: VertexBuffer;
 
-		constructor(vertexData:Array<number>, indexData:Array<number>, uvData:Array<number>, normalData:Array<number>) {
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
 			this.normalData = normalData;
+			this.indexed = indexData != null ? true : false;
 		}
 
 		public destroy () {
@@ -34,14 +36,13 @@ namespace XEngine {
 			}
 		}
 
-		public initialize(material: Material, renderer:Renderer) {
+		public initialize(material: Material, renderer: Renderer) {
 			this.gl = renderer.context;
 			renderer.bindMaterial(material);
 			let attributes = material.getAttributes(renderer);
 			let stride = material.getAttrStride();
-			this.vertDataBuffer = new DataBuffer32(stride * this.indexData.length);
-			this.indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
-			
+			this.vertDataBuffer = new DataBuffer32(stride * (this.vertexData.length / 7));
+
 			if (this.indexBuffer) {
 				this.gl.deleteBuffer(this.indexBuffer.buffer);
 				delete this.indexBuffer;
@@ -60,15 +61,12 @@ namespace XEngine {
 				}
 			}
 
-			this.indexBuffer = renderer.resourceManager.createBuffer(
-				this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
-
 			let index = this.vertDataBuffer.allocate(this.vertexData.length);
 			let uvIndex = 0;
 			let colorIndex = 0;
 			let normalIndex = 0;
 			let floatBuffer = this.vertDataBuffer.floatView;
-			let uintIndexBuffer = this.indexDataBuffer.uintView;
+
 			let vertices = this.vertexData;
 			let normals = this.normalData;
 			let uv = this.uvData;
@@ -86,31 +84,39 @@ namespace XEngine {
 				floatBuffer[index++] = x;
 				floatBuffer[index++] = y;
 
-				floatBuffer[index++] = vertices[i++]; //COLOR
-				floatBuffer[index++] = vertices[i++]; //COLOR
-				floatBuffer[index++] = vertices[i++]; //COLOR
-				floatBuffer[index++] = vertices[i]; //COLOR
+				floatBuffer[index++] = vertices[i++]; // COLOR
+				floatBuffer[index++] = vertices[i++]; // COLOR
+				floatBuffer[index++] = vertices[i++]; // COLOR
+				floatBuffer[index++] = vertices[i]; // COLOR
 				floatBuffer[index++] = normals[normalIndex++];
 				floatBuffer[index++] = normals[normalIndex++];
 				floatBuffer[index++] = normals[normalIndex++];
-			}
-
-			let indices = this.indexData;
-			index = this.indexDataBuffer.allocate(indices.length);
-			for (let i = 0; i < indices.length; i++) {
-				uintIndexBuffer[i] = indices[i];
-				this.vertexCount++;
 			}
 
 			this.vertexBuffer.updateResource(floatBuffer, 0);
-			this.indexBuffer.updateResource(uintIndexBuffer, 0);
- 
+			if (this.indexed) {
+				this.indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
+				this.indexBuffer = renderer.resourceManager.createBuffer(
+					this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
+				let uintIndexBuffer = this.indexDataBuffer.uintView;
+				let indices = this.indexData;
+				index = this.indexDataBuffer.allocate(indices.length);
+				for (let i = 0; i < indices.length; i++) {
+					uintIndexBuffer[i] = indices[i];
+					this.vertexCount++;
+				}
+				this.indexBuffer.updateResource(uintIndexBuffer, 0);
+			} else {
+				this.vertexCount = vertices.length / 7;
+			}
 			this.initialized = true;
 		}
 
-		public bind(){
+		public bind() {
 			this.vertexBuffer.bind();
-			this.indexBuffer.bind();
+			if (this.indexed) {
+				this.indexBuffer.bind();
+			}
 		}
 	}
 }
