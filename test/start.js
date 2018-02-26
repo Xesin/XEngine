@@ -53,6 +53,12 @@ Start.prototype = {
 			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(40*deltaTime));
 		}
 
+		if(this.game.input.isDown(XEngine.KEY_CODE.E)){
+			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(40*deltaTime));
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q)){
+			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(40*deltaTime));
+		}
+
 		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
 			this.rot += deltaTime * 1.5;
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){

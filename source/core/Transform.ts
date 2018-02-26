@@ -37,6 +37,15 @@ namespace XEngine {
 			return vf;
 		}
 
+		public right(): Vector3 {
+			let vf = new Vector3(1, 0, 0);
+			this.helperMatrix.extractRotation(this.matrix);
+
+			vf.multiplyMatrix(this.helperMatrix.elements);
+			vf.reflect(new Vector3(1, 0, 0));
+			return vf;
+		}
+
 	}
 
 	Object.defineProperties(Transform.prototype, {
