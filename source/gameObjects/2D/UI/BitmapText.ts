@@ -102,7 +102,7 @@ namespace XEngine {
 				this.start();
 			}
 			if (this.body) {
-				this.body.velocity = new XEngine.Vector(0, 0);
+				this.body.velocity = new XEngine.Vector3(0, 0);
 			}
 		}
 	}

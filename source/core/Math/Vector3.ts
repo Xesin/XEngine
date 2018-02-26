@@ -1,54 +1,8 @@
 namespace XEngine {
 
-	export class Mathf {
+	export class Vector3 {
 
-		public static readonly TO_RADIANS = 0.0174532925199432957;
-		public static readonly TO_DEGREES = 57.2957795130823208767;
-
-		public static randomRange(min: number, max: number): number {
-			return min + (Math.random() * (max - min));
-		}
-
-		public static randomIntRange(min: number, max: number): number {
-			return Math.round(min + Math.random() * (max - min));
-		}
-
-		public static clamp(number: number, min: number, max: number) {
-			return Math.max(Math.min(number, max), min);
-		}
-
-		public static lerp(a: number, b: number, t: number) {
-			t = XEngine.Mathf.clamp(t, 0, 1);
-			return (1 - t) * a + t * b;
-		}
-
-		public static lerpColor(a: string, b: string, amount: number) {
-			let ah = parseInt(a.replace(/#/g, ""), 16),
-				ar = ah >> 16,
-				ag = ah >> 8 & 0xff,
-				ab = ah & 0xff,
-				bh = parseInt(b.replace(/#/g, ""), 16),
-				br = bh >> 16,
-				bg = bh >> 8 & 0xff,
-				bb = bh & 0xff,
-				rr = ar + amount * (br - ar),
-				rg = ag + amount * (bg - ag),
-				rb = ab + amount * (bb - ab);
-
-			return "#" + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
-		}
-
-		public static angleBetween(originX: number, originY: number, targetX: number, targetY: number) {
-			let x = targetX - originX;
-			let y = targetY - originY;
-
-			return (Math.atan2(y, x));
-		}
-	}
-
-	export class Vector {
-
-		public static readonly Zero = new Vector(0);
+		public static readonly Zero = new Vector3(0);
 
 		public x: number;
 		public y: number;
@@ -62,7 +16,7 @@ namespace XEngine {
 		private _y: number;
 		private _z: number;
 
-		constructor (x: number, y = x, z = 1.0) {
+		constructor (x = 1, y = x, z = 1) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -76,7 +30,7 @@ namespace XEngine {
 			this.z = z;
 		}
 
-		public sub(vector: Vector): Vector {
+		public sub(vector: Vector3): Vector3 {
 			this.x -= vector.x;
 			this.y -= vector.y;
 			this.z -= vector.z;
@@ -84,7 +38,7 @@ namespace XEngine {
 			return this;
 		}
 
-		public add(vector: Vector): Vector {
+		public add(vector: Vector3): Vector3 {
 			this.x += vector.x;
 			this.y += vector.y;
 			this.z += vector.z;
@@ -92,14 +46,14 @@ namespace XEngine {
 			return this;
 		}
 
-		public multiply(vector: Vector): Vector {
+		public multiply(vector: Vector3): Vector3 {
 			this.x *= vector.x;
 			this.y *= vector.y;
 			this.z *= vector.z;
 			return this;
 		}
 
-		public multiplyMatrix(matrix: Array<number>): Vector {
+		public multiplyMatrix(matrix: Array<number> | Float32Array): Vector3 {
 			let x = this.x,
 			y = this.y;
 			let z = this.z;
@@ -111,7 +65,7 @@ namespace XEngine {
 			return this;
 		}
 
-		public rotate(angle: number): Vector {
+		public rotate(angle: number): Vector3 {
 			let x = this.x;
 			let y = this.y;
 			this.x = x * Math.cos(angle) - y * Math.sin(angle);
@@ -119,39 +73,51 @@ namespace XEngine {
 			return this;
 		}
 
-		public normalize(): Vector {
+		public normalize(): Vector3 {
 			let d = this.length();
 			if (d > 0) {
 				this.x = this.x / d;
 				this.y = this.y / d;
+				this.z = this.z / d;
 			}
 			return this;
 		}
 
-		public project(vector: Vector): Vector {
+		public project(vector: Vector3): Vector3 {
 			let amt = this.dot(vector) / vector.len2();
 			this.x = amt * vector.x;
 			this.y = amt * vector.y;
+			this.z = amt * vector.z;
 			return this;
 		}
 
-		public scale(x, y = x): Vector {
+		public scalar(scalarNum: number): Vector3 {
+			this.x *= scalarNum;
+			this.y *= scalarNum;
+			this.z *= scalarNum;
+
+			return this;
+		}
+
+		public scale(x, y = x): Vector3 {
 			this.x *= x;
 			this.y *= y;
 			return this;
 		}
 
-		public reflect(axis: Vector): Vector {
+		public reflect(axis: Vector3): Vector3 {
 			let x = this.x;
 			let y = this.y;
+			let z = this.z;
 			this.project(axis).scale(2);
 			this.x -= x;
 			this.y -= y;
+			this.z -= z;
 			return this;
 		}
 
-		public distance(vector: Vector): number {
-			let tmp = new XEngine.Vector(this.x, this.y, this.z);
+		public distance(vector: Vector3): number {
+			let tmp = new XEngine.Vector3(this.x, this.y, this.z);
 			tmp.sub(vector);
 			return tmp.length();
 		}
@@ -164,12 +130,51 @@ namespace XEngine {
 			return Math.sqrt(this.len2());
 		}
 
-		public dot(vec: Vector): number {
-			return this.x * vec.x + this.y * vec.y;
+		public lengthSq(): number {
+			return Math.sqrt(this.length());
+		}
+
+		public dot(vec: Vector3): number {
+			return this.x * vec.x + this.y * vec.y + this.z * vec.z;
+		}
+
+		public crossVectors( a: Vector3, b: Vector3 ) {
+
+			let ax = a.x, ay = a.y, az = a.z;
+			let bx = b.x, by = b.y, bz = b.z;
+
+			this.x = ay * bz - az * by;
+			this.y = az * bx - ax * bz;
+			this.z = ax * by - ay * bx;
+
+			return this;
+		}
+
+		public subVectors( a: Vector3, b: Vector3) {
+			this.x = a.x - b.x;
+			this.y = a.y - b.y;
+			this.z = a.z - b.z;
+
+			return this;
+		}
+
+		public setFromMatrixColumn( m: Mat4, index: number ) {
+
+			return this.fromArray( m.elements, index * 4 );
+		}
+
+		public fromArray(array: Array<number> | Float32Array, offset: number) {
+			if ( offset === undefined ) { offset = 0; }
+
+			this.x = array[ offset ];
+			this.y = array[ offset + 1 ];
+			this.z = array[ offset + 2 ];
+
+			return this;
 		}
 	}
 
-	Object.defineProperties(Vector.prototype, {
+	Object.defineProperties(Vector3.prototype, {
 		x: {
 			enumerable: true,
 

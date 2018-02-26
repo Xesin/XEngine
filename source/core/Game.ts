@@ -82,7 +82,7 @@ namespace XEngine {
 		public add: ObjectFactory;
 		public input: InputManager;
 		public resourceManager: ResourceManager;
-		public readonly position: Vector;
+		public readonly position: Vector3;
 
 		private timer: number;
 		private elapsedTime: number;
@@ -95,7 +95,7 @@ namespace XEngine {
 				this.canvas.id = idContainer;
 			}
 
-			this.position = new Vector(0);
+			this.position = new Vector3(0);
 
 			this.width = width;
 			this.height = height;

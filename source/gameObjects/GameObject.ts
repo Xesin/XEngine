@@ -7,15 +7,15 @@ namespace XEngine {
 		public alive: boolean;
 		public alpha: number;
 		public transform: Transform;
-		public anchor: Vector;
+		public anchor: Vector3;
 		public rotation: number;
 
 		public width: number;
 		public height: number;
 		public isometric: boolean;
 		public pickeable: boolean;
-		public downPos: Vector;
-		public posWhenDown: Vector;
+		public downPos: Vector3;
+		public posWhenDown: Vector3;
 		public color: number;
 		public body: any;
 		public persist: boolean;
@@ -54,7 +54,7 @@ namespace XEngine {
 			this.alive = true;
 			this.alpha = 1.0;
 			this.transform = new Transform();
-			this.anchor = new XEngine.Vector(0, 0);
+			this.anchor = new XEngine.Vector3(0, 0);
 			this.rotation = 0;
 			this.transform.position.setTo(posX, posY, posZ);
 			this.onClick = new XEngine.Signal();
@@ -96,8 +96,8 @@ namespace XEngine {
 			mat4.identity(this.modelMatrix);
 
 			this.pickeable = false;
-			this.downPos = new XEngine.Vector(0, 0);
-			this.posWhenDown = new XEngine.Vector(0, 0);
+			this.downPos = new XEngine.Vector3(0, 0);
+			this.posWhenDown = new XEngine.Vector3(0, 0);
 			this.color = (0xffffff >> 16) + (0xffffff & 0xff00) + ((0xffffff & 0xff) << 16);
 		}
 
@@ -159,7 +159,7 @@ namespace XEngine {
 			let parentPos = this.parent.getWorldPos();
 			let x = this.transform.position.x + parentPos.x;
 			let y = this.transform.position.y + parentPos.y;
-			return new XEngine.Vector(x, y);
+			return new XEngine.Vector3(x, y);
 		}
 
 		public getTotalAlpha () {
@@ -338,7 +338,7 @@ namespace XEngine {
 		}
 
 		public _setVertices(width: number, height: number, color: number, uv: Array<number>) {
-			let pos = new XEngine.Vector(0, 0);
+			let pos = new XEngine.Vector3(0, 0);
 			this._uv = uv;
 			this.width = width;
 			this.height = height;

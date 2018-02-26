@@ -107,7 +107,7 @@ namespace XEngine {
 				let uintBuffer = this.vertexDataBuffer.uintView;
 				let index = this.vertexDataBuffer.allocate(24);
 				let objectAlpha = gameObject.getTotalAlpha();
-				let pos = new XEngine.Vector(0, 0);
+				let pos = new XEngine.Vector3(0, 0);
 				mat4.identity(gameObject.modelMatrix);
 				gameObject.getWorldMatrix(gameObject.modelMatrix);
 				pos = pos.multiplyMatrix(gameObject.modelMatrix);
@@ -117,9 +117,9 @@ namespace XEngine {
 				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[0];
 				floatBuffer[index++] = gameObject._uv[1];
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(0, gameObject.height);
@@ -130,9 +130,9 @@ namespace XEngine {
 				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[2];
 				floatBuffer[index++] = gameObject._uv[3];
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, 0);
@@ -143,9 +143,9 @@ namespace XEngine {
 				floatBuffer[index++] = -0.1;
 				floatBuffer[index++] = gameObject._uv[4];
 				floatBuffer[index++] = gameObject._uv[5];
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
-				floatBuffer[index++] = 1
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
+				floatBuffer[index++] = 1;
 				floatBuffer[index++] = objectAlpha;
 
 				pos.setTo(gameObject.width, gameObject.height);

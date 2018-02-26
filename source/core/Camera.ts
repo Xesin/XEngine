@@ -13,12 +13,12 @@ namespace XEngine {
 		public axis: AXIS;
 		public pMatrix: Array<number>;
 		public uiMatrix: Array<number>;
-		public viewMatrix: Array<number>;
+		public viewMatrix: Mat4;
 		public follow: boolean;
 		public offsetLeft: number;
 		public offsetUp: number;
 		public dirty: boolean;
-		public lookAt: Vector;
+		public lookAt: Vector3;
 
 		private _dirty: boolean;
 
@@ -29,8 +29,9 @@ namespace XEngine {
 			this._dirty = true;
 			this.pMatrix = mat4.create();
 			this.uiMatrix = mat4.create();
-			this.viewMatrix = mat4.create();
-			this.lookAt = new Vector(0 , 0, -1);
+			this.viewMatrix = new Mat4();
+			this.transform.matrix = this.viewMatrix;
+			this.lookAt = new Vector3(0 , 0, -1);
 		}
 
 		public followObject(gameObject: GameObject, offsetLeft: number, offsetUp: number) {
@@ -75,7 +76,9 @@ namespace XEngine {
 
 				let pos = [this.transform.position.x, this.transform.position.y, this.transform.position.z ];
 				let center = [this.lookAt.x, this.lookAt.y, this.lookAt.z];
-				mat4.lookAt(this.viewMatrix, pos, center, [0, 1, 0]);
+				let upVec = new Vector3(0, 1, 0);
+				this.viewMatrix.lookAt(this.transform.position, this.lookAt, upVec);
+				// mat4.lookAt(this.viewMatrix.elements, pos, center, [0, 1, 0]);
 
 				mat4.ortho(this.uiMatrix, this.transform.position.x , right, up, this.transform.position.y, 0, 100);
 			}

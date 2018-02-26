@@ -3,7 +3,7 @@ namespace XEngine {
 	export class Renderer {
 
 		public clearColor: any;
-		public scale: Vector;
+		public scale: Vector3;
 		public context: WebGLRenderingContext;
 		public resourceManager: ResourceManager;
 		public spriteBatch: SpriteBatcher.SpriteBatch;
@@ -18,7 +18,7 @@ namespace XEngine {
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
-			this.scale = new Vector(1);
+			this.scale = new Vector3(1);
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
 			let options = {stencil: true, antialias: true};
 			this.context = canvas.getContext("webgl2", options) as WebGLRenderingContext;

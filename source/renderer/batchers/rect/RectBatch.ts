@@ -101,7 +101,7 @@ namespace XEngine {
 				let uintBuffer = this.vertexDataBuffer.uintView;
 				let index = this.vertexDataBuffer.allocate(24);
 
-				let pos = new XEngine.Vector(0, 0);
+				let pos = new XEngine.Vector3(0, 0);
 				mat4.identity(gameObject.modelMatrix);
 				gameObject.getWorldMatrix(gameObject.modelMatrix);
 				pos = pos.multiplyMatrix(gameObject.modelMatrix);
@@ -183,7 +183,7 @@ namespace XEngine {
 
 				let attributes = shader.getAttributes(this.renderer);
 				let stride = shader.getAttrStride();
-				
+
 				for (const attr in attributes) {
 					if (attributes.hasOwnProperty(attr)) {
 						const element = attributes[attr];

@@ -7,7 +7,7 @@ namespace XEngine {
 		public onInputUp: Signal;
 		public onInputMove: Signal;
 		public pointerDown: boolean;
-		public pointer: Vector;
+		public pointer: Vector3;
 
 		private keysPressed: Array<boolean>;
 		private game: Game;
@@ -21,7 +21,7 @@ namespace XEngine {
 			this.onInputUp = new Signal();
 			this.onInputMove = new Signal();
 			this.pointerDown = false;
-			this.pointer = new Vector(0);
+			this.pointer = new Vector3(0);
 
 			let _this = this;
 			document.addEventListener("keydown", function (event) {
@@ -66,7 +66,7 @@ namespace XEngine {
 			}
 		}
 
-		public isPressed(keyCode: KEY_CODE): boolean {
+		public isDown(keyCode: KEY_CODE): boolean {
 			return this.keysPressed[keyCode];
 		}
 

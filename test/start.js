@@ -30,6 +30,7 @@ Start.prototype = {
 		for(geom in this.game.cache.geometries){
 			this.text = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
+		this.rot = 0;
 
 		this.game.camera.transform.position.y = 30;
 		this.game.camera.transform.position.x = -10;
@@ -45,6 +46,28 @@ Start.prototype = {
 	},
 	
 	update : function (deltaTime) {
+
+		if(this.game.input.isDown(XEngine.KEY_CODE.W)){
+			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(40*deltaTime));
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.S)){
+			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(40*deltaTime));
+		}
+
+		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
+			this.rot += deltaTime * 1.5;
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){
+			this.rot -= deltaTime * 1.5;
+		}
+
+		if(this.game.input.isDown(XEngine.KEY_CODE.R)){
+			this.game.camera.transform.position.y += 20 * deltaTime;
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.F)){
+			this.game.camera.transform.position.y -= 20 * deltaTime;
+		}
+
+		this.game.camera.lookAt.x = Math.cos(this.rot) * 200 + this.game.camera.transform.position.x;
+		this.game.camera.lookAt.z = Math.sin(this.rot) * 200 + this.game.camera.transform.position.z;
+		this.game.camera.lookAt.y = this.game.camera.transform.position.y;
 	},
 	
 	fin: function () {
