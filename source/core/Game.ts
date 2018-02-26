@@ -68,7 +68,7 @@ namespace XEngine {
 
 		public game: Game;
 		public canvas: HTMLCanvasElement;
-		public context: WebGLRenderingContext;
+		public context: WebGL2RenderingContext;
 		public camera: Camera;
 		public audioContext: AudioContext;
 		public load: Loader;

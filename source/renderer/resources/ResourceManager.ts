@@ -2,10 +2,10 @@ namespace XEngine {
 
 	export class ResourceManager {
 
-		private gl: WebGLRenderingContext;
+		private gl: WebGL2RenderingContext;
 		private shaderCache: Array<Material>;
 
-		constructor(gl: WebGLRenderingContext) {
+		constructor(gl: WebGL2RenderingContext) {
 			this.gl = gl;
 			this.shaderCache = new Array();
 		}

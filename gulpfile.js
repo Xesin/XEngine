@@ -17,7 +17,7 @@ var tsProject = tsc.createProject("tsconfig.json");
 gulp.task("build-app", function() {
     return gulp.src([
             "source/**/**.ts",
-            "typings/main.d.ts/",
+            "typings/**/*.d.ts/",
             "source/interfaces/interfaces.d.ts"
         ])
         .pipe(tsProject())
