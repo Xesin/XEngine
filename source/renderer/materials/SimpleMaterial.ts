@@ -6,6 +6,11 @@ namespace XEngine {
 
 		constructor() {
 			super(XEngine.ShaderLib.SimpleShader.vertexShader, XEngine.ShaderLib.SimpleShader.fragmentShader, null);
+			this.depthTest = true;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = false;
+			this.depthWrite = true;
 		}
 
 		// public _setTexture(texture: WebGLTexture) {

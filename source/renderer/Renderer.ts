@@ -44,12 +44,6 @@ namespace XEngine {
 
 		public render() {
 			this.context.clearDepth(1.0);
-			this.context.enable(this.context.DEPTH_TEST);
-			this.context.depthFunc(this.context.LEQUAL);
-			this.context.enable(this.context.CULL_FACE);
-			this.context.cullFace(this.context.BACK);
-			this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
-			this.context.enable(this.context.BLEND);
 
 			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
@@ -91,6 +85,49 @@ namespace XEngine {
 				this.currentMaterial = material;
 				this.context.useProgram(material.shaderProgram);
 				this.currentMaterial.bind(this);
+
+				if (this.currentMaterial.depthWrite) {
+					this.context.depthMask(true);
+				} else {
+					this.context.depthMask(false);
+				}
+
+				if (this.currentMaterial.depthTest) {
+					this.context.enable(this.context.DEPTH_TEST);
+					this.context.depthFunc(this.context.LEQUAL);
+				} else {
+					this.context.disable(this.context.DEPTH_TEST);
+				}
+
+				if (this.currentMaterial.transparent) {
+					switch (this.currentMaterial.blendMode) {
+						case BlendMode.Multiply:
+							this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
+					}
+					this.context.enable(this.context.BLEND);
+				} else {
+					this.context.disable(this.context.BLEND);
+				}
+
+				if (this.currentMaterial.cullFace) {
+					switch (this.currentMaterial.cullMode) {
+						case CullMode.BACK:
+							this.context.cullFace(this.context.BACK);
+							break;
+						case CullMode.FRONT:
+							this.context.cullFace(this.context.FRONT);
+							break;
+						case CullMode.BOTH:
+							this.context.cullFace(this.context.FRONT_AND_BACK);
+							break;
+						case CullMode.NONE:
+							this.context.cullFace(this.context.NONE);
+							break;
+					}
+					this.context.enable(this.context.CULL_FACE);
+				} else {
+					this.context.disable(this.context.CULL_FACE);
+				}
 			}
 		}
 
@@ -125,6 +162,8 @@ namespace XEngine {
 
 				}
 			}
+			VertexBuffer.SetDiry();
+			IndexBuffer.SetDiry();
 		}
 
 		public setScale(x, y) {

@@ -5,6 +5,10 @@ namespace XEngine {
 		public static shader = new CircleMat();
 		constructor() {
 			super(ShaderLib.CircleShader.vertexShader, ShaderLib.CircleShader.fragmentShader);
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = true;
 		}
 	}
 }

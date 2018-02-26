@@ -4,6 +4,19 @@ namespace XEngine {
 
 	};
 
+	export enum BlendMode {
+		Multiply,
+		Add,
+		Substract,
+	}
+
+	export enum CullMode {
+		BACK,
+		FRONT,
+		NONE,
+		BOTH,
+	}
+
 	export class Material {
 
 		public uniforms: any;
@@ -11,11 +24,23 @@ namespace XEngine {
 		public compiled: boolean;
 		public shader: Material;
 
+		public transparent: boolean;
+		public blendMode: BlendMode;
+		public depthTest: boolean;
+		public cullFace: boolean;
+		public cullMode: CullMode;
+		public depthWrite: boolean;
+
 		public shaderProgram: WebGLProgram;
 		private vertexCode: Array<string>;
 		private fragmentCode: Array<string>;
 
 		constructor(vertexCode: Array<string>, fragmentCode: Array<string>, uniforms = {}) {
+			this.transparent = false;
+			this.depthWrite = false;
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
 			this.uniforms = uniforms;
 			this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
 			this.baseUniforms.pMatrix = {
@@ -43,6 +68,7 @@ namespace XEngine {
 		public initializeShader(gl: WebGLRenderingContext) {
 			let vertString = "";
 			let fragmentString = "";
+			this.blendMode = BlendMode.Multiply;
 
 			for (let i = 0; i < this.vertexCode.length; i++) {
 				vertString += this.vertexCode[i] + "\n";
@@ -111,7 +137,7 @@ namespace XEngine {
 				normalized: false,
 				offset: 12,
 				type: renderer.context.FLOAT,
-				},
+			},
 			);
 			attrs.push({
 				gpuLoc: this.getAttribLocation(renderer.context, "aVertexColor"),
@@ -135,10 +161,10 @@ namespace XEngine {
 					this.uniforms[property].value = undefined;
 					this.uniforms[property]._value = uniformValue;
 					Object.defineProperty(this.uniforms[property], "value", {
-						get: function() {
+						get: function () {
 							return this._value;
 						},
-						set: function(val) {
+						set: function (val) {
 							this._value = val;
 							this.dirty = true;
 						},
@@ -154,10 +180,10 @@ namespace XEngine {
 					this.baseUniforms[property].value = undefined;
 					this.baseUniforms[property]._value = uniformValue;
 					Object.defineProperty(this.baseUniforms[property], "value", {
-						get: function() {
+						get: function () {
 							return this._value;
 						},
-						set: function(val) {
+						set: function (val) {
 							this._value = val;
 							this.dirty = true;
 						},

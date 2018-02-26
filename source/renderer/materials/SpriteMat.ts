@@ -5,6 +5,10 @@ namespace XEngine {
 
 		constructor() {
 			super(XEngine.ShaderLib.SpriteShader.vertexShader, XEngine.ShaderLib.SpriteShader.fragmentShader);
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = true;
 		}
 
 		public _setTexture(texture: WebGLTexture) {
