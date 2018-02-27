@@ -23,7 +23,7 @@ var text;
 Start.prototype = {
 	
 	preload: function () {
-		this.game.load.obj('img/sponza2.obj');
+		this.game.load.obj('img/sponza2.obj', 'img/sponza2.mtl');
 	},
 	
 	start: function () {

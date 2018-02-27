@@ -6,6 +6,8 @@ namespace XEngine {
 		public uvs: Array<number>;
 
 		public objects: Array<ObjObject>;
+		public materials: IDict<ObjMaterial>;
+		public currentMaterial: ObjMaterial;
 		private currentObject: ObjObject;
 
 		constructor() {
@@ -14,11 +16,17 @@ namespace XEngine {
 			this.colors = new Array();
 			this.uvs = new Array();
 			this.objects = new Array();
+			this.materials = new IDict();
 		}
 
 		public startObject(name: string, fromDeclaration) {
 			this.currentObject = new ObjObject(name);
 			this.objects.push(this.currentObject);
+		}
+
+		public startMaterial(name: string) {
+			this.currentMaterial = new ObjMaterial(name);
+			this.materials[name] = this.currentMaterial;
 		}
 
 		public parseVertexIndex( value, len ) {
@@ -34,6 +42,10 @@ namespace XEngine {
 		public parseUVIndex( value, len ) {
 			let index = parseInt( value, 10 );
 			return ( index >= 0 ? index - 1 : index + len / 2 ) * 2;
+		}
+
+		public addMaterial(name: string) {
+			this.currentObject.materials.push(name);
 		}
 
 		public addVertexFace(a: number, b: number, c: number ) {
@@ -62,7 +74,7 @@ namespace XEngine {
 
 		public addFaceUV(a: number, b: number, c: number ) {
 
-			let src = this.normals;
+			let src = this.uvs;
 			let dst = this.currentObject.uvs;
 
 			dst.push( src[ a + 0 ], src[ a + 1 ]);

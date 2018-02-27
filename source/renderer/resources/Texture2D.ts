@@ -34,7 +34,12 @@ namespace XEngine {
 			gl.bindTexture(gl.TEXTURE_2D, this._texture);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			if (this.wrapMode === WRAP_MODE.REPEAT) {
-				gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
+				let uinType = "Uint8Array";
+				if (this.image.constructor === Uint8Array) {
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.image);
+				} else {
+					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
+				}
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 			} else {

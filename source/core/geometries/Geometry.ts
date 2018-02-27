@@ -5,6 +5,7 @@ namespace XEngine {
 		public initialized = false;
 		public vertexCount = 0;
 		public indexed = true;
+		public materials = new Array<string>();
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
@@ -17,12 +18,14 @@ namespace XEngine {
 		protected indexBuffer: IndexBuffer;
 		protected vertexBuffer: VertexBuffer;
 
-		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>) {
+		// tslint:disable-next-line:max-line-length
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, materials?: Array<string>) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
 			this.normalData = normalData;
 			this.indexed = indexData != null ? true : false;
+			this.materials = materials || this.materials;
 		}
 
 		public destroy () {

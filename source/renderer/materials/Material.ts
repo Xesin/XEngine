@@ -59,6 +59,7 @@ namespace XEngine {
 				type: Uniforms.MAT4X4,
 				value: mat4.create(),
 			};
+
 			this.shaderProgram = null;
 			this.compiled = false;
 			this.vertexCode = vertexCode;
@@ -205,6 +206,9 @@ namespace XEngine {
 			let valueType = uniform.type;
 			switch (valueType) {
 				case XEngine.Uniforms.INTEGER:
+					gl.uniform1i(uniform.gpuPosition, uniform.value);
+					break;
+				case XEngine.Uniforms.SAMPLER:
 					gl.uniform1i(uniform.gpuPosition, uniform.value);
 					break;
 				case XEngine.Uniforms.FLOAT:

@@ -90,13 +90,13 @@ declare var EXT_disjoint_timer_query: {
 interface WebGL2RenderingContext extends WebGLRenderingContext {
     getIndexedParameter(target: number, index: number): WebGLBuffer | number | null;
     copyBufferSubData(readTarget: number, writeTarget: number, readOffset: number, writeOffset: number, size: number): void;
-    getBufferSubData(target: number, srcByteOffset: number, dstData: ArrayBufferView | SharedArrayBuffer, dstOffset?: number, length?: number): void;
+    getBufferSubData(target: number, srcByteOffset: number, dstData: ArrayBufferView, dstOffset?: number, length?: number): void;
     blitFramebuffer(srcX0: number, srcY0: number, srcX1: number, srcY1: number, dstX0: number, dstY0: number, dstX1: number, dstY1: number, mask: number, filter: number): void;
     framebufferTextureLayer(target: number, attachment: number, texture: WebGLTexture, level: number, layer: number): void;
     invalidateFramebuffer(target: number, attachments: number[]): void;
     invalidateSubFramebuffer(target: number, attachments: number[], x: number, y: number, width: number, height: number): void;
-    bufferData(target: number, srcDataOrSize: number | ArrayBufferView | ArrayBuffer | SharedArrayBuffer, usage: number, srcOffset?: number, length?: number): void;
-    bufferSubData(target: number, dstByteOffset: number, srcData: ArrayBufferView | ArrayBuffer | SharedArrayBuffer, srcOffset?: number, length?: number): void;
+    bufferData(target: number, srcDataOrSize: number | ArrayBufferView | ArrayBuffer, usage: number, srcOffset?: number, length?: number): void;
+    bufferSubData(target: number, dstByteOffset: number, srcData: ArrayBufferView | ArrayBuffer, srcOffset?: number, length?: number): void;
     readBuffer(src: number): void;
     readPixels(x: number, y: number, width: number, height: number, format: number, type: number, offset?: number): void;
     readPixels(x: number, y: number, width: number, height: number, format: number, type: number, dstData: ArrayBufferView | ArrayBuffer, dstOffset?: number): void;

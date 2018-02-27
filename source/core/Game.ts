@@ -151,9 +151,9 @@ namespace XEngine {
 					// 	this.physics.update(this.deltaTime);
 					// 	this.state.currentState.physicsUpdate();
 					// }
-					this.renderQueue = this.renderQueue.removePending();
-					this.renderer.render();
 				}
+				this.renderQueue = this.renderQueue.removePending();
+				this.renderer.render();
 			}
 		}
 

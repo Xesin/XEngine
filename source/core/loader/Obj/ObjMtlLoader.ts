@@ -1,16 +1,19 @@
 namespace XEngine {
-	export class ObjMtlLoader {
+	export class ObjMtlLoader implements BasicLoader {
 
 		public objUrl: string;
 		public mtlUrl: string;
 		public completed: boolean;
+		public isLoading: boolean;
 
 		private loader: Loader;
+		private state: ObjData;
 		private readonly object_pattern = /^[og]\s*(.+)?/;
 		private readonly material_use_pattern = /^usemtl /;
 		private readonly material_library_pattern = /^mtllib /;
 
 		constructor (objUrl: string, mtlUrl: string, loader: Loader, frameWidth = 0, frameHeight = 0) {
+			this.isLoading = false;
 			this.objUrl = objUrl;
 			this.mtlUrl = mtlUrl;
 			this.completed = false;
@@ -18,27 +21,103 @@ namespace XEngine {
 		}
 
 		public load() {
+			this.isLoading = true;
 			let _this = this;
+			this.state =  new ObjData();
 			let request = new XMLHttpRequest();
 			request.open("GET", _this.objUrl, true);
 			let mtlRequest = new XMLHttpRequest();
-			// mtlRequest.open("GET", _this.mtlUrl, true);
+			mtlRequest.open("GET", _this.mtlUrl, true);
 			let objHandler = function () {
 				let objData = request.response;
 				_this.parseObjDataToMesh(objData);
 				_this.completed = true;
 				_this.loader._notifyCompleted();
-				// mtlRequest.send();
 			};
 
 			let mtlHandler = function () {
-
-				_this.loader._notifyCompleted();
+				let mtlData = mtlRequest.response;
+				_this.parseMtlDataToMaterial(mtlData);
+				request.send();
 			};
 
 			request.onload = objHandler;
-			// mtlRequest.onload = objHandler;
-			request.send();
+			mtlRequest.onload = mtlHandler;
+			mtlRequest.send();
+		}
+
+		private parseMtlDataToMaterial(text) {
+			let lines = text.split( "\n" );
+			let info = {};
+			let delimiter_pattern = /\s+/;
+			let state = this.state;
+
+			for ( let i = 0; i < lines.length; i ++ ) {
+
+				let line = lines[ i ];
+				line = line.trim();
+
+				if ( line.length === 0 || line.charAt( 0 ) === "#" ) {
+
+					// Blank line or comment ignore
+					continue;
+
+				}
+
+				let pos = line.indexOf( " " );
+
+				let key = ( pos >= 0 ) ? line.substring( 0, pos ) : line;
+				key = key.toLowerCase();
+
+				let value = ( pos >= 0 ) ? line.substring( pos + 1 ) : "";
+				value = value.trim();
+
+				if ( key === "newmtl" ) {
+
+					// New material
+					state.startMaterial(value);
+					info = { name: value };
+
+				} else if ( info ) {
+
+					if ( key === "ka" || key === "kd" || key === "ks" ) {
+
+						let ss = value.split( delimiter_pattern, 3 );
+						info[ key ] = [ parseFloat( ss[ 0 ] ), parseFloat( ss[ 1 ] ), parseFloat( ss[ 2 ] ), 1.0 ];
+						switch (key) {
+							case "ka":
+								state.currentMaterial.ambient = info[ key ];
+								break;
+							case "kd":
+								state.currentMaterial.diffuse = info[ key ];
+								break;
+							// case "ks":
+							// 	state.currentMaterial.ambient = info[ key ];
+							// 	break;
+						}
+					} else {
+
+						info[ key ] = value;
+						switch (key) {
+							// case "map_ka":
+							// 	state.currentMaterial.ambient = info[ key ];
+							// 	break;
+							case "map_kd":
+								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader._startPreload();
+								state.currentMaterial.albedoTexture = info[ key ];
+								break;
+							case "map_bump":
+								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader._startPreload();
+								state.currentMaterial.normalTexture = info[ key ];
+								break;
+						}
+					}
+
+				}
+
+			}
 		}
 
 		private parseObjDataToMesh(text) {
@@ -59,7 +138,6 @@ namespace XEngine {
 			let line = "", lineFirstChar = "";
 			let lineLength = 0;
 			let result = [];
-			let state =  new ObjData();
 
 			// Faster to just trim left side of the line. Use if available.
 
@@ -85,14 +163,14 @@ namespace XEngine {
 					switch ( data[ 0 ] ) {
 
 						case "v":
-							state.vertices.push(
+							this.state.vertices.push(
 								parseFloat( data[ 1 ] ),
 								parseFloat( data[ 2 ] ),
 								parseFloat( data[ 3 ] ),
 							);
 							if ( data.length === 8 ) {
 
-								state.vertices.push(
+								this.state.vertices.push(
 									parseFloat( data[ 4 ] ),
 									parseFloat( data[ 5 ] ),
 									parseFloat( data[ 6 ] ),
@@ -102,14 +180,14 @@ namespace XEngine {
 							}
 							break;
 						case "vn":
-							state.normals.push(
+							this.state.normals.push(
 								parseFloat( data[ 1 ] ),
 								parseFloat( data[ 2 ] ),
 								parseFloat( data[ 3 ] ),
 							);
 							break;
 						case "vt":
-							state.uvs.push(
+							this.state.uvs.push(
 								parseFloat( data[ 1 ] ),
 								parseFloat( data[ 2 ] ),
 							);
@@ -147,7 +225,7 @@ namespace XEngine {
 						let v2 = faceVertices[ j ];
 						let v3 = faceVertices[ j + 1 ];
 
-						state.addFace(
+						this.state.addFace(
 							v1[ 0 ], v2[ 0 ], v3[ 0 ],
 							v1[ 1 ], v2[ 1 ], v3[ 1 ],
 							v1[ 2 ], v2[ 2 ], v3[ 2 ],
@@ -163,14 +241,27 @@ namespace XEngine {
 					// WORKAROUND: https://bugs.chromium.org/p/v8/issues/detail?id=2869
 					// let name = result[ 0 ].substr( 1 ).trim();
 					let name = ( " " + result[ 0 ].substr( 1 ).trim() ).substr( 1 );
-					state.startObject( name, undefined );
+					this.state.startObject( name, undefined );
+				} else if ( this.material_use_pattern.test( line ) ) {
+
+					// material
+					this.state.addMaterial( line.substring( 7 ).trim() );
+
 				}
 
 			}
 
-			for ( let i = 0, l = state.objects.length; i < l; i ++ ) {
+			// tslint:disable-next-line:forin
+			for (let mat in this.state.materials) {
 
-				let object = state.objects[ i ];
+				let objMat = this.state.materials[ mat ];
+				let material = objMat.createMaterial(this.loader.game.cache);
+				this.loader.game.cache.materials[objMat.name] = material;
+			}
+
+			for ( let i = 0, l = this.state.objects.length; i < l; i ++ ) {
+
+				let object = this.state.objects[ i ];
 				let geometry = object.createGeometry();
 				let hasVertexColors = false;
 				this.loader.game.cache.geometries[object.name] = geometry;

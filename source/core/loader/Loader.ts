@@ -64,8 +64,8 @@ namespace XEngine {
 			this.pendingLoads.push(new XEngine.AudioLoader(audioName, audioUrl, this));
 		}
 
-		public obj(objURL) {
-			this.pendingLoads.push(new XEngine.ObjMtlLoader(objURL, null, this));
+		public obj(objURL, mtlUrl) {
+			this.pendingLoads.push(new XEngine.ObjMtlLoader(objURL, mtlUrl, this));
 		}
 
 		/**
@@ -79,7 +79,9 @@ namespace XEngine {
 				this._callStart();
 			} else {
 				for (let i = 0; i < this.pendingLoads.length; i++) {
-					this.pendingLoads[i].load();
+					if (!this.pendingLoads[i].isLoading) {
+						this.pendingLoads[i].load();
+					}
 				}
 			}
 		}

@@ -1,16 +1,18 @@
 namespace XEngine {
-	export class BitmapXMLLoader {
+	export class BitmapXMLLoader implements BasicLoader {
 		public imageName: string;
 		public imageUrl: string;
 		public completed: boolean;
 		public frameWidth: number;
 		public frameHeight: number;
+		public isLoading: boolean;
 		public xmlUrl: string;
 		private oneCompleted: boolean;
 
 		private loader: Loader;
 
 		constructor (imageName, imageUrl, xmlUrl, loader) {
+			this.isLoading = false;
 			this.imageName = imageName;
 			this.imageUrl = imageUrl;
 			this.xmlUrl = xmlUrl;
@@ -23,6 +25,7 @@ namespace XEngine {
 		}
 
 		public load() {
+			this.isLoading = true;
 			this.loadXML();
 		}
 

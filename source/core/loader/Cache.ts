@@ -7,6 +7,7 @@ namespace XEngine {
 		public json: Array<any>;
 		public bitmapData: Array<BitmapData>;
 		public geometries: IDict<Geometry>;
+		public materials: IDict<Material>;
 		private game: Game;
 
 		constructor (game: Game) {
@@ -15,6 +16,7 @@ namespace XEngine {
 			this.audios = new Array();
 			this.json = new Array();
 			this.geometries = new IDict<Geometry>();
+			this.materials = new IDict<Material>();
 			this.bitmapData = new Array();
 		}
 
@@ -56,11 +58,13 @@ namespace XEngine {
 			delete this.json;
 			delete this.bitmapData;
 			delete this.geometries;
+			delete this.materials;
 			this.images = new Array();
 			this.audios = new Array();
 			this.json = new Array();
 			this.bitmapData = new Array();
 			this.geometries = new IDict<Geometry>();
+			this.materials = new IDict<Material>();
 		}
 	}
 }

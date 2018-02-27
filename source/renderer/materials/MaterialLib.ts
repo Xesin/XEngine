@@ -35,7 +35,7 @@ namespace XEngine {
 			];
 		}
 
-		export class SimpleShader extends ShaderLibObject {
+		export class LambertShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
@@ -53,16 +53,24 @@ namespace XEngine {
 				"#version 300 es",
 				"precision mediump float;",
 				"#XBaseParams",
-				// "uniform sampler2D texSampler;",
+				"uniform vec4 color;",
+				"uniform float smoothness;",
+				"uniform float glossiness;",
+				"uniform sampler2D albedoTex;",
+				"uniform sampler2D normalTex;",
 				"in vec3 normal;",
 
 				"void main(void) {",
 					"fragColor.a = 1.0;",
-					"vec4 texCol = vec4(1.0);//texture(texSampler, uv);",
+					"vec2 _uv = uv;",
+					"_uv += vec2(1.0);",
+					"_uv /= 2.0;",
+					"vec4 texCol = texture(albedoTex, uv);",
+					"vec4 normalCol = texture(normalTex, uv);",
 					"texCol.xyz = texCol.xyz * texCol.a;",
-					"vec3 matColor = mix(vec3(1.0), texCol.xyz * vec3(1.0), texCol.a);",
+					"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 					"float lightColor = pow((dot(normal, vec3(0.3, 0.7, 0.8)) + 1.0) * 0.5, 3.0);",
-					"fragColor.xyz = matColor * lightColor;",
+					"fragColor.xyz = matColor.xyz * lightColor;",
 				"}",
 			];
 		}

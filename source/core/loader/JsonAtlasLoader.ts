@@ -1,16 +1,18 @@
 namespace XEngine {
-	export class JsonImageLoader {
+	export class JsonImageLoader implements BasicLoader {
 		public imageName: string;
 		public imageUrl: string;
 		public completed: boolean;
 		public frameWidth: number;
 		public frameHeight: number;
 		public jsonUrl: string;
+		public isLoading: boolean;
 		private oneCompleted: boolean;
 
 		private loader: Loader;
 
 		constructor (imageName, imageUrl, jsonUrl, loader) {
+			this.isLoading = false;
 			this.imageName = imageName;
 			this.imageUrl = imageUrl;
 			this.jsonUrl = jsonUrl;
@@ -23,6 +25,7 @@ namespace XEngine {
 		}
 
 		public load() {
+			this.isLoading = true;
 			this.loadJson();
 		}
 
