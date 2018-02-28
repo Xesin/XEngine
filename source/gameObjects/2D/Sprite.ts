@@ -39,7 +39,7 @@ namespace XEngine {
 			if (this.columns > 1 || this.rows > 1 || this.json !== undefined) {
 				this.tilled = true;
 			}
-			this.shader = XEngine.SpriteMat.shader;
+			this.materials[0] = XEngine.SpriteMat.shader;
 			this.animation = new AnimationManager(game, this);
 		}
 
@@ -102,7 +102,7 @@ namespace XEngine {
 					endUvX, endUvY,
 				];
 			}
-			this.game.renderer.spriteBatch.addSprite(this, this.shader);
+			this.game.renderer.spriteBatch.addSprite(this, this.materials);
 		}
 
 		public reset(x: number, y: number) {

@@ -31,7 +31,7 @@ namespace XEngine {
 
 		public render: boolean;
 		public fixedToCamera: boolean;
-		public shader: Material;
+		public materials: Array<Material>;
 		public mask: GameObject;
 		public sprite: string;
 		public modelMatrix: Array<number>;
@@ -73,7 +73,7 @@ namespace XEngine {
 			this._prevWidth = 0;
 			this._prevHeight = 0;
 			this._prevPos = {x: 0, y: 0 };
-			this.shader = null;
+			this.materials = new Array();
 
 			this.vertDataBuffer = new XEngine.DataBuffer32(24 * 4);
 
@@ -112,9 +112,11 @@ namespace XEngine {
 		protected onDestroy() { return; }
 
 		public _onInitialize() {
-			if (this.shader) {
-				if (!this.shader.compiled) {
-					this.shader.initializeShader(this.gl);
+			if (this.materials) {
+				for (let i = 0; i < this.materials.length; i ++) {
+					if (!this.materials[i].compiled) {
+						this.materials[i].initializeShader(this.gl);
+					}
 				}
 				this._setBuffers();
 			}
@@ -175,11 +177,11 @@ namespace XEngine {
 		}
 
 		public _renderToCanvas (context: WebGLRenderingContext) {
-			this.shader.bind(this.game.renderer);
-			this.shader.baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
+			this.materials[0].bind(this.game.renderer);
+			this.materials[0].baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 			this.getWorldMatrix(this.modelMatrix);
-			this.shader.baseUniforms.modelMatrix.value = this.modelMatrix;
-			this.shader.updateUniforms(context);
+			this.materials[0].baseUniforms.modelMatrix.value = this.modelMatrix;
+			this.materials[0].updateUniforms(context);
 
 			if (this._prevHeight !== this.height ||
 				this._prevWidth !== this.width ||
@@ -208,11 +210,11 @@ namespace XEngine {
 			gl.enable(gl.STENCIL_TEST);
 			if (this.sprite) {
 				let cache_image = this.game.cache.image(this.sprite);
-				(this.shader as SpriteMat)._setTexture(cache_image._texture);
+				(this.materials[0] as SpriteMat)._setTexture(cache_image._texture);
 			}
 
-			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-			this.shader.updateUniforms(gl);
+			this.materials[0].baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+			this.materials[0].updateUniforms(gl);
 
 			this.vertexBuffer.bind();
 			this.indexBuffer.bind();
@@ -274,9 +276,9 @@ namespace XEngine {
 
 		public setVertices(vertices: Array<number>, indices: Array<number>, uv?: Array<number>, vertColors?: Array<number> | number) {
 			let renderer = this.game.renderer;
-			let material = this.shader;
-			let attributes = material.getAttributes(renderer);
-			let stride = material.getAttrStride();
+			let material = this.materials;
+			let attributes = material[0].getAttributes(renderer);
+			let stride = material[0].getAttrStride();
 			if (this.indexBuffer) {
 				this.gl.deleteBuffer(this.indexBuffer.buffer);
 				delete this.indexBuffer;

@@ -45,7 +45,7 @@ namespace XEngine {
 		}
 
 		public addMaterial(name: string) {
-			this.currentObject.materials.push(name);
+			this.currentObject.addMaterial(name);
 		}
 
 		public addVertexFace(a: number, b: number, c: number ) {

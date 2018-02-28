@@ -6,6 +6,7 @@ namespace XEngine {
 		public vertexCount = 0;
 		public indexed = true;
 		public materials = new Array<string>();
+		public groups: Array<{materialIndex: number, start: number, count: number}>;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
@@ -26,6 +27,7 @@ namespace XEngine {
 			this.normalData = normalData;
 			this.indexed = indexData != null ? true : false;
 			this.materials = materials || this.materials;
+			this.groups = new Array();
 		}
 
 		public destroy () {
@@ -113,6 +115,10 @@ namespace XEngine {
 				this.vertexCount = vertices.length / 7;
 			}
 			this.initialized = true;
+		}
+
+		public addGroup(start, count, materialIndex) {
+			this.groups.push({materialIndex: materialIndex, start: start, count: count});
 		}
 
 		public bind() {

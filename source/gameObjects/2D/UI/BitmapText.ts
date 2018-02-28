@@ -21,7 +21,7 @@ namespace XEngine {
 			this.atlasWidth = cache_image.frameWidth || 10;
 			this.atlasHeight = cache_image.frameHeight || 10;
 			this.transform.position.setTo(posX, posY);
-			this.shader = this.game.renderer.spriteBatch.shader;
+			this.materials[0] = this.game.renderer.spriteBatch.shader;
 			this.setText(text);
 		}
 
@@ -57,7 +57,7 @@ namespace XEngine {
 								(charData.x + charData.width) / this.atlasWidth, 1 - ((charData.y + charData.height) / this.atlasHeight),
 							];
 							newSprite._setVertices(charData.width, charData.height, newSprite.color, uvs);
-							newSprite.shader = this.shader;
+							newSprite.materials = this.materials;
 							newSprite.parent = this;
 							this.spriteArrays.push(newSprite);
 							startX += charData.xadvance;
@@ -89,7 +89,7 @@ namespace XEngine {
 		public _renderToCanvas(gl) {
 			for (let spriteToAdd of this.spriteArrays) {
 				if (spriteToAdd !== undefined) {
-					this.game.renderer.spriteBatch.addSprite(spriteToAdd, this.shader);
+					this.game.renderer.spriteBatch.addSprite(spriteToAdd, this.materials);
 				}
 			}
 		}

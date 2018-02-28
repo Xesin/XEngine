@@ -7,7 +7,7 @@ namespace XEngine {
 			super(game, posX, posY);
 			this.width = width;
 			this.height = height;
-			this.shader = this.game.resourceManager.createMaterial(SimpleColorMat, "colorShader");
+			this.materials[0] = this.game.resourceManager.createMaterial(SimpleColorMat, "colorShader");
 			this.setColor(color);
 		}
 
@@ -16,7 +16,7 @@ namespace XEngine {
 		}
 
 		public _renderToCanvas(gl: WebGLRenderingContext) {
-			this.game.renderer.rectBatch.addRect(this, this.shader);
+			this.game.renderer.rectBatch.addRect(this, this.materials);
 		}
 	}
 }

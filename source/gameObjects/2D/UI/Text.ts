@@ -32,18 +32,18 @@ namespace XEngine {
 			this.context.restore();
 			this.width = textSize.width;
 			this.height = this.size;
-			this.shader = this.game.resourceManager.createMaterial(SpriteMat, "spriteShader");
+			this.materials[0] = this.game.resourceManager.createMaterial(SpriteMat, "spriteShader");
 			this.setText(text);
 		}
 
 		public _beginRender(context: WebGLRenderingContext) {
 			this.updateText();
 			super._beginRender(context);
-			(this.shader as SpriteMat)._setTexture(this.texture);
+			(this.materials[0] as SpriteMat)._setTexture(this.texture);
 		}
 
 		public _renderToCanvas(context: WebGLRenderingContext) {
-			if (this.shader == null) { return; }
+			if (this.materials == null) { return; }
 			super._renderToCanvas(context);
 		}
 
