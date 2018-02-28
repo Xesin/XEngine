@@ -14,7 +14,7 @@ namespace XEngine {
 		}
 
 		public createMaterial(cache: Cache, gl: WebGL2RenderingContext): Material {
-			let mat = new LambertMaterial();
+			let mat = new PhongMaterial();
 			if (this.albedoTexture) {
 				mat.setAlbedo(cache.image(this.albedoTexture)._texture, gl);
 			}

@@ -20,6 +20,7 @@ namespace XEngine {
 			this.geometry = geometry;
 			for (let i = 0; i < this.materials.length; i ++) {
 				this.materials[i].baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+				this.materials[i].baseUniforms.eyePos.value = this.game.camera.transform.position;
 				this.materials[i].baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
 			}
 		}

@@ -64,8 +64,8 @@ namespace XEngine {
 			return this.existing(audioObject, true, false);
 		}
 
-		public mesh(posX: number, posY: number, posZ: number, geometry: Geometry): XEngine.Mesh {
-			let gameObject = new XEngine.Mesh(this.game, posX, posY, posZ, geometry);
+		public mesh(posX: number, posY: number, posZ: number, geometry: Geometry, material?: Material | Array<Material>): XEngine.Mesh {
+			let gameObject = new XEngine.Mesh(this.game, posX, posY, posZ, geometry, material);
 			return this.existing(gameObject, true, true);
 		}
 

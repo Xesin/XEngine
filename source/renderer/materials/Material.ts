@@ -172,7 +172,7 @@ namespace XEngine {
 					gl.uniform2fv(uniform.gpuPosition, uniform.value);
 					break;
 				case XEngine.Uniforms.VECTOR3:
-					gl.uniform3fv(uniform.gpuPosition, uniform.value);
+					gl.uniform3fv(uniform.gpuPosition, [uniform.value.x, uniform.value.y, uniform.value.z]);
 					break;
 				case XEngine.Uniforms.VECTOR4:
 					gl.uniform4fv(uniform.gpuPosition, uniform.value);

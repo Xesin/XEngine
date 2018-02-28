@@ -53,15 +53,15 @@ Start.prototype = {
 			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(40*deltaTime));
 		}
 
-		if(this.game.input.isDown(XEngine.KEY_CODE.E)){
+		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
 			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(40*deltaTime));
-		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q)){
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){
 			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(40*deltaTime));
 		}
 
-		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
+		if(this.game.input.isDown(XEngine.KEY_CODE.E)){
 			this.rot += deltaTime * 1.5;
-		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q)){
 			this.rot -= deltaTime * 1.5;
 		}
 
