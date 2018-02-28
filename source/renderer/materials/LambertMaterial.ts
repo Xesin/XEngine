@@ -4,10 +4,12 @@ namespace XEngine {
 		public static shader = new LambertMaterial();
 		public albedoTexture: WebGLTexture;
 		public normalTexture: WebGLTexture;
-		public emissiveTexture: WebGLTexture;
+		public opacityMask: WebGLTexture;
 		public smoothness: number;
 		public glossiness: number;
 		public color: Array<number>;
+
+		private defines = Array<string>();
 
 		constructor() {
 			super(XEngine.ShaderLib.LambertShader.vertexShader, XEngine.ShaderLib.LambertShader.fragmentShader, null);
@@ -41,23 +43,61 @@ namespace XEngine {
 				type: Uniforms.SAMPLER,
 				value: 1,
 			};
+
+			this.baseUniforms.opacityMask = {
+				type: Uniforms.SAMPLER,
+				value: 2,
+			};
 		}
 
 		// public _setTexture(texture: WebGLTexture) {
 		// 	this.texture = texture;
 		// }
 
-		public _setTexture(texture: WebGLTexture) {
+		public setAlbedo(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+			if (this.albedoTexture === undefined) {
+				this.defines.push("#define ALBEDO");
+				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
+				this.setUniforms(gl);
+			}
 			this.albedoTexture = texture;
+		}
+
+		public setNormal(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+			if (this.normalTexture === undefined) {
+				this.defines.push("#define NORMAL");
+				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
+				this.setUniforms(gl);
+			}
+			this.normalTexture = texture;
+		}
+
+		public setOpacityMask(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+			if (this.opacityMask === undefined) {
+				this.defines.push("#define OPACITY_MASK");
+				this.defines.push("#define MASKED");
+				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
+				this.setUniforms(gl);
+			}
+			this.opacityMask = texture;
 		}
 
 		public bind(renderer: Renderer) {
 			XEngine.Material.prototype.bind.call(this, renderer);
 			if (this.albedoTexture) {
 				renderer.bindTexture(this.albedoTexture, renderer.context.TEXTURE0);
+			} else {
+				renderer.bindTexture(null, renderer.context.TEXTURE0);
 			}
 			if (this.normalTexture) {
 				renderer.bindTexture(this.normalTexture, renderer.context.TEXTURE1);
+			} else {
+				renderer.bindTexture(null, renderer.context.TEXTURE1);
+			}
+			if (this.opacityMask) {
+				renderer.bindTexture(this.opacityMask, renderer.context.TEXTURE2);
+			} else {
+				renderer.bindTexture(null, renderer.context.TEXTURE2);
 			}
 		}
 

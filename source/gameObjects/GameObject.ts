@@ -38,7 +38,7 @@ namespace XEngine {
 		protected _uv: Array<number>;
 		protected indexDataBuffer: XEngine.DataBuffer16;
 		protected vertDataBuffer: DataBuffer32;
-		protected gl: WebGLRenderingContext;
+		protected gl: WebGL2RenderingContext;
 
 		protected indexBuffer: IndexBuffer;
 		protected vertexBuffer: VertexBuffer;

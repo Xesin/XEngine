@@ -32,8 +32,8 @@ namespace XEngine {
 		public depthWrite: boolean;
 
 		public shaderProgram: WebGLProgram;
-		private vertexCode: Array<string>;
-		private fragmentCode: Array<string>;
+		public vertexCode: Array<string>;
+		public fragmentCode: Array<string>;
 
 		constructor(vertexCode: Array<string>, fragmentCode: Array<string>, uniforms = {}) {
 			this.transparent = false;
@@ -64,57 +64,11 @@ namespace XEngine {
 			this.compiled = false;
 			this.vertexCode = vertexCode;
 			this.fragmentCode = fragmentCode;
+			this.blendMode = BlendMode.Multiply;
 		}
 
-		public initializeShader(gl: WebGLRenderingContext) {
-			let vertString = "";
-			let fragmentString = "";
-			this.blendMode = BlendMode.Multiply;
-
-			for (let i = 0; i < this.vertexCode.length; i++) {
-				vertString += this.vertexCode[i] + "\n";
-			}
-
-			vertString = XEngine.ShaderCompiler.compileVertexShader(vertString);
-
-			for (let j = 0; j < this.fragmentCode.length; j++) {
-				fragmentString += this.fragmentCode[j] + "\n";
-			}
-
-			fragmentString = XEngine.ShaderCompiler.compileFragmentShader(fragmentString);
-
-			let vertexShader;
-			let fragmentShader;
-			fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-			vertexShader = gl.createShader(gl.VERTEX_SHADER);
-
-			gl.shaderSource(vertexShader, vertString);
-			gl.compileShader(vertexShader);
-			gl.shaderSource(fragmentShader, fragmentString);
-			gl.compileShader(fragmentShader);
-
-			if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-				alert("vertex shader error: " + gl.getShaderInfoLog(vertexShader) + "\n" + vertexShader);
-				this.compiled = true;
-				return null;
-			}
-
-			if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-				alert("fragment shader error: " + gl.getShaderInfoLog(fragmentShader) + "\n" + fragmentShader);
-				this.compiled = true;
-				return null;
-			}
-
-			this.shaderProgram = gl.createProgram();
-			gl.attachShader(this.shaderProgram, vertexShader);
-			gl.attachShader(this.shaderProgram, fragmentShader);
-			gl.linkProgram(this.shaderProgram);
-
-			if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
-				alert("Could not initialise shaders");
-				this.compiled = true;
-			}
-			this.compiled = true;
+		public initializeShader(gl: WebGL2RenderingContext) {
+			this.shaderProgram = ShaderCompiler.compileShader(gl, this, []);
 			this.setUniforms(gl);
 		}
 

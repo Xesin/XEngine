@@ -5,7 +5,7 @@ namespace XEngine {
 		public diffuse: Array<number>;
 		public albedoTexture: string;
 		public normalTexture: string;
-		public emissiveTexture: string;
+		public opacityMask: string;
 		public smoothness: number;
 		public glossiness: number;
 
@@ -13,13 +13,16 @@ namespace XEngine {
 			this.name = name;
 		}
 
-		public createMaterial(cache: Cache): Material {
+		public createMaterial(cache: Cache, gl: WebGL2RenderingContext): Material {
 			let mat = new LambertMaterial();
 			if (this.albedoTexture) {
-				mat.albedoTexture = cache.image(this.albedoTexture)._texture;
+				mat.setAlbedo(cache.image(this.albedoTexture)._texture, gl);
 			}
 			if (this.normalTexture) {
-				mat.normalTexture = cache.image(this.normalTexture)._texture;
+				mat.setNormal(cache.image(this.normalTexture)._texture, gl);
+			}
+			if (this.opacityMask) {
+				mat.setOpacityMask(cache.image(this.opacityMask)._texture, gl);
 			}
 			mat.smoothness = this.smoothness;
 			mat.glossiness = this.glossiness;

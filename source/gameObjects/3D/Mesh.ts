@@ -18,7 +18,6 @@ namespace XEngine {
 			this.geometry = geometry;
 			this.shader.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
 			this.shader.baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
-			this.shader.initializeShader(this.game.context);
 		}
 
 		public _renderToCanvas(gl: WebGLRenderingContext) {

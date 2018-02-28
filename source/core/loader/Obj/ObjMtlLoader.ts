@@ -112,6 +112,10 @@ namespace XEngine {
 								this.loader._startPreload();
 								state.currentMaterial.normalTexture = info[ key ];
 								break;
+							case "map_d":
+								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader._startPreload();
+								state.currentMaterial.opacityMask = info[ key ];
 						}
 					}
 
@@ -255,7 +259,7 @@ namespace XEngine {
 			for (let mat in this.state.materials) {
 
 				let objMat = this.state.materials[ mat ];
-				let material = objMat.createMaterial(this.loader.game.cache);
+				let material = objMat.createMaterial(this.loader.game.cache, this.loader.game.context);
 				this.loader.game.cache.materials[objMat.name] = material;
 			}
 
