@@ -20,7 +20,7 @@ namespace XEngine {
 			this.depthWrite = true;
 			this.color = [1, 1, 1, 1];
 			this.smoothness = 1;
-			this.glossiness = 32;
+			this.glossiness = 45;
 			this.baseUniforms.color = {
 				type: Uniforms.VECTOR4,
 				value: this.color,
@@ -108,7 +108,7 @@ namespace XEngine {
 
 		public getAttrStride(): number {
 			let baseStride = super.getAttrStride();
-			return baseStride + 12;
+			return baseStride + 24;
 		}
 
 		public getAttributes(renderer: Renderer): Array<any> {
@@ -120,6 +120,13 @@ namespace XEngine {
 				type: renderer.context.FLOAT,
 				normalized: true,
 				offset: baseStride,
+			});
+			attrs.push({
+				gpuLoc: this.getAttribLocation(renderer.context, "aTangent"),
+				items: 3,
+				type: renderer.context.FLOAT,
+				normalized: false,
+				offset: baseStride + 12,
 			});
 
 			return attrs;

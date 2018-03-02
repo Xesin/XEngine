@@ -27,7 +27,8 @@ namespace XEngine {
 			"out vec4 vertexPos;",
 			"out highp vec4 vColor;",
 			"out highp float alpha;",
-			"mat4 mvpMatrix;",
+			"out highp mat4 mvpMatrix;",
+			"out highp mat4 mvMatrix;",
 		];
 
 		public static readonly fragmentBaseParams = [
@@ -36,18 +37,21 @@ namespace XEngine {
 			"in float alpha;",
 			"in vec4 vertexPos;",
 			"out vec4 fragColor;",
+			"mat4 mvpMatrix;",
+			"mat4 mvMatrix;",
 		];
 
 		public static readonly vertexMain = [
 			"void main(void) {",
 				"vertPos = vec4(aVertexPosition, 1.0);",
-				"mvpMatrix = pMatrix * viewMatrix * modelMatrix;",
+				"mvMatrix = viewMatrix * modelMatrix;",
+				"mvpMatrix = pMatrix * mvMatrix;",
 				"uv = vUv;",
 				"vColor = aVertexColor;",
 				"alpha = 1.0;//in_alpha;",
 				"mainPass();",
 				"vertexPos = vertPos;",
-				"gl_Position = vertPos;",
+				"gl_Position = pMatrix * vertPos;",
 			"}",
 		];
 
