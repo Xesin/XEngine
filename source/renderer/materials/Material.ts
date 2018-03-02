@@ -194,7 +194,7 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property)) {
+				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].dirty) {
 					this._setUniform(this.uniforms[property], gl);
 					this.uniforms[property].dirty = false;
 				}
