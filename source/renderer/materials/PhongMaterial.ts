@@ -12,7 +12,7 @@ namespace XEngine {
 		private defines = Array<string>();
 
 		constructor() {
-			super(XEngine.ShaderLib.BlinnPhongShader.vertexShader, XEngine.ShaderLib.BlinnPhongShader.fragmentShader, null);
+			super(XEngine.ShaderLib.BlinnPhongShader.vertexShader, XEngine.ShaderLib.BlinnPhongShader.fragmentShader, {});
 			this.depthTest = true;
 			this.cullFace = true;
 			this.cullMode = CullMode.BACK;
@@ -52,6 +52,21 @@ namespace XEngine {
 			this.baseUniforms.opacityMask = {
 				type: Uniforms.SAMPLER,
 				value: 2,
+			};
+
+			this.uniforms["light.position"] = {
+				type: Uniforms.VECTOR3,
+				value: new Vector3(0.5, 0.5, 0.5),
+			};
+
+			this.uniforms["light.intensity"] = {
+				type: Uniforms.FLOAT,
+				value: 2,
+			};
+
+			this.uniforms["light.color"] = {
+				type: Uniforms.VECTOR3,
+				value: new Vector3(1, 1, 1),
 			};
 		}
 

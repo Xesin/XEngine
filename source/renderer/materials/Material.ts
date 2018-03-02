@@ -112,7 +112,7 @@ namespace XEngine {
 			for (let property in this.uniforms) {
 				if (this.uniforms.hasOwnProperty(property)) {
 					let uniformValue = this.uniforms[property].value;
-					this.baseUniforms[property].dirty = false;
+					this.uniforms[property].dirty = false;
 					this.uniforms[property].value = undefined;
 					this.uniforms[property]._value = uniformValue;
 					Object.defineProperty(this.uniforms[property], "value", {
@@ -194,7 +194,7 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].dirty) {
+				if (this.uniforms.hasOwnProperty(property)) {
 					this._setUniform(this.uniforms[property], gl);
 					this.uniforms[property].dirty = false;
 				}
