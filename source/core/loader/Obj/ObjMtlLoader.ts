@@ -99,9 +99,11 @@ namespace XEngine {
 
 						info[ key ] = value;
 						switch (key) {
-							// case "map_ka":
-							// 	state.currentMaterial.ambient = info[ key ];
-							// 	break;
+							case "map_ka":
+								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader._startPreload();
+								state.currentMaterial.ambientTexture = info[ key ];
+								break;
 							case "map_kd":
 								this.loader.image(info[ key ], "img/" + info[ key ]);
 								this.loader._startPreload();

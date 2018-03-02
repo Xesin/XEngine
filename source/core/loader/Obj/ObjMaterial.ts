@@ -6,6 +6,7 @@ namespace XEngine {
 		public albedoTexture: string;
 		public normalTexture: string;
 		public opacityMask: string;
+		public ambientTexture: string;
 		public smoothness: number;
 		public glossiness: number;
 
@@ -23,6 +24,9 @@ namespace XEngine {
 			}
 			if (this.opacityMask) {
 				mat.setOpacityMask(cache.image(this.opacityMask)._texture, gl);
+			}
+			if (this.ambientTexture) {
+				mat.setAmbient(cache.image(this.ambientTexture)._texture, gl);
 			}
 			mat.smoothness = this.smoothness;
 			mat.glossiness = this.glossiness;

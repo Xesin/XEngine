@@ -5,6 +5,7 @@ namespace XEngine {
 		public albedoTexture: WebGLTexture;
 		public normalTexture: WebGLTexture;
 		public opacityMask: WebGLTexture;
+		public ambientTexture: WebGLTexture;
 		public smoothness: number;
 		public glossiness: number;
 		public color: Array<number>;
@@ -21,6 +22,7 @@ namespace XEngine {
 			this.color = [1, 1, 1, 1];
 			this.smoothness = 1;
 			this.glossiness = 45;
+
 			this.baseUniforms.color = {
 				type: Uniforms.VECTOR4,
 				value: this.color,
@@ -54,6 +56,11 @@ namespace XEngine {
 				value: 2,
 			};
 
+			this.baseUniforms.ambientMap = {
+				type: Uniforms.SAMPLER,
+				value: 3,
+			};
+
 			this.uniforms["light.position"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(0.5, 0.5, 0.5),
@@ -61,7 +68,7 @@ namespace XEngine {
 
 			this.uniforms["light.intensity"] = {
 				type: Uniforms.FLOAT,
-				value: 2,
+				value: 0.8,
 			};
 
 			this.uniforms["light.color"] = {
@@ -102,6 +109,15 @@ namespace XEngine {
 			this.opacityMask = texture;
 		}
 
+		public setAmbient(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+			if (this.ambientTexture === undefined) {
+				this.defines.push("#define AMBIENT_MAP");
+				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
+				this.setUniforms(gl);
+			}
+			this.ambientTexture = texture;
+		}
+
 		public bind(renderer: Renderer) {
 			XEngine.Material.prototype.bind.call(this, renderer);
 			if (this.albedoTexture) {
@@ -118,6 +134,12 @@ namespace XEngine {
 				renderer.bindTexture(this.opacityMask, renderer.context.TEXTURE2);
 			} else {
 				renderer.bindTexture(null, renderer.context.TEXTURE2);
+			}
+
+			if (this.ambientTexture) {
+				renderer.bindTexture(this.ambientTexture, renderer.context.TEXTURE3);
+			} else {
+				renderer.bindTexture(null, renderer.context.TEXTURE3);
 			}
 		}
 
