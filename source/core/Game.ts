@@ -134,6 +134,8 @@ namespace XEngine {
 					this.updateQueue = this.updateQueue.removePending();
 					this.tween.update(this.time.deltaTimeMillis);
 					let queueLength = this.updateQueue.length - 1;
+					this.state.currentState.update(this.time.deltaTime);
+					this.camera.update();
 					for (let i = queueLength; i >= 0; i--) {
 						let gameObject = this.updateQueue[i];
 						if (gameObject.alive) {
@@ -144,16 +146,14 @@ namespace XEngine {
 						}
 					}
 
-					this.state.currentState.update(this.time.deltaTime);
-					this.camera.update();
-
 					// if (this.physics.systemEnabled) {
-					// 	this.physics.update(this.deltaTime);
-					// 	this.state.currentState.physicsUpdate();
-					// }
-				}
-				this.renderQueue = this.renderQueue.removePending();
-				this.renderer.render();
+						// 	this.physics.update(this.deltaTime);
+						// 	this.state.currentState.physicsUpdate();
+						// }
+					}
+					this.renderQueue = this.renderQueue.removePending();
+					this.renderer.render();
+					this.camera.dirty = false;
 			}
 		}
 

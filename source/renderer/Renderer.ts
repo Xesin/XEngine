@@ -10,10 +10,17 @@ namespace XEngine {
 		public rectBatch: RectBatcher.RectBatch;
 		public currentMaterial: Material;
 
+		public depthWriteEnabled: boolean;
+		public depthTestEnabled: boolean;
+		public transparencyEnabled: boolean;
+		public cullFaceEnabled: boolean;
+		public currentCullMode: CullMode;
+
 		private game: Game;
 		private renderer: any;
 		private sprite: string;
 		private currentTexture: WebGLTexture;
+
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
@@ -86,47 +93,58 @@ namespace XEngine {
 				this.context.useProgram(material.shaderProgram);
 				this.currentMaterial.bind(this);
 
-				if (this.currentMaterial.depthWrite) {
-					this.context.depthMask(true);
-				} else {
-					this.context.depthMask(false);
+				if (this.currentMaterial.depthWrite !== this.depthWriteEnabled) {
+					this.depthWriteEnabled = this.currentMaterial.depthWrite;
+					this.context.depthMask(this.currentMaterial.depthWrite);
 				}
 
-				if (this.currentMaterial.depthTest) {
-					this.context.enable(this.context.DEPTH_TEST);
-					this.context.depthFunc(this.context.LEQUAL);
-				} else {
-					this.context.disable(this.context.DEPTH_TEST);
-				}
-
-				if (this.currentMaterial.transparent) {
-					switch (this.currentMaterial.blendMode) {
-						case BlendMode.Multiply:
-							this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
+				if (this.currentMaterial.depthTest !== this.depthTestEnabled) {
+					this.depthTestEnabled = this.currentMaterial.depthTest;
+					if (this.currentMaterial.depthTest) {
+						this.context.enable(this.context.DEPTH_TEST);
+						this.context.depthFunc(this.context.LEQUAL);
+					} else {
+						this.context.disable(this.context.DEPTH_TEST);
 					}
-					this.context.enable(this.context.BLEND);
-				} else {
-					this.context.disable(this.context.BLEND);
 				}
 
-				if (this.currentMaterial.cullFace) {
-					switch (this.currentMaterial.cullMode) {
-						case CullMode.BACK:
-							this.context.cullFace(this.context.BACK);
-							break;
-						case CullMode.FRONT:
-							this.context.cullFace(this.context.FRONT);
-							break;
-						case CullMode.BOTH:
-							this.context.cullFace(this.context.FRONT_AND_BACK);
-							break;
-						case CullMode.NONE:
-							this.context.cullFace(this.context.NONE);
-							break;
+				if (this.currentMaterial.transparent !== this.transparencyEnabled) {
+					this.transparencyEnabled = this.currentMaterial.transparent;
+					if (this.currentMaterial.transparent) {
+						switch (this.currentMaterial.blendMode) {
+							case BlendMode.Multiply:
+								this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
+						}
+						this.context.enable(this.context.BLEND);
+					} else {
+						this.context.disable(this.context.BLEND);
 					}
-					this.context.enable(this.context.CULL_FACE);
-				} else {
-					this.context.disable(this.context.CULL_FACE);
+				}
+
+				if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
+					this.cullFaceEnabled = this.currentMaterial.cullFace;
+					if (this.currentMaterial.cullFace) {
+						if (this.currentMaterial.cullMode !== this.currentCullMode) {
+							this.currentCullMode = this.currentMaterial.cullMode;
+							switch (this.currentMaterial.cullMode) {
+								case CullMode.BACK:
+									this.context.cullFace(this.context.BACK);
+									break;
+								case CullMode.FRONT:
+									this.context.cullFace(this.context.FRONT);
+									break;
+								case CullMode.BOTH:
+									this.context.cullFace(this.context.FRONT_AND_BACK);
+									break;
+								case CullMode.NONE:
+									this.context.cullFace(this.context.NONE);
+									break;
+							}
+						}
+						this.context.enable(this.context.CULL_FACE);
+					} else {
+						this.context.disable(this.context.CULL_FACE);
+					}
 				}
 			}
 		}

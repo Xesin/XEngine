@@ -100,11 +100,11 @@ namespace XEngine {
 	Object.defineProperties(Camera.prototype, {
 		dirty: {
 			get: function() {
-				return this._dirty || this.transform.dirty;
+				return this._dirty || this.transform.dirty || this.lookAt.dirty;
 			},
 
 			set: function(value) {
-				this._dirty = this.transform.dirty = value;
+				this._dirty = this.transform.dirty = this.lookAt.dirty = value;
 			},
 		},
 	});

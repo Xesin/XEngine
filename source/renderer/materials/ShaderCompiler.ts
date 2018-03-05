@@ -15,6 +15,7 @@ namespace XEngine {
 	export class ShaderCompiler {
 
 		public static readonly vertexBaseParams = [
+			"#define MAX_LIGHTS 5",
 			"in vec3 aVertexPosition;",
 			"in vec2 vUv;",
 			"in vec4 aVertexColor;",
@@ -32,6 +33,7 @@ namespace XEngine {
 		];
 
 		public static readonly fragmentBaseParams = [
+			"#define MAX_LIGHTS 5",
 			"in highp vec4 vColor;",
 			"in highp vec2 uv;",
 			"in float alpha;",
@@ -114,7 +116,7 @@ namespace XEngine {
 			gl.linkProgram(shaderProgram);
 
 			if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-				alert("Could not initialise shaders");
+				alert("Could not initialise shaders" + gl.getProgramInfoLog(shaderProgram));
 				material.compiled = true;
 			}
 			material.compiled = true;

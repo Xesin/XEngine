@@ -61,17 +61,17 @@ namespace XEngine {
 				value: 3,
 			};
 
-			this.uniforms["light.position"] = {
+			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(0.5, 0.5, 0.5),
 			};
 
-			this.uniforms["light.intensity"] = {
+			this.uniforms["light[0].intensity"] = {
 				type: Uniforms.FLOAT,
 				value: 0.8,
 			};
 
-			this.uniforms["light.color"] = {
+			this.uniforms["light[0].color"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(1, 1, 1),
 			};
