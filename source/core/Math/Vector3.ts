@@ -15,11 +15,14 @@ namespace XEngine {
 		private _x: number;
 		private _y: number;
 		private _z: number;
+		private _Array: Array<number>;
 
 		constructor (x = 1, y = x, z = 1) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+
+			this._Array = new Array(3);
 
 			this.zOffset = 0;
 		}
@@ -171,6 +174,14 @@ namespace XEngine {
 			this.z = array[ offset + 2 ];
 
 			return this;
+		}
+
+		public toArray(): Array<number> {
+			this._Array[0] = this.x;
+			this._Array[1] = this.y;
+			this._Array[2] = this.z;
+
+			return this._Array;
 		}
 	}
 

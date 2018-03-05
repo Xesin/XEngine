@@ -24,6 +24,11 @@ namespace XEngine {
 		public load() {
 			this.isLoading = true;
 			let _this = this;
+			if (_this.loader.game.cache.images[_this.imageName] !== undefined) {
+				_this.completed = true;
+				_this.loader._notifyCompleted();
+				return;
+			}
 			let newImage = new Texture2D(_this.imageName, _this.frameWidth, _this.frameHeight, 1);
 			let isTga = false;
 			if (_this.imageUrl.split(".").indexOf("tga") !== -1) {

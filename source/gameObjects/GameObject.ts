@@ -140,7 +140,7 @@ namespace XEngine {
 
 		public getWorldMatrix (childMatrix: Array<number>) {
 			this.parent.getWorldMatrix(childMatrix);
-			let translation = [this.transform.position.x, this.transform.position.y, this.transform.position.z];
+			let translation =  this.transform.position.toArray();
 			if (this.fixedToCamera) {
 				translation[0] += this.game.camera.transform.position.x;
 				translation[1] += this.game.camera.transform.position.y;
@@ -152,7 +152,7 @@ namespace XEngine {
 			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
-			mat4.scale(childMatrix, childMatrix, [this.transform.scale.x, this.transform.scale.y, this.transform.scale.z]);
+			mat4.scale(childMatrix, childMatrix, this.transform.scale.toArray());
 			mat4.translate(childMatrix, childMatrix, [anchorX, anchorY, 0]);
 			return childMatrix;
 		}

@@ -21,7 +21,7 @@ namespace XEngine {
 			this.depthWrite = true;
 			this.color = [1, 1, 1, 1];
 			this.smoothness = 1;
-			this.glossiness = 45;
+			this.glossiness = 64;
 
 			this.baseUniforms.color = {
 				type: Uniforms.VECTOR4,

@@ -28,7 +28,7 @@ Start.prototype = {
 	
 	start: function () {
 		for(geom in this.game.cache.geometries){
-			this.text = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
+			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
 		this.rot = 0;
 
