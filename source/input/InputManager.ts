@@ -237,8 +237,8 @@ namespace XEngine {
 		}
 
 		private _pointerInsideBounds(gameObject: GameObject) {
-			if (gameObject.getBounds !== undefined) {
-				let bounds = gameObject.getBounds();
+			if ((gameObject as Object).hasOwnProperty("getBounds")) {
+				let bounds = (gameObject as TwoDObject).getBounds();
 				let worldPos = gameObject.getWorldPos();
 				if (this.pointer.x < (worldPos.x - bounds.width * gameObject.anchor.x)
 				|| this.pointer.x > (worldPos.x + bounds.width * (1 - gameObject.anchor.x))) {

@@ -22,12 +22,12 @@ namespace XEngine {
 			this.wrapMode = wrapMode;
 		}
 
-		public createTexture(gl: WebGLRenderingContext) {
+		public createTexture(gl: WebGL2RenderingContext) {
 			if (this.imageName == null) {return; }
 
 			this._texture = gl.createTexture();
 
-			const internalFormat = gl.RGBA;
+			const internalFormat = gl.SRGB8_ALPHA8;
 			const srcFormat = gl.RGBA;
 			const srcType = gl.UNSIGNED_BYTE;
 
@@ -36,14 +36,18 @@ namespace XEngine {
 			if (this.wrapMode === WRAP_MODE.REPEAT) {
 				let uinType = "Uint8Array";
 				if (this.image.constructor === Uint8Array) {
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.image);
+					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.frameWidth, this.frameHeight, 0, srcFormat, gl.UNSIGNED_BYTE, this.image);
 				} else {
 					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
 				}
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 			} else {
-				gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
+				if (this.image.constructor === Uint8Array) {
+					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.frameWidth, this.frameHeight, 0, srcFormat, gl.UNSIGNED_BYTE, this.image);
+				} else {
+					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
+				}
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			}

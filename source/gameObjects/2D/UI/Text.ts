@@ -1,5 +1,5 @@
 namespace XEngine {
-	export class Text extends GameObject {
+	export class Text extends TwoDObject {
 
 		public font: string;
 		public size: number;

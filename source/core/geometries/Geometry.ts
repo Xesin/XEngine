@@ -103,6 +103,7 @@ namespace XEngine {
 				floatBuffer[index++] = tangents[tangentIndex++];
 				floatBuffer[index++] = tangents[tangentIndex++];
 				floatBuffer[index++] = tangents[tangentIndex++];
+				floatBuffer[index++] = tangents[tangentIndex++];
 			}
 
 			this.vertexBuffer.updateResource(floatBuffer, 0);
@@ -131,10 +132,12 @@ namespace XEngine {
 		public CalculateTangentArray(vertexCount: number) {
 			let tan1 = new Array(vertexCount);
 			let triangleCount = vertexCount / 3;
+			let biTangents = new Array<Vector3>();
 			for (let a = 0; a < triangleCount; a++) {
 				let index1 = a * 21;
 				let index2 = index1 + 7;
 				let index3 = index2 + 7;
+				let normalIndex = a * 3;
 				const v1 = new Vector3(this.vertexData[index1], this.vertexData[index1 + 1], this.vertexData[index1 + 2]);
 				const v2 = new Vector3(this.vertexData[index2], this.vertexData[index2 + 1], this.vertexData[index2 + 2]);
 				const v3 = new Vector3(this.vertexData[index3], this.vertexData[index3 + 1], this.vertexData[index3 + 2]);
@@ -146,39 +149,60 @@ namespace XEngine {
 				const w2 = new Vector3(this.uvData[index2], this.uvData[index2 + 1]);
 				const w3 = new Vector3(this.uvData[index3], this.uvData[index3 + 1]);
 
-				let deltaPos1 = new Vector3().subVectors(v2, v1);
-				let deltaPos2 = new Vector3().subVectors(v3, v1);
+				const x1 = v2.x - v1.x;
+				const x2 = v3.x - v1.x;
+				const y1 = v2.y - v1.y;
+				const y2 = v3.y - v1.y;
+				const z1 = v2.z - v1.z;
+				const z2 = v3.z - v1.z;
+				const s1 = w2.x - w1.x;
+				const s2 = w3.x - w1.x;
+				const t1 = w2.y - w1.y;
+				const t2 = w3.y - w1.y;
 
-				let deltaUV1 = new Vector3().subVectors(w2, w1);
-				let deltaUV2 = new Vector3().subVectors(w3, w1);
+				let tangent: Vector3;
+				let r = 1.0 / (s1 * t2 - s2 * t1);
 
-				let r = 1.0 / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
-				let tangent = (deltaPos1.scalar(deltaUV2.y).sub(deltaPos2.scalar(deltaUV1.y))).scalar(r);
-				if (tangent.x === Infinity) {
-					console.log("fail at triangle " + a);
-					console.log("uv data ", w1, w2, w3 );
+				if (r === Infinity) {
+					tangent = Vector3.Zero;
+				} else {
+					// tslint:disable-next-line:max-line-length
+					tangent = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+				(t2 * z1 - t1 * z2) * r);
 				}
+				let bitangent = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+				(s1 * z2 - s2 * z1) * r);
+				let cross = new Vector3();
+				cross.crossVectors(tangent.normalize(), bitangent.normalize());
 				// this.tangentData.push(1, 1, 1);
 				// this.tangentData.push(1, 1, 1);
 				// this.tangentData.push(1, 1, 1);
-				this.tangentData.push(tangent.x, tangent.y, tangent.z);
-				this.tangentData.push(tangent.x, tangent.y, tangent.z);
-				this.tangentData.push(tangent.x, tangent.y, tangent.z);
+				biTangents.push(bitangent);
+				biTangents.push(bitangent);
+				biTangents.push(bitangent);
+				this.tangentData.push(tangent.x, tangent.y, tangent.z, 1.0);
+				this.tangentData.push(tangent.x, tangent.y, tangent.z, 1.0);
+				this.tangentData.push(tangent.x, tangent.y, tangent.z, 1.0);
 			}
 
-			// for (long a = 0; a < vertexCount; a++)
-			// {
-			// 	const Vector3D& n = normal[a];
-			// 	const Vector3D& t = tan1[a];
+			for (let a = 0; a < vertexCount; a++) {
+				let index1 = a * 3;
+				let index2 = a * 4;
+				let n = new Vector3(this.normalData[index1], this.normalData[index1 + 1], this.normalData[index1 + 2]);
+				let t = new Vector3(this.tangentData[index2], this.tangentData[index2 + 1], this.tangentData[index2 + 2]);
 
-			// 	// Gram-Schmidt orthogonalize
-			// 	tangent[a] = (t - n * Dot(n, t)).Normalize();
-
-			// 	// Calculate handedness
-			// 	tangent[a].w = (Dot(Cross(n, t), tan2[a]) < 0.0F) ? -1.0F : 1.0F;
-			// }
-
-			// delete[] tan1;
+				// Gram-Schmidt orthogonalize
+				let tan = t.sub(n.scalar(n.dot(t))).normalize();
+				this.tangentData[index2] = tan.x;
+				this.tangentData[index2 + 1] = tan.y;
+				this.tangentData[index2 + 2] = tan.z;
+				// // Calculate handedness
+				n = new Vector3(this.normalData[index1], this.normalData[index1 + 1], this.normalData[index1 + 2]);
+				t = new Vector3(this.tangentData[index2], this.tangentData[index2 + 1], this.tangentData[index2 + 2]);
+				let cross = new Vector3();
+				cross.crossVectors(n, t);
+				this.tangentData[index2 + 3] = cross.dot(biTangents[a]) < 0.0 ? -1.0 : 1.0;
+			}
 		}
 
 		public bind() {

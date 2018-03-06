@@ -40,12 +40,17 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"in vec3 aNormal;",
+				"in vec3 aTangent;",
 				"out highp vec3 normal;",
+				"out highp vec3 tangent;",
+				"out highp vec3 bTangent;",
 
 				"void mainPass() {",
 					"vertPos = mvMatrix * vertPos;",
 					"uv = uv;",
 					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz);",
+					"tangent = normalize(aTangent);",
+					"bTangent = normalize(cross(aNormal, tangent));",
 				"}",
 			];
 
@@ -61,8 +66,11 @@ namespace XEngine {
 				"uniform sampler2D normalTex;",
 				"uniform sampler2D opacityMask;",
 				"in vec3 normal;",
+				"in vec3 tangent;",
+				"in vec3 bTangent;",
 
 				"void main(void) {",
+					"mat3 TBN = mat3(tangent, bTangent, normal);",
 					"fragColor.a = 1.0;",
 					"vec3 fragNormal = normal;",
 					"#ifdef ALBEDO",
@@ -88,6 +96,7 @@ namespace XEngine {
 					"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 					"float lightColor = clamp(dot(normal, vec3(0.3, 0.7, 0.8)), 0.0, 1.0);",
 					"fragColor.xyz = matColor.xyz * lightColor;",
+					"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
 				"}",
 			];
 		}
@@ -104,7 +113,7 @@ namespace XEngine {
 				"};",
 
 				"in vec3 aNormal;",
-				"in vec3 aTangent;",
+				"in vec4 aTangent;",
 				"uniform Light light[MAX_LIGHTS];",
 				"uniform vec3 cameraPos;",
 				"out highp vec3 normal;",
@@ -116,10 +125,14 @@ namespace XEngine {
 					"vertPos = mvMatrix * vertPos;",
 					"eyeDir = normalize(mvMatrix * vec4(cameraPos, 0.0) - vertPos).xyz;",
 					"uv = uv;",
-					"tangent = normalize(aTangent);",
-					"bTangent = normalize(cross(aNormal, tangent));",
-					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz);",
+					"tangent = (normalMatrix * vec4(aTangent.xyz, 0.0)).xyz;",
+					"tangent = vec3(aTangent.w);",
+					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz) ;",
+					"bTangent = cross(normal, tangent.xyz) * aTangent.w;",
+					"if(dot(cross(bTangent, tangent), normal) < 0.0){",
+						// "bTangent *= -1.0;",
 					"}",
+				"}",
 				];
 
 				public static readonly fragmentShader = [
@@ -159,9 +172,9 @@ namespace XEngine {
 						"TBN = mat3(tangent, bTangent, normal);",
 						"fragColor.a = 1.0;",
 						"vec3 fragNormal = normal;",
-						"vec3 ambient = vec3(0.2);",
+						"vec3 ambient = vec3(0.0);",
 						"#ifdef AMBIENT_MAP",
-							"ambient = texture(ambientMap, uv, -1.0).xyz * 0.3;",
+							"ambient = texture(ambientMap, uv, -1.0).xyz * 0.0;",
 						"#endif",
 						"#ifdef ALBEDO",
 						"	vec4 texCol = texture(albedoTex, uv, -1.0);",
@@ -189,6 +202,8 @@ namespace XEngine {
 						"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 						"texCol.xyz = texCol.xyz * texCol.a;",
 						"fragColor.xyz = ambient + matColor.xyz * lightColor + specular;",
+						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
+						"fragColor.xyz = tangent;",
 					"}",
 			];
 		}

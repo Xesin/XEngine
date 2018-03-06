@@ -12,7 +12,7 @@ namespace XEngine {
 			private vertexDataBuffer: DataBuffer32;
 			private indexDataBuffer: DataBuffer16;
 			private elementCount: number;
-			private mask: GameObject;
+			private mask: TwoDObject;
 			private vertexCount: number;
 
 			constructor(game: Game, gl: WebGLRenderingContext, renderer: Renderer) {

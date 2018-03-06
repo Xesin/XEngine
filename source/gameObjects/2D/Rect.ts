@@ -1,5 +1,5 @@
 namespace XEngine {
-	export class Rect extends GameObject {
+	export class Rect extends TwoDObject {
 		public width: number;
 		public height: number;
 

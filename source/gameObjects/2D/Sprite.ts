@@ -1,6 +1,6 @@
 namespace XEngine {
 
-	export class Sprite extends GameObject {
+	export class Sprite extends TwoDObject {
 
 		public sprite: string;
 		public frame: string | number;

@@ -1,6 +1,6 @@
 namespace XEngine {
 
-	export class BitmapText extends GameObject {
+	export class BitmapText extends TwoDObject {
 
 		public sprite: string;
 		public bitmapData: BitmapData;

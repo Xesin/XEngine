@@ -30,6 +30,10 @@ Start.prototype = {
 		for(geom in this.game.cache.geometries){
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
+
+		// var sphereGeom = new XEngine.SphereGeometry(1, 40, 40);
+		// this.game.add.mesh(-10, 0, 50, sphereGeom);
+
 		this.rot = 0;
 
 		this.game.camera.transform.position.y = 30;

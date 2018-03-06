@@ -64,16 +64,19 @@ namespace XEngine {
 			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(0.5, 0.5, 0.5),
+				dirty: true,
 			};
 
 			this.uniforms["light[0].intensity"] = {
 				type: Uniforms.FLOAT,
-				value: 0.8,
+				value: 0.6,
+				dirty: true,
 			};
 
 			this.uniforms["light[0].color"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(1, 1, 1),
+				dirty: true,
 			};
 		}
 
@@ -145,7 +148,7 @@ namespace XEngine {
 
 		public getAttrStride(): number {
 			let baseStride = super.getAttrStride();
-			return baseStride + 24;
+			return baseStride + 28;
 		}
 
 		public getAttributes(renderer: Renderer): Array<any> {
@@ -160,7 +163,7 @@ namespace XEngine {
 			});
 			attrs.push({
 				gpuLoc: this.getAttribLocation(renderer.context, "aTangent"),
-				items: 3,
+				items: 4,
 				type: renderer.context.FLOAT,
 				normalized: false,
 				offset: baseStride + 12,

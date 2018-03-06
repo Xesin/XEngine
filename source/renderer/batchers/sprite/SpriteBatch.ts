@@ -14,7 +14,7 @@ namespace XEngine {
 			private elementCount: number;
 			private currentTexture2D: WebGLTexture;
 			private currentSprite: string;
-			private mask: GameObject;
+			private mask: TwoDObject;
 			private vertexCount: number;
 
 			constructor(game: Game, gl: WebGLRenderingContext, renderer: Renderer) {

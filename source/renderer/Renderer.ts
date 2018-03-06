@@ -167,7 +167,7 @@ namespace XEngine {
 				if (Group.prototype.isPrototypeOf(object)) {
 					object._beginRender(_this.context);
 					_this.renderLoop(object.children);
-					object._endRender(_this.context);
+					// object._endRender(_this.context);
 				} else if (!Audio.prototype.isPrototypeOf(object)) {
 					if (!object.alive) {continue; }
 					if (this.game.autoCulling && !object.isInsideCamera()) {continue ; }
@@ -176,7 +176,7 @@ namespace XEngine {
 					if (object.body !== undefined) {
 						object.body._renderBounds(_this.context);
 					}
-					object._endRender(_this.context);
+					// object._endRender(_this.context);
 
 				}
 			}

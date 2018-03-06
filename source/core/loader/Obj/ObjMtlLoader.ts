@@ -225,12 +225,10 @@ namespace XEngine {
 					// Draw an edge between the first vertex and all subsequent vertices to form an n-gon
 
 					let v1 = faceVertices[ 0 ];
-
 					for ( let j = 1, jl = faceVertices.length - 1; j < jl; j ++ ) {
 
 						let v2 = faceVertices[ j ];
 						let v3 = faceVertices[ j + 1 ];
-
 						this.state.addFace(
 							v1[ 0 ], v2[ 0 ], v3[ 0 ],
 							v1[ 1 ], v2[ 1 ], v3[ 1 ],
