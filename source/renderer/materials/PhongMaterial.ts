@@ -36,11 +36,6 @@ namespace XEngine {
 				value: this.glossiness,
 			};
 
-			this.baseUniforms.eyePos = {
-				type: Uniforms.VECTOR3,
-				value: [],
-			};
-
 			this.baseUniforms.albedoTex = {
 				type: Uniforms.SAMPLER,
 				value: 0,
@@ -69,7 +64,7 @@ namespace XEngine {
 
 			this.uniforms["light[0].intensity"] = {
 				type: Uniforms.FLOAT,
-				value: 0.6,
+				value: 0.8,
 				dirty: true,
 			};
 

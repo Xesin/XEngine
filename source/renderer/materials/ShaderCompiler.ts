@@ -38,9 +38,9 @@ namespace XEngine {
 			"in highp vec2 uv;",
 			"in float alpha;",
 			"in vec4 vertexPos;",
+			"in mat4 mvpMatrix;",
+			"in mat4 mvMatrix;",
 			"out vec4 fragColor;",
-			"mat4 mvpMatrix;",
-			"mat4 mvMatrix;",
 		];
 
 		public static readonly vertexMain = [

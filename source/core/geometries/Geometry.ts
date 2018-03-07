@@ -137,7 +137,7 @@ namespace XEngine {
 				let index1 = a * 21;
 				let index2 = index1 + 7;
 				let index3 = index2 + 7;
-				let normalIndex = a * 3;
+
 				const v1 = new Vector3(this.vertexData[index1], this.vertexData[index1 + 1], this.vertexData[index1 + 2]);
 				const v2 = new Vector3(this.vertexData[index2], this.vertexData[index2 + 1], this.vertexData[index2 + 2]);
 				const v3 = new Vector3(this.vertexData[index3], this.vertexData[index3 + 1], this.vertexData[index3 + 2]);

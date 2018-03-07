@@ -71,7 +71,6 @@ namespace XEngine {
 						let imageData = _this.decodeTGA(this.response);
 						let imageRef = _this.loader.game.cache.images[_this.imageName];
 						imageRef.image = imageData.data;
-						_this.completed = true;
 
 						if (_this.frameWidth === 0) {
 							imageRef.frameWidth = imageData.width;
@@ -87,6 +86,8 @@ namespace XEngine {
 							imageRef.frameHeight = _this.frameHeight;
 						}
 						imageRef.createTexture(_this.loader.game.context);
+						_this.completed = true;
+						_this.loader._notifyCompleted();
 					}
 				};
 				xhr.send(null);
