@@ -23,7 +23,7 @@ var text;
 Start.prototype = {
 	
 	preload: function () {
-		this.game.load.obj('img/sponza2.obj', 'img/sponza2.mtl');
+		this.game.load.obj('img/sponza.obj', 'img/sponza.mtl');
 		this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');
 	},
 	
@@ -32,10 +32,10 @@ Start.prototype = {
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
 
-		var mat = new XEngine.PhongMaterial();
-		// mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
-		var sphereGeom = new XEngine.SphereGeometry(1, 40, 40);
-		this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
+		// var mat = new XEngine.PhongMaterial();
+		// // mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
+		// var sphereGeom = new XEngine.SphereGeometry(1, 40, 40);
+		// this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
 
 		this.rot = 0;
 
@@ -55,15 +55,15 @@ Start.prototype = {
 	update : function (deltaTime) {
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.W)){
-			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(40*deltaTime));
+			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(180*deltaTime));
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.S)){
-			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(40*deltaTime));
+			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(180*deltaTime));
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
-			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(40*deltaTime));
+			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(180*deltaTime));
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){
-			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(40*deltaTime));
+			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(180*deltaTime));
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.E)){
@@ -73,9 +73,9 @@ Start.prototype = {
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.R)){
-			this.game.camera.transform.position.y += 20 * deltaTime;
+			this.game.camera.transform.position.y += 90 * deltaTime;
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.F)){
-			this.game.camera.transform.position.y -= 20 * deltaTime;
+			this.game.camera.transform.position.y -= 90 * deltaTime;
 		}
 
 		this.game.camera.lookAt.x = Math.cos(this.rot) * 200 + this.game.camera.transform.position.x;

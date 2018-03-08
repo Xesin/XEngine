@@ -125,7 +125,7 @@ namespace XEngine {
 					"uv = uv;",
 					"tangent = (normalMatrix * vec4(aTangent.xyz, 0.0)).xyz;",
 					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz) ;",
-					"bTangent = normalize(cross(normal, tangent.xyz)* aTangent.w);",
+					"bTangent = normalize(cross(normal, tangent.xyz) * aTangent.w);",
 				"}",
 				];
 
@@ -148,6 +148,7 @@ namespace XEngine {
 					"uniform sampler2D normalTex;",
 					"uniform sampler2D opacityMask;",
 					"uniform sampler2D ambientMap;",
+					"uniform sampler2D specularTex;",
 					"uniform Light light[MAX_LIGHTS];",
 					"in vec3 normal;",
 					"in vec3 tangent;",
@@ -165,6 +166,7 @@ namespace XEngine {
 						"fragColor.a = 1.0;",
 						"vec3 fragNormal = normal;",
 						"vec3 ambient = vec3(0.0);",
+						"vec3 specularColor = vec3(1.0);",
 						"#ifdef AMBIENT_MAP",
 							"ambient = texture(ambientMap, uv, -1.0).xyz * 0.2;",
 						"#endif",
@@ -173,6 +175,10 @@ namespace XEngine {
 						"	ambient *= texCol.xyz;",
 						"#else",
 						"	vec4 texCol = vec4(1.0);",
+						"#endif",
+
+						"#ifdef SPECULAR_COLOR",
+						"	specularColor = texture(specularTex, uv, -1.0).xyz;",
 						"#endif",
 						"#ifdef NORMAL",
 						"	fragNormal = normalize(TBN * decodeNormals(normalTex, uv));",
@@ -191,12 +197,12 @@ namespace XEngine {
 						"viewDir = normalize(vertexPos.xyz);",
 						"reflectDir = normalize(light[0].position + viewDir);",
 						"float lightColor = clamp(dot(fragNormal, light[0].position), 0.0, 1.0) * light[0].intensity;",
-						"float specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * 0.5 * light[0].intensity;",
+						"vec3 specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * specularColor * light[0].intensity;",
 						"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 						"texCol.xyz = texCol.xyz * texCol.a;",
 						"fragColor.xyz = ambient + matColor.xyz * lightColor + specular;",
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
-						// "fragColor.xyz = fragNormal;", // GAMMA CORRECTION
+						// "fragColor.xyz = texCol.xyz;", // GAMMA CORRECTION
 					"}",
 			];
 		}

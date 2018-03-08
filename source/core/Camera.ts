@@ -63,7 +63,7 @@ namespace XEngine {
 			const fieldOfView = 45 * Math.PI / 180;   // in radians
 			const aspect = this.game.width / this.game.height;
 			const zNear = 0.1;
-			const zFar = 1000.0;
+			const zFar = 3500.0;
 
 			// note: glmatrix.js always has the first argument
 			// as the destination to receive the result.

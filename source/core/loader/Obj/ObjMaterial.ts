@@ -7,6 +7,7 @@ namespace XEngine {
 		public normalTexture: string;
 		public opacityMask: string;
 		public ambientTexture: string;
+		public specularTexture: string;
 		public smoothness: number;
 		public glossiness: number;
 
@@ -27,6 +28,9 @@ namespace XEngine {
 			}
 			if (this.ambientTexture) {
 				mat.setAmbient(cache.image(this.ambientTexture)._texture, gl);
+			}
+			if (this.specularTexture) {
+				mat.setSpecular(cache.image(this.specularTexture)._texture, gl);
 			}
 			mat.smoothness = this.smoothness;
 			mat.glossiness = this.glossiness;

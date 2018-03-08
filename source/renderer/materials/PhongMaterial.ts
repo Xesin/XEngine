@@ -6,6 +6,7 @@ namespace XEngine {
 		public normalTexture: WebGLTexture;
 		public opacityMask: WebGLTexture;
 		public ambientTexture: WebGLTexture;
+		public specularTexture: WebGLTexture;
 		public smoothness: number;
 		public glossiness: number;
 		public color: Array<number>;
@@ -54,6 +55,11 @@ namespace XEngine {
 			this.baseUniforms.ambientMap = {
 				type: Uniforms.SAMPLER,
 				value: 3,
+			};
+
+			this.baseUniforms.specularTex = {
+				type: Uniforms.SAMPLER,
+				value: 4,
 			};
 
 			this.uniforms["light[0].position"] = {
@@ -114,6 +120,15 @@ namespace XEngine {
 				this.setUniforms(gl);
 			}
 			this.ambientTexture = texture;
+		}
+
+		public setSpecular(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+			if (this.specularTexture === undefined) {
+				this.defines.push("#define SPECULAR_COLOR");
+				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
+				this.setUniforms(gl);
+			}
+			this.specularTexture = texture;
 		}
 
 		public bind(renderer: Renderer) {

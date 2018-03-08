@@ -118,6 +118,11 @@ namespace XEngine {
 								this.loader.image(info[ key ], "img/" + info[ key ]);
 								this.loader._startPreload();
 								state.currentMaterial.opacityMask = info[ key ];
+								break;
+							case "map_ks":
+								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader._startPreload();
+								state.currentMaterial.specularTexture = info[ key ];
 						}
 					}
 
