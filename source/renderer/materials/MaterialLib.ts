@@ -11,7 +11,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
-					"vertPos = modelMatrix * vertPos;",
+					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
 				"}",
 			];
 
@@ -46,7 +46,6 @@ namespace XEngine {
 				"out highp vec3 bTangent;",
 
 				"void mainPass() {",
-					"vertPos = mvMatrix * vertPos;",
 					"uv = uv;",
 					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz);",
 					"tangent = normalize(aTangent.xyz);",
@@ -121,7 +120,6 @@ namespace XEngine {
 				"out highp vec3 bTangent;",
 
 				"void mainPass() {",
-					"vertPos = mvMatrix * vertPos;",
 					"uv = uv;",
 					"tangent = (normalMatrix * vec4(aTangent.xyz, 0.0)).xyz;",
 					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz) ;",
@@ -194,15 +192,17 @@ namespace XEngine {
 						"		discard;",
 						"	}",
 						"#endif",
-						"viewDir = normalize(vertexPos.xyz);",
+						"viewDir = normalize(mat3(viewMatrix) * vWorldPos.xyz);",
 						"reflectDir = normalize(light[0].position + viewDir);",
-						"float lightColor = clamp(dot(fragNormal, light[0].position), 0.0, 1.0) * light[0].intensity;",
+						"vec3 lightDir = normalize((mat3(modelMatrix) * light[0].position) - vWorldPos.xyz);",
+						"float lightColor = clamp(dot(fragNormal, lightDir), 0.0, 1.0) * light[0].intensity;",
 						"vec3 specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * specularColor * light[0].intensity;",
 						"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 						"texCol.xyz = texCol.xyz * texCol.a;",
 						"fragColor.xyz = ambient + matColor.xyz * lightColor + specular;",
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
-						// "fragColor.xyz = texCol.xyz;", // GAMMA CORRECTION
+						// tslint:disable-next-line:max-line-length
+						"fragColor.xyz = vec3(lightColor);", // GAMMA CORRECTION
 					"}",
 			];
 		}
@@ -212,7 +212,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
-					"vertPos = mvMatrix * vertPos;",
+					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
 				"}",
 			];
 
@@ -232,7 +232,7 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 				"void mainPass() {",
-					"vertPos = mvMatrix * vertPos;",
+					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
 				"}",
 			];
 

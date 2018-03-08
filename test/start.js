@@ -24,7 +24,7 @@ Start.prototype = {
 	
 	preload: function () {
 		this.game.load.obj('img/sponza.obj', 'img/sponza.mtl');
-		this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');
+		// this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');
 	},
 	
 	start: function () {
@@ -32,10 +32,10 @@ Start.prototype = {
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
 
-		// var mat = new XEngine.PhongMaterial();
-		// // mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
-		// var sphereGeom = new XEngine.SphereGeometry(1, 40, 40);
-		// this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
+		var mat = new XEngine.PhongMaterial();
+		// mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
+		var sphereGeom = new XEngine.BoxGeometry(10, 10, 10);
+		this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
 
 		this.rot = 0;
 

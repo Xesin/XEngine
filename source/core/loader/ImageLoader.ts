@@ -112,10 +112,10 @@ namespace XEngine {
 				return null;
 			}
 
-			if (imagetype !== 2) {
-				console.error("Unsupported TGA format:", imagetype);
-				return null;
-			}
+			// if (imagetype !== 2) {
+			// 	console.error("Unsupported TGA format:", imagetype);
+			// 	return null;
+			// }
 
 			data = new Uint8Array(width * height * 4);
 			i = contentOffset;

@@ -64,7 +64,7 @@ namespace XEngine {
 
 			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
-				value: new Vector3(0.5, 0.5, 0.5),
+				value: new Vector3(0.5, 10.5, 0.5),
 				dirty: true,
 			};
 
