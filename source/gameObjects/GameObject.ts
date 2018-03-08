@@ -110,9 +110,9 @@ namespace XEngine {
 				translation[2] += this.game.camera.transform.position.z;
 			}
 			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
 			mat4.scale(childMatrix, childMatrix, this.transform.scale.toArray());
 			return childMatrix;
 		}
