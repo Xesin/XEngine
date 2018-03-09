@@ -194,15 +194,21 @@ namespace XEngine {
 
 		public updateUniforms(gl: WebGLRenderingContext) {
 			for (const property in this.uniforms) {
-				if (this.uniforms.hasOwnProperty(property) && this.uniforms[property].dirty) {
+				if (this.uniforms.hasOwnProperty(property) && (this.uniforms[property].dirty || this.uniforms[property].value.dirty)) {
 					this._setUniform(this.uniforms[property], gl);
 					this.uniforms[property].dirty = false;
+					if (typeof(this.uniforms[property].value) === "object" ) {
+						this.uniforms[property].value.dirty = false;
+					}
 				}
 			}
 			for (let property in this.baseUniforms) {
-				if (this.baseUniforms.hasOwnProperty(property) && this.baseUniforms[property].dirty) {
+				if (this.baseUniforms.hasOwnProperty(property) && (this.baseUniforms[property].dirty || this.baseUniforms[property].value.dirty)) {
 					this._setUniform(this.baseUniforms[property], gl);
 					this.baseUniforms[property].dirty = false;
+					if (typeof(this.baseUniforms[property].value) === "object" ) {
+						this.baseUniforms[property].value.dirty = false;
+					}
 				}
 			}
 		}

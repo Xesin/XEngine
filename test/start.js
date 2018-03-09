@@ -13,6 +13,18 @@ function initGame(){
    game.setBackgroundColor(100,100,100, 255);
 }
 
+function setLight(value, value1, value2) {
+	for(var mat in game.cache.materials){
+		game.cache.materials[mat].uniforms["light[0].position"].value.setTo(value, value1, value2);
+	}
+}
+
+function setNormal(value, value1, value2) {
+	for(var mat in game.cache.materials){
+		game.cache.materials[mat].baseUniforms["normalIntensity"].value = value;
+	}
+}
+
 var Start = function (game) {
 	
 };

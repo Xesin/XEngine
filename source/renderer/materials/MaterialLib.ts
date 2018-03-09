@@ -105,25 +105,12 @@ namespace XEngine {
 				"#version 300 es",
 				"#XBaseParams",
 
-				"struct Light{",
-					"highp float intensity;",
-					"highp vec3 position;",
-					"highp vec3 color;",
-				"};",
-
 				"in vec3 aNormal;",
-				"in vec4 aTangent;",
-				"uniform Light light[MAX_LIGHTS];",
-				"out highp vec3 normal;",
-				"out highp vec3 viewDir;",
-				"out highp vec3 tangent;",
-				"out highp vec3 bTangent;",
+				"vec3 viewDir;",
+				"out vec3 normal;",
 
 				"void mainPass() {",
-					"uv = uv;",
-					"tangent = (normalMatrix * vec4(aTangent.xyz, 0.0)).xyz;",
 					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz) ;",
-					"bTangent = normalize(cross(normal, tangent.xyz) * aTangent.w);",
 				"}",
 				];
 
@@ -137,11 +124,13 @@ namespace XEngine {
 						"highp float intensity;",
 						"highp vec3 position;",
 						"highp vec3 color;",
+						"int type;",
 					"};",
 
 					"uniform vec4 color;",
 					"uniform float smoothness;",
 					"uniform float glossiness;",
+					"uniform float normalIntensity;",
 					"uniform sampler2D albedoTex;",
 					"uniform sampler2D normalTex;",
 					"uniform sampler2D opacityMask;",
@@ -149,8 +138,6 @@ namespace XEngine {
 					"uniform sampler2D specularTex;",
 					"uniform Light light[MAX_LIGHTS];",
 					"in vec3 normal;",
-					"in vec3 tangent;",
-					"in vec3 bTangent;",
 					"vec3 viewDir;",
 					"vec3 reflectDir;",
 					"mat3 TBN;",
@@ -159,8 +146,29 @@ namespace XEngine {
 					"	return texture(normalTex, uv, -1.0).xyz * 2.0 - 1.0;",
 					"}",
 
+					"vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {",
+
+						// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
+
+						"vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );",
+						"vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );",
+						"vec2 st0 = dFdx( uv.st );",
+						"vec2 st1 = dFdy( uv.st );",
+
+						"vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
+						"vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
+						"vec3 cST = cross(S, T);",
+						"if(dot(cST, surf_norm) < 0.0) S *= -1.0;",
+						"vec3 N = surf_norm;",
+
+						"vec3 mapN = decodeNormals( normalTex, uv );",
+						"mapN.xy = normalIntensity * mapN.xy;",
+						"mat3 tsn = mat3( S, T, N );",
+						"vec3 abNormals = normalize( tsn * mapN );",
+						"return abNormals;",
+					"}",
+
 					"void main(void) {",
-						"TBN = mat3(tangent, bTangent, normal);",
 						"fragColor.a = 1.0;",
 						"vec3 fragNormal = normal;",
 						"vec3 ambient = vec3(0.0);",
@@ -179,7 +187,7 @@ namespace XEngine {
 						"	specularColor = texture(specularTex, uv, -1.0).xyz;",
 						"#endif",
 						"#ifdef NORMAL",
-						"	fragNormal = normalize(TBN * decodeNormals(normalTex, uv));",
+						"	fragNormal = perturbNormal2Arb(vWorldPos.xyz, normal);",
 						"#endif",
 						"#ifdef MASKED",
 						"	#ifdef OPACITY_MASK",
@@ -192,17 +200,23 @@ namespace XEngine {
 						"		discard;",
 						"	}",
 						"#endif",
-						"viewDir = normalize(mat3(viewMatrix) * vWorldPos.xyz);",
-						"reflectDir = normalize(light[0].position + viewDir);",
-						"vec3 lightDir = normalize((mat3(modelMatrix) * light[0].position) - vWorldPos.xyz);",
-						"float lightColor = clamp(dot(fragNormal, lightDir), 0.0, 1.0) * light[0].intensity;",
-						"vec3 specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * specularColor * light[0].intensity;",
+						"vec3 lightPos = light[0].position;",
+						"vec3 lightDir;",
+						"if(light[0].type == 0){ //DIRECTIONAL LIGHT",
+							"lightDir = normalize(lightPos);",
+						"} else{ //POINT LIGHT",
+							"lightDir =normalize(lightPos - vWorldPos.xyz);",
+						"}",
+						"viewDir = normalize(-vViewPos.xyz);",
+						"reflectDir = normalize(lightDir + viewDir);",
+						"float lightColor = max(dot(fragNormal, lightDir), 0.0);",
+						"float specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * light[0].intensity;",
 						"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
 						"texCol.xyz = texCol.xyz * texCol.a;",
 						"fragColor.xyz = ambient + matColor.xyz * lightColor + specular;",
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
 						// tslint:disable-next-line:max-line-length
-						"fragColor.xyz = vec3(lightColor);", // GAMMA CORRECTION
+						// "fragColor.xyz = vec3(lightColor);", // GAMMA CORRECTION
 					"}",
 			];
 		}

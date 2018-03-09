@@ -9,6 +9,7 @@ namespace XEngine {
 		public specularTexture: WebGLTexture;
 		public smoothness: number;
 		public glossiness: number;
+		public normalIntensity: number;
 		public color: Array<number>;
 
 		private defines = Array<string>();
@@ -22,7 +23,8 @@ namespace XEngine {
 			this.depthWrite = true;
 			this.color = [1, 1, 1, 1];
 			this.smoothness = 1;
-			this.glossiness = 64;
+			this.glossiness = 32;
+			this.normalIntensity = 1.0;
 
 			this.baseUniforms.color = {
 				type: Uniforms.VECTOR4,
@@ -35,6 +37,10 @@ namespace XEngine {
 			this.baseUniforms.glossiness = {
 				type: Uniforms.FLOAT,
 				value: this.glossiness,
+			};
+			this.baseUniforms.normalIntensity = {
+				type: Uniforms.FLOAT,
+				value: this.normalIntensity,
 			};
 
 			this.baseUniforms.albedoTex = {
@@ -64,7 +70,7 @@ namespace XEngine {
 
 			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
-				value: new Vector3(0.5, 10.5, 0.5),
+				value: new Vector3(0.5, 0.5, 0.5),
 				dirty: true,
 			};
 
@@ -77,6 +83,12 @@ namespace XEngine {
 			this.uniforms["light[0].color"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(1, 1, 1),
+				dirty: true,
+			};
+
+			this.uniforms["light[0].type"] = {
+				type: Uniforms.INTEGER,
+				value: 0,
 				dirty: true,
 			};
 		}
@@ -158,7 +170,7 @@ namespace XEngine {
 
 		public getAttrStride(): number {
 			let baseStride = super.getAttrStride();
-			return baseStride + 28;
+			return baseStride + 12;
 		}
 
 		public getAttributes(renderer: Renderer): Array<any> {
@@ -170,13 +182,6 @@ namespace XEngine {
 				type: renderer.context.FLOAT,
 				normalized: true,
 				offset: baseStride,
-			});
-			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "aTangent"),
-				items: 4,
-				type: renderer.context.FLOAT,
-				normalized: false,
-				offset: baseStride + 12,
 			});
 
 			return attrs;

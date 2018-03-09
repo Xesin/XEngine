@@ -108,7 +108,7 @@ namespace XEngine {
 
 		public getAttrStride(): number {
 			let baseStride = super.getAttrStride();
-			return baseStride + 28;
+			return baseStride + 12;
 		}
 
 		public getAttributes(renderer: Renderer): Array<any> {
@@ -120,13 +120,6 @@ namespace XEngine {
 				type: renderer.context.FLOAT,
 				normalized: true,
 				offset: baseStride,
-			});
-			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "aTangent"),
-				items: 4,
-				type: renderer.context.FLOAT,
-				normalized: false,
-				offset: baseStride + 12,
 			});
 
 			return attrs;
