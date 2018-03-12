@@ -226,7 +226,7 @@ namespace XEngine {
 						"	}",
 						"#endif",
 						"vec3 lightPos = light[0].position;",
-						"vec3 viewDir = normalize(vViewPos.xyz);",
+						"vec3 viewDir = inverse(mat3(mvMatrix)) * normalize(vViewPos.xyz); //View space to world space",
 						"vec3 lightDir;",
 						"if(light[0].type == 0){ //DIRECTIONAL LIGHT",
 							"lightDir = normalize(lightPos);",
@@ -242,7 +242,7 @@ namespace XEngine {
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
 						"fragColor.a = diffuseColor.a;",
 						// tslint:disable-next-line:max-line-length
-						// "fragColor.xyz = specularColor.rgb * texCol.rgb;", // GAMMA CORRECTION
+						// "fragColor.xyz = vec3(saturate(dot(fragNormal, viewDir)));", // GAMMA CORRECTION
 					"}",
 			];
 		}
