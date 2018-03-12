@@ -59,7 +59,7 @@ namespace XEngine {
 				"mvMatrix = viewMatrix * modelMatrix;",
 				"mvpMatrix = pMatrix * mvMatrix;",
 				"vClipPos = mvpMatrix * vObjectPos;",
-				"vViewPos = viewMatrix * modelMatrix * vObjectPos;",
+				"vViewPos = -(mvMatrix * vObjectPos);",
 				"gl_Position = vClipPos;",
 				"uv = vUv;",
 				"vColor = aVertexColor;",

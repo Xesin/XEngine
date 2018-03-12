@@ -23,7 +23,7 @@ namespace XEngine {
 			this.depthWrite = true;
 			this.color = [1, 1, 1, 1];
 			this.smoothness = 1;
-			this.glossiness = 32;
+			this.glossiness = 24;
 			this.normalIntensity = 1.0;
 
 			this.baseUniforms.color = {
@@ -70,7 +70,7 @@ namespace XEngine {
 
 			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
-				value: new Vector3(0.5, 0.5, 0.5),
+				value: new Vector3(0.3, 0.5, 0.8),
 				dirty: true,
 			};
 
@@ -165,6 +165,12 @@ namespace XEngine {
 				renderer.bindTexture(this.ambientTexture, renderer.context.TEXTURE3);
 			} else {
 				renderer.bindTexture(null, renderer.context.TEXTURE3);
+			}
+
+			if (this.specularTexture) {
+				renderer.bindTexture(this.specularTexture, renderer.context.TEXTURE4);
+			} else {
+				renderer.bindTexture(null, renderer.context.TEXTURE4);
 			}
 		}
 

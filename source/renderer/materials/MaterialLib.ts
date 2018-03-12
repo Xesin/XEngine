@@ -106,7 +106,6 @@ namespace XEngine {
 				"#XBaseParams",
 
 				"in vec3 aNormal;",
-				"vec3 viewDir;",
 				"out vec3 normal;",
 
 				"void mainPass() {",
@@ -119,6 +118,9 @@ namespace XEngine {
 					"precision mediump float;",
 					"#include DEFINES",
 					"#XBaseParams",
+
+					"#define saturate(a) clamp( a, 0.0, 1.0 )",
+					"#define RECIPROCAL_PI 0.31830988618",
 
 					"struct Light{",
 						"highp float intensity;",
@@ -138,8 +140,6 @@ namespace XEngine {
 					"uniform sampler2D specularTex;",
 					"uniform Light light[MAX_LIGHTS];",
 					"in vec3 normal;",
-					"vec3 viewDir;",
-					"vec3 reflectDir;",
 					"mat3 TBN;",
 
 					"vec3 decodeNormals(sampler2D normalSampler, vec2 uv){",
@@ -168,11 +168,36 @@ namespace XEngine {
 						"return abNormals;",
 					"}",
 
+					"vec3 Fresnel_Schlick( const in vec3 specularColor, const in float dotLH ) {",
+						"float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );",
+						"return ( 1.0 - specularColor ) * fresnel + specularColor;",
+					"}",
+
+					"float BlinnPhong( const in float shininess, const in float dotNH ) {",
+						"return RECIPROCAL_PI * ( shininess * 0.5 + 1.0 ) * pow( dotNH, shininess );",
+					"}",
+
+					// tslint:disable-next-line:max-line-length
+					"vec3 specular_BlinnPhong(const in vec3 lightDir, const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float shininess){",
+						"vec3 halfDir = normalize(lightDir + viewDir);",
+						"float NdH = saturate(dot(normal, halfDir));",
+						"float LdH = saturate(dot(lightDir, halfDir));",
+						"vec3 F = Fresnel_Schlick(specularColor, LdH);",
+						"float G = 0.25;",
+						"float D = BlinnPhong(shininess, NdH);",
+						"return F * (G * D);",
+					"}",
+
+					"vec3 diffuse_BlinnPhong(const in vec3 lightDir, const in vec3 surfaceNormal, const in vec3 diffuseColor){",
+						"float NdL = saturate(dot(surfaceNormal, lightDir));",
+						"return NdL * diffuseColor;",
+					"}",
+
 					"void main(void) {",
 						"fragColor.a = 1.0;",
 						"vec3 fragNormal = normal;",
 						"vec3 ambient = vec3(0.0);",
-						"vec3 specularColor = vec3(1.0);",
+						"vec4 specularColor = vec4(1.0);",
 						"#ifdef AMBIENT_MAP",
 							"ambient = texture(ambientMap, uv, -1.0).xyz * 0.2;",
 						"#endif",
@@ -184,7 +209,7 @@ namespace XEngine {
 						"#endif",
 
 						"#ifdef SPECULAR_COLOR",
-						"	specularColor = texture(specularTex, uv, -1.0).xyz;",
+						"	specularColor = texture(specularTex, uv, -1.0);",
 						"#endif",
 						"#ifdef NORMAL",
 						"	fragNormal = perturbNormal2Arb(vWorldPos.xyz, normal);",
@@ -195,28 +220,29 @@ namespace XEngine {
 						"	#else",
 						"		vec4 mask = vec4(1.0);",
 						"	#endif",
-						"	bool clip = texCol.a - 0.1 < 0.0 || mask.r - 0.1 < 0.0;",
+						"	bool clip = (texCol.a * color.a) - 0.1 < 0.0 || mask.r - 0.1 < 0.0;",
 						"	if(clip){",
 						"		discard;",
 						"	}",
 						"#endif",
 						"vec3 lightPos = light[0].position;",
+						"vec3 viewDir = normalize(vViewPos.xyz);",
 						"vec3 lightDir;",
 						"if(light[0].type == 0){ //DIRECTIONAL LIGHT",
 							"lightDir = normalize(lightPos);",
 						"} else{ //POINT LIGHT",
 							"lightDir =normalize(lightPos - vWorldPos.xyz);",
 						"}",
-						"viewDir = normalize(-vViewPos.xyz);",
-						"reflectDir = normalize(lightDir + viewDir);",
-						"float lightColor = max(dot(fragNormal, lightDir), 0.0);",
-						"float specular = pow(max(dot(reflectDir, fragNormal), 0.0), glossiness) * light[0].intensity;",
-						"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
-						"texCol.xyz = texCol.xyz * texCol.a;",
-						"fragColor.xyz = ambient + matColor.xyz * lightColor + specular;",
-						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
+						"vec4 diffuseColor = texCol * color;",
+						"diffuseColor.rgb *= diffuseColor.a; //PREMULTIPLY ALPHA",
+						"vec3 reflectDir = normalize(lightDir + viewDir);",
+						"vec3 diffuseDirect = diffuse_BlinnPhong(lightDir, fragNormal, diffuseColor.rgb);",
+						"vec3 specular = specular_BlinnPhong(lightDir, viewDir, fragNormal, specularColor.rgb, glossiness);",
+						"fragColor.xyz = ambient + diffuseDirect + specular;",
+						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
+						"fragColor.a = diffuseColor.a;",
 						// tslint:disable-next-line:max-line-length
-						// "fragColor.xyz = vec3(lightColor);", // GAMMA CORRECTION
+						// "fragColor.xyz = specularColor.rgb * texCol.rgb;", // GAMMA CORRECTION
 					"}",
 			];
 		}
