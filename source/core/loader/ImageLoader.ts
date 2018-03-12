@@ -68,7 +68,7 @@ namespace XEngine {
 				xhr.responseType = "arraybuffer";
 				xhr.onload = function() {
 					if (this.status === 200) {
-						let imageData = _this.decodeTGA(this.response);
+						let imageData = TGAParser.parse(this.response);
 						let imageRef = _this.loader.game.cache.images[_this.imageName];
 						imageRef.image = imageData.data;
 
@@ -93,49 +93,6 @@ namespace XEngine {
 				xhr.send(null);
 			}
 			_this.loader.game.cache.images[newImage.imageName] = newImage;
-		}
-
-		private decodeTGA(arrayBuffer) {
-			let content = new Uint8Array(arrayBuffer),
-				contentOffset = 18 + content[0],
-				imagetype = content[2], // 2 = rgb, only supported format for now
-				width = content[12] + (content[13] << 8),
-				height = content[14] + (content[15] << 8),
-				bpp = content[16], // should be 8,16,24,32
-
-				bytesPerPixel = bpp / 8,
-				bytesPerRow = width * 4,
-				data, i, j, x, y;
-
-			if (!width || !height) {
-				console.error("Invalid dimensions");
-				return null;
-			}
-
-			// if (imagetype !== 2) {
-			// 	console.error("Unsupported TGA format:", imagetype);
-			// 	return null;
-			// }
-
-			data = new Uint8Array(width * height * 4);
-			i = contentOffset;
-
-			// Oy, with the flipping of the rows...
-			for (y = height - 1; y >= 0; --y) {
-				for (x = 0; x < width; ++x, i += bytesPerPixel) {
-					j = (x * 4) + (y * bytesPerRow);
-					data[j] = content[i + 2];
-					data[j + 1] = content[i + 1];
-					data[j + 2] = content[i + 0];
-					data[j + 3] = (bpp === 32 ? content[i + 3] : 255);
-				}
-			}
-
-			return {
-				width: width,
-				height: height,
-				data: data,
-			};
 		}
 	}
 }
