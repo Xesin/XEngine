@@ -40,8 +40,10 @@ Start.prototype = {
 	},
 	
 	start: function () {
-		var dirLight = this.game.add.pointLight(1.0, 200.0);
-		dirLight.transform.position.setTo(0.0, 0.0, 0.0);
+		var dirLight = this.game.add.pointLight(200.0, 200.0);
+		dirLight.transform.position.setTo(0.0, 100.0, 0.0);
+		dirLight = this.game.add.pointLight(200.0, 100.0);
+		dirLight.transform.position.setTo(400.0, 100.0, 0.0);
 		for(geom in this.game.cache.geometries){
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}

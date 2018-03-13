@@ -73,35 +73,37 @@ namespace XEngine {
 				value: new Vector3(0.0, 0.0, 0.0),
 			};
 
-			this.uniforms["light[0].position"] = {
-				type: Uniforms.VECTOR3,
-				value: new Vector3(0.3, 0.5, 0.8),
-				dirty: true,
-			};
+			for (let i = 0; i < 5; i++) {
+				this.uniforms["light[" + i + "].position"] = {
+					type: Uniforms.VECTOR3,
+					value: new Vector3(0, 0, 0),
+					dirty: true,
+				};
 
-			this.uniforms["light[0].intensity"] = {
-				type: Uniforms.FLOAT,
-				value: 0.8,
-				dirty: true,
-			};
+				this.uniforms["light[" + i + "].intensity"] = {
+					type: Uniforms.FLOAT,
+					value: 1,
+					dirty: true,
+				};
 
-			this.uniforms["light[0].color"] = {
-				type: Uniforms.VECTOR3,
-				value: new Vector3(1, 1, 1),
-				dirty: true,
-			};
+				this.uniforms["light[" + i + "].color"] = {
+					type: Uniforms.VECTOR3,
+					value: new Vector3(1, 1, 1),
+					dirty: true,
+				};
 
-			this.uniforms["light[0].type"] = {
-				type: Uniforms.INTEGER,
-				value: 0,
-				dirty: true,
-			};
+				this.uniforms["light[" + i + "].type"] = {
+					type: Uniforms.INTEGER,
+					value: 0,
+					dirty: true,
+				};
 
-			this.uniforms["light[0].range"] = {
-				type: Uniforms.FLOAT,
-				value: 1,
-				dirty: true,
-			};
+				this.uniforms["light[" + i + "].range"] = {
+					type: Uniforms.FLOAT,
+					value: 1,
+					dirty: true,
+				};
+			}
 
 			this.lightOn = true;
 		}
