@@ -60,6 +60,7 @@ namespace XEngine {
 		public isMobile: boolean;
 		public updateQueue: Array<GameObject>;
 		public renderQueue: Array<GameObject>;
+		public lights: Array<Light>;
 		public pause: boolean;
 		public worldWidth: number;
 		public worldHeight: number;
@@ -131,6 +132,7 @@ namespace XEngine {
 				if (this.pause) { return; }
 				if (this.state.currentState == null) { return; }
 				if (!this.load.preloading) {
+					this.lights = this.lights.removePending();
 					this.updateQueue = this.updateQueue.removePending();
 					this.tween.update(this.time.deltaTimeMillis);
 					let queueLength = this.updateQueue.length - 1;
@@ -182,6 +184,17 @@ namespace XEngine {
 					this.renderQueue.splice(i, 1);
 				}
 			}
+
+			for (let i = this.lights.length - 1; i >= 0; i--) {
+				let gameObject = this.lights[i];
+				if (!gameObject.persist) {
+					gameObject.destroy();
+					if (gameObject.body !== undefined) {
+						gameObject.body.destroy();
+					}
+					this.lights.splice(i, 1);
+				}
+			}
 			// this.physics._destroy();
 			// this.tween._destroy();
 			delete this.camera;
@@ -203,6 +216,7 @@ namespace XEngine {
 		private init() {
 			this.updateQueue = new Array();
 			this.renderQueue = new Array();
+			this.lights = new Array();
 			this.pause = false;
 			this.state = new StateManager(this);
 			this.add = new ObjectFactory(this);

@@ -40,18 +40,20 @@ Start.prototype = {
 	},
 	
 	start: function () {
+		var dirLight = this.game.add.pointLight(1.0, 200.0);
+		dirLight.transform.position.setTo(0.0, 0.0, 0.0);
 		for(geom in this.game.cache.geometries){
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}
 
-		var mat = new XEngine.PhongMaterial();
-		// mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
-		var sphereGeom = new XEngine.BoxGeometry(10, 10, 10);
-		this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
+		// var mat = new XEngine.PhongMaterial();
+		// // mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
+		// var sphereGeom = new XEngine.SphereGeometry(20, 40, 40);
+		// this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
 
 		this.rot = 0;
 
-		// this.game.camera.transform.position.y = 30;
+		this.game.camera.transform.position.y = 60;
 		// this.game.camera.transform.position.x = -10;
 		this.game.camera.lookAt.x = -500;
 		this.game.camera.lookAt.y = 5;

@@ -3,5 +3,6 @@ namespace XEngine {
 		public type: LightType;
 		public intensity: number;
 		public lightColor: Vector3;
+		public range: number;
 	}
 }

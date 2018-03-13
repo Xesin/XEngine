@@ -20,11 +20,12 @@ namespace XEngine {
 			this.geometry = geometry;
 			for (let i = 0; i < this.materials.length; i ++) {
 				this.materials[i].baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+				this.materials[i].baseUniforms.eyePos.value = this.game.camera.transform.position;
 				this.materials[i].baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
 			}
 		}
 
-		public _renderToCanvas(gl: WebGLRenderingContext) {
+		public _renderToCanvas(gl: WebGL2RenderingContext) {
 			let renderer = this.game.renderer;
 			let vertexDataBuffer = this.vertDataBuffer;
 			let geometry = this.geometry;
@@ -45,11 +46,14 @@ namespace XEngine {
 				renderer.bindMaterial(this.materials[i]);
 				if (this.game.camera.dirty) {
 					this.materials[i].baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+					this.materials[i].baseUniforms.eyePos.value = this.game.camera.transform.position;
 					this.materials[i].baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
 				}
 				this.materials[i].baseUniforms.modelMatrix.value = this.modelMatrix;
 				this.materials[i].baseUniforms.normalMatrix.value = this.transposed;
-
+				if (this.materials[i].lightOn) {
+					this.materials[i].updateLights(gl, this.game.lights);
+				}
 				this.materials[i].updateUniforms(gl);
 			}
 

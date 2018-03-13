@@ -120,12 +120,15 @@ namespace XEngine {
 					"#XBaseParams",
 
 					"#define saturate(a) clamp( a, 0.0, 1.0 )",
+					"#define Square(a) ( a * a )",
 					"#define RECIPROCAL_PI 0.31830988618",
+					"#define PI 3.14159265358979323",
 
 					"struct Light{",
 						"highp float intensity;",
 						"highp vec3 position;",
 						"highp vec3 color;",
+						"highp float range;",
 						"int type;",
 					"};",
 
@@ -133,6 +136,7 @@ namespace XEngine {
 					"uniform float smoothness;",
 					"uniform float glossiness;",
 					"uniform float normalIntensity;",
+					"uniform vec3 eyePos;",
 					"uniform sampler2D albedoTex;",
 					"uniform sampler2D normalTex;",
 					"uniform sampler2D opacityMask;",
@@ -181,16 +185,25 @@ namespace XEngine {
 					"vec3 specular_BlinnPhong(const in vec3 lightDir, const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float shininess){",
 						"vec3 halfDir = normalize(lightDir + viewDir);",
 						"float NdH = saturate(dot(normal, halfDir));",
+						"float NdL = saturate(dot(lightDir, normal)); //FOR PREVENTING ARTIFACTS",
 						"float LdH = saturate(dot(lightDir, halfDir));",
 						"vec3 F = Fresnel_Schlick(specularColor, LdH);",
 						"float G = 0.25;",
 						"float D = BlinnPhong(shininess, NdH);",
-						"return F * (G * D);",
+						"return F * (G * D) * NdL;",
 					"}",
 
 					"vec3 diffuse_BlinnPhong(const in vec3 lightDir, const in vec3 surfaceNormal, const in vec3 diffuseColor){",
 						"float NdL = saturate(dot(surfaceNormal, lightDir));",
 						"return NdL * diffuseColor;",
+					"}",
+
+					// tslint:disable-next-line:max-line-length
+					"float getAttenuation(const in vec3 lightPos, const in vec3 worldPos, const in float range, const in float lightIntensity){",
+						"vec3 toLight = lightPos - worldPos;",
+						"float att = dot(toLight, toLight);",
+						"att = (1.0 / (att + range)) * range * lightIntensity;",
+						"return 1.0 - (1.0 / pow(att + 1.0, 2.2));",
 					"}",
 
 					"void main(void) {",
@@ -226,24 +239,30 @@ namespace XEngine {
 						"	}",
 						"#endif",
 						"vec3 lightPos = light[0].position;",
-						"vec3 viewDir = inverse(mat3(mvMatrix)) * normalize(vViewPos.xyz); //View space to world space",
+						"float lightRange = light[0].range;",
+						"float lightIntensity = light[0].intensity;",
+						"vec3 viewDir = normalize(eyePos - vWorldPos.xyz); //View space to world space",
 						"vec3 lightDir;",
+						"float atten = lightIntensity;",
 						"if(light[0].type == 0){ //DIRECTIONAL LIGHT",
 							"lightDir = normalize(lightPos);",
 						"} else{ //POINT LIGHT",
 							"lightDir =normalize(lightPos - vWorldPos.xyz);",
+							"//Attenuation",
+							"float maxDistance = pow( lightRange, 0.30);",
+							"float quadDistance = pow( distance(lightPos, vWorldPos.xyz), 0.23);",
+							"atten = getAttenuation(lightPos, vWorldPos.xyz, lightRange, lightIntensity);",
 						"}",
 						"vec4 diffuseColor = texCol * color;",
 						"diffuseColor.rgb *= diffuseColor.a; //PREMULTIPLY ALPHA",
-						"vec3 reflectDir = normalize(lightDir + viewDir);",
-						"vec3 diffuseDirect = diffuse_BlinnPhong(lightDir, fragNormal, diffuseColor.rgb);",
-						"vec3 specular = specular_BlinnPhong(lightDir, viewDir, fragNormal, specularColor.rgb, glossiness);",
+						"vec3 diffuseDirect = diffuse_BlinnPhong(lightDir, fragNormal, diffuseColor.rgb) * atten;",
+						"vec3 specular = specular_BlinnPhong(lightDir, viewDir, fragNormal, specularColor.rgb, glossiness) * atten;",
 						"fragColor.xyz = ambient + diffuseDirect + specular;",
+						// tslint:disable-next-line:max-line-length
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
 						"fragColor.a = diffuseColor.a;",
-						// tslint:disable-next-line:max-line-length
-						// "fragColor.xyz = vec3(saturate(dot(fragNormal, viewDir)));", // GAMMA CORRECTION
-					"}",
+						// "fragColor.xyz = vec3(atten);", // GAMMA CORRECTION
+						"}",
 			];
 		}
 

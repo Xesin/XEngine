@@ -23,6 +23,16 @@ namespace XEngine {
 			return gameObject;
 		}
 
+		public light(light: Light) {
+			this.game.lights.push(light);
+			light.parent = this.game;
+			light._onInitialize();
+			if (light.start !== undefined) {
+				light.start();
+			}
+			return light;
+		}
+
 		public circle(posX: number, posY: number, width: number, height: number): Circle {
 			let gameObject = new XEngine.Circle(this.game, posX, posY, width, height);
 			return this.existing(gameObject, false, true);
@@ -67,6 +77,16 @@ namespace XEngine {
 		public mesh(posX: number, posY: number, posZ: number, geometry: Geometry, material?: Material | Array<Material>): XEngine.Mesh {
 			let gameObject = new XEngine.Mesh(this.game, posX, posY, posZ, geometry, material);
 			return this.existing(gameObject, true, true);
+		}
+
+		public directionalLight(intensity) {
+			let go = new XEngine.DirectionalLight(this.game, intensity);
+			return this.light(go);
+		}
+
+		public pointLight(intensity, range) {
+			let go = new XEngine.PointLight(this.game, intensity, range);
+			return this.light(go);
 		}
 
 		public group(posX: number, posY: number): Group {

@@ -68,6 +68,11 @@ namespace XEngine {
 				value: 4,
 			};
 
+			this.baseUniforms.eyePos = {
+				type: Uniforms.VECTOR3,
+				value: new Vector3(0.0, 0.0, 0.0),
+			};
+
 			this.uniforms["light[0].position"] = {
 				type: Uniforms.VECTOR3,
 				value: new Vector3(0.3, 0.5, 0.8),
@@ -91,6 +96,14 @@ namespace XEngine {
 				value: 0,
 				dirty: true,
 			};
+
+			this.uniforms["light[0].range"] = {
+				type: Uniforms.FLOAT,
+				value: 1,
+				dirty: true,
+			};
+
+			this.lightOn = true;
 		}
 
 		// public _setTexture(texture: WebGLTexture) {

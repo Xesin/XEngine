@@ -27,11 +27,11 @@ namespace XEngine {
 					normalData.push(z);
 					textureCoordData.push(u);
 					textureCoordData.push(v);
-					//Position
+					// Position
 					vertexPositionData.push(radius * x);
 					vertexPositionData.push(radius * y);
 					vertexPositionData.push(radius * z);
-					//ColorData
+					// ColorData
 					vertexPositionData.push(0);
 					vertexPositionData.push(0);
 					vertexPositionData.push(0);
