@@ -40,10 +40,28 @@ Start.prototype = {
 	},
 	
 	start: function () {
-		var dirLight = this.game.add.pointLight(200.0, 200.0);
-		dirLight.transform.position.setTo(0.0, 100.0, 0.0);
-		dirLight = this.game.add.pointLight(200.0, 100.0);
-		dirLight.transform.position.setTo(400.0, 100.0, 0.0);
+		var dirLight = this.game.add.directionalLight(1.0);
+		dirLight.transform.rotation.setTo(0.1, 0.8, 0.8);
+		var dirLight = this.game.add.pointLight(150.0, 100.0);
+		dirLight.transform.position.setTo(-1200, 200.0, 402.0);
+		dirLight.lightColor.y = 0.2;
+		dirLight.lightColor.z = 0.2;
+		dirLight = this.game.add.pointLight(150, 100);
+		dirLight.transform.position.setTo(-1232.0, 200, -461);
+		dirLight.lightColor.y = 0.2;
+		dirLight.lightColor.z = 0.2;
+		dirLight = this.game.add.pointLight(150, 100);
+		dirLight.transform.position.setTo(1200.0, 200, -461);
+		dirLight.lightColor.y = 0.2;
+		dirLight.lightColor.z = 0.2;
+		dirLight = this.game.add.pointLight(150.0, 100.0);
+		dirLight.transform.position.setTo(1200, 200.0, 402.0);
+		dirLight.lightColor.y = 0.2;
+		dirLight.lightColor.z = 0.2;
+
+		// var dirLight = this.game.add.pointLight(3000.0, 10.0);
+		// dirLight.transform.position.setTo(0, 200.0, 0);
+	
 		for(geom in this.game.cache.geometries){
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
 		}

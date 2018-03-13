@@ -147,7 +147,8 @@ namespace XEngine {
 					"mat3 TBN;",
 
 					"vec3 decodeNormals(sampler2D normalSampler, vec2 uv){",
-					"	return texture(normalTex, uv, -1.0).xyz * 2.0 - 1.0;",
+						"vec3 texCol = texture(normalTex, uv).xyz;",
+					"	return pow(texCol, vec3(0.4545)) * 2.0 - 1.0;",
 					"}",
 
 					"vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {",
@@ -160,15 +161,15 @@ namespace XEngine {
 						"vec2 st1 = dFdy( uv.st );",
 
 						"vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
-						"vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
-						"vec3 cST = cross(S, T);",
-						"if(dot(cST, surf_norm) < 0.0) S *= -1.0;",
 						"vec3 N = surf_norm;",
+						"vec3 T = cross(N, S);//normalize( -q0 * st1.s + q1 * st0.s );",
+						"vec3 cST = cross(S, T);",
+						// "if(dot(cST, surf_norm) < 0.0) S *= -1.0;",
 
+						"mat3 tsn = mat3( S, T, N );",
 						"vec3 mapN = decodeNormals( normalTex, uv );",
 						"mapN.xy = normalIntensity * mapN.xy;",
-						"mat3 tsn = mat3( S, T, N );",
-						"vec3 abNormals = normalize( tsn * mapN );",
+						"vec3 abNormals = tsn * mapN;",
 						"return abNormals;",
 					"}",
 
@@ -202,16 +203,17 @@ namespace XEngine {
 					"float getAttenuation(const in vec3 lightPos, const in vec3 worldPos, const in float range, const in float lightIntensity){",
 						"vec3 toLight = lightPos - worldPos;",
 						"float att = dot(toLight, toLight);",
-						"att = (1.0 / (att + range)) * range * lightIntensity;",
-						"return 1.0 - (1.0 / pow(att + 1.0, 2.2));",
+						"att = (1.0 / (att + range)) * range;",
+						"return (1.0 - (1.0 / pow(att + 1.0, 2.2))) * lightIntensity;",
 					"}",
 
 					// tslint:disable-next-line:max-line-length
 					"vec3 getLightContribution(const in vec3 viewDir, const in vec3 worldPos, const in vec3 worldNormal, const in vec3 diffuseColor, const in vec3 specularColor){",
-						"float diffuseDirect = 0.0;",
+						"vec3 diffuseDirect = vec3(0.0);",
 						"vec3 specular = vec3(0.0);",
 						"for(int i = 0; i < MAX_LIGHTS; i++){",
 							"vec3 lightPos = light[i].position;",
+							"vec3 lightColor = light[i].color;",
 							"float lightRange = light[i].range;",
 							"float lightIntensity = light[i].intensity;",
 							"vec3 lightDir;",
@@ -222,8 +224,8 @@ namespace XEngine {
 								"lightDir =normalize(lightPos - worldPos);",
 								"atten = getAttenuation(lightPos, worldPos, lightRange, lightIntensity);",
 							"}",
-							"diffuseDirect += diffuse_BlinnPhong(lightDir, worldNormal) * atten;",
-							"specular += specular_BlinnPhong(lightDir, viewDir, worldNormal, specularColor.rgb, glossiness) * atten;",
+							"diffuseDirect += diffuse_BlinnPhong(lightDir, worldNormal) * lightColor * atten;",
+							"specular += specular_BlinnPhong(lightDir, viewDir, worldNormal, specularColor.rgb, glossiness) * lightColor * atten;",
 						"}",
 						"vec3 finalColor = diffuseDirect * diffuseColor + specular;",
 						"return finalColor;",
@@ -266,7 +268,7 @@ namespace XEngine {
 						"vec3 viewDir = normalize(eyePos - vWorldPos.xyz); //View space to world space",
 						// tslint:disable-next-line:max-line-length
 						"vec3 lightContribution = getLightContribution(viewDir, vWorldPos.xyz, fragNormal, diffuseColor.rgb, specularColor.rgb);",
-						"fragColor.xyz = ambient + lightContribution;",
+						"fragColor.xyz = lightContribution;",
 						// tslint:disable-next-line:max-line-length
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
 						"fragColor.a = diffuseColor.a;",
