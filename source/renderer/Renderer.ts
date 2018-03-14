@@ -61,6 +61,10 @@ namespace XEngine {
 				this.renderer = null;
 				this.sprite = null;
 			}
+
+			for (let i = 0; i < this.game.lights.length; i++) {
+				this.game.lights[i].dirty = false;
+			}
 		}
 
 		public setRenderer(renderer, sprite) {

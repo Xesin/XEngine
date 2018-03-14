@@ -10,6 +10,7 @@ namespace XEngine {
 
 		public constructor(game: Game, posX: number, posY: number, posZ: number) {
 			super(game, posX, posY, posZ);
+			this.lightColor = new Vector3(1, 1, 1);
 		}
 
 		get intensity(): number {
@@ -44,7 +45,7 @@ namespace XEngine {
 		}
 
 		set dirty(value: boolean) {
-			this._dirty = value;
+			this._dirty = this.transform.dirty = this.lightColor.dirty =  value;
 		}
 	}
 }
