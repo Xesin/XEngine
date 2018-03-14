@@ -17,7 +17,7 @@ namespace XEngine {
 		}
 
 		public image(imageName, imageUrl, isNormal = false) {
-			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, null, null, isNormal));
+			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, 0, 0, isNormal));
 		}
 
 		/**
