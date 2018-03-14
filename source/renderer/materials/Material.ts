@@ -198,36 +198,38 @@ namespace XEngine {
 
 		public updateLights(gl: WebGL2RenderingContext, lights: Array<Light>) {
 			for (let i = 0; i < lights.length; i++) {
-				// tslint:disable-next-line:max-line-length
-				this.uniforms["light[" + i + "].position"].value = lights[i].type === LightType.DIRECTIONAL ? lights[i].transform.rotation : lights[i].transform.position;
-				this.uniforms["light[" + i + "].position"].dirty = true;
+				if (lights[i].dirty) {
+					// tslint:disable-next-line:max-line-length
+					this.uniforms["light[" + i + "].position"].value = lights[i].type === LightType.DIRECTIONAL ? lights[i].transform.rotation : lights[i].transform.position;
+					this.uniforms["light[" + i + "].position"].dirty = true;
 
-				this.uniforms["light[" + i + "].intensity"].value = lights[i].intensity;
-				this.uniforms["light[" + i + "].intensity"].dirty = true;
+					this.uniforms["light[" + i + "].intensity"].value = lights[i].intensity;
+					this.uniforms["light[" + i + "].intensity"].dirty = true;
 
-				this.uniforms["light[" + i + "].color"].value = lights[i].lightColor;
-				this.uniforms["light[" + i + "].color"].dirty = true;
+					this.uniforms["light[" + i + "].color"].value = lights[i].lightColor;
+					this.uniforms["light[" + i + "].color"].dirty = true;
 
-				this.uniforms["light[" + i + "].type"].value = lights[i].type;
-				this.uniforms["light[" + i + "].type"].dirty = true;
+					this.uniforms["light[" + i + "].type"].value = lights[i].type;
+					this.uniforms["light[" + i + "].type"].dirty = true;
 
-				this.uniforms["light[" + i + "].range"].value = lights[i].range;
-				this.uniforms["light[" + i + "].range"].dirty = true;
+					this.uniforms["light[" + i + "].range"].value = lights[i].range;
+					this.uniforms["light[" + i + "].range"].dirty = true;
 
-				if (this.uniforms["light[" + i + "].position"].gpuPosition === undefined) {
-					this.uniforms["light[" + i + "].position"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].position");
-				}
-				if (this.uniforms["light[" + i + "].intensity"].gpuPosition === undefined) {
-					this.uniforms["light[" + i + "].intensity"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].intensity");
-				}
-				if (this.uniforms["light[" + i + "].color"].gpuPosition === undefined) {
-					this.uniforms["light[" + i + "].color"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].color");
-				}
-				if (this.uniforms["light[" + i + "].type"].gpuPosition === undefined) {
-					this.uniforms["light[" + i + "].type"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].type");
-				}
-				if (this.uniforms["light[" + i + "].range"].gpuPosition === undefined) {
-					this.uniforms["light[" + i + "].range"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].range");
+					if (this.uniforms["light[" + i + "].position"].gpuPosition === undefined) {
+						this.uniforms["light[" + i + "].position"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].position");
+					}
+					if (this.uniforms["light[" + i + "].intensity"].gpuPosition === undefined) {
+						this.uniforms["light[" + i + "].intensity"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].intensity");
+					}
+					if (this.uniforms["light[" + i + "].color"].gpuPosition === undefined) {
+						this.uniforms["light[" + i + "].color"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].color");
+					}
+					if (this.uniforms["light[" + i + "].type"].gpuPosition === undefined) {
+						this.uniforms["light[" + i + "].type"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].type");
+					}
+					if (this.uniforms["light[" + i + "].range"].gpuPosition === undefined) {
+						this.uniforms["light[" + i + "].range"].gpuPosition = gl.getUniformLocation(this.shaderProgram, "light[" + i + "].range");
+					}
 				}
 			}
 		}
