@@ -17,7 +17,6 @@ namespace XEngine {
 		public follow: boolean;
 		public offsetLeft: number;
 		public offsetUp: number;
-		public dirty: boolean;
 		public lookAt: Vector3;
 
 		private _dirty: boolean;
@@ -99,17 +98,13 @@ namespace XEngine {
 			return childMatrix;
 		}
 
+		get dirty(): boolean {
+			return this._dirty || this.transform.dirty || this.lookAt.dirty;
+		}
+
+		set dirty(value: boolean) {
+			this._dirty = this.transform.dirty = this.lookAt.dirty = value;
+		}
+
 	}
-
-	Object.defineProperties(Camera.prototype, {
-		dirty: {
-			get: function() {
-				return this._dirty || this.transform.dirty || this.lookAt.dirty;
-			},
-
-			set: function(value) {
-				this._dirty = this.transform.dirty = this.lookAt.dirty = value;
-			},
-		},
-	});
 }

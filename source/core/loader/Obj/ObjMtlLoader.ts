@@ -110,7 +110,7 @@ namespace XEngine {
 								state.currentMaterial.albedoTexture = info[ key ];
 								break;
 							case "map_bump":
-								this.loader.image(info[ key ], "img/" + info[ key ]);
+								this.loader.image(info[ key ], "img/" + info[ key ], true);
 								this.loader._startPreload();
 								state.currentMaterial.normalTexture = info[ key ];
 								break;

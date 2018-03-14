@@ -80,7 +80,7 @@ namespace XEngine {
 			this.context.textBaseline = "top";
 			this.context.textAlign = "left";
 			this.context.fillText(this.text, 0, 0);
-			let texture = new XEngine.Texture2D("textTexture", this.width, this.height, WRAP_MODE.CLAMP);
+			let texture = new XEngine.Texture2D("textTexture", this.width, this.height, WRAP_MODE.CLAMP, false);
 			texture.image = this.context.canvas;
 			texture.createTexture(this.game.context);
 			this.texture = texture._texture;

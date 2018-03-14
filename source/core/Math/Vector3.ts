@@ -3,26 +3,17 @@ namespace XEngine {
 	export class Vector3 {
 
 		public static readonly Zero = new Vector3(0);
-
-		public x: number;
-		public y: number;
-		public z: number;
-
-
 		public zOffset = 0;
 		public dirty = true;
 
 		private _x: number;
 		private _y: number;
 		private _z: number;
-		private _Array: Array<number>;
 
 		constructor (x = 1, y = x, z = 1) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
-
-			this._Array = new Array(3);
 
 			this.zOffset = 0;
 		}
@@ -177,50 +168,40 @@ namespace XEngine {
 		}
 
 		public toArray(): Array<number> {
-			this._Array[0] = this.x;
-			this._Array[1] = this.y;
-			this._Array[2] = this.z;
-
-			return this._Array;
+			return [this.x, this.y, this.z];
 		}
-	}
 
-	Object.defineProperties(Vector3.prototype, {
-		x: {
-			enumerable: true,
+		get x(): number {
+			return this._x;
+		}
 
-			get: function () {
-				return this._x;
-			},
-
-			set: function (value) {
+		set x(value: number) {
+			if (this._x !== value) {
 				this._x = value;
 				this.dirty = true;
-			},
-		},
-		y: {
-			enumerable: true,
+			}
+		}
 
-			get: function () {
-				return this._y;
-			},
+		get y(): number {
+			return this._y;
+		}
 
-			set: function (value) {
+		set y(value: number) {
+			if (this._y !== value) {
 				this._y = value;
 				this.dirty = true;
-			},
-		},
-		z: {
-			enumerable: true,
+			}
+		}
 
-			get: function () {
-				return this._z;
-			},
+		get z(): number {
+			return this._z;
+		}
 
-			set: function (value) {
+		set z(value: number) {
+			if (this._z !== value) {
 				this._z = value;
 				this.dirty = true;
-			},
-		},
-	});
+			}
+		}
+	}
 }

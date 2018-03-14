@@ -16,8 +16,8 @@ namespace XEngine {
 			this.onCompleteFile = new XEngine.Signal();
 		}
 
-		public image(imageName, imageUrl) {
-			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this));
+		public image(imageName, imageUrl, isNormal = false) {
+			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, null, null, isNormal));
 		}
 
 		/**

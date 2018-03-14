@@ -10,16 +10,18 @@ namespace XEngine {
 		public frameWidth: number;
 		public frameHeight: number;
 		public _texture: WebGLTexture;
+		public readonly isNormal: boolean;
 		public ready: boolean;
 		public wrapMode: WRAP_MODE;
 
-		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT) {
+		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean) {
 			this.imageName = name;
 			this.frameWidth = width;
 			this.frameHeight = height;
 			this._texture = null;
 			this.ready = false;
 			this.wrapMode = wrapMode;
+			this.isNormal = isNormal;
 		}
 
 		public createTexture(gl: WebGL2RenderingContext) {
@@ -27,8 +29,11 @@ namespace XEngine {
 
 			this._texture = gl.createTexture();
 
-			const internalFormat = gl.SRGB8_ALPHA8;
-			const srcFormat = gl.RGBA;
+			let internalFormat = gl.SRGB8_ALPHA8;
+			let srcFormat = gl.RGBA;
+			if (this.isNormal) {
+				internalFormat = gl.RGBA;
+			}
 			const srcType = gl.UNSIGNED_BYTE;
 
 			gl.bindTexture(gl.TEXTURE_2D, this._texture);
