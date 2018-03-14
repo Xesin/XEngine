@@ -67,7 +67,6 @@ namespace XEngine {
 		public height: number;
 		public width: number;
 
-		public game: Game;
 		public canvas: HTMLCanvasElement;
 		public context: WebGL2RenderingContext;
 		public camera: Camera;
@@ -132,8 +131,12 @@ namespace XEngine {
 				if (this.pause) { return; }
 				if (this.state.currentState == null) { return; }
 				if (!this.load.preloading) {
-					this.lights = this.lights.removePending();
-					this.updateQueue = this.updateQueue.removePending();
+					let tmpLights = this.lights.removePending();
+					delete this.lights;
+					this.lights = tmpLights;
+					let tmpUpdateQueue = this.updateQueue.removePending();
+					delete this.updateQueue;
+					this.updateQueue = tmpUpdateQueue;
 					this.tween.update(this.time.deltaTimeMillis);
 					let queueLength = this.updateQueue.length - 1;
 					this.state.currentState.update(this.time.deltaTime);
@@ -152,10 +155,12 @@ namespace XEngine {
 						// 	this.physics.update(this.deltaTime);
 						// 	this.state.currentState.physicsUpdate();
 						// }
-					}
-					this.renderQueue = this.renderQueue.removePending();
-					this.renderer.render();
-					this.camera.dirty = false;
+				}
+				let tmpRenderQueue = this.renderQueue.removePending();
+				delete this.renderQueue;
+				this.renderQueue = tmpRenderQueue;
+				this.renderer.render();
+				this.camera.dirty = false;
 			}
 		}
 

@@ -88,8 +88,9 @@ namespace XEngine {
 		}
 
 		public bindMaterial(material: Material) {
-			if (this.currentMaterial !== material) {
+			if (this.currentMaterial !== material || this.currentMaterial.dirty) {
 				this.currentMaterial = material;
+				this.currentMaterial.dirty = false;
 				this.context.useProgram(material.shaderProgram);
 				this.currentMaterial.bind(this);
 

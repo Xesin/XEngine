@@ -23,6 +23,7 @@ namespace XEngine {
 		public baseUniforms: any;
 		public compiled: boolean;
 		public lightOn: boolean;
+		public dirty: boolean;
 		public shader: Material;
 
 		public transparent: boolean;
@@ -67,6 +68,7 @@ namespace XEngine {
 			this.fragmentCode = fragmentCode;
 			this.blendMode = BlendMode.Multiply;
 			this.lightOn = false;
+			this.dirty = true;
 		}
 
 		public initializeShader(gl: WebGL2RenderingContext) {

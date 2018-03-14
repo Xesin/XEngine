@@ -152,25 +152,17 @@ namespace XEngine {
 					"}",
 
 					"vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {",
-
-						// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
-
 						"vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );",
 						"vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );",
 						"vec2 st0 = dFdx( uv.st );",
 						"vec2 st1 = dFdy( uv.st );",
-
 						"vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
-						"vec3 N = surf_norm;",
-						"vec3 T = cross(N, S);//normalize( -q0 * st1.s + q1 * st0.s );",
-						"vec3 cST = cross(S, T);",
-						// "if(dot(cST, surf_norm) < 0.0) S *= -1.0;",
-
-						"mat3 tsn = mat3( S, T, N );",
+						"vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
+						"vec3 N = normalize( surf_norm );",
 						"vec3 mapN = decodeNormals( normalTex, uv );",
 						"mapN.xy = normalIntensity * mapN.xy;",
-						"vec3 abNormals = tsn * mapN;",
-						"return abNormals;",
+						"mat3 tsn = mat3( S, T, N );",
+						"return normalize( tsn * mapN );",
 					"}",
 
 					"vec3 Fresnel_Schlick( const in vec3 specularColor, const in float dotLH ) {",

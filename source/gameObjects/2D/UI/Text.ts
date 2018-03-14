@@ -37,7 +37,6 @@ namespace XEngine {
 		}
 
 		public _beginRender(context: WebGLRenderingContext) {
-			this.updateText();
 			super._beginRender(context);
 			(this.materials[0] as SpriteMat)._setTexture(this.texture);
 		}
@@ -50,6 +49,7 @@ namespace XEngine {
 		public setText(text: string) {
 			this.isDirty = true;
 			this.text = text;
+			this.updateText();
 		}
 
 		public getBounds(): any {
@@ -84,6 +84,7 @@ namespace XEngine {
 			texture.image = this.context.canvas;
 			texture.createTexture(this.game.context);
 			this.texture = texture._texture;
+			this.materials[0].dirty = true;
 			this._setVertices(this.width, this.height, this.color, this._uv);
 		}
 	}

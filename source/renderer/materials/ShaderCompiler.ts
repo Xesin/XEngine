@@ -63,7 +63,6 @@ namespace XEngine {
 				"gl_Position = vClipPos;",
 				"uv = vUv;",
 				"vColor = aVertexColor;",
-				"alpha = 1.0;//in_alpha;",
 				"mainPass();",
 			"}",
 		];

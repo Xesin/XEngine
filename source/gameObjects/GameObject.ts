@@ -50,10 +50,10 @@ namespace XEngine {
 			this.vertDataBuffer = new XEngine.DataBuffer32(24 * 4);
 
 			this._uv = [
-				0, 1,
-				0, 0,
-				1, 1,
-				1, 0,
+				0, 1,   // AR-I
+				1, 1,   // AR-D
+				1, 0,   // AB-D
+				0, 0,   // AB-I
 			];
 
 			this.gl = this.game.context;
@@ -137,7 +137,7 @@ namespace XEngine {
 		}
 
 		public _renderToCanvas (context: WebGLRenderingContext) {
-			this.materials[0].bind(this.game.renderer);
+			this.game.renderer.bindMaterial(this.materials[0]);
 			this.materials[0].baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
 			this.getWorldMatrix(this.modelMatrix);
 			this.materials[0].baseUniforms.modelMatrix.value = this.modelMatrix;
@@ -166,7 +166,7 @@ namespace XEngine {
 				this.gl.deleteBuffer(this.vertexBuffer.buffer);
 				delete this.vertexBuffer;
 			}
-			this.vertDataBuffer = new XEngine.DataBuffer32(stride * indices.length);
+			this.vertDataBuffer = new XEngine.DataBuffer32(stride * (vertices.length / 3));
 			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);
 
 			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
@@ -194,7 +194,7 @@ namespace XEngine {
 			for (let i = 0; i < vertices.length; i++) {
 				floatBuffer[index++] = vertices[i++];
 				floatBuffer[index++] = vertices[i++];
-				floatBuffer[index++] = vertices[i++];
+				floatBuffer[index++] = vertices[i];
 				let x = 0;
 				let y = 0;
 				if (uv !== undefined) {

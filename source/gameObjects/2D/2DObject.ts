@@ -21,7 +21,7 @@ namespace XEngine {
 
 		private _prevWidth: number;
 		private _prevHeight: number;
-		private _prevPos: any;
+		private _prevPos: Vector3;
 
 
 		constructor(game: Game, posX = 0, posY = 0, posZ = 0) {
@@ -33,6 +33,7 @@ namespace XEngine {
 			this.onInputOver = new XEngine.Signal();
 			this.onInputLeft = new XEngine.Signal();
 			this.inputEnabled = false;
+			this._prevPos = new XEngine.Vector3();
 
 			this.color = (0xffffff >> 16) + (0xffffff & 0xff00) + ((0xffffff & 0xff) << 16);
 		}
@@ -164,9 +165,10 @@ namespace XEngine {
 				width, height, -1,
 				0, height, -1,
 			];
+
 			const indices = [
-				0, 1, 2,
-				1, 3, 2,
+				2, 1, 0,
+				0, 3, 2,
 			];
 
 			this.setVertices(vertices, indices, uv);

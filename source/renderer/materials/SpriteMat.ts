@@ -9,6 +9,11 @@ namespace XEngine {
 			this.cullFace = true;
 			this.cullMode = CullMode.BACK;
 			this.transparent = true;
+
+			this.baseUniforms.texSampler = {
+				type: Uniforms.SAMPLER,
+				value: 0,
+			};
 		}
 
 		public _setTexture(texture: WebGLTexture) {

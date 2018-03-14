@@ -32,6 +32,10 @@ namespace XEngine {
 			this.viewMatrix = new Mat4();
 			this.transform.matrix = this.viewMatrix;
 			this.lookAt = new Vector3(0 , 0, -1);
+
+			let right = this.game.width;
+			let up = this.game.height;
+			mat4.ortho(this.uiMatrix, 0.0, right, up, 0, 0.0, 100);
 		}
 
 		public followObject(gameObject: GameObject, offsetLeft: number, offsetUp: number) {
@@ -58,8 +62,8 @@ namespace XEngine {
 					}
 				}
 			}
-			let right = this.game.width + this.transform.position.x;
-			let up = this.game.height + this.transform.position.y;
+			let right = this.game.width;
+			let up = this.game.height;
 			const fieldOfView = 45 * Math.PI / 180;   // in radians
 			const aspect = this.game.width / this.game.height;
 			const zNear = 0.1;
@@ -80,7 +84,7 @@ namespace XEngine {
 				this.viewMatrix.lookAt(this.transform.position, this.lookAt, upVec);
 				// mat4.lookAt(this.viewMatrix.elements, pos, center, [0, 1, 0]);
 
-				mat4.ortho(this.uiMatrix, this.transform.position.x , right, up, this.transform.position.y, 0, 100);
+				mat4.ortho(this.uiMatrix, 0.0, right, up, 0, 0.0, 100);
 			}
 		}
 
