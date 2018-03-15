@@ -14,20 +14,20 @@ Sponza.prototype = {
 	start: function () {
 		var dirLight = this.game.add.directionalLight(1.0);
 		dirLight.transform.rotation.setTo(0.1, 0.8, 0.8);
-		var dirLight = this.game.add.pointLight(150.0, 100.0);
-		dirLight.transform.position.setTo(-1200, 200.0, 402.0);
+		var dirLight = this.game.add.pointLight(50.0, 20);
+		dirLight.transform.position.setTo(-280, 50.0, 112.0);
 		dirLight.lightColor.y = 0.2;
 		dirLight.lightColor.z = 0.2;
-		dirLight = this.game.add.pointLight(150, 100);
-		dirLight.transform.position.setTo(-1232.0, 200, -461);
+		dirLight = this.game.add.pointLight(50, 20);
+		dirLight.transform.position.setTo(-280.0, 50, -112);
 		dirLight.lightColor.y = 0.2;
 		dirLight.lightColor.z = 0.2;
-		dirLight = this.game.add.pointLight(150, 100);
-		dirLight.transform.position.setTo(1200.0, 200, -461);
+		dirLight = this.game.add.pointLight(50, 20);
+		dirLight.transform.position.setTo(280.0, 50, -112);
 		dirLight.lightColor.y = 0.2;
 		dirLight.lightColor.z = 0.2;
-		dirLight = this.game.add.pointLight(150.0, 100.0);
-		dirLight.transform.position.setTo(1200, 200.0, 402.0);
+		dirLight = this.game.add.pointLight(50.0, 20);
+		dirLight.transform.position.setTo(280, 50.0, 112.0);
 		dirLight.lightColor.y = 0.2;
 		dirLight.lightColor.z = 0.2;
 
@@ -52,6 +52,7 @@ Sponza.prototype = {
 		this.game.camera.lookAt.x = -500;
 		this.game.camera.lookAt.y = 5;
 		this.game.camera.lookAt.z = 50;
+		this.velocity = 90;
 		
 
 		this.game.input.onInputMove.add(this.onMove, this);
@@ -63,27 +64,27 @@ Sponza.prototype = {
 	update : function (deltaTime) {
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.W)){
-			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(180*deltaTime));
+			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(this.velocity *deltaTime));
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.S)){
-			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(180*deltaTime));
+			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(this.velocity *deltaTime));
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
-			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(180*deltaTime));
+			this.game.camera.transform.position.add(this.game.camera.transform.right().scalar(this.velocity *deltaTime));
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.A)){
-			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(180*deltaTime));
+			this.game.camera.transform.position.sub(this.game.camera.transform.right().scalar(this.velocity *deltaTime));
 		}
 
-		if(this.game.input.isDown(XEngine.KEY_CODE.E)){
+		if(this.game.input.isDown(XEngine.KEY_CODE.E) || this.game.input.isDown(XEngine.KEY_CODE.RIGHT)){
 			this.rot += deltaTime * 1.5;
-		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q)){
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q) || this.game.input.isDown(XEngine.KEY_CODE.LEFT)){
 			this.rot -= deltaTime * 1.5;
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.R)){
-			this.game.camera.transform.position.y += 90 * deltaTime;
+			this.game.camera.transform.position.y += 45 * deltaTime;
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.F)){
-			this.game.camera.transform.position.y -= 90 * deltaTime;
+			this.game.camera.transform.position.y -= 45 * deltaTime;
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.UP)){
