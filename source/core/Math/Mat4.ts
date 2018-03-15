@@ -3,6 +3,10 @@ namespace XEngine {
 	export class Mat4 {
 
 		public elements: Float32Array;
+		private v0 = new Vector3();
+		private vX = new Vector3();
+		private vY = new Vector3();
+		private vZ = new Vector3();
 
 		constructor() {
 			this.elements = new Float32Array(4 * 4);
@@ -30,14 +34,14 @@ namespace XEngine {
 		}
 
 		public extractRotation(rotMat: Mat4) {
-			let v1 = new Vector3(0);
+			this.v0.setTo(0);
 
 			let te = this.elements;
 			let me = rotMat.elements;
 
-			let scaleX = 1 / v1.setFromMatrixColumn(rotMat, 0).length();
-			let scaleY = 1 / v1.setFromMatrixColumn(rotMat, 1).length();
-			let scaleZ = 1 / v1.setFromMatrixColumn(rotMat, 2).length();
+			let scaleX = 1 / this.v0.setFromMatrixColumn(rotMat, 0).length();
+			let scaleY = 1 / this.v0.setFromMatrixColumn(rotMat, 1).length();
+			let scaleZ = 1 / this.v0.setFromMatrixColumn(rotMat, 2).length();
 
 			te[ 0 ] = me[ 0 ] * scaleX;
 			te[ 1 ] = me[ 1 ] * scaleX;
@@ -55,51 +59,46 @@ namespace XEngine {
 		}
 
 		public lookAt (eye: Vector3, target: Vector3, up: Vector3) {
-
-			let x = new Vector3();
-			let y = new Vector3();
-			let z = new Vector3();
-
 			let te = this.elements;
 
-			z.subVectors( eye, target );
+			this.vZ.subVectors( eye, target );
 
-			if ( z.lengthSq() === 0 ) {
+			if ( this.vZ.lengthSq() === 0 ) {
 
 				// eye and target are in the same position
 
-				z.z = 1;
+				this.vZ.z = 1;
 
 			}
 
-			z.normalize();
-			x.crossVectors( up, z );
+			this.vZ.normalize();
+			this.vX.crossVectors( up, this.vZ );
 
-			if ( x.lengthSq() === 0 ) {
+			if ( this.vX.lengthSq() === 0 ) {
 				// up and z are parallel
 
 				if ( Math.abs( up.z ) === 1 ) {
 
-					z.x += 0.0001;
+					this.vZ.x += 0.0001;
 
 				} else {
 
-					z.z += 0.0001;
+					this.vZ.z += 0.0001;
 
 				}
 
-				z.normalize();
-				x.crossVectors( up, z );
+				this.vZ.normalize();
+				this.vX.crossVectors( up, this.vZ );
 
 			}
 
-			x.normalize();
-			y.crossVectors( z, x );
+			this.vX.normalize();
+			this.vY.crossVectors( this.vZ, this.vX );
 
-			te[ 0 ] = x.x; te[ 1 ] = y.x; te[ 2 ] = z.x;
-			te[ 4 ] = x.y; te[ 5 ] = y.y; te[ 6 ] = z.y;
-			te[ 8 ] = x.z; te[ 9 ] = y.z; te[ 10 ] = z.z;
-			te[ 12 ] = -x.dot(eye); te[ 13 ] = -y.dot(eye); te[ 14 ] = -z.dot(eye);
+			te[ 0 ] = this.vX.x; te[ 1 ] = this.vY.x; te[ 2 ] = this.vZ.x;
+			te[ 4 ] = this.vX.y; te[ 5 ] = this.vY.y; te[ 6 ] = this.vZ.y;
+			te[ 8 ] = this.vX.z; te[ 9 ] = this.vY.z; te[ 10 ] = this.vZ.z;
+			te[ 12 ] = -this.vX.dot(eye); te[ 13 ] = -this.vY.dot(eye); te[ 14 ] = -this.vZ.dot(eye);
 			te[ 15 ] = 1;
 
 

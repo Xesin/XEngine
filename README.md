@@ -5,15 +5,17 @@ Puedes ver un pequeño ejemplo de su uso dentro de la carpeta "test", por ahora 
 
 [Demo online](http://games.xiscoferrer.com/XEngine/)
 
-TODO
-  1. Documentar el proyecto
-  2. Shadow casting
-  3. Sistema de partículas
-  4. Materiales PBR
-  5. Render pipeline único
-  6. Post-procesado
-  7. Física
-  8. Picking
-  9. Lightmaps
-  10. Environment maps
-  11. Crear escenarios de ejemplo
+___
+
+## TODO
+1. Documentar el proyecto
+2. Shadow casting
+3. Sistema de partículas
+4. Materiales PBR
+5. Render pipeline único
+6. Post-procesado
+7. Física
+8. Picking
+9. Lightmaps
+10. Environment maps
+11. Crear escenarios de ejemplo

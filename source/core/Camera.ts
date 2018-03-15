@@ -20,6 +20,7 @@ namespace XEngine {
 		public lookAt: Vector3;
 
 		private _dirty: boolean;
+		private readonly upVector = new Vector3(0, 1, 0);
 
 		constructor(game: Game, posX = 0, posY = 0, posZ = 0) {
 			super(game, posX, posY, posZ);
@@ -79,8 +80,7 @@ namespace XEngine {
 
 				let pos = [this.transform.position.x, this.transform.position.y, this.transform.position.z ];
 				let center = [this.lookAt.x, this.lookAt.y, this.lookAt.z];
-				let upVec = new Vector3(0, 1, 0);
-				this.viewMatrix.lookAt(this.transform.position, this.lookAt, upVec);
+				this.viewMatrix.lookAt(this.transform.position, this.lookAt, this.upVector);
 				// mat4.lookAt(this.viewMatrix.elements, pos, center, [0, 1, 0]);
 
 				mat4.ortho(this.uiMatrix, 0.0, right, up, 0, 0.0, 100);

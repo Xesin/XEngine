@@ -3,6 +3,7 @@ namespace XEngine {
 	export class Transform {
 
 		public position: Vector3;
+		public worldPosition: Vector3;
 		public scale: Vector3;
 		public rotation: Vector3;
 		public  matrix: Mat4;
@@ -13,6 +14,9 @@ namespace XEngine {
 		private _position: Vector3;
 		private _scale: Vector3;
 		private _rotation: Vector3;
+
+		private vf = new Vector3();
+		private readonly reflectV = new Vector3(1, 0, 0);
 
 		private helperMatrix: Mat4;
 		constructor() {
@@ -29,21 +33,21 @@ namespace XEngine {
 		}
 
 		public forward(): Vector3 {
-			let vf = new Vector3(0, 0, 1);
+			this.vf.setTo(0, 0, 1);
 			this.helperMatrix.extractRotation(this.matrix);
 
-			vf.multiplyMatrix(this.helperMatrix.elements);
-			vf.reflect(new Vector3(1, 0, 0));
-			return vf;
+			this.vf.multiplyMatrix(this.helperMatrix.elements);
+			this.vf.reflect(this.reflectV);
+			return this.vf;
 		}
 
 		public right(): Vector3 {
-			let vf = new Vector3(1, 0, 0);
+			this.vf.setTo(1, 0, 0);
 			this.helperMatrix.extractRotation(this.matrix);
 
-			vf.multiplyMatrix(this.helperMatrix.elements);
-			vf.reflect(new Vector3(1, 0, 0));
-			return vf;
+			this.vf.multiplyMatrix(this.helperMatrix.elements);
+			this.vf.reflect(this.reflectV);
+			return this.vf;
 		}
 
 	}
