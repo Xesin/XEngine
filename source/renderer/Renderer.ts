@@ -126,7 +126,7 @@ namespace XEngine {
 					}
 				}
 
-				if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
+				if (this.currentMaterial.cullFace) {
 					this.cullFaceEnabled = this.currentMaterial.cullFace;
 					if (this.currentMaterial.cullFace) {
 						if (this.currentMaterial.cullMode !== this.currentCullMode) {
@@ -146,9 +146,14 @@ namespace XEngine {
 									break;
 							}
 						}
-						this.context.enable(this.context.CULL_FACE);
+						if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
+							this.context.enable(this.context.CULL_FACE);
+						}
 					} else {
-						this.context.disable(this.context.CULL_FACE);
+						this.cullFaceEnabled = this.currentMaterial.cullFace;
+						if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
+							this.context.disable(this.context.CULL_FACE);
+						}
 					}
 				}
 			}
