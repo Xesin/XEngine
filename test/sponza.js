@@ -45,7 +45,7 @@ Sponza.prototype = {
 		// this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
 
 		this.rot = 0;
-
+		this.upOffset = 0;
 		this.game.camera.transform.position.y = 60;
 		// this.game.camera.transform.position.x = -10;
 		this.game.camera.lookAt.x = -500;
@@ -62,9 +62,9 @@ Sponza.prototype = {
 	update : function (deltaTime) {
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.W)){
-			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(180*deltaTime));
-		}else if(this.game.input.isDown(XEngine.KEY_CODE.S)){
 			this.game.camera.transform.position.sub(this.game.camera.transform.forward().scalar(180*deltaTime));
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.S)){
+			this.game.camera.transform.position.add(this.game.camera.transform.forward().scalar(180*deltaTime));
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.D)){
@@ -85,9 +85,15 @@ Sponza.prototype = {
 			this.game.camera.transform.position.y -= 90 * deltaTime;
 		}
 
-		this.game.camera.lookAt.x = Math.cos(this.rot) * 200 + this.game.camera.transform.position.x;
-		this.game.camera.lookAt.z = Math.sin(this.rot) * 200 + this.game.camera.transform.position.z;
-		this.game.camera.lookAt.y = this.game.camera.transform.position.y;
+		if(this.game.input.isDown(XEngine.KEY_CODE.UP)){
+			this.upOffset += 1.5 * deltaTime;
+		}else if(this.game.input.isDown(XEngine.KEY_CODE.DOWN)){
+			this.upOffset -= 1.5 * deltaTime;
+		}
+
+		this.game.camera.lookAt.x = Math.cos(this.rot) + this.game.camera.transform.position.x;
+		this.game.camera.lookAt.z = Math.sin(this.rot) + this.game.camera.transform.position.z;
+		this.game.camera.lookAt.y = this.upOffset + this.game.camera.transform.position.y;
 	},
 	
 	fin: function () {

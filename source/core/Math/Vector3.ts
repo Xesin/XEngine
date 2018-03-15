@@ -18,10 +18,11 @@ namespace XEngine {
 			this.zOffset = 0;
 		}
 
-		public setTo(x: number, y = x, z = x) {
+		public setTo(x: number, y = x, z = x): Vector3 {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+			return this;
 		}
 
 		public sub(vector: Vector3): Vector3 {
@@ -53,9 +54,9 @@ namespace XEngine {
 			let z = this.z;
 
 			let out = new Array(3);
-			this.x = x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12];
-			this.y = x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13];
-			this.z = x * matrix[2] + y * matrix[6] + z * matrix[10] + matrix[14];
+			this.x = x * matrix[0] + y * matrix[1] + z * matrix[2] + matrix[3];
+			this.y = x * matrix[4] + y * matrix[5] + z * matrix[6] + matrix[7];
+			this.z = x * matrix[8] + y * matrix[9] + z * matrix[10] + matrix[11];
 			return this;
 		}
 

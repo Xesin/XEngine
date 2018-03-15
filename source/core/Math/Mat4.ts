@@ -39,20 +39,20 @@ namespace XEngine {
 			let te = this.elements;
 			let me = rotMat.elements;
 
-			let scaleX = 1 / this.v0.setFromMatrixColumn(rotMat, 0).length();
-			let scaleY = 1 / this.v0.setFromMatrixColumn(rotMat, 1).length();
-			let scaleZ = 1 / this.v0.setFromMatrixColumn(rotMat, 2).length();
+			let scaleX = 1 / this.v0.setTo(rotMat.elements[0], rotMat.elements[4], rotMat.elements[8]).length();
+			let scaleY = 1 / this.v0.setTo(rotMat.elements[1], rotMat.elements[5], rotMat.elements[9]).length();
+			let scaleZ = 1 / this.v0.setTo(rotMat.elements[2], rotMat.elements[6], rotMat.elements[10]).length();
 
 			te[ 0 ] = me[ 0 ] * scaleX;
-			te[ 1 ] = me[ 1 ] * scaleX;
-			te[ 2 ] = me[ 2 ] * scaleX;
+			te[ 4 ] = me[ 4 ] * scaleX;
+			te[ 8 ] = me[ 8 ] * scaleX;
 
-			te[ 4 ] = me[ 4 ] * scaleY;
+			te[ 1 ] = me[ 1 ] * scaleY;
 			te[ 5 ] = me[ 5 ] * scaleY;
-			te[ 6 ] = me[ 6 ] * scaleY;
+			te[ 9 ] = me[ 9 ] * scaleY;
 
-			te[ 8 ] = me[ 8 ] * scaleZ;
-			te[ 9 ] = me[ 9 ] * scaleZ;
+			te[ 2 ] = me[ 2 ] * scaleZ;
+			te[ 6 ] = me[ 6 ] * scaleZ;
 			te[ 10 ] = me[ 10 ] * scaleZ;
 
 			return this;

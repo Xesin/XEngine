@@ -39,7 +39,7 @@ namespace XEngine {
 			this.helperMatrix.extractRotation(this.matrix);
 
 			this.vf.multiplyMatrix(this.helperMatrix.elements);
-			this.vf.reflect(this.reflectV);
+			// this.vf.reflect(this.reflectV);
 			return this.vf;
 		}
 
@@ -58,7 +58,7 @@ namespace XEngine {
 			this.helperMatrix.extractRotation(this.matrix);
 
 			this.vf.multiplyMatrix(this.helperMatrix.elements);
-			this.vf.reflect(this.reflectV);
+			// this.vf.reflect(this.reflectV);
 			return this.vf;
 		}
 

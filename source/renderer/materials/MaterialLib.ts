@@ -159,6 +159,8 @@ namespace XEngine {
 						"vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
 						"vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
 						"vec3 N = normalize( surf_norm );",
+						"vec3 crs = cross(S, T);",
+						"if(dot(crs, N) < 0.0) T *= -1.0;",
 						"vec3 mapN = decodeNormals( normalTex, uv );",
 						"mapN.xy = normalIntensity * mapN.xy;",
 						"mat3 tsn = mat3( S, T, N );",
