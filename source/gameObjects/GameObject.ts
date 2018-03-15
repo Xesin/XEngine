@@ -2,11 +2,11 @@ namespace XEngine {
 	declare var mat4: any;
 	export class GameObject {
 		protected game: Game;
-		public parent: any;
 		public isPendingDestroy: boolean;
 		public alive: boolean;
 		public alpha: number;
 		public transform: Transform;
+		public localTransform: Transform;
 		public anchor: Vector3;
 		public rotation: number;
 
@@ -33,11 +33,11 @@ namespace XEngine {
 
 		constructor(game: Game, posX = 0, posY = 0, posZ = 0) {
 			this.game = game;
-			this.parent = game;
 			this.isPendingDestroy = false;
 			this.alive = true;
 			this.alpha = 1.0;
 			this.transform = new Transform();
+			this.localTransform = new Transform();
 			this.anchor = new XEngine.Vector3(0, 0);
 			this.rotation = 0;
 			this.transform.position.setTo(posX, posY, posZ);
@@ -101,53 +101,36 @@ namespace XEngine {
 			this.alive = true;
 		}
 
-		public getWorldMatrix (childMatrix: Array<number>) {
-			this.parent.getWorldMatrix(childMatrix);
-			let translation =  this.transform.position.toArray();
-			if (this.fixedToCamera) {
-				translation[0] += this.game.camera.transform.position.x;
-				translation[1] += this.game.camera.transform.position.y;
-				translation[2] += this.game.camera.transform.position.z;
-			}
-			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
-			mat4.scale(childMatrix, childMatrix, this.transform.scale.toArray());
-			return childMatrix;
-		}
-
-		public getWorldPos () {
-			let parentPos = this.parent.getWorldPos();
-			let x = this.transform.position.x + parentPos.x;
-			let y = this.transform.position.y + parentPos.y;
-			return new XEngine.Vector3(x, y);
-		}
-
 		public getTotalAlpha () {
-			let totAlpha = this.alpha;
-			if (this.parent.getTotalAlpha !== undefined) {
-				totAlpha *= this.parent.getTotalAlpha();
-			}
-			return totAlpha;
+			return this.alpha;
 		}
 
-		public _beginRender(context: WebGLRenderingContext) {
+		public beginRender(context: WebGLRenderingContext) {
+			if (this.transform.dirty) {
+				this.transform.calculateMatrix();
+			}
 			this.game.renderer.setRenderer(null, null);
 		}
 
-		public _renderToCanvas (context: WebGLRenderingContext) {
-			this.game.renderer.bindMaterial(this.materials[0]);
-			this.materials[0].baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
-			this.getWorldMatrix(this.modelMatrix);
-			this.materials[0].baseUniforms.modelMatrix.value = this.modelMatrix;
-			this.materials[0].updateUniforms(context);
+		public endRender(context: WebGLRenderingContext) {
+			if (this.transform.dirty) {
+				this.transform.dirty = false;
+			}
+		}
+
+		public renderToCanvas (context: WebGLRenderingContext) {
+			for (let i = 0; i < this.materials.length; i++) {
+				this.game.renderer.bindMaterial(this.materials[i]);
+				this.materials[i].baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
+				this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
+				this.materials[i].updateUniforms(context);
 
 
-			this.vertexBuffer.bind();
-			this.indexBuffer.bind();
+				this.vertexBuffer.bind();
+				this.indexBuffer.bind();
 
-			context.drawElements(context.TRIANGLES, 6, context.UNSIGNED_SHORT, 0);
+				context.drawElements(context.TRIANGLES, this.indexDataBuffer.wordLength, context.UNSIGNED_SHORT, 0);
+			}
 		}
 
 		public start () { return; }

@@ -25,7 +25,7 @@ namespace XEngine {
 			}
 		}
 
-		public _renderToCanvas(gl: WebGL2RenderingContext) {
+		public renderToCanvas(gl: WebGL2RenderingContext) {
 			let renderer = this.game.renderer;
 			let vertexDataBuffer = this.vertDataBuffer;
 			let geometry = this.geometry;
@@ -37,8 +37,7 @@ namespace XEngine {
 			geometry.bind();
 
 			if (this.transform.dirty) {
-				this.getWorldMatrix(this.modelMatrix);
-				mat4.invert(this.transposed, this.modelMatrix);
+				mat4.invert(this.transposed, this.transform.matrix);
 				mat4.transpose(this.transposed, this.transposed);
 				this.transform.dirty = false;
 			}

@@ -36,14 +36,14 @@ namespace XEngine {
 			this.setText(text);
 		}
 
-		public _beginRender(context: WebGLRenderingContext) {
-			super._beginRender(context);
+		public beginRender(context: WebGLRenderingContext) {
+			super.beginRender(context);
 			(this.materials[0] as SpriteMat)._setTexture(this.texture);
 		}
 
-		public _renderToCanvas(context: WebGLRenderingContext) {
+		public renderToCanvas(context: WebGLRenderingContext) {
 			if (this.materials == null) { return; }
-			super._renderToCanvas(context);
+			super.renderToCanvas(context);
 		}
 
 		public setText(text: string) {

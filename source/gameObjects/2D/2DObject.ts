@@ -38,24 +38,24 @@ namespace XEngine {
 			this.color = (0xffffff >> 16) + (0xffffff & 0xff00) + ((0xffffff & 0xff) << 16);
 		}
 
-		public getWorldMatrix (childMatrix: Array<number>) {
-			this.parent.getWorldMatrix(childMatrix);
-			let translation =  this.transform.position.toArray();
-			if (this.fixedToCamera) {
-				translation[0] += this.game.camera.transform.position.x;
-				translation[1] += this.game.camera.transform.position.y;
-				translation[2] += this.game.camera.transform.position.z;
-			}
-			let anchorX = Math.round(-(this.width * this.anchor.x));
-			let anchorY = Math.round(-(this.height * this.anchor.y));
-			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
-			mat4.scale(childMatrix, childMatrix, this.transform.scale.toArray());
-			mat4.translate(childMatrix, childMatrix, [anchorX, anchorY, 0]);
-			return childMatrix;
-		}
+		// public getWorldMatrix (childMatrix: Array<number>) {
+		// 	this.parent.getWorldMatrix(childMatrix);
+		// 	let translation =  this.transform.position.toArray();
+		// 	if (this.fixedToCamera) {
+		// 		translation[0] += this.game.camera.transform.position.x;
+		// 		translation[1] += this.game.camera.transform.position.y;
+		// 		translation[2] += this.game.camera.transform.position.z;
+		// 	}
+		// 	let anchorX = Math.round(-(this.width * this.anchor.x));
+		// 	let anchorY = Math.round(-(this.height * this.anchor.y));
+		// 	mat4.translate(childMatrix, childMatrix, translation);
+		// 	mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
+		// 	mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
+		// 	mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
+		// 	mat4.scale(childMatrix, childMatrix, this.transform.scale.toArray());
+		// 	mat4.translate(childMatrix, childMatrix, [anchorX, anchorY, 0]);
+		// 	return childMatrix;
+		// }
 
 		public update(deltaTime: number) {
 			super.update(deltaTime);
@@ -80,9 +80,6 @@ namespace XEngine {
 
 		public getTotalAlpha () {
 			let totAlpha = this.alpha;
-			if (this.parent.getTotalAlpha !== undefined) {
-				totAlpha *= this.parent.getTotalAlpha();
-			}
 			return totAlpha;
 		}
 
@@ -122,7 +119,7 @@ namespace XEngine {
 		public getBounds (): any {
 			let width = this.width * this.transform.scale.x;
 			let height = this.height * this.transform.scale.y;
-			let worldPos = this.getWorldPos();
+			let worldPos = this.transform.position;
 			let widthAnchor = width * this.anchor.x;
 			let heightAnchor = height * this.anchor.y;
 			let minX = worldPos.x - widthAnchor;
@@ -141,7 +138,7 @@ namespace XEngine {
 
 		public isInsideCamera(): boolean {
 			let bounds = this.getBounds();
-			let worldPos = this.getWorldPos();
+			let worldPos = this.transform.position;
 			let cameraPos = this.game.camera.transform.position;
 			let viewRect = {width: this.game.width, height: this.game.height};
 			if (bounds.maxX < cameraPos.x) { return false; }

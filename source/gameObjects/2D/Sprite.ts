@@ -43,11 +43,11 @@ namespace XEngine {
 			this.animation = new AnimationManager(game, this);
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
+		public beginRender(gl: WebGLRenderingContext) {
 			return;
 		}
 
-		public _renderToCanvas(gl) {
+		public renderToCanvas(gl) {
 			if (this.tilled) {
 				let startX = 0;
 				let startY = 0;

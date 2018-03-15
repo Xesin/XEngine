@@ -11,11 +11,11 @@ namespace XEngine {
 			this.setColor(color);
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
+		public beginRender(gl: WebGLRenderingContext) {
 			return;
 		}
 
-		public _renderToCanvas(gl: WebGLRenderingContext) {
+		public renderToCanvas(gl: WebGLRenderingContext) {
 			this.game.renderer.rectBatch.addRect(this, this.materials);
 		}
 	}

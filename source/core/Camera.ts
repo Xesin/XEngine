@@ -87,17 +87,6 @@ namespace XEngine {
 			}
 		}
 
-		public getWorldMatrix (childMatrix: Array<number>) {
-			this.parent.getWorldMatrix(childMatrix);
-			let translation = [this.transform.position.x, this.transform.position.y, this.transform.position.z];
-			mat4.translate(childMatrix, childMatrix, translation);
-			mat4.rotateY(childMatrix, childMatrix, this.transform.rotation.y * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateZ(childMatrix, childMatrix, this.transform.rotation.z * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateX(childMatrix, childMatrix, this.transform.rotation.x * XEngine.Mathf.TO_RADIANS);
-			mat4.invert(childMatrix, childMatrix);
-			return childMatrix;
-		}
-
 		get dirty(): boolean {
 			return this._dirty || this.transform.dirty || this.lookAt.dirty;
 		}

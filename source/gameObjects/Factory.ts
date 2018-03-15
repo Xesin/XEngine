@@ -25,7 +25,6 @@ namespace XEngine {
 
 		public light(light: Light) {
 			this.game.lights.push(light);
-			light.parent = this.game;
 			light._onInitialize();
 			if (light.start !== undefined) {
 				light.start();

@@ -58,7 +58,7 @@ namespace XEngine {
 							];
 							newSprite._setVertices(charData.width, charData.height, newSprite.color, uvs);
 							newSprite.materials = this.materials;
-							newSprite.parent = this;
+							newSprite.transform.parent = this.transform;
 							this.spriteArrays.push(newSprite);
 							startX += charData.xadvance;
 						} else if (charCode === 32) {
@@ -82,11 +82,11 @@ namespace XEngine {
 			}
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
+		public beginRender(gl: WebGLRenderingContext) {
 			return;
 		}
 
-		public _renderToCanvas(gl) {
+		public renderToCanvas(gl) {
 			for (let spriteToAdd of this.spriteArrays) {
 				if (spriteToAdd !== undefined) {
 					this.game.renderer.spriteBatch.addSprite(spriteToAdd, this.materials);

@@ -7,7 +7,7 @@ namespace XEngine {
 			this.children = new Array<GameObject>();
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
+		public beginRender(gl: WebGLRenderingContext) {
 			return;
 		}
 
