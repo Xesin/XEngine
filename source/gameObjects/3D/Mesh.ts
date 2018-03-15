@@ -37,7 +37,7 @@ namespace XEngine {
 			geometry.bind();
 
 			if (this.transform.dirty) {
-				mat4.invert(this.transposed, this.transform.matrix);
+				mat4.invert(this.transposed, this.transform.matrix.elements);
 				mat4.transpose(this.transposed, this.transposed);
 				this.transform.dirty = false;
 			}
@@ -48,7 +48,7 @@ namespace XEngine {
 					this.materials[i].baseUniforms.eyePos.value = this.game.camera.transform.position;
 					this.materials[i].baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
 				}
-				this.materials[i].baseUniforms.modelMatrix.value = this.modelMatrix;
+				this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
 				this.materials[i].baseUniforms.normalMatrix.value = this.transposed;
 				if (this.materials[i].lightOn) {
 					this.materials[i].updateLights(gl, this.game.lights);

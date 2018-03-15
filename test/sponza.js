@@ -37,6 +37,7 @@ Sponza.prototype = {
 		
 		for(geom in this.game.cache.geometries){
 			let mesh = this.game.add.mesh(0, 0, 0, this.game.cache.geometries[geom]);
+			mesh.transform.scale.setTo(0.25);
 		}
 
 		// var mat = new XEngine.PhongMaterial();
