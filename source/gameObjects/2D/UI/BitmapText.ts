@@ -14,8 +14,8 @@ namespace XEngine {
 			super(game, posX, posY);
 			this.sprite = fontName;
 			this.game = game;
-			this.width = 10;
-			this.height = 10;
+			this.transform.width = 10;
+			this.transform.height = 10;
 			this.bitmapData = this.game.cache.bitmapData[fontName];
 			let cache_image = this.game.cache.image(fontName);
 			this.atlasWidth = cache_image.frameWidth || 10;
@@ -77,8 +77,8 @@ namespace XEngine {
 						startX += 20;
 					}
 				}
-				this.width = maxX;
-				this.height = startY + this.bitmapData.lineHeight;
+				this.transform.width = maxX;
+				this.transform.height = startY + this.bitmapData.lineHeight;
 			}
 		}
 

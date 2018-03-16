@@ -17,11 +17,11 @@ namespace XEngine {
 			this.game = game;
 			this.frame = frame || 0;
 			let cache_image = this.game.cache.image(sprite);
-			this.width = cache_image.frameWidth || 10;
-			this.height = cache_image.frameHeight || 10;
+			this.transform.width = cache_image.frameWidth || 10;
+			this.transform.height = cache_image.frameHeight || 10;
 
-			this.columns = Math.floor(cache_image.image.width / this.width);
-			this.rows = Math.floor(cache_image.image.height / this.height);
+			this.columns = Math.floor(cache_image.image.width / this.transform.width);
+			this.rows = Math.floor(cache_image.image.height / this.transform.height);
 			this.tilled = false;
 
 			if (this.game.cache.getJson(sprite) !== undefined) {
@@ -32,8 +32,8 @@ namespace XEngine {
 				} else {
 					frameInfo = this.json.frames[this.frame];
 				}
-				this.width = frameInfo.frame.w;
-				this.height = frameInfo.frame.h;
+				this.transform.width = frameInfo.frame.w;
+				this.transform.height = frameInfo.frame.h;
 			}
 
 			if (this.columns > 1 || this.rows > 1 || this.json !== undefined) {
@@ -70,8 +70,8 @@ namespace XEngine {
 					endX = startX + width;
 					endY = startY + height;
 
-					this.width = width;
-					this.height = height;
+					this.transform.width = width;
+					this.transform.height = height;
 
 				} else {
 					let column = (this.frame as number);

@@ -7,8 +7,6 @@ namespace XEngine {
 		public alpha: number;
 		public transform: Transform;
 		public localTransform: Transform;
-		public anchor: Vector3;
-		public rotation: number;
 
 		public pickeable: boolean;
 		public downPos: Vector3;
@@ -38,8 +36,6 @@ namespace XEngine {
 			this.alpha = 1.0;
 			this.transform = new Transform();
 			this.localTransform = new Transform();
-			this.anchor = new XEngine.Vector3(0, 0);
-			this.rotation = 0;
 			this.transform.position.setTo(posX, posY, posZ);
 
 			this.render = true;

@@ -238,13 +238,14 @@ namespace XEngine {
 
 		private _pointerInsideBounds(gameObject: GameObject) {
 			if ((gameObject as Object).hasOwnProperty("getBounds")) {
-				let bounds = (gameObject as TwoDObject).getBounds();
+				let go = gameObject as TwoDObject;
+				let bounds = go.getBounds();
 				let worldPos = gameObject.transform.position;
-				if (this.pointer.x < (worldPos.x - bounds.width * gameObject.anchor.x)
-				|| this.pointer.x > (worldPos.x + bounds.width * (1 - gameObject.anchor.x))) {
+				if (this.pointer.x < (worldPos.x - bounds.width * go.transform.anchor.x)
+				|| this.pointer.x > (worldPos.x + bounds.width * (1 - go.transform.anchor.x))) {
 					return false;
-				} else if (this.pointer.y < (worldPos.y - bounds.height * gameObject.anchor.y)
-				|| this.pointer.y > (worldPos.y + bounds.height * (1 - gameObject.anchor.y))) {
+				} else if (this.pointer.y < (worldPos.y - bounds.height * go.transform.anchor.y)
+				|| this.pointer.y > (worldPos.y + bounds.height * (1 - go.transform.anchor.y))) {
 					return false;
 				} else {
 					return true;

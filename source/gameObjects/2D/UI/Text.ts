@@ -30,8 +30,8 @@ namespace XEngine {
 			this.context.font = this.size + "px " + this.font;
 			let textSize = this.context.measureText(this.text);
 			this.context.restore();
-			this.width = textSize.width;
-			this.height = this.size;
+			this.transform.width = textSize.width;
+			this.transform.height = this.size;
 			this.materials[0] = this.game.resourceManager.createMaterial(SpriteMat, "spriteShader");
 			this.setText(text);
 		}
@@ -53,8 +53,8 @@ namespace XEngine {
 		}
 
 		public getBounds(): any {
-			let width = this.width * this.transform.scale.x;
-			let height = this.height * this.transform.scale.y;
+			let width = this.transform.width * this.transform.scale.x;
+			let height = this.transform.height * this.transform.scale.y;
 			return {
 				width: width,
 				height: height,
@@ -66,26 +66,26 @@ namespace XEngine {
 			let font = this.style + " " + this.size + "px " + this.font;
 			this.context.font = font.trim();
 			let textSize = this.context.measureText(this.text);
-			this.width = textSize.width;
-			this.height = this.size;
+			this.transform.width = textSize.width;
+			this.transform.height = this.size;
 			this.canvas.width = textSize.width;
-			this.canvas.height = this.height;
+			this.canvas.height = this.transform.height;
 			this.context.font = font.trim();
 			if (this.strokeWidth > 0) {
 				this.context.strokeStyle = this.strokeColor;
 				this.context.lineWidth = this.strokeWidth;
-				this.context.strokeText(this.text, 0, this.height);
+				this.context.strokeText(this.text, 0, this.transform.height);
 			}
 			this.context.fillStyle = this.textColor;
 			this.context.textBaseline = "top";
 			this.context.textAlign = "left";
 			this.context.fillText(this.text, 0, 0);
-			let texture = new XEngine.Texture2D("textTexture", this.width, this.height, WRAP_MODE.CLAMP, false);
+			let texture = new XEngine.Texture2D("textTexture", this.transform.width, this.transform.height, WRAP_MODE.CLAMP, false);
 			texture.image = this.context.canvas;
 			texture.createTexture(this.game.context);
 			this.texture = texture._texture;
 			this.materials[0].dirty = true;
-			this._setVertices(this.width, this.height, this.color, this._uv);
+			this._setVertices(this.transform.width, this.transform.height, this.color, this._uv);
 		}
 	}
 }

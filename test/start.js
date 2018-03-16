@@ -37,7 +37,7 @@ Start.prototype = {
 	
 	preload: function () {
 		this.loadingText = this.game.add.text(this.game.width / 2, this.game.height / 2, "0%", { font_size : 32});
-		this.loadingText.anchor.setTo(0.5);
+		this.loadingText.transform.anchor.setTo(0.5);
 		this.game.load.obj('img/sponza.obj', 'img/sponza.mtl');
 		this.game.load.onCompleteFile.add(this.onCompleteFile, this);
 		// this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');

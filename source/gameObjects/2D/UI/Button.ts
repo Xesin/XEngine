@@ -41,8 +41,8 @@ namespace XEngine {
 			if (!this.tilled) {
 				this.sprite = sprite;
 				let new_image = this.game.cache.image(this.sprite).image;
-				this.width = new_image.width || 10;
-				this.height = new_image.height || 10;
+				this.transform.width = new_image.width || 10;
+				this.transform.height = new_image.height || 10;
 			} else {
 				this.frame = sprite;
 				if (this.game.cache.getJson(sprite) !== undefined) {
@@ -53,8 +53,8 @@ namespace XEngine {
 					} else {
 						frameInfo = this.json.frames[this.frame];
 					}
-					this.width = frameInfo.frame.w;
-					this.height = frameInfo.frame.h;
+					this.transform.width = frameInfo.frame.w;
+					this.transform.height = frameInfo.frame.h;
 				}
 			}
 		}

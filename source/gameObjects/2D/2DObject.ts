@@ -12,9 +12,8 @@ namespace XEngine {
 		public inputEnabled: boolean;
 		public isInputDown: boolean;
 		public isInputOver: boolean;
+		public transform: RectTransform;
 
-		public width: number;
-		public height: number;
 		public isometric: boolean;
 
 		public mask: GameObject;
@@ -26,6 +25,8 @@ namespace XEngine {
 
 		constructor(game: Game, posX = 0, posY = 0, posZ = 0) {
 			super(game, posX, posY, posZ);
+			this.transform = new RectTransform(0, 0);
+			this.transform.position.setTo(posX, posY, posZ);
 
 			this.onClick = new XEngine.Signal();
 			this.onInputDown = new XEngine.Signal();
@@ -60,13 +61,13 @@ namespace XEngine {
 		public update(deltaTime: number) {
 			super.update(deltaTime);
 
-			if (this._prevHeight !== this.height ||
-				this._prevWidth !== this.width ||
+			if (this._prevHeight !== this.transform.height ||
+				this._prevWidth !== this.transform.width ||
 				this._prevPos.x !== this.transform.position.x ||
 				this._prevPos.y !== this.transform.position.y) {
-				this._setVertices(this.width, this.height, this.color, this._uv);
-				this._prevHeight = this.height;
-				this._prevWidth = this.width;
+				this._setVertices(this.transform.width, this.transform.height, this.color, this._uv);
+				this._prevHeight = this.transform.height;
+				this._prevWidth = this.transform.width;
 				this._prevPos.x = this.transform.position.x;
 				this._prevPos.y = this.transform.position.y;
 			}
@@ -75,7 +76,7 @@ namespace XEngine {
 		public setColor(value: number, a = 1.0) {
 			this.color = value;
 			this.alpha = a;
-			this._setVertices(this.width, this.height, this.color, this._uv);
+			this._setVertices(this.transform.width, this.transform.height, this.color, this._uv);
 		}
 
 		public getTotalAlpha () {
@@ -117,11 +118,11 @@ namespace XEngine {
 		}
 
 		public getBounds (): any {
-			let width = this.width * this.transform.scale.x;
-			let height = this.height * this.transform.scale.y;
+			let width = this.transform.width * this.transform.scale.x;
+			let height = this.transform.height * this.transform.scale.y;
 			let worldPos = this.transform.position;
-			let widthAnchor = width * this.anchor.x;
-			let heightAnchor = height * this.anchor.y;
+			let widthAnchor = width * this.transform.anchor.x;
+			let heightAnchor = height * this.transform.anchor.y;
 			let minX = worldPos.x - widthAnchor;
 			let maxX = worldPos.x + width - widthAnchor;
 			let minY = worldPos.y - heightAnchor;
@@ -152,8 +153,8 @@ namespace XEngine {
 		public _setVertices(width: number, height: number, color: number, uv: Array<number>) {
 			let pos = new XEngine.Vector3(0, 0);
 			this._uv = uv;
-			this.width = width;
-			this.height = height;
+			this.transform.width = width;
+			this.transform.height = height;
 
 			let vertices = [
 				// Cara delantera
