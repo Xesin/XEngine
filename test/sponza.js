@@ -76,9 +76,9 @@ Sponza.prototype = {
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.E) || this.game.input.isDown(XEngine.KEY_CODE.RIGHT)){
-			this.rot += deltaTime * 1.5;
+			this.game.camera.transform.rotation.y -= this.velocity *deltaTime;
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.Q) || this.game.input.isDown(XEngine.KEY_CODE.LEFT)){
-			this.rot -= deltaTime * 1.5;
+			this.game.camera.transform.rotation.y += this.velocity *deltaTime;
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.R)){
@@ -88,14 +88,11 @@ Sponza.prototype = {
 		}
 
 		if(this.game.input.isDown(XEngine.KEY_CODE.UP)){
-			this.upOffset += 1.5 * deltaTime;
+			this.game.camera.transform.rotation.x += this.velocity *deltaTime;
 		}else if(this.game.input.isDown(XEngine.KEY_CODE.DOWN)){
-			this.upOffset -= 1.5 * deltaTime;
+			this.game.camera.transform.rotation.x -= this.velocity *deltaTime;
 		}
-
-		this.game.camera.lookAt.x = Math.cos(this.rot) + this.game.camera.transform.position.x;
-		this.game.camera.lookAt.z = Math.sin(this.rot) + this.game.camera.transform.position.z;
-		this.game.camera.lookAt.y = this.upOffset + this.game.camera.transform.position.y;
+		this.game.camera.transform.rotation.x = XEngine.Mathf.clamp(this.game.camera.transform.rotation.x, -80, 80);
 	},
 	
 	fin: function () {

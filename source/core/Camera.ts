@@ -80,7 +80,9 @@ namespace XEngine {
 
 				let pos = [this.transform.position.x, this.transform.position.y, this.transform.position.z ];
 				let center = [this.lookAt.x, this.lookAt.y, this.lookAt.z];
-				this.viewMatrix.lookAt(this.transform.position, this.lookAt, this.upVector);
+				// this.viewMatrix.lookAt(this.transform.position, this.lookAt, this.upVector);
+				// tslint:disable-next-line:max-line-length
+				this.viewMatrix.FPSView(this.transform.position, this.transform.rotation.x * Mathf.TO_RADIANS, this.transform.rotation.y * Mathf.TO_RADIANS);
 				// mat4.lookAt(this.viewMatrix.elements, pos, center, [0, 1, 0]);
 
 				mat4.ortho(this.uiMatrix, 0.0, right, up, 0, 0.0, 100);

@@ -4,8 +4,8 @@ namespace XEngine {
 
 		public static readonly Zero = new Vector3(0);
 		public zOffset = 0;
-		public dirty = true;
 
+		private _dirty = true;
 		private _x: number;
 		private _y: number;
 		private _z: number;
@@ -170,6 +170,14 @@ namespace XEngine {
 
 		public toArray(): Array<number> {
 			return [this.x, this.y, this.z];
+		}
+
+		get dirty(): boolean {
+			return this._dirty;
+		}
+
+		set dirty(value: boolean) {
+			this._dirty = value;
 		}
 
 		get x(): number {

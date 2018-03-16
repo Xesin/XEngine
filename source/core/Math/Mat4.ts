@@ -105,5 +105,26 @@ namespace XEngine {
 			return this;
 
 		}
+
+		public FPSView( eye: Vector3, pitch: number, yaw: number ) {
+			let te = this.elements;
+
+			let cosPitch = Math.cos(pitch);
+			let sinPitch = Math.sin(pitch);
+			let cosYaw = Math.cos(yaw);
+			let sinYaw = Math.sin(yaw);
+
+			this.vX.setTo(cosYaw, 0, -sinYaw);
+			this.vY.setTo(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch);
+			this.vZ.setTo(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw);
+
+			te[ 0 ] = this.vX.x; te[ 1 ] = this.vY.x; te[ 2 ] = this.vZ.x;
+			te[ 4 ] = this.vX.y; te[ 5 ] = this.vY.y; te[ 6 ] = this.vZ.y;
+			te[ 8 ] = this.vX.z; te[ 9 ] = this.vY.z; te[ 10 ] = this.vZ.z;
+			te[ 12 ] = -this.vX.dot(eye); te[ 13 ] = -this.vY.dot(eye); te[ 14 ] = -this.vZ.dot(eye);
+			te[ 15 ] = 1;
+
+			return this;
+		}
 	}
 }
