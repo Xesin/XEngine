@@ -163,7 +163,6 @@ namespace XEngine {
 						"if(dot(crs, N) < 0.0) T *= -1.0;",
 						"vec3 mapN = decodeNormals( normalTex, uv );",
 						"mapN.xy = normalIntensity * mapN.xy;",
-						"mapN.y *= -1.0;",
 						"mat3 tsn = mat3( S, T, N );",
 						"return normalize( tsn * mapN );",
 					"}",

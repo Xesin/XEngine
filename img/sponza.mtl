@@ -155,6 +155,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd textures\sponza_details_diff.tga
+map_Bump textures\sponza_details_ddn.png
 map_Ka textures\sponza_details_diff.tga
 map_Ks textures\sponza_details_spec.tga
 
