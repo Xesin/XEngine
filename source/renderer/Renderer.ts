@@ -127,33 +127,31 @@ namespace XEngine {
 				}
 
 				if (this.currentMaterial.cullFace) {
-					this.cullFaceEnabled = this.currentMaterial.cullFace;
-					if (this.currentMaterial.cullFace) {
-						if (this.currentMaterial.cullMode !== this.currentCullMode) {
-							this.currentCullMode = this.currentMaterial.cullMode;
-							switch (this.currentMaterial.cullMode) {
-								case CullMode.BACK:
-									this.context.cullFace(this.context.BACK);
-									break;
-								case CullMode.FRONT:
-									this.context.cullFace(this.context.FRONT);
-									break;
-								case CullMode.BOTH:
-									this.context.cullFace(this.context.FRONT_AND_BACK);
-									break;
-								case CullMode.NONE:
-									this.context.cullFace(this.context.NONE);
-									break;
-							}
+					if (this.currentMaterial.cullMode !== this.currentCullMode) {
+						this.currentCullMode = this.currentMaterial.cullMode;
+						switch (this.currentMaterial.cullMode) {
+							case CullMode.BACK:
+								this.context.cullFace(this.context.BACK);
+								break;
+							case CullMode.FRONT:
+								this.context.cullFace(this.context.FRONT);
+								break;
+							case CullMode.BOTH:
+								this.context.cullFace(this.context.FRONT_AND_BACK);
+								break;
+							case CullMode.NONE:
+								this.context.cullFace(this.context.NONE);
+								break;
 						}
 						if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
+							this.cullFaceEnabled = this.currentMaterial.cullFace;
 							this.context.enable(this.context.CULL_FACE);
 						}
-					} else {
+					}
+				} else {
+					if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
 						this.cullFaceEnabled = this.currentMaterial.cullFace;
-						if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
-							this.context.disable(this.context.CULL_FACE);
-						}
+						this.context.disable(this.context.CULL_FACE);
 					}
 				}
 			}
