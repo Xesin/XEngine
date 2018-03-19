@@ -41,15 +41,16 @@ namespace XEngine {
 			(this.materials[0] as SpriteMat)._setTexture(this.texture);
 		}
 
-		public renderToCanvas(context: WebGLRenderingContext) {
+		public renderToCanvas (context: WebGL2RenderingContext, viewMatrix: Mat4, pMatrix: Array<number>, eyePos: Vector3, material?: Material) {
 			if (this.materials == null) { return; }
-			super.renderToCanvas(context);
+			super.renderToCanvas(context, viewMatrix, pMatrix, eyePos, material);
 		}
 
 		public setText(text: string) {
 			this.isDirty = true;
 			this.text = text;
 			this.updateText();
+			this.transform.calculateMatrix();
 		}
 
 		public getBounds(): any {

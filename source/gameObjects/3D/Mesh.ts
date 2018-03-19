@@ -25,7 +25,7 @@ namespace XEngine {
 			}
 		}
 
-		public renderToCanvas(gl: WebGL2RenderingContext) {
+		public renderToCanvas(gl: WebGL2RenderingContext, viewMatrix: Mat4, pMatrix: Array<number>, eyePos: Vector3, material?: Material) {
 			let renderer = this.game.renderer;
 			let vertexDataBuffer = this.vertDataBuffer;
 			let geometry = this.geometry;
@@ -41,19 +41,33 @@ namespace XEngine {
 				mat4.transpose(this.transposed, this.transposed);
 				this.transform.dirty = false;
 			}
-			for (let i = 0; i < this.materials.length; i ++) {
-				renderer.bindMaterial(this.materials[i]);
-				if (this.game.camera.dirty) {
-					this.materials[i].baseUniforms.pMatrix.value = this.game.camera.pMatrix;
-					this.materials[i].baseUniforms.eyePos.value = this.game.camera.transform.position;
-					this.materials[i].baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
+			if (!material) {
+				for (let i = 0; i < this.materials.length; i ++) {
+					renderer.bindMaterial(this.materials[i]);
+					// if (this.game.camera.dirty) {
+					this.materials[i].baseUniforms.pMatrix.value = pMatrix;
+					this.materials[i].baseUniforms.eyePos.value = eyePos;
+					this.materials[i].baseUniforms.viewMatrix.value = viewMatrix.elements;
+					// }
+					this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
+					this.materials[i].baseUniforms.normalMatrix.value = this.transposed;
+					if (this.materials[i].lightOn) {
+						this.materials[i].updateLights(gl, this.game.lights);
+					}
+					this.materials[i].updateUniforms(gl);
 				}
-				this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
-				this.materials[i].baseUniforms.normalMatrix.value = this.transposed;
-				if (this.materials[i].lightOn) {
-					this.materials[i].updateLights(gl, this.game.lights);
+			} else {
+				renderer.bindMaterial(material);
+				material.baseUniforms.pMatrix.value = this.game.camera.pMatrix;
+				material.baseUniforms.eyePos.value = this.game.camera.transform.position;
+				material.baseUniforms.viewMatrix.value = this.game.camera.viewMatrix.elements;
+				// }
+				material.baseUniforms.modelMatrix.value = this.transform.matrix.elements;
+				material.baseUniforms.normalMatrix.value = this.transposed;
+				if (material.lightOn) {
+					material.updateLights(gl, this.game.lights);
 				}
-				this.materials[i].updateUniforms(gl);
+				material.updateUniforms(gl);
 			}
 
 			if (geometry.indexed) {
@@ -62,7 +76,9 @@ namespace XEngine {
 				// tslint:disable-next-line:forin
 				for (let i = 0; i < geometry.groups.length; i ++) {
 					let group = geometry.groups[i];
-					renderer.bindMaterial(this.materials[group.materialIndex]);
+					if (!material) {
+						renderer.bindMaterial(this.materials[group.materialIndex]);
+					}
 					gl.drawArrays(gl.TRIANGLES, group.start, group.count);
 				}
 			}

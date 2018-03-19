@@ -9,11 +9,13 @@ namespace XEngine {
 		private _x: number;
 		private _y: number;
 		private _z: number;
+		private arr: Array<number>;
 
 		constructor (x = 1, y = x, z = 1) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+			this.arr = new Array(3);
 
 			this.zOffset = 0;
 		}
@@ -169,7 +171,10 @@ namespace XEngine {
 		}
 
 		public toArray(): Array<number> {
-			return [this.x, this.y, this.z];
+			this.arr[0] = this.x;
+			this.arr[1] = this.y;
+			this.arr[2] = this.z;
+			return this.arr;
 		}
 
 		get dirty(): boolean {

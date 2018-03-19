@@ -55,7 +55,7 @@ namespace XEngine {
 			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
 			this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
-			this.renderLoop(this.game.renderQueue);
+			this.mainRender(this.game.renderQueue);
 			if (this.renderer) {
 				this.renderer.flush();
 				this.renderer = null;
@@ -165,7 +165,7 @@ namespace XEngine {
 			this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 		}
 
-		public renderLoop(arrayObjects) {
+		public mainRender(arrayObjects) {
 			let _this = this;
 			let arrayLenght = arrayObjects.length;
 
@@ -174,16 +174,20 @@ namespace XEngine {
 				if (!object.render) {continue; }
 				if (Group.prototype.isPrototypeOf(object)) {
 					object.beginRender(_this.context);
-					_this.renderLoop(object.children);
+					_this.mainRender(object.children);
 					// object._endRender(_this.context);
 				} else if (!Audio.prototype.isPrototypeOf(object)) {
-					if (!object.alive) {continue; }
-					if (this.game.autoCulling && !object.isInsideCamera()) {continue ; }
-					object.beginRender(_this.context);
-					object.renderToCanvas(_this.context);
-					object.endRender(_this.context);
-					if (object.body !== undefined) {
-						object.body._renderBounds(_this.context);
+					let go = object as GameObject;
+					if (!go.alive) {continue; }
+					if (this.game.autoCulling && !(go as TwoDObject).isInsideCamera()) {continue ; }
+					let camera = this.game.camera;
+					let viewMatrix = camera.viewMatrix;
+					let pMatrix = !(go instanceof TwoDObject) ? camera.pMatrix : camera.uiMatrix;
+					go.beginRender(_this.context);
+					go.renderToCanvas(_this.context, viewMatrix, pMatrix, camera.transform.position);
+					go.endRender(_this.context);
+					if (go.body !== undefined) {
+						go.body._renderBounds(_this.context);
 					}
 					// object._endRender(_this.context);
 

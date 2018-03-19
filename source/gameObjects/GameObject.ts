@@ -114,10 +114,10 @@ namespace XEngine {
 			}
 		}
 
-		public renderToCanvas (context: WebGLRenderingContext) {
+		public renderToCanvas (context: WebGL2RenderingContext, viewMatrix: Mat4, pMatrix: Array<number>, eyePos: Vector3, material?: Material) {
 			for (let i = 0; i < this.materials.length; i++) {
 				this.game.renderer.bindMaterial(this.materials[i]);
-				this.materials[i].baseUniforms.pMatrix.value = this.game.camera.uiMatrix;
+				this.materials[i].baseUniforms.pMatrix.value = pMatrix;
 				this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
 				this.materials[i].updateUniforms(context);
 
