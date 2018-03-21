@@ -4,7 +4,7 @@ namespace XEngine {
 
 		constructor(game: Game, intensity = 1) {
 			super(game, 0, 0, 0);
-			this.render = false;
+			this.visible = false;
 			this.type = LightType.DIRECTIONAL;
 			this.intensity = intensity;
 			this.lightColor = new Vector3(1, 1, 1);

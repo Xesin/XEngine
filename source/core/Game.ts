@@ -159,7 +159,7 @@ namespace XEngine {
 				let tmpRenderQueue = this.renderQueue.removePending();
 				delete this.renderQueue;
 				this.renderQueue = tmpRenderQueue;
-				this.renderer.render();
+				this.state.currentState.render(this.renderer);
 				this.camera.dirty = false;
 			}
 		}

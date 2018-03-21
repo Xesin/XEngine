@@ -13,19 +13,19 @@ namespace XEngine {
 				// Cara trasera
 				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
 				-sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1, 
-				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1, 
+				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
 
 				// Top face
 				-sizeW, sizeH, -sizeZ, 0, 0, 0, 1,
 				-sizeW, sizeH,  sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1, 
-				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1, 
+				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
+				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
 
 				// Bottom face
 				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1, 
-				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1, 
+				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
 				-sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
 
 				// Right face

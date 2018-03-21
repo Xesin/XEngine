@@ -15,7 +15,7 @@ namespace XEngine {
 		public body: any;
 		public persist: boolean;
 
-		public render: boolean;
+		public visible: boolean;
 		public fixedToCamera: boolean;
 		public materials: Array<Material>;
 
@@ -38,7 +38,7 @@ namespace XEngine {
 			this.localTransform = new Transform();
 			this.transform.position.setTo(posX, posY, posZ);
 
-			this.render = true;
+			this.visible = true;
 			this.fixedToCamera = false;
 
 			this.materials = new Array();

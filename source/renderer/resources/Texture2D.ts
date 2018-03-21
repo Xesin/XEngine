@@ -40,7 +40,7 @@ namespace XEngine {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			if (this.wrapMode === WRAP_MODE.REPEAT) {
 				let uinType = "Uint8Array";
-				if (this.image.constructor === Uint8Array) {
+				if (this.image.constructor === Uint8Array || this.image === null) {
 					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.frameWidth, this.frameHeight, 0, srcFormat, gl.UNSIGNED_BYTE, this.image);
 				} else {
 					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);

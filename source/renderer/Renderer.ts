@@ -49,13 +49,18 @@ namespace XEngine {
 			}
 		}
 
-		public render() {
+		public render(objects: Array<GameObject>, camera: Camera) {
+			if (camera.renderTarget) {
+				this.context.viewport(0, 0, this.game.width, this.game.height);
+				this.context.bindFramebuffer(this.context.FRAMEBUFFER, camera.renderTarget.frameBuffer);
+			} else {
+				this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
+			}
 			this.context.clearDepth(1.0);
 
 			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
-			this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
-			this.mainRender(this.game.renderQueue);
+			this.mainRender(objects, camera);
 			if (this.renderer) {
 				this.renderer.flush();
 				this.renderer = null;
@@ -65,6 +70,9 @@ namespace XEngine {
 			for (let i = 0; i < this.game.lights.length; i++) {
 				this.game.lights[i].dirty = false;
 			}
+
+			this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+			this.context.bindRenderbuffer(this.context.RENDERBUFFER, null);
 		}
 
 		public setRenderer(renderer, sprite) {
@@ -165,22 +173,21 @@ namespace XEngine {
 			this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 		}
 
-		public mainRender(arrayObjects) {
+		public mainRender(arrayObjects, camera: Camera) {
 			let _this = this;
 			let arrayLenght = arrayObjects.length;
 
 			for (let i = 0; i < arrayLenght; i++) {
 				let object = arrayObjects[i];
-				if (!object.render) {continue; }
+				if (!object.visible) {continue; }
 				if (Group.prototype.isPrototypeOf(object)) {
 					object.beginRender(_this.context);
-					_this.mainRender(object.children);
+					_this.mainRender(object.children, camera);
 					// object._endRender(_this.context);
 				} else if (!Audio.prototype.isPrototypeOf(object)) {
 					let go = object as GameObject;
 					if (!go.alive) {continue; }
 					if (this.game.autoCulling && !(go as TwoDObject).isInsideCamera()) {continue ; }
-					let camera = this.game.camera;
 					let viewMatrix = camera.viewMatrix;
 					let pMatrix = !(go instanceof TwoDObject) ? camera.pMatrix : camera.uiMatrix;
 					go.beginRender(_this.context);

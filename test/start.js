@@ -52,6 +52,10 @@ Start.prototype = {
 		this.loadingText.setText((progress * 100) + "%");
 	},
 
+	render: function(renderer){
+		this.game.camera.render(renderer);
+	},
+
 	
 	fin: function () {
 		

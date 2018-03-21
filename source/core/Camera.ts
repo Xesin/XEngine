@@ -18,6 +18,7 @@ namespace XEngine {
 		public offsetLeft: number;
 		public offsetUp: number;
 		public lookAt: Vector3;
+		public renderTarget: RenderTarget;
 
 		private _dirty: boolean;
 		private readonly upVector = new Vector3(0, 1, 0);
@@ -87,6 +88,11 @@ namespace XEngine {
 
 				mat4.ortho(this.uiMatrix, 0.0, right, up, 0, 0.0, 100);
 			}
+		}
+
+		public render(renderer: Renderer) {
+			// TODO: Get objects in frustrum
+			renderer.render(this.game.renderQueue, this);
 		}
 
 		get dirty(): boolean {

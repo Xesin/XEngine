@@ -41,5 +41,49 @@ namespace XEngine {
 			}
 			return shader;
 		}
+
+		public createTexture(width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean) {
+			let gl = this.gl;
+			let texture = gl.createTexture();
+
+			let internalFormat = gl.SRGB8_ALPHA8;
+			let srcFormat = gl.RGBA;
+
+			const srcType = gl.UNSIGNED_BYTE;
+
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+
+			let uinType = "Uint8Array";
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, gl.UNSIGNED_BYTE, data);
+
+			if (wrap === WRAP_MODE.REPEAT) {
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			} else {
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			}
+
+			if (generateMipMaps) {
+				gl.generateMipmap(gl.TEXTURE_2D);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+			} else {
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			}
+
+			gl.bindTexture(gl.TEXTURE_2D, null);
+
+			return texture;
+		}
+
+		public createRenderBuffer(width: number, height: number) {
+			let gl = this.gl;
+			let buffer = gl.createFramebuffer();
+			gl.bindFramebuffer(gl.FRAMEBUFFER, buffer);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			return;
+		}
 	}
 }

@@ -1,7 +1,7 @@
 namespace XEngine {
 	export class Light extends GameObject {
 		public type: LightType;
-
+		public castShadow: boolean;
 
 		private _dirty: boolean;
 		private _intensity: number;
@@ -11,6 +11,11 @@ namespace XEngine {
 		public constructor(game: Game, posX: number, posY: number, posZ: number) {
 			super(game, posX, posY, posZ);
 			this.lightColor = new Vector3(1, 1, 1);
+			this.castShadow = false;
+		}
+
+		public renderShadowMask() {
+			return;
 		}
 
 		get intensity(): number {
