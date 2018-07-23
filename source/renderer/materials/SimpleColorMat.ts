@@ -3,7 +3,11 @@ namespace XEngine {
 	export class SimpleColorMat extends Material {
 		public static shader = new SimpleColorMat();
 		constructor() {
-			super(MaterialLib.SimpleColor.vertexShader, MaterialLib.SimpleColor.fragmentShader);
+			super(ShaderLib.SimpleColorShader.vertexShader, ShaderLib.SimpleColorShader.fragmentShader);
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = true;
 		}
 	}
 }

@@ -6,14 +6,24 @@ function initGame(){
    game = new XEngine.Game(1280, 720, 'contenedor');							//iniciamos el juego
    game.frameLimit = 120;
    game.scale.scaleType = XEngine.Scale.SHOW_ALL;
-   game.state.add('unicorns', Start);
-   game.state.add('anim', AnimScene);
-   game.state.add('shader', CustomShader);
-   game.state.add('gimp', Gimp);
-   game.state.start('unicorns');
+   game.state.add('start', Start);
+   game.state.add('sponza', Sponza);
+   game.state.start('start');
 
 
    game.setBackgroundColor(100,100,100, 255);
+}
+
+function setLight(value, value1, value2) {
+	for(var mat in game.cache.materials){
+		game.cache.materials[mat].uniforms["light[0].position"].value.setTo(value, value1, value2);
+	}
+}
+
+function setNormal(value, value1, value2) {
+	for(var mat in game.cache.materials){
+		game.cache.materials[mat].baseUniforms["normalIntensity"].value = value;
+	}
 }
 
 var Start = function (game) {
@@ -26,33 +36,29 @@ var text;
 Start.prototype = {
 	
 	preload: function () {
-		this.game.load.bitmapFont('font1', 'img/font.png', 'img/font.fnt');
+		this.loadingText = this.game.add.text(this.game.width / 2, this.game.height / 2, "0%", { font_size : 32});
+		this.loadingText.transform.anchor.setTo(0.5);
+		this.game.load.obj('img/sponza.obj', 'img/sponza.mtl');
+		this.game.load.onCompleteFile.add(this.onCompleteFile, this);
+		// this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');
+		
 	},
 	
 	start: function () {
-		this.game.autoCulling = true;
-		text = this.game.add.bitmapText(500, 420,'font1', 'loops: 0');
-		
-		text.anchor.setTo(0.5);
-		var contador = 0;
-		let timer = this.game.time.addTimer(1000, true, true);
-		timer.onCompleted.add(function(){
-			contador++;
-			text.setText("loops: " + contador);
-		}, this);
+		this.game.state.start("sponza");
+	},
 
-		let timer2 = this.game.time.addTimer(1000, true, true, true);
-		timer2.onCompleted.add(function(){
-			timer2.stop();
-			console.log("completedOnce");
-		}, this);
+	onCompleteFile: function(progress) {
+		this.loadingText.setText((progress * 100) + "%");
 	},
-	
-	update : function (deltaTime) {
-		//text.rotation += 20 * deltaTime;
+
+	render: function(renderer){
+		this.game.camera.render(renderer);
 	},
+
 	
 	fin: function () {
 		
 	},
+
 };

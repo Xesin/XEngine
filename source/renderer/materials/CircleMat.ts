@@ -4,7 +4,11 @@ namespace XEngine {
 	export class CircleMat extends Material {
 		public static shader = new CircleMat();
 		constructor() {
-			super(MaterialLib.CircleColor.vertexShader, MaterialLib.CircleColor.fragmentShader);
+			super(ShaderLib.CircleShader.vertexShader, ShaderLib.CircleShader.fragmentShader);
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = true;
 		}
 	}
 }

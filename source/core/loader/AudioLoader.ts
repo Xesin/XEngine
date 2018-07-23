@@ -1,9 +1,10 @@
 namespace XEngine {
 
-	export class AudioLoader {
+	export class AudioLoader implements BasicLoader {
 		public audioName: string;
 		public audioUrl: string;
 		public completed: boolean;
+		public isLoading: boolean;
 		private loader: Loader;
 
 		constructor (audioName: string, audioUrl: string, loader: Loader) {
@@ -11,10 +12,12 @@ namespace XEngine {
 			this.audioUrl = audioUrl;
 			this.completed = false;
 			this.loader = loader;
+			this.isLoading = false;
 		}
 
 		public load() {
 			let _this = this;
+			this.isLoading = true;
 			let newAudio = {
 				audioName: _this.audioName,
 				audio: null,

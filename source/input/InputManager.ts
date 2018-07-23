@@ -7,7 +7,7 @@ namespace XEngine {
 		public onInputUp: Signal;
 		public onInputMove: Signal;
 		public pointerDown: boolean;
-		public pointer: Vector;
+		public pointer: Vector3;
 
 		private keysPressed: Array<boolean>;
 		private game: Game;
@@ -21,7 +21,7 @@ namespace XEngine {
 			this.onInputUp = new Signal();
 			this.onInputMove = new Signal();
 			this.pointerDown = false;
-			this.pointer = new Vector(0);
+			this.pointer = new Vector3(0);
 
 			let _this = this;
 			document.addEventListener("keydown", function (event) {
@@ -66,7 +66,7 @@ namespace XEngine {
 			}
 		}
 
-		public isPressed(keyCode: KEY_CODE): boolean {
+		public isDown(keyCode: KEY_CODE): boolean {
 			return this.keysPressed[keyCode];
 		}
 
@@ -166,6 +166,8 @@ namespace XEngine {
 
 		private inputMoveHandler() {
 			let inputPos = this.getInputPosition(event);
+			inputPos.deltaX = this.pointer.x - inputPos.position.x;
+			inputPos.deltaY = this.pointer.y - inputPos.position.y;
 			this.pointer.x = inputPos.position.x;
 			this.pointer.y = inputPos.position.y;
 			let _this = this;
@@ -235,14 +237,15 @@ namespace XEngine {
 		}
 
 		private _pointerInsideBounds(gameObject: GameObject) {
-			if (gameObject.getBounds !== undefined) {
-				let bounds = gameObject.getBounds();
-				let worldPos = gameObject.getWorldPos();
-				if (this.pointer.x < (worldPos.x - bounds.width * gameObject.anchor.x)
-				|| this.pointer.x > (worldPos.x + bounds.width * (1 - gameObject.anchor.x))) {
+			if ((gameObject as Object).hasOwnProperty("getBounds")) {
+				let go = gameObject as TwoDObject;
+				let bounds = go.getBounds();
+				let worldPos = gameObject.transform.position;
+				if (this.pointer.x < (worldPos.x - bounds.width * go.transform.anchor.x)
+				|| this.pointer.x > (worldPos.x + bounds.width * (1 - go.transform.anchor.x))) {
 					return false;
-				} else if (this.pointer.y < (worldPos.y - bounds.height * gameObject.anchor.y)
-				|| this.pointer.y > (worldPos.y + bounds.height * (1 - gameObject.anchor.y))) {
+				} else if (this.pointer.y < (worldPos.y - bounds.height * go.transform.anchor.y)
+				|| this.pointer.y > (worldPos.y + bounds.height * (1 - go.transform.anchor.y))) {
 					return false;
 				} else {
 					return true;
@@ -252,7 +255,7 @@ namespace XEngine {
 			}
 		}
 
-		private getInputPosition(event: any) {
+		private getInputPosition(event: any): any {
 			let rect = this.game.canvas.getBoundingClientRect();
 			let newEvent = {
 				position: {

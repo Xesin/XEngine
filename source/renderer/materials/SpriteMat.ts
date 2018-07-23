@@ -4,20 +4,26 @@ namespace XEngine {
 		public texture: WebGLTexture;
 
 		constructor() {
-			super(XEngine.MaterialLib.Sprite.vertexShader, XEngine.MaterialLib.Sprite.fragmentShader);
+			super(XEngine.ShaderLib.SpriteShader.vertexShader, XEngine.ShaderLib.SpriteShader.fragmentShader);
+			this.depthTest = false;
+			this.cullFace = true;
+			this.cullMode = CullMode.BACK;
+			this.transparent = true;
+
+			this.baseUniforms.texSampler = {
+				type: Uniforms.SAMPLER,
+				value: 0,
+			};
 		}
 
 		public _setTexture(texture: WebGLTexture) {
 			this.texture = texture;
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
-			XEngine.Material.prototype._beginRender.call(this, gl);
+		public bind(renderer: Renderer) {
+			super.bind(renderer);
 			// Tell WebGL we want to affect texture unit 0
-			gl.activeTexture(gl.TEXTURE0);
-
-			// Bind the texture to texture unit 0
-			gl.bindTexture(gl.TEXTURE_2D, this.texture);
+			renderer.bindTexture(this.texture, renderer.context.TEXTURE0);
 		}
 	}
 }

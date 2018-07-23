@@ -7,12 +7,12 @@ namespace XEngine {
 			this.children = new Array<GameObject>();
 		}
 
-		public _beginRender(gl: WebGLRenderingContext) {
+		public beginRender(gl: WebGLRenderingContext) {
 			return;
 		}
 
 		public update(deltaTime: number) {
-			this.children.removePending();
+			this.children = this.children.removePending();
 			let childLenght = this.children.length - 1;
 			for (let i = childLenght; i >= 0; i--) {
 				let gameObject = this.children[i];

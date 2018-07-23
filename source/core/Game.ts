@@ -1,19 +1,53 @@
 interface Array<T> {
 	removePending();
+	equals(array: Array<T>): boolean;
 }
 
 Array.prototype.removePending = function () {
-	let i = this.length;
-	while (i--) {
-		if (this[i].isPendingDestroy) {
-			if (this[i].body !== undefined) {
-				this[i].body.destroy();
+	return this.filter(go => {
+		if (go.isPendingDestroy) {
+			if (go.body !== undefined) {
+				go.body.destroy();
 			}
-			delete this[i];
-			this.splice(i, 1);
+			return false;
+		}
+		return true;
+	});
+};
+
+if ( Array.prototype.equals ) {
+	console.warn("Overriding existing Array.prototype.equals. \
+	Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+}
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array): boolean {
+	// if the other array is a falsy value, return
+	if (!array) {
+		return false;
+	}
+
+	// compare lengths - can save a lot of time
+	if (this.length !== array.length) {
+		return false;
+	}
+
+	for (let i = 0, l = this.length; i < l; i++) {
+	// Check if we have nested arrays
+		if (this[i] instanceof Array && array[i] instanceof Array) {
+			// recurse into the nested arrays
+			if (!this[i].equals(array[i])) {
+				return false;
+			}
+		} else if (this[i] !== array[i]) {
+			// Warning - two different object instances will never be equal: {x:20} != {x:20}
+			return false;
 		}
 	}
+	return true;
 };
+
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 namespace XEngine {
 	export let version = "2.0";
@@ -26,15 +60,15 @@ namespace XEngine {
 		public isMobile: boolean;
 		public updateQueue: Array<GameObject>;
 		public renderQueue: Array<GameObject>;
+		public lights: Array<Light>;
 		public pause: boolean;
 		public worldWidth: number;
 		public worldHeight: number;
 		public height: number;
 		public width: number;
 
-		public game: Game;
 		public canvas: HTMLCanvasElement;
-		public context: WebGLRenderingContext;
+		public context: WebGL2RenderingContext;
 		public camera: Camera;
 		public audioContext: AudioContext;
 		public load: Loader;
@@ -48,7 +82,7 @@ namespace XEngine {
 		public add: ObjectFactory;
 		public input: InputManager;
 		public resourceManager: ResourceManager;
-		public readonly position: Vector;
+		public readonly position: Vector3;
 
 		private timer: number;
 		private elapsedTime: number;
@@ -61,7 +95,7 @@ namespace XEngine {
 				this.canvas.id = idContainer;
 			}
 
-			this.position = new Vector(0);
+			this.position = new Vector3(0);
 
 			this.width = width;
 			this.height = height;
@@ -97,9 +131,16 @@ namespace XEngine {
 				if (this.pause) { return; }
 				if (this.state.currentState == null) { return; }
 				if (!this.load.preloading) {
-					this.updateQueue.removePending();
+					let tmpLights = this.lights.removePending();
+					delete this.lights;
+					this.lights = tmpLights;
+					let tmpUpdateQueue = this.updateQueue.removePending();
+					delete this.updateQueue;
+					this.updateQueue = tmpUpdateQueue;
 					this.tween.update(this.time.deltaTimeMillis);
 					let queueLength = this.updateQueue.length - 1;
+					this.state.currentState.update(this.time.deltaTime);
+					this.camera.update();
 					for (let i = queueLength; i >= 0; i--) {
 						let gameObject = this.updateQueue[i];
 						if (gameObject.alive) {
@@ -110,16 +151,16 @@ namespace XEngine {
 						}
 					}
 
-					this.state.currentState.update(this.time.deltaTime);
-					this.camera.update();
-
 					// if (this.physics.systemEnabled) {
-					// 	this.physics.update(this.deltaTime);
-					// 	this.state.currentState.physicsUpdate();
-					// }
-					this.renderQueue.removePending();
-					this.renderer.render();
+						// 	this.physics.update(this.deltaTime);
+						// 	this.state.currentState.physicsUpdate();
+						// }
 				}
+				let tmpRenderQueue = this.renderQueue.removePending();
+				delete this.renderQueue;
+				this.renderQueue = tmpRenderQueue;
+				this.state.currentState.render(this.renderer);
+				this.camera.dirty = false;
 			}
 		}
 
@@ -148,6 +189,17 @@ namespace XEngine {
 					this.renderQueue.splice(i, 1);
 				}
 			}
+
+			for (let i = this.lights.length - 1; i >= 0; i--) {
+				let gameObject = this.lights[i];
+				if (!gameObject.persist) {
+					gameObject.destroy();
+					if (gameObject.body !== undefined) {
+						gameObject.body.destroy();
+					}
+					this.lights.splice(i, 1);
+				}
+			}
 			// this.physics._destroy();
 			// this.tween._destroy();
 			delete this.camera;
@@ -169,6 +221,7 @@ namespace XEngine {
 		private init() {
 			this.updateQueue = new Array();
 			this.renderQueue = new Array();
+			this.lights = new Array();
 			this.pause = false;
 			this.state = new StateManager(this);
 			this.add = new ObjectFactory(this);

@@ -2,12 +2,38 @@ namespace XEngine {
 
 	export class Loader {
 
+		/**
+		 * @type {number}
+		 * @memberof Loader
+		 */
 		public progress: number;
+		/**
+		 * @type {boolean}
+		 * @memberof Loader
+		 */
 		public preloading: boolean;
+		/**
+		 * @type {XEngine.Signal}
+		 * @memberof Loader
+		 */
 		public onCompleteFile: XEngine.Signal;
+		/**
+		 * @type {Game}
+		 * @memberof Loader
+		 */
 		public game: Game;
+		/**
+		 * @private
+		 * @type {Array<any>}
+		 * @memberof Loader
+		 */
 		private pendingLoads: Array<any>;
 
+		/**
+		 * Creates an instance of Loader.
+		 * @param {Game} game
+		 * @memberof Loader
+		 */
 		constructor (game: Game) {
 			this.game = game;
 			this.pendingLoads = new Array();
@@ -16,75 +42,63 @@ namespace XEngine {
 			this.onCompleteFile = new XEngine.Signal();
 		}
 
-		public image(imageName, imageUrl) {
-			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this));
+
+		/**
+		 * @param {string} imageName
+		 * @param {string} imageUrl
+		 * @param {boolean} [isNormal=false]
+		 * @memberof Loader
+		 */
+		public image(imageName: string, imageUrl: string, isNormal = false) {
+			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, 0, 0, isNormal));
 		}
 
 		/**
-		 * Añade hoja de sprites a la cola de carga
-		 * @method XEngine.Loader#spriteSheet
-		 * @param {String} imageName - KeyName de la imagen
-		 * @param {String} imageUrl - fuente de la imagen
-		 * @param {Number} frameWidth - ancho de cada frame
-		 * @param {Number} frameHeight - alto de cada frame
+		 * @param  {string} imageName
+		 * @param  {string} imageUrl
+		 * @param  {number} frameWidth
+		 * @param  {number} frameHeight
 		 */
-		public spriteSheet(imageName, imageUrl, frameWidth, frameHeight) {
+		public spriteSheet(imageName: string, imageUrl: string, frameWidth: number, frameHeight: number) {
 			this.pendingLoads.push(new XEngine.ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
 		}
 
 		/**
-		 * Añade hoja de sprites a la cola de carga
-		 * @method XEngine.Loader#spriteSheet
-		 * @param {String} imageName - KeyName de la imagen
-		 * @param {String} imageUrl - fuente de la imagen
-		 * @param {String} jsonUrl - ruta donde se encuentra el json con la información del spritesheet
+		 * @param  {string} imageName
+		 * @param  {string} imageUrl
+		 * @param  {string} jsonUrl
 		 */
-		public jsonSpriteSheet(imageName, imageUrl, jsonUrl) {
+		public jsonSpriteSheet(imageName: string, imageUrl: string, jsonUrl: string) {
 			this.pendingLoads.push(new XEngine.JsonImageLoader(imageName, imageUrl, jsonUrl, this));
 		}
 
-		/**
-		 * Añade hoja de sprites a la cola de carga
-		 * @method XEngine.Loader#spriteSheet
-		 * @param {String} imageName - KeyName de la imagen
-		 * @param {String} imageUrl - fuente de la imagen
-		 * @param {String} jsonUrl - ruta donde se encuentra el json con la información del spritesheet
-		 */
+
 		public bitmapFont(fontName, imageUrl, xmlUrl) {
 			this.pendingLoads.push(new XEngine.BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
 		}
 
-		/**
-		 * Añade un audio a la cola de carga
-		 * @method XEngine.Loader#audio
-		 * @param {String} audioName - KeyName del audio
-		 * @param {String} audioUrl - fuente del audio
-		 */
+
 		public audio(audioName, audioUrl) {
 			this.pendingLoads.push(new XEngine.AudioLoader(audioName, audioUrl, this));
 		}
 
-		/**
-		 * Arranca la carga de archivos
-		 * @method XEngine.Loader#startPreload
-		 * @private
-		 */
+		public obj(objURL, mtlUrl) {
+			this.pendingLoads.push(new XEngine.ObjMtlLoader(objURL, mtlUrl, this));
+		}
+
 		public _startPreload() {
 			this.preloading = true;
 			if (this.pendingLoads.length === 0) {
 				this._callStart();
 			} else {
 				for (let i = 0; i < this.pendingLoads.length; i++) {
-					this.pendingLoads[i].load();
+					if (!this.pendingLoads[i].isLoading) {
+						this.pendingLoads[i].load();
+					}
 				}
 			}
 		}
 
-		/**
-		 * Actualiza las tareas completadas y las notifica cada vez que una termina
-		 * @method XEngine.Loader#notifyCompleted
-		 * @private
-		 */
 		public _notifyCompleted() {
 			let completedTasks = 0;
 
@@ -105,11 +119,6 @@ namespace XEngine {
 			}
 		}
 
-		/**
-		 * Una vez que finaliza el proceso de carga o no hay datos a cargar, se llama al start del estado
-		 * @method XEngine.Loader#callStart
-		 * @private
-		 */
 		public _callStart() {
 			this.preloading = false;
 			this.game.state.currentState.start();

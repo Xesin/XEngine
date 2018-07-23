@@ -4,6 +4,10 @@ namespace XEngine {
 		[id: number]: T;
 	}
 
+	export class IDict<T> {
+		[id: string]: T;
+	}
+
 	export class BitmapChar {
 		public x: number;
 		public y: number;

@@ -1,29 +1,21 @@
 # XEngine
-Framework para JS creado en el transcurso del primer curso de la carrera en aulatematica
+Framework de webgl hecho en TypeScript. Tiene todo lo básico para crear una escena 3D con hasta 5 luces distintas. Está todavía en una fase WIP y hay mucho que añadir, mejorar y optimizar.
 
-TODO
-  1. Documentar el proyecto (hecho al 90%)
-  2. Añadir callbacks a las animaciones
-  3. Sistema de partículas
+Puedes ver un pequeño ejemplo de su uso dentro de la carpeta "test", por ahora bastante desorganizada porque todas las pruebas las voy haciendo ahí.
 
-API
+[Demo online](http://games.xiscoferrer.com/XEngine/)
 
-http://games.xiscoferrer.com/EngineApi/
+___
 
-DONE 
-
--Física de colisiones
--Animaciones con spriteSheets
--Sistema de carga
--Sistema de audio
--Motor de tweens
--Manejo de escenas mediante el state manager
--Manager de la escala del canvas
--Input tanto de teclado como de ratón
--Integración para spriteSheets creados con TexturePacker
--Formas básicas como cuadrados y circulos
--Textos usando fuentes definidas por el usuario
--Input sobre los textos dentro del canvas
--Implementados botones con swap del sprite
--Matemática de vectores básica
--Uso de grupos para manejar la posición de múltiples objetos respecto a un padre
+## TODO
+1. Documentar el proyecto
+2. Shadow casting
+3. Sistema de partículas
+4. Materiales PBR
+5. Render pipeline único
+6. Post-procesado
+7. Física
+8. Picking
+9. Lightmaps
+10. Environment maps
+11. Crear escenarios de ejemplo
