@@ -21,10 +21,6 @@ namespace XEngine {
 		public updateResource(bufferData: Uint16Array, offset: number) {
 			let gl = this.gl;
 
-			// if (IndexBuffer.CurrentIndexBuffer !== this) {
-			// 	IndexBuffer.CurrentIndexBuffer = this;
-			// 	gl.bindBuffer(this.bufferType, this.buffer);
-			// }
 			gl.bindBuffer(this.bufferType, this.buffer);
 			gl.bufferSubData(this.bufferType, offset, bufferData);
 		}

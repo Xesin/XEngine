@@ -48,7 +48,8 @@ namespace XEngine {
 			let _this = this;
 			let img1 = new Image();
 			let handler = function () {
-				let imageRef = _this.loader.game.cache.images[_this.imageName];
+				let imageRef : Texture2D;
+				imageRef = _this.loader.game.cache.images[_this.imageName];
 				imageRef.image = this;
 				_this.completed = true;
 
@@ -65,8 +66,6 @@ namespace XEngine {
 				} else {
 					imageRef.frameHeight = _this.frameHeight;
 				}
-
-				imageRef.createTexture(_this.loader.game.context);
 				_this.loader._notifyCompleted();
 			};
 			img1.onload = handler;
@@ -99,7 +98,6 @@ namespace XEngine {
 					} else {
 						imageRef.frameHeight = _this.frameHeight;
 					}
-					imageRef.createTexture(_this.loader.game.context);
 					_this.completed = true;
 					_this.loader._notifyCompleted();
 				}

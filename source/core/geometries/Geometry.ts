@@ -56,7 +56,7 @@ namespace XEngine {
 				delete this.vertexBuffer;
 			}
 
-			this.vertexBuffer = renderer.resourceManager.createBuffer(
+			this.vertexBuffer = renderer.game.resourceManager.createBuffer(
 				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
 			for (const attr in attributes) {
 				if (attributes.hasOwnProperty(attr)) {
@@ -67,9 +67,7 @@ namespace XEngine {
 
 			let index = this.vertDataBuffer.allocate(this.vertexData.length);
 			let uvIndex = 0;
-			let colorIndex = 0;
 			let normalIndex = 0;
-			let tangentIndex = 0;
 			let floatBuffer = this.vertDataBuffer.floatView;
 
 			let vertices = this.vertexData;
@@ -101,7 +99,7 @@ namespace XEngine {
 			this.vertexBuffer.updateResource(floatBuffer, 0);
 			if (this.indexed) {
 				this.indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
-				this.indexBuffer = renderer.resourceManager.createBuffer(
+				this.indexBuffer = renderer.game.resourceManager.createBuffer(
 					this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
 				let uintIndexBuffer = this.indexDataBuffer.uintView;
 				let indices = this.indexData;

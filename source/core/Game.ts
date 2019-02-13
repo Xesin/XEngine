@@ -145,9 +145,6 @@ namespace XEngine {
 						let gameObject = this.updateQueue[i];
 						if (gameObject.alive) {
 							gameObject.update(this.time.deltaTime);
-							if (XEngine.Sprite.prototype.isPrototypeOf(gameObject)) {
-								(gameObject as Sprite)._updateAnims(this.time.deltaTimeMillis);
-							}
 						}
 					}
 
@@ -169,9 +166,6 @@ namespace XEngine {
 				let gameObject = this.updateQueue[i];
 				if (!gameObject.persist) {
 					gameObject.destroy();
-					if (gameObject.body !== undefined) {
-						gameObject.body.destroy();
-					}
 					this.updateQueue.splice(i, 1);
 				}
 				let renderIndex = this.renderQueue.indexOf(gameObject);
@@ -183,9 +177,6 @@ namespace XEngine {
 				let gameObject = this.renderQueue[i];
 				if (!gameObject.persist) {
 					gameObject.destroy();
-					if (gameObject.body !== undefined) {
-						gameObject.body.destroy();
-					}
 					this.renderQueue.splice(i, 1);
 				}
 			}
@@ -194,9 +185,6 @@ namespace XEngine {
 				let gameObject = this.lights[i];
 				if (!gameObject.persist) {
 					gameObject.destroy();
-					if (gameObject.body !== undefined) {
-						gameObject.body.destroy();
-					}
 					this.lights.splice(i, 1);
 				}
 			}

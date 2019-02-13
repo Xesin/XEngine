@@ -6,21 +6,13 @@ namespace XEngine {
 		public alive: boolean;
 		public alpha: number;
 		public transform: Transform;
-		public localTransform: Transform;
 
-		public pickeable: boolean;
-		public downPos: Vector3;
-		public posWhenDown: Vector3;
-
-		public body: any;
 		public persist: boolean;
 
 		public visible: boolean;
-		public fixedToCamera: boolean;
 		public materials: Array<Material>;
 
 
-		public modelMatrix: Array<number>;
 		protected _uv: Array<number>;
 		protected indexDataBuffer: XEngine.DataBuffer16;
 		protected vertDataBuffer: DataBuffer32;
@@ -35,11 +27,9 @@ namespace XEngine {
 			this.alive = true;
 			this.alpha = 1.0;
 			this.transform = new Transform();
-			this.localTransform = new Transform();
 			this.transform.position.setTo(posX, posY, posZ);
 
 			this.visible = true;
-			this.fixedToCamera = false;
 
 			this.materials = new Array();
 
@@ -53,17 +43,6 @@ namespace XEngine {
 			];
 
 			this.gl = this.game.context;
-			let gl = this.gl;
-
-			// this._setVertices(this.width, this.height, this.color, this._uv);
-
-			this.modelMatrix = mat4.create();
-
-			mat4.identity(this.modelMatrix);
-
-			this.pickeable = false;
-			this.downPos = new XEngine.Vector3(0, 0);
-			this.posWhenDown = new XEngine.Vector3(0, 0);
 		}
 
 		public destroy () {
@@ -105,7 +84,6 @@ namespace XEngine {
 			if (this.transform.dirty) {
 				this.transform.calculateMatrix();
 			}
-			this.game.renderer.setRenderer(null, null);
 		}
 
 		public endRender(context: WebGLRenderingContext) {
@@ -114,19 +92,8 @@ namespace XEngine {
 			}
 		}
 
-		public renderToCanvas (context: WebGL2RenderingContext, viewMatrix: Mat4, pMatrix: Array<number>, eyePos: Vector3, material?: Material) {
-			for (let i = 0; i < this.materials.length; i++) {
-				this.game.renderer.bindMaterial(this.materials[i]);
-				this.materials[i].baseUniforms.pMatrix.value = pMatrix;
-				this.materials[i].baseUniforms.modelMatrix.value = this.transform.matrix.elements;
-				this.materials[i].updateUniforms(context);
-
-
-				this.vertexBuffer.bind();
-				this.indexBuffer.bind();
-
-				context.drawElements(context.TRIANGLES, this.indexDataBuffer.wordLength, context.UNSIGNED_SHORT, 0);
-			}
+		public render (gl: WebGL2RenderingContext, camera: Camera, material?: Material) {
+			
 		}
 
 		public start () { return; }
@@ -148,7 +115,7 @@ namespace XEngine {
 			this.vertDataBuffer = new XEngine.DataBuffer32(stride * (vertices.length / 3));
 			this.indexDataBuffer = new XEngine.DataBuffer16(2 * indices.length);
 
-			this.vertexBuffer = this.game.renderer.resourceManager.createBuffer(
+			this.vertexBuffer = this.game.resourceManager.createBuffer(
 				this.gl.ARRAY_BUFFER, this.vertDataBuffer.getByteCapacity(), this.gl.STREAM_DRAW) as VertexBuffer;
 
 			for (const attr in attributes) {
@@ -158,16 +125,14 @@ namespace XEngine {
 				}
 			}
 
-			this.indexBuffer = this.game.renderer.resourceManager.createBuffer(
+			this.indexBuffer = this.game.resourceManager.createBuffer(
 				this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.STATIC_DRAW) as IndexBuffer;
 
 			let alpha = this.getTotalAlpha();
 
 			let index = this.vertDataBuffer.allocate(vertices.length);
 			let uvIndex = 0;
-			let colorIndex = 0;
 			let floatBuffer = this.vertDataBuffer.floatView;
-			let uintBuffer = this.vertDataBuffer.uintView;
 			let uintIndexBuffer = this.indexDataBuffer.uintView;
 			// tslint:disable-next-line:forin
 			for (let i = 0; i < vertices.length; i++) {
@@ -198,7 +163,7 @@ namespace XEngine {
 		}
 
 		private _setBuffers() {
-			let context = this.gl;
+			// let context = this.gl;
 			// this.shader.bind(this.game.renderer);
 			// this.vertexBuffer.addAttribute(this.shader.vertPosAtt, 2, context.FLOAT, false, 0, 0);
 			// this.vertexBuffer.addAttribute(this.shader.vertUvAtt, 2, context.FLOAT, false, 24, 8);

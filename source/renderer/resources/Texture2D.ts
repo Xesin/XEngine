@@ -5,67 +5,94 @@ namespace XEngine {
 	}
 
 	export class Texture2D {
-		public imageName: string;
-		public image: any;
-		public frameWidth: number;
-		public frameHeight: number;
-		public _texture: WebGLTexture;
+		private _imageName: string;
+		private _image: any;
+		private _frameWidth: number;
+		private _frameHeight: number;
+		private _texture: WebGLTexture;
 		public readonly isNormal: boolean;
-		public ready: boolean;
-		public wrapMode: WRAP_MODE;
+		private _dirty: boolean;
+		private _generateMipmaps: boolean;
+		private _wrapMode: WRAP_MODE;
 
-		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean) {
+		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean, generateMipmaps = true) {
 			this.imageName = name;
 			this.frameWidth = width;
 			this.frameHeight = height;
 			this._texture = null;
-			this.ready = false;
+			this.dirty = true;
 			this.wrapMode = wrapMode;
 			this.isNormal = isNormal;
+			this.generateMipmaps = generateMipmaps;
 		}
 
-		public createTexture(gl: WebGL2RenderingContext) {
-			if (this.imageName == null) {return; }
+		get imageName():string{
+			return this._imageName;
+		}
 
-			this._texture = gl.createTexture();
+		set imageName(name: string){
+			this._imageName = name;
+		}
 
-			let internalFormat = gl.SRGB8_ALPHA8;
-			let srcFormat = gl.RGBA;
-			if (this.isNormal) {
-				internalFormat = gl.RGBA;
-			}
-			const srcType = gl.UNSIGNED_BYTE;
+		get frameWidth():number{
+			return this._frameWidth;
+		}
 
-			gl.bindTexture(gl.TEXTURE_2D, this._texture);
-			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-			if (this.wrapMode === WRAP_MODE.REPEAT) {
-				let uinType = "Uint8Array";
-				if (this.image.constructor === Uint8Array || this.image === null) {
-					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.frameWidth, this.frameHeight, 0, srcFormat, gl.UNSIGNED_BYTE, this.image);
-				} else {
-					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
-				}
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-			} else {
-				if (this.image.constructor === Uint8Array) {
-					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.frameWidth, this.frameHeight, 0, srcFormat, gl.UNSIGNED_BYTE, this.image);
-				} else {
-					gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, srcFormat, srcType, this.image);
-				}
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			}
+		set frameWidth(width: number){
+			this.dirty = true;
+			this._frameWidth = width;
+		}
 
+		get frameHeight():number{
+			return this._frameHeight;
+		}
 
-			gl.generateMipmap(gl.TEXTURE_2D);
+		set frameHeight(height: number){
+			this.dirty = true;
+			this._frameHeight = height;
+		}
 
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		get image():any{
+			return this._image;
+		}
 
-			gl.bindTexture(gl.TEXTURE_2D, null);
+		set image(image){
+			this.dirty = true;
+			this._image = image;
+		}
 
-			this.ready = true;
+		get texture():WebGLTexture{
+			return this._texture;
+		}
+
+		set texture(texture : WebGLTexture){
+			this.dirty = true;
+			this._texture = texture;
+		}
+
+		get dirty():boolean{
+			return this._dirty;
+		}
+
+		set dirty(dirty: boolean){
+			this._dirty = dirty;
+		}
+
+		get wrapMode():WRAP_MODE{
+			return this._wrapMode;
+		}
+
+		set wrapMode(mode: WRAP_MODE){
+			this.dirty = true;
+			this._wrapMode = mode;
+		}
+
+		get generateMipmaps():boolean{
+			return this._generateMipmaps;
+		}
+
+		set generateMipmaps(generateMipmaps: boolean){
+			this._generateMipmaps = generateMipmaps;
 		}
 	}
 }

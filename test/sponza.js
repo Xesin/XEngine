@@ -12,7 +12,6 @@ Sponza.prototype = {
 	},
 	
 	start: function () {
-		this.rt = new XEngine.RenderTarget(this.game.renderer, this.game.width, this.game.height);
 
 		var dirLight = this.game.add.directionalLight(1.0);
 		dirLight.transform.rotation.setTo(0.1, 0.8, 0.8);
@@ -42,20 +41,9 @@ Sponza.prototype = {
 			mesh.transform.scale.setTo(0.25);
 		}
 
-		var mat = new XEngine.PhongMaterial();
-		mat.setAlbedo(this.rt.attachedTextures[this.game.renderer.context.COLOR_ATTACHMENT0], this.game.context);
-		// // mat.setNormal(this.game.cache.images['normal']._texture, this.game.context);
-		var sphereGeom = new XEngine.SphereGeometry(20, 40, 40);
-		this.sphereMesh = this.game.add.mesh(-10, 0, 50, sphereGeom, mat);
-		this.sphereMesh.visible = false;
-
 		this.rot = 0;
 		this.upOffset = 0;
 		this.game.camera.transform.position.y = 60;
-		// this.game.camera.transform.position.x = -10;
-		this.game.camera.lookAt.x = -500;
-		this.game.camera.lookAt.y = 5;
-		this.game.camera.lookAt.z = 50;
 		this.velocity = 90;
 		
 
@@ -100,12 +88,7 @@ Sponza.prototype = {
 	},
 
 	render: function(renderer) {
-		this.sphereMesh.visible = false;
-		this.game.camera.renderTarget = this.rt;
-		this.game.camera.render(renderer);
-		this.game.camera.renderTarget = null;
-		this.sphereMesh.visible = true;
-		this.game.camera.render(renderer);
+		this.game.camera.renderScene(renderer);
 	},
 	
 	fin: function () {

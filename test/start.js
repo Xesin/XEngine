@@ -7,7 +7,7 @@ function initGame(){
    game.frameLimit = 120;
    game.scale.scaleType = XEngine.Scale.SHOW_ALL;
    game.state.add('start', Start);
-   game.state.add('sponza', Sponza);
+   game.state.add('sponza', XEngine.Test);
    game.state.start('start');
 
 
@@ -36,8 +36,6 @@ var text;
 Start.prototype = {
 	
 	preload: function () {
-		this.loadingText = this.game.add.text(this.game.width / 2, this.game.height / 2, "0%", { font_size : 32});
-		this.loadingText.transform.anchor.setTo(0.5);
 		this.game.load.obj('img/sponza.obj', 'img/sponza.mtl');
 		this.game.load.onCompleteFile.add(this.onCompleteFile, this);
 		// this.game.load.image('normal', 'img/textures/spnza_bricks_a_ddn.tga');
@@ -49,7 +47,7 @@ Start.prototype = {
 	},
 
 	onCompleteFile: function(progress) {
-		this.loadingText.setText((progress * 100) + "%");
+
 	},
 
 	render: function(renderer){

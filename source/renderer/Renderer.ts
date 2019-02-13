@@ -5,9 +5,6 @@ namespace XEngine {
 		public clearColor: any;
 		public scale: Vector3;
 		public context: WebGL2RenderingContext;
-		public resourceManager: ResourceManager;
-		public spriteBatch: SpriteBatcher.SpriteBatch;
-		public rectBatch: RectBatcher.RectBatch;
 		public currentMaterial: Material;
 
 		public depthWriteEnabled: boolean;
@@ -16,10 +13,9 @@ namespace XEngine {
 		public cullFaceEnabled: boolean;
 		public currentCullMode: CullMode;
 
-		private game: Game;
+		public game: Game;
 		private renderer: any;
-		private sprite: string;
-		private currentTexture: WebGLTexture;
+		private currentTexture: Texture2D;
 
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
@@ -41,61 +37,53 @@ namespace XEngine {
 				this.context.clear(this.context.COLOR_BUFFER_BIT
 					| this.context.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
 				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
-				this.resourceManager = this.game.resourceManager;
-				this.spriteBatch = new SpriteBatcher.SpriteBatch(this.game, this.context, this);
 				// this.rectBatch = new RectBatcher.RectBatch(this.game, this.context, this);
 				this.renderer = null;
-				this.sprite = undefined;
 			}
 		}
 
 		public render(objects: Array<GameObject>, camera: Camera) {
-			if (camera.renderTarget) {
-				this.context.viewport(0, 0, this.game.width, this.game.height);
-				this.context.bindFramebuffer(this.context.FRAMEBUFFER, camera.renderTarget.frameBuffer);
-			} else {
-				this.context.viewport(0, 0, this.game.canvas.width, this.game.canvas.height);
-			}
-			this.context.clearDepth(1.0);
-
 			// Clear the canvas before we start drawing on it.
 			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
-			this.mainRender(objects, camera);
+			this.renderLoop(objects, camera);
 			if (this.renderer) {
 				this.renderer.flush();
 				this.renderer = null;
-				this.sprite = null;
 			}
 
 			for (let i = 0; i < this.game.lights.length; i++) {
 				this.game.lights[i].dirty = false;
 			}
-
-			this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
-			this.context.bindRenderbuffer(this.context.RENDERBUFFER, null);
+			camera.dirty = false;
 		}
 
-		public setRenderer(renderer, sprite) {
-			if (this.renderer !== renderer || this.sprite !== sprite) {
-				if (this.renderer) {
-					this.renderer.flush();
-				}
+		public bindTexture(texture: Texture2D, position: number) {
+			if(texture == null){
+				this.context.activeTexture(position);
+				this.context.bindTexture(this.context.TEXTURE_2D, null);
+				return;
 			}
-			if (renderer && renderer.shouldFlush()) {
-				renderer.flush();
-			}
-			this.renderer = renderer;
-			this.sprite = sprite;
-		}
-
-		public bindTexture(texture: WebGLTexture, position: number) {
-			if (this.currentTexture !== texture) {
+			if (this.currentTexture !== texture || texture.dirty) {
 				this.currentTexture = texture;
-
+				if(texture.dirty)
+				{
+					if(texture.texture != null)
+					{
+						this.context.deleteTexture(texture.texture);
+					}
+					texture.texture = this.game.resourceManager.createTexture(
+						texture.frameWidth
+					  , texture.frameHeight
+					  , texture.image
+					  , texture.wrapMode
+					  , texture.generateMipmaps
+					  , texture.isNormal);
+					texture.dirty = false;
+				}
 				this.context.activeTexture(position);
 
 				// Bind the texture to texture unit 0
-				this.context.bindTexture(this.context.TEXTURE_2D, texture);
+				this.context.bindTexture(this.context.TEXTURE_2D, texture.texture);
 			}
 		}
 
@@ -173,7 +161,7 @@ namespace XEngine {
 			this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 		}
 
-		public mainRender(arrayObjects, camera: Camera) {
+		public renderLoop(arrayObjects, camera: Camera) {
 			let _this = this;
 			let arrayLenght = arrayObjects.length;
 
@@ -182,22 +170,14 @@ namespace XEngine {
 				if (!object.visible) {continue; }
 				if (Group.prototype.isPrototypeOf(object)) {
 					object.beginRender(_this.context);
-					_this.mainRender(object.children, camera);
-					// object._endRender(_this.context);
+					_this.renderLoop(object.children, camera);
+					object.endRender(_this.context);
 				} else if (!Audio.prototype.isPrototypeOf(object)) {
 					let go = object as GameObject;
 					if (!go.alive) {continue; }
-					if (this.game.autoCulling && !(go as TwoDObject).isInsideCamera()) {continue ; }
-					let viewMatrix = camera.viewMatrix;
-					let pMatrix = !(go instanceof TwoDObject) ? camera.pMatrix : camera.uiMatrix;
 					go.beginRender(_this.context);
-					go.renderToCanvas(_this.context, viewMatrix, pMatrix, camera.transform.position);
+					go.render(_this.context, camera);
 					go.endRender(_this.context);
-					if (go.body !== undefined) {
-						go.body._renderBounds(_this.context);
-					}
-					// object._endRender(_this.context);
-
 				}
 			}
 			VertexBuffer.SetDiry();

@@ -42,17 +42,21 @@ namespace XEngine {
 			return shader;
 		}
 
-		public createTexture(width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean) {
+		public createTexture(width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean, isNormal = false) {
 			let gl = this.gl;
 			let texture = gl.createTexture();
 
 			let internalFormat = gl.SRGB8_ALPHA8;
 			let srcFormat = gl.RGBA;
 
+			if (isNormal) {
+				internalFormat = gl.RGBA;
+			}
+
 			const srcType = gl.UNSIGNED_BYTE;
 
 			gl.bindTexture(gl.TEXTURE_2D, texture);
-
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 			let uinType = "Uint8Array";
 			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, gl.UNSIGNED_BYTE, data);
 

@@ -2,14 +2,10 @@ namespace XEngine {
 
 	export class Transform {
 
-		public position: Vector3;
 		public worldPosition: Vector3;
-		public scale: Vector3;
-		public rotation: Vector3;
 		public matrix: Mat4;
 		public parent: Transform;
 
-		public dirty: boolean;
 		private _dirty = false;
 
 		private _position: Vector3;
@@ -21,17 +17,14 @@ namespace XEngine {
 
 		private helperMatrix: Mat4;
 		constructor() {
-			this.position = new Vector3(0, 0, 0);
-			this.scale = new Vector3(1);
-			this.rotation = new Vector3(0, 0, 0);
+			this._position = new Vector3(0, 0, 0);
+			this._scale = new Vector3(1);
+			this._rotation = new Vector3(0, 0, 0);
 			this.matrix = new Mat4();
 			this.matrix.identity();
 			this.helperMatrix = new Mat4();
 			this.helperMatrix.identity();
-			this.dirty = true;
-			// this._position = this.position;
-			// this._position = this.scale;
-			// this._position = this.rotation;
+			this._dirty = true;
 		}
 
 		public forward(): Vector3 {
@@ -39,7 +32,6 @@ namespace XEngine {
 			this.helperMatrix.extractRotation(this.matrix);
 
 			this.vf.multiplyMatrix(this.helperMatrix.elements);
-			// this.vf.reflect(this.reflectV);
 			return this.vf;
 		}
 
@@ -62,54 +54,39 @@ namespace XEngine {
 			return this.vf;
 		}
 
+		get position () : Vector3 {
+			return this._position;
+		}
+	
+		set position (value : Vector3) {
+			this._position = value;
+			this.dirty = true;
+		}
+
+		get scale (): Vector3 {
+			return this._scale;
+		}
+
+		set scale(value : Vector3) {
+			this._scale = value;
+			this.dirty = true;
+		}
+
+		get rotation (): Vector3 {
+			return this._rotation;
+		}
+
+		set rotation (value : Vector3) {
+			this._rotation = value;
+			this.dirty = true;
+		}
+
+		get dirty() :boolean {
+			return this._dirty || this.position.dirty || this.scale.dirty || this.rotation.dirty;
+		}
+
+		set dirty(value: boolean) {
+			this._dirty = this.position.dirty = this.scale.dirty = this.rotation.dirty = value;
+		}
 	}
-
-	Object.defineProperties(Transform.prototype, {
-		position: {
-			enumerable: false,
-
-			get: function () {
-				return this._position;
-			},
-
-			set: function (value) {
-				this._position = value;
-				this._dirty = true;
-			},
-		},
-		scale: {
-			enumerable: false,
-
-			get: function () {
-				return this._scale;
-			},
-
-			set: function (value) {
-				this._scale = value;
-				this._dirty = true;
-			},
-		},
-		// tslint:disable-next-line:object-literal-sort-keys
-		rotation: {
-			enumerable: false,
-
-			get: function () {
-				return this._rotation;
-			},
-
-			set: function (value) {
-				this._rotation = value;
-				this._dirty = true;
-			},
-		},
-		dirty: {
-			get: function() {
-				return this._dirty || this.position.dirty || this.scale.dirty || this.rotation.dirty;
-			},
-
-			set: function(value) {
-				this._dirty = this.position.dirty = this.scale.dirty = this.rotation.dirty = value;
-			},
-		},
-	});
 }

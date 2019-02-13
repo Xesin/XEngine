@@ -17,8 +17,7 @@ var tsProject = tsc.createProject("tsconfig.json");
 gulp.task("build-app", function() {
     return gulp.src([
             "source/**/**.ts",
-            "typings/**/*.d.ts/",
-            "source/interfaces/interfaces.d.ts"
+            "typings/**/*.d.ts/"
         ])
         .pipe(tsProject())
         .js.pipe(gulp.dest("source/"));
@@ -46,6 +45,6 @@ gulp.task("bundle", function() {
         .pipe(gulp.dest(outputFolder));
 });
 
-gulp.task("compile", function() {
-    runSequence("build-app", "bundle")
+gulp.task("compile", gulp.series("build-app", "bundle"), function(done){
+    done();
 });;

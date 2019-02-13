@@ -19,18 +19,18 @@ Gimp.prototype = {
 
 		//this.tilled = this.game.add.tilled(0,0,'player', 400,400);
 
-        this.game.input.onKeyUp.add(function(event){
-            if(event.keyCode == XEngine.KEY_CODE.TWO){
-                this.game.input.onKeyUp._destroy();
-			    this.game.input.onClick._destroy();
-                this.game.state.start('unicorns');
-            }
-            if(event.keyCode == XEngine.KEY_CODE.THREE){
-                this.game.input.onKeyUp._destroy();
-			    this.game.input.onClick._destroy();
-                this.game.state.start('shader');
-            }
-		},this);
+        // this.game.input.onKeyUp.add(function(event){
+        //     if(event.keyCode == XEngine.KEY_CODE.TWO){
+        //         this.game.input.onKeyUp._destroy();
+		// 	    this.game.input.onClick._destroy();
+        //         this.game.state.start('unicorns');
+        //     }
+        //     if(event.keyCode == XEngine.KEY_CODE.THREE){
+        //         this.game.input.onKeyUp._destroy();
+		// 	    this.game.input.onClick._destroy();
+        //         this.game.state.start('shader');
+        //     }
+		// },this);
 
         // this.game.input.onClick.add(function(){
 		// 	this.game.input.onKeyUp._destroy();
@@ -149,7 +149,7 @@ Gimp.prototype = {
 		object.value = value;
 	},
 	
-	fin: function () {
-		
+	render: function (renderer) {
+		this.game.camera.render(renderer);
 	},
 };

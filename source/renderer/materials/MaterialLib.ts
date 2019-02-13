@@ -6,100 +6,6 @@ namespace XEngine {
 			public static readonly uniforms: any;
 		}
 
-		export class SpriteShader extends ShaderLibObject {
-			public static readonly vertexShader = [
-				"#version 300 es",
-				"#XBaseParams",
-				"void mainPass() {",
-					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
-				"}",
-			];
-
-			public static readonly fragmentShader = [
-				"#version 300 es",
-				"precision mediump float;",
-				"uniform sampler2D texSampler;",
-				"#XBaseParams",
-
-				"void main(void) {",
-					"vec4 texCol = textureLod(texSampler, uv, 0.0);",
-					"texCol.rgb *= texCol.w;",
-					// "if(texCol.a >= 0.8){",
-					// "if(texCol.a <= 0.05) discard;",
-					"texCol *= vColor;",
-					"texCol.xyz *= vColor.a;",
-					"fragColor = texCol;",
-					// "}else{",
-					// "}",
-				"}",
-			];
-		}
-
-		export class LambertShader extends ShaderLibObject {
-			public static readonly vertexShader = [
-				"#version 300 es",
-				"#XBaseParams",
-				"in vec3 aNormal;",
-				"in vec4 aTangent;",
-				"out highp vec3 normal;",
-				"out highp vec3 tangent;",
-				"out highp vec3 bTangent;",
-
-				"void mainPass() {",
-					"uv = uv;",
-					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz);",
-					"tangent = normalize(aTangent.xyz);",
-					"bTangent = normalize(cross(aNormal, tangent) * aTangent.w);",
-				"}",
-			];
-
-			public static readonly fragmentShader = [
-				"#version 300 es",
-				"precision mediump float;",
-				"#include DEFINES",
-				"#XBaseParams",
-				"uniform vec4 color;",
-				"uniform float smoothness;",
-				"uniform float glossiness;",
-				"uniform sampler2D albedoTex;",
-				"uniform sampler2D normalTex;",
-				"uniform sampler2D opacityMask;",
-				"in vec3 normal;",
-				"in vec3 tangent;",
-				"in vec3 bTangent;",
-
-				"void main(void) {",
-					"mat3 TBN = mat3(tangent, bTangent, normal);",
-					"fragColor.a = 1.0;",
-					"vec3 fragNormal = normal;",
-					"#ifdef ALBEDO",
-					"	vec4 texCol = texture(albedoTex, uv, -1.0);",
-					"#else",
-					"	vec4 texCol = vec4(1.0);",
-					"#endif",
-					"#ifdef NORMAL",
-					"	fragNormal = texture(normalTex, uv, -1.0).xyz;",
-					"#endif",
-					"#ifdef MASKED",
-					"	#ifdef OPACITY_MASK",
-					"		vec4 mask = texture(opacityMask, uv, -1.0);",
-					"	#else",
-					"		vec4 mask = vec4(1.0);",
-					"	#endif",
-					"	bool clip = texCol.a - 0.1 < 0.0 || mask.r - 0.1 < 0.0;",
-					"	if(clip){",
-					"		discard;",
-					"	}",
-					"#endif",
-					"texCol.xyz = texCol.xyz * texCol.a;",
-					"vec4 matColor = mix(vec4(1.0), texCol, texCol.a) * color;",
-					"float lightColor = clamp(dot(normal, vec3(0.3, 0.7, 0.8)), 0.0, 1.0);",
-					"fragColor.xyz = matColor.xyz * lightColor;",
-					"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545));", // GAMMA CORRECTION
-				"}",
-			];
-		}
-
 		export class BlinnPhongShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
@@ -265,54 +171,229 @@ namespace XEngine {
 						"fragColor.xyz = lightContribution;",
 						// tslint:disable-next-line:max-line-length
 						"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
+						// "fragColor.xyz =fragNormal.xyz; // GAMMA CORRECTION",
 						"fragColor.a = diffuseColor.a;",
 						// "fragColor.xyz = vec3(atten);", // GAMMA CORRECTION
 						"}",
 			];
 		}
 
-		export class SimpleColorShader extends ShaderLibObject {
+		export class PBRShader extends ShaderLibObject {
 			public static readonly vertexShader = [
 				"#version 300 es",
 				"#XBaseParams",
+
+				"in vec3 aNormal;",
+				"out vec3 normal;",
+
 				"void mainPass() {",
-					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
+					"normal = normalize((normalMatrix * vec4(aNormal, 1.0)).xyz) ;",
 				"}",
 			];
 
 			public static readonly fragmentShader = [
 				"#version 300 es",
 				"precision mediump float;",
+				"#include DEFINES",
 				"#XBaseParams",
+
+				"#define saturate(a) clamp( a, 0.0, 1.0 )",
+				"#define Square(a) ( a * a )",
+				"#define RECIPROCAL_PI 0.31830988618",
+				"#define PI 3.14159265358979323",
+				"#define INV_PI 0.31830988618",
+				"#define ColorSpaceDielectricSpec vec4(0.04, 0.04, 0.04, 1.0 - 0.04)",
+
+				"struct Light{",
+					"highp float intensity;",
+					"highp vec3 position;",
+					"highp vec3 color;",
+					"highp float range;",
+					"int type;",
+				"};",
+
+				"uniform vec4 color;",
+				"uniform float smoothness;",
+				"uniform float metallic;",
+				"uniform float normalIntensity;",
+				"uniform vec3 eyePos;",
+				"uniform sampler2D albedoTex;",
+				"uniform sampler2D normalTex;",
+				"uniform sampler2D opacityMask;",
+				"uniform sampler2D ambientMap;",
+				"uniform sampler2D metallicTex;",
+				"uniform Light light[MAX_LIGHTS];",
+				"in vec3 normal;",
+				"mat3 TBN;",
+
+				"vec3 decodeNormals(sampler2D normalSampler, vec2 uv){",
+					"vec3 texCol = texture(normalTex, uv).xyz;",
+				"	return texCol * 2.0 - 1.0;",
+				"}",
+
+				"vec3 perturbNormalPerPixel( vec3 worldPosition, vec3 surf_norm ) {",
+					"vec3 q0 = vec3( dFdx( worldPosition.x ), dFdx( worldPosition.y ), dFdx( worldPosition.z ) );",
+					"vec3 q1 = vec3( dFdy( worldPosition.x ), dFdy( worldPosition.y ), dFdy( worldPosition.z ) );",
+					"vec2 st0 = dFdx( uv.st );",
+					"vec2 st1 = dFdy( uv.st );",
+					"vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
+					"vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
+					"vec3 N = normalize( surf_norm );",
+					"vec3 crs = cross(S, T);",
+					"if(dot(crs, N) < 0.0) T *= -1.0;",
+					"vec3 mapN = decodeNormals( normalTex, uv );",
+					"mapN.xy = normalIntensity * mapN.xy;",
+					"mat3 tsn = mat3( S, T, N );",
+					"return normalize( tsn * mapN );",
+				"}",
+
+				// tslint:disable-next-line:max-line-length
+				"float getAttenuation(const in vec3 lightPos, const in vec3 worldPos, const in float range, const in float lightIntensity){",
+					"vec3 toLight = lightPos - worldPos;",
+					"float att = dot(toLight, toLight);",
+					"att = (1.0 / (att + range)) * range;",
+					"return (1.0 - (1.0 / pow(att + 1.0, 2.2))) * lightIntensity;",
+				"}",
+
+				"float SmoothnessToPerceptualRoughness(float smoothness){",
+					"return (1.0 - smoothness);",
+				"}",
+
+				"float PerceptualRoughnessToRoughness(float perceptualRoughness){",
+					"return perceptualRoughness * perceptualRoughness;",
+				"}",
+
+				"float OneMinusReflectivityFromMetallic(float metallic){",
+					"float oneMinusDielectricSpec = ColorSpaceDielectricSpec.w;",
+					"return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;",
+				"}",
+
+				"vec3 SafeNormalize(vec3 inVec){",
+					"float dp3 = max(0.001, dot(inVec, inVec));",
+					"return inVec * inversesqrt(dp3);",
+				"}",
+
+				"float Pow5 (float x){",
+					"return x*x * x*x * x;",
+				"}",
+
+				"float DisneyDiffuse(float NdotV, float NdotL, float LdotH, float perceptualRoughness){",
+					"float fd90 = 0.5 + 2.0 * LdotH * LdotH * perceptualRoughness;",
+					"// Two schlick fresnel term",
+					"float lightScatter   = (1.0 + (fd90 - 1.0) * Pow5(1.0 - NdotL));",
+					"float viewScatter    = (1.0 + (fd90 - 1.0) * Pow5(1.0 - NdotV));",
+
+					"return lightScatter * viewScatter;",
+				"}",
+
+				"vec3 FresnelTerm (vec3 F0, float cosA){",
+					"float t = Pow5 (1.0 - cosA);",
+					"return F0 + (1.0-F0) * t;",
+				"}",
+
+				"float SmithJointGGXVisibilityTerm (float NdotL, float NdotV, float roughness){",
+					"float a = roughness;",
+					"float lambdaV = NdotL * (NdotV * (1.0 - a) + a);",
+					"float lambdaL = NdotV * (NdotL * (1.0 - a) + a);",
+				
+					"return 0.5 / (lambdaV + lambdaL + 1e-5);",
+				"}",
+
+				"float GGXTerm (float NdotH, float roughness){",
+					"float a2 = roughness * roughness;",
+					"float d = (NdotH * a2 - NdotH) * NdotH + 1.0; // 2 mad",
+					"return INV_PI * a2 / (d * d + 1e-7);",
+				"}",
+
+				// tslint:disable-next-line:max-line-length
+				"vec3 BRDF(vec3 diffColor, vec3 specColor, float oneMinusReflectivity, float smoothness, vec3 normal, vec3 viewDir){",
+					"float perceptualRoughness = SmoothnessToPerceptualRoughness (smoothness);",
+					"vec3 diffuseDirect = vec3(0.0);",
+					"vec3 specular = vec3(0.0);",
+					"for(int i = 0; i < MAX_LIGHTS; i++){",
+						"vec3 lightPos = light[i].position;",
+						"vec3 lightColor = light[i].color;",
+						"float lightRange = light[i].range;",
+						"float lightIntensity = light[i].intensity;",
+						"vec3 lightDir;",
+						"float atten = lightIntensity;",
+						"if(light[i].type == 0){ //DIRECTIONAL LIGHT",
+							"lightDir = normalize(lightPos);",
+						"} else{ //POINT LIGHT",
+							"lightDir =normalize(lightPos - vWorldPos.xyz);",
+							"atten = getAttenuation(lightPos, vWorldPos.xyz, lightRange, lightIntensity);",
+						"}",
+						"vec3 halfDir = SafeNormalize(lightDir + viewDir);",
+						"float nv = abs(dot(normal, viewDir));",
+						"float nl = saturate(dot(normal, lightDir));",
+						"float nh = saturate(dot(normal, halfDir));",
+						"float lv = saturate(dot(lightDir, viewDir));",
+						"float lh = saturate(dot(lightDir, halfDir));",
+
+						"float diffuse = DisneyDiffuse(nv, nl, lh, perceptualRoughness) * nl;",
+						"diffuseDirect += diffColor * diffuse * lightColor * atten;",
+
+						"float roughness = PerceptualRoughnessToRoughness(perceptualRoughness);",
+						
+						"float V = SmithJointGGXVisibilityTerm (nl, nv, roughness);",
+						"float D = GGXTerm (nh, roughness);",
+
+						"float specularTerm = V*D * PI; // Torrance-Sparrow model, Fresnel is applied later",
+						"specularTerm = max(0.0, specularTerm * nl);",
+
+						"float grazingTerm = clamp(smoothness + (1.0 - oneMinusReflectivity), 0.0, 1.0);",
+
+						"float surfaceReduction = 1.0 / (roughness*roughness + 1.0);",
+						"specular += specularTerm * lightColor * FresnelTerm(specColor, lh) * atten;",
+					"}",
+					"vec3 finalColor = diffuseDirect + specular;",
+					"return finalColor;",
+				"}",
 
 				"void main(void) {",
-					"fragColor = vColor * alpha;",
-				"}",
-			];
-		}
-
-		export class CircleShader extends ShaderLibObject {
-			public static readonly vertexShader = [
-				"#version 300 es",
-				"#XBaseParams",
-				"void mainPass() {",
-					"gl_Position = pMatrix * modelMatrix * vObjectPos;",
-				"}",
-			];
-
-			public static readonly fragmentShader = [
-				"#version 300 es",
-				"precision mediump float;",
-				"#XBaseParams",
-
-				"void main(void) {",
-					"vec2 uvOffset = uv - 0.5;",
-					"float distance = length(uvOffset);",
-					"float res = smoothstep(distance,distance+0.04,0.5);",
-					"if(res < 0.1) discard;",
-					"fragColor = vec4(1.0, 1.0, 1.0, res) * res * alpha;",
-					"fragColor.xyz *= vColor.xyz;",
-				"}",
+					"fragColor.a = 1.0;",
+					"vec3 fragNormal = normal;",
+					"vec3 ambient = vec3(0.0);",
+					"vec4 metallicColor = vec4(metallic);",
+					"#ifdef AMBIENT_MAP",
+						"ambient = texture(ambientMap, uv, -1.0).xyz * 0.2;",
+					"#endif",
+					"#ifdef ALBEDO",
+					"	vec4 texCol = texture(albedoTex, uv, -1.0);",
+					"	ambient *= texCol.xyz;",
+					"#else",
+					"	vec4 texCol = vec4(1.0);",
+					"#endif",
+					"#ifdef METALLIC_COLOR",
+					"	metallicColor = texture(metallicTex, uv, -1.0);",
+					"#endif",
+					"#ifdef NORMAL",
+					"	fragNormal = perturbNormalPerPixel(vWorldPos.xyz, normal);",
+					"#endif",
+					"#ifdef MASKED",
+					"	#ifdef OPACITY_MASK",
+					"		vec4 mask = texture(opacityMask, uv, -1.0);",
+					"	#else",
+					"		vec4 mask = vec4(1.0);",
+					"	#endif",
+					"	bool clip = (texCol.a * color.a) - 0.1 < 0.0 || mask.r - 0.1 < 0.0;",
+					"	if(clip){",
+					"		discard;",
+					"	}",
+					"#endif",
+					"vec4 diffuseColor = texCol * color;",
+					"diffuseColor.rgb *= diffuseColor.a; //PREMULTIPLY ALPHA",
+					"vec3 viewDir = normalize(eyePos - vWorldPos.xyz); //View space to world space",
+					"vec3 specColor = mix (ColorSpaceDielectricSpec.rgb, diffuseColor.rgb, metallicColor.r);",
+					"float oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallicColor.r);",
+					"fragColor.xyz = BRDF(diffuseColor.xyz, specColor, oneMinusReflectivity, smoothness, fragNormal, viewDir);",
+					
+					// tslint:disable-next-line:max-line-length
+					"fragColor.xyz = pow(fragColor.xyz, vec3(0.4545)); // GAMMA CORRECTION",
+					// "fragColor.xyz =fragNormal.xyz; // GAMMA CORRECTION",
+					"fragColor.a = diffuseColor.a;",
+					// "fragColor.xyz = vec3(atten);", // GAMMA CORRECTION
+					"}",
 			];
 		}
 	}

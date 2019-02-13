@@ -16,24 +16,24 @@ namespace XEngine {
 		}
 
 		public createMaterial(cache: Cache, gl: WebGL2RenderingContext): Material {
-			let mat = new PhongMaterial();
+			let mat = new PBRMaterial();
 			if (this.albedoTexture) {
-				mat.setAlbedo(cache.image(this.albedoTexture)._texture, gl);
+				mat.setAlbedo(cache.image(this.albedoTexture), gl);
 			}
 			if (this.normalTexture) {
-				mat.setNormal(cache.image(this.normalTexture)._texture, gl);
+				mat.setNormal(cache.image(this.normalTexture), gl);
 			}
 			if (this.opacityMask) {
-				mat.setOpacityMask(cache.image(this.opacityMask)._texture, gl);
+				mat.setOpacityMask(cache.image(this.opacityMask), gl);
 			}
 			if (this.ambientTexture) {
-				mat.setAmbient(cache.image(this.ambientTexture)._texture, gl);
+				mat.setAmbient(cache.image(this.ambientTexture), gl);
 			}
-			if (this.specularTexture) {
-				mat.setSpecular(cache.image(this.specularTexture)._texture, gl);
-			}
-			mat.smoothness = this.smoothness;
-			mat.glossiness = this.glossiness;
+			// if (this.specularTexture) {
+			// 	mat.setSpecular(cache.image(this.specularTexture), gl);
+			// }
+			mat.baseUniforms.smoothness.value = 0.55;
+			mat.baseUniforms.metallic.value = 0;
 			return mat;
 		}
 	}

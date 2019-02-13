@@ -39,19 +39,12 @@ namespace XEngine {
 		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
 			let gl = this.gl;
 
-			// if (VertexBuffer.CurrentVertexBuffer !== this) {
-			// 	VertexBuffer.CurrentVertexBuffer = this;
-			// 	gl.bindBuffer(this.bufferType, this.buffer);
-			// }
 			gl.bindBuffer(this.bufferType, this.buffer);
 			gl.bufferSubData(this.bufferType, offset, bufferData);
 		}
 
 		public bind() {
 			let gl = this.gl;
-			let buffer = this.buffer;
-			let attributes = this.attributes;
-			let attributesLength = attributes.length;
 
 			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;

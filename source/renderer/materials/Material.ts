@@ -45,15 +45,15 @@ namespace XEngine {
 			this.cullMode = CullMode.BACK;
 			this.uniforms = uniforms;
 			this.baseUniforms = JSON.parse(JSON.stringify(XEngine.ShaderUniforms));
-			this.baseUniforms.pMatrix = {
-				type: Uniforms.MAT4X4,
-				value: mat4.create(),
-			};
 			this.baseUniforms.modelMatrix = {
 				type: Uniforms.MAT4X4,
 				value: mat4.create(),
 			};
 			this.baseUniforms.viewMatrix = {
+				type: Uniforms.MAT4X4,
+				value: mat4.create(),
+			};
+			this.baseUniforms.pMatrix = {
 				type: Uniforms.MAT4X4,
 				value: mat4.create(),
 			};

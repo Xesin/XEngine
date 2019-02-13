@@ -99,29 +99,6 @@ namespace XEngine {
 			this.pointer.y = inputPos.position.y;
 			this.onInputDown.dispatch(inputPos);
 			let _this = this;
-			let loop = function (array) {
-				for (let i = array.length - 1; i >= 0; i--) {
-					let gameObject = array[i];
-					if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
-						if (loop(gameObject.children)) {return true; }
-					} else {
-						if (!gameObject.inputEnabled) {continue; }
-						if (_this._pointerInsideBounds(gameObject)) {
-							if (gameObject.onInputDown === undefined) {
-								gameObject.onInputDown = new XEngine.Signal();
-							}
-							gameObject.onInputDown.dispatch(event);
-							gameObject.isInputDown = true;
-							gameObject.downPos.setTo(inputPos.position.x, inputPos.position.y);
-							gameObject.posWhenDown.setTo(gameObject.position.x, gameObject.position.y);
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-
-			loop(this.game.updateQueue);
 		}
 
 
@@ -171,39 +148,8 @@ namespace XEngine {
 			this.pointer.x = inputPos.position.x;
 			this.pointer.y = inputPos.position.y;
 			let _this = this;
-			let loop = function (array) {
-				for (let i = array.length - 1; i >= 0; i--) {
-					let gameObject = array[i];
-					if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
-						loop(gameObject.children);
-					} else {
-						if (!gameObject.inputEnabled) {continue; }
-						if (_this._pointerInsideBounds(gameObject)) {
-							if (!gameObject.isInputOver) {
-								if (gameObject.onInputOver === undefined) {
-									gameObject.onInputOver = new XEngine.Signal();
-								}
-								gameObject.onInputOver.dispatch(event);
-								gameObject.isInputOver = true;
-							}
-						} else if (gameObject.isInputOver) {
-							if (gameObject.onInputLeft === undefined) {
-								gameObject.onInputLeft = new XEngine.Signal();
-							}
-							gameObject.onInputLeft.dispatch(event);
-							gameObject.isInputOver = false;
-						}
-						if (gameObject.pickeable && gameObject.isInputDown) {
-							gameObject.position.setTo(gameObject.posWhenDown.x - (gameObject.downPos.x - inputPos.position.x)
-							, gameObject.posWhenDown.y - (gameObject.downPos.y - inputPos.position.y));
-						}
-					}
-
-				}
-			};
 
 			this.onInputMove.dispatch(inputPos);
-			loop(this.game.updateQueue);
 		}
 
 		private clickHandler(event: any) {
@@ -214,45 +160,6 @@ namespace XEngine {
 		private clickDispatcher(event: any) {
 			this.onClick.dispatch(event);
 			let _this = this;
-			let loop = function (array) {
-				for (let i = array.length - 1; i >= 0; i--) {
-					let gameObject = array[i];
-					if (XEngine.Group.prototype.isPrototypeOf(gameObject)) {
-						if (loop(gameObject.children)) {return true; }
-					} else {
-						if (gameObject || gameObject.inputEnabled) {
-							if (_this._pointerInsideBounds(gameObject)) {
-								if (gameObject.onClick === undefined) {
-									gameObject.onClick = new XEngine.Signal();
-								}
-								gameObject.onClick.dispatch(event);
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			};
-			loop(this.game.updateQueue);
-		}
-
-		private _pointerInsideBounds(gameObject: GameObject) {
-			if ((gameObject as Object).hasOwnProperty("getBounds")) {
-				let go = gameObject as TwoDObject;
-				let bounds = go.getBounds();
-				let worldPos = gameObject.transform.position;
-				if (this.pointer.x < (worldPos.x - bounds.width * go.transform.anchor.x)
-				|| this.pointer.x > (worldPos.x + bounds.width * (1 - go.transform.anchor.x))) {
-					return false;
-				} else if (this.pointer.y < (worldPos.y - bounds.height * go.transform.anchor.y)
-				|| this.pointer.y > (worldPos.y + bounds.height * (1 - go.transform.anchor.y))) {
-					return false;
-				} else {
-					return true;
-				}
-			} else {
-				return false;
-			}
 		}
 
 		private getInputPosition(event: any): any {

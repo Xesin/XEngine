@@ -2,11 +2,11 @@ declare var mat4: any;
 namespace XEngine {
 	export class PhongMaterial extends Material {
 		public static shader = new PhongMaterial();
-		public albedoTexture: WebGLTexture;
-		public normalTexture: WebGLTexture;
-		public opacityMask: WebGLTexture;
-		public ambientTexture: WebGLTexture;
-		public specularTexture: WebGLTexture;
+		public albedoTexture: Texture2D;
+		public normalTexture: Texture2D;
+		public opacityMask: Texture2D;
+		public ambientTexture: Texture2D;
+		public specularTexture: Texture2D;
 		public smoothness: number;
 		public glossiness: number;
 		public normalIntensity: number;
@@ -112,7 +112,7 @@ namespace XEngine {
 		// 	this.texture = texture;
 		// }
 
-		public setAlbedo(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+		public setAlbedo(texture: Texture2D, gl: WebGL2RenderingContext) {
 			if (this.albedoTexture === undefined) {
 				this.defines.push("#define ALBEDO");
 				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
@@ -121,7 +121,7 @@ namespace XEngine {
 			this.albedoTexture = texture;
 		}
 
-		public setNormal(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+		public setNormal(texture: Texture2D, gl: WebGL2RenderingContext) {
 			if (this.normalTexture === undefined) {
 				this.defines.push("#define NORMAL");
 				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
@@ -130,7 +130,7 @@ namespace XEngine {
 			this.normalTexture = texture;
 		}
 
-		public setOpacityMask(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+		public setOpacityMask(texture: Texture2D, gl: WebGL2RenderingContext) {
 			if (this.opacityMask === undefined) {
 				this.defines.push("#define OPACITY_MASK");
 				this.defines.push("#define MASKED");
@@ -140,7 +140,7 @@ namespace XEngine {
 			this.opacityMask = texture;
 		}
 
-		public setAmbient(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+		public setAmbient(texture: Texture2D, gl: WebGL2RenderingContext) {
 			if (this.ambientTexture === undefined) {
 				this.defines.push("#define AMBIENT_MAP");
 				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
@@ -149,7 +149,7 @@ namespace XEngine {
 			this.ambientTexture = texture;
 		}
 
-		public setSpecular(texture: WebGLTexture, gl: WebGL2RenderingContext) {
+		public setSpecular(texture: Texture2D, gl: WebGL2RenderingContext) {
 			if (this.specularTexture === undefined) {
 				this.defines.push("#define SPECULAR_COLOR");
 				this.shaderProgram = ShaderCompiler.compileShader(gl, this, this.defines);
