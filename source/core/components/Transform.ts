@@ -40,8 +40,8 @@ namespace XEngine {
 			mat4.identity(this.matrix.elements);
 			mat4.translate(this.matrix.elements, this.matrix.elements, translation);
 			mat4.rotateY(this.matrix.elements, this.matrix.elements, this.rotation.y * XEngine.Mathf.TO_RADIANS);
-			mat4.rotateZ(this.matrix.elements, this.matrix.elements, this.rotation.z * XEngine.Mathf.TO_RADIANS);
 			mat4.rotateX(this.matrix.elements, this.matrix.elements, this.rotation.x * XEngine.Mathf.TO_RADIANS);
+			mat4.rotateZ(this.matrix.elements, this.matrix.elements, this.rotation.z * XEngine.Mathf.TO_RADIANS);
 			mat4.scale(this.matrix.elements, this.matrix.elements, this.scale.toArray());
 		}
 

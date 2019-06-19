@@ -50,7 +50,7 @@ Array.prototype.equals = function (array): boolean {
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 namespace XEngine {
-	export let version = "2.0";
+	export var version = "2.0";
 	declare var mat4: any;
 	export class Game {
 

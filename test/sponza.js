@@ -88,7 +88,7 @@ Sponza.prototype = {
 	},
 
 	render: function(renderer) {
-		this.game.camera.renderScene(renderer);
+		this.game.camera.render(renderer);
 	},
 	
 	fin: function () {

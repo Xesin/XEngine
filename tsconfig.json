@@ -1,4 +1,8 @@
 {
+    "include": [
+        "typings/*.d.ts/",
+        "source/**/**.ts"
+    ],
     "compilerOptions": {
         "target": "es5",
         "sourceMap": true,

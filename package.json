@@ -14,24 +14,10 @@
   "author": "Francisco Ferrer",
   "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^2.19.0",
-    "browserify": "^14.5.0",
-    "chai": "^4.1.2",
+    "express": "^4.16.4",
     "gulp": "^4.0.0",
-    "gulp-babel-minify": "^0.2.0",
-    "gulp-istanbul": "^1.1.2",
-    "gulp-mocha": "^6.0.0",
-    "gulp-sourcemaps": "^2.6.1",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^3.2.3",
-    "gulp-uglify": "^3.0.0",
-    "run-sequence": "^2.2.0",
-    "tslint": "^5.8.0",
-    "typescript": "^2.6.2",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
-  },
-  "dependencies": {
-    "@types/webgl2": "0.0.4"
+    "gulp-sequence": "^1.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "typescript": "2.6.1"
   }
 }
