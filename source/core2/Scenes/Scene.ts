@@ -29,7 +29,12 @@ namespace XEngine2
             return instancedActor;
         }
 
-        public Update(deltaTime: number)
+        public start()
+        {
+
+        }
+
+        public update(deltaTime: number)
         {
 
         }

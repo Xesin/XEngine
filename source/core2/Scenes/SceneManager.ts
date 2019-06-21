@@ -39,6 +39,7 @@ namespace XEngine2 {
 			}
 
 			_this.currentScene = scene;			
+			_this.currentScene.start();
 			_this.game.scale.updateScale();
 		}
 
@@ -50,7 +51,7 @@ namespace XEngine2 {
 		{
 			if(this.currentScene != null && this.currentScene != undefined)
 			{
-				this.currentScene.Update(deltaTime);
+				this.currentScene.update(deltaTime);
 			}
 		}
 

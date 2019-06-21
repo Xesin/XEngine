@@ -1,7 +1,13 @@
 /// <reference path="core2/Scenes/Scene.ts" />
 namespace XEngine2 {
 	export class Test extends Scene {
-		public Update (deltaTime: number) {
+
+		public start()
+		{
+
+		}
+
+		public update (deltaTime: number) {
 
 		}
 	}
