@@ -6,9 +6,9 @@ namespace XEngine2 {
 		public zOffset = 0;
 
 		private dirty = true;
-		public x: number;
-		public y: number;
-		public z: number;
+		public _x: number;
+		public _y: number;
+		public _z: number;
 		private arr: Array<number>;
 
 		constructor (x = 1, y = x, z = 1) {
@@ -181,5 +181,48 @@ namespace XEngine2 {
 			Vector3._zero.setTo(0);
 			return Vector3._zero;
 		}
+
+		
+		public get Dirty() : boolean {
+			return this.dirty;
+		}
+		
+		
+		public set Dirty(v : boolean) {
+			this.dirty = v;
+		}
+
+		
+		public set x(v : number) {
+			this.Dirty = true;
+			this._x = v;
+		}
+		
+		
+		public get x() : number {
+			return this._x;
+		}
+
+		public set y(v : number) {
+			this.Dirty = true;
+			this._y = v;
+		}
+		
+		
+		public get y() : number {
+			return this._y;
+		}
+
+		public set z(v : number) 
+		{
+			this.Dirty = true;
+			this._z = v;
+		}
+		
+		
+		public get z() : number {
+			return this._z;
+		}
+		
 	}
 }

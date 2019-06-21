@@ -5,7 +5,7 @@ namespace XEngine2
         public initialized = false;
 		public vertexCount = 0;
 		public indexed = true;
-		public groups: Array<{materialIndex: number, start: number, count: number}>;
+		public groups: Array<MeshGroup>;
 		public materials: Material[];
 		public topology: Topology;
 
@@ -49,7 +49,7 @@ namespace XEngine2
 
 			for(let i = 0; i < this.groups.length; i++){
 				let stride = this.materials[this.groups[i].materialIndex].AttrStride;
-				this.vertDataBuffer[i] = new DataBuffer32(stride * (this.groups[i].count));
+				this.vertDataBuffer[i] = new DataBuffer32(stride * (this.groups[i].vertexCount));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
 
 				let index = this.vertDataBuffer[i].allocate(this.vertexData.length);
@@ -120,7 +120,7 @@ namespace XEngine2
 		}
 
 		public addGroup(start, count, materialIndex) {
-			this.groups.push({materialIndex: materialIndex, start: start, count: count});
+			this.groups.push(new MeshGroup(materialIndex, start, count, this));
 		}
 
 		public bind(materialIndex = 0) {

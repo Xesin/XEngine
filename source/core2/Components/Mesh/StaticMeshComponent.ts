@@ -9,9 +9,9 @@ namespace XEngine2 {
             super();
         }
 
-        public render(renderer: Renderer)
+        public getAllRenderableGroups(): Array<MeshGroup>
         {
-            renderer.renderMeshImmediate(this.Mesh, this.transform);
+            return new Array<MeshGroup>().concat(this.Mesh.groups);
         }
     }
 }

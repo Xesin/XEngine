@@ -10,6 +10,8 @@ namespace XEngine2 {
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
 
+        public renderQueue = RenderQueue.OPAQUE;
+
         constructor(shader: Shader)
         {
             this.shader = shader;

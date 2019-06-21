@@ -13,5 +13,10 @@ namespace XEngine2 {
         {
             
         }
+
+        public getAllRenderableGroups(): Array<MeshGroup>
+        {
+            return null;
+        }
     }
 }

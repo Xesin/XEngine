@@ -48,10 +48,10 @@ namespace XEngine2 {
 		public width: number;
 
 		public canvas: HTMLCanvasElement;
-		public context: WebGL2RenderingContext;
 		public audioContext: AudioContext;
 		public time: TimeManager;
 		public scale: ScaleManager;
+		public sceneManager: SceneManager;
 
 		private renderer: Renderer;
 
@@ -95,6 +95,7 @@ namespace XEngine2 {
 			this.time = new TimeManager();
 			this.scale = new ScaleManager(this, scaleType);
 			this.renderer = new Renderer(this, this.canvas);
+			this.sceneManager = new SceneManager(this);
 
 			this.pause = false;
 			this.isMobile = false;
@@ -116,8 +117,9 @@ namespace XEngine2 {
 				this.timer = setTimeout(() => { this.update(); }, this.time.frameLimit / 1);
 			}
 			if (this.time.update()) {
-				this.renderer.render();
 				if (this.pause) { return; }
+				this.sceneManager.update(this.time.deltaTime);
+				this.sceneManager.render(this.renderer);
 			}
 		}
 

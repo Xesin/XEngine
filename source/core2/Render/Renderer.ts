@@ -1,5 +1,17 @@
 namespace XEngine2 {
 
+	class RenderObject
+	{
+		group: MeshGroup;
+		modelMatrix: Mat4x4;
+
+		constructor(group: MeshGroup, modelMatrix: Mat4x4)
+		{
+			this.group = group;
+			this.modelMatrix = modelMatrix;
+		}
+	}
+
 	export class Renderer {
 
 		public clearColor: any;
@@ -16,12 +28,17 @@ namespace XEngine2 {
 		private currentScene: Scene;
 		private currentCamera: CameraComponent;
 
+		private opaqueRenderQueue: Array<RenderObject>;
+		private transparentRenderQueue: Array<RenderObject>;
+
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
 			let options = {stencil: true, antialias: true};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
+			this.opaqueRenderQueue = new Array();
+			this.transparentRenderQueue = new Array();
 			this.init();
 		}
 
@@ -40,15 +57,9 @@ namespace XEngine2 {
 			this.game.scale.onResized.add(this.OnResize, this);
 		}
 
-		public render() {
-			// Clear the canvas before we start drawing on it.
-			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-		}
-
 		private OnResize(width: number, height: number)
 		{
-			this.game.context.viewport(0, 0, width, height);
-			console.log("Resized ", width, height);
+			this.gl.viewport(0, 0, width, height);
 		}
 
 		// public bindMaterial(material: Material) {
@@ -125,11 +136,30 @@ namespace XEngine2 {
 			this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 		}
 
-		public Render(scene: Scene, camera: CameraComponent)
+		public render(scene: Scene, camera: CameraComponent)
 		{
 			this.currentCamera = camera;
 			this.currentScene = scene;
+			this.opaqueRenderQueue = new Array();
+			this.transparentRenderQueue = new Array();
 
+			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+			this.PopulateRenderQueues(scene);
+
+			for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
+				const opaqueObject = this.opaqueRenderQueue[i];
+				this.renderMeshImmediate(opaqueObject);
+			}
+
+			for (let i = 0; i < this.transparentRenderQueue.length; i++) {
+				const transparentObject = this.transparentRenderQueue[i];
+				this.renderMeshImmediate(transparentObject);
+			}
+		}
+
+		private PopulateRenderQueues(scene: Scene)
+		{
 			let actors = scene.actors;
 			for (let i = 0; i < actors.length; i++) {
 				const actor = actors[i];
@@ -139,36 +169,53 @@ namespace XEngine2 {
 					for (let j = 0; j < components.length; j++) {
 						const sceneComponent = components[j];
 						
-						sceneComponent.render(this);
+						let groups = sceneComponent.getAllRenderableGroups();
+						if(groups != null)
+						{
+							for (let k = 0; k < groups.length; k++) 
+							{
+								const group = groups[k];
+								let renderObject = new RenderObject(group, sceneComponent.transform.Matrix);
+								switch(group.Mesh.materials[group.materialIndex].renderQueue)
+								{
+									case RenderQueue.OPAQUE:
+										this.opaqueRenderQueue.push(renderObject);
+										break;
+									case RenderQueue.TRANSPARENT:
+										this.transparentRenderQueue.push(renderObject);
+										break;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
 
-		public renderMeshImmediate(Mesh: StaticMesh, transform: Transform, camera = this.currentCamera)
+		public renderMeshImmediate(renderObject: RenderObject, camera = this.currentCamera)
 		{
-			if(!Mesh.initialized)
-				Mesh.initialize(this);
+			let meshGroup = renderObject.group;
+			let modelMatrix = renderObject.modelMatrix;
+			if(!meshGroup.Mesh.initialized)
+				meshGroup.Mesh.initialize(this);
 
-			for (let i = 0; i < Mesh.groups.length; i++) {
-				const group = Mesh.groups[i];
-				Mesh.bind(Mesh.groups[i].materialIndex);
+				meshGroup.Mesh.bind(meshGroup.materialIndex);
 				
 				let gl = this.gl;
 
-				let material = Mesh.materials[Mesh.groups[i].materialIndex];
+				let material = meshGroup.Mesh.materials[meshGroup.materialIndex];
 
-				material.modelMatrix.value = transform.Matrix;
+				material.modelMatrix.value = modelMatrix;
 				material.viewMatrix.value = camera.transform.Matrix;
 				material.projectionMatrix.value = camera.projectionMatrix;
 
 				gl.useProgram(material.ShaderProgram);
 
-				gl.drawArrays(Mesh.topology, group.start, group.count);
+				gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
 
 				gl.useProgram(null);
-				Mesh.unBind(Mesh.groups[i].materialIndex);
-			}
+				meshGroup.Mesh.unBind(meshGroup.materialIndex);
+			
 		}
 	}
 }

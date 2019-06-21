@@ -7,6 +7,8 @@ var tsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-app", function() {
     return tsProject.src()
+        .pipe(sourcemaps.init())
         .pipe(tsProject())
-        .js.pipe(gulp.dest("dist"));
+        .pipe(sourcemaps.write("../dist"))
+        .pipe(gulp.dest("dist"));
 });

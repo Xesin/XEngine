@@ -11,6 +11,8 @@ namespace XEngine2
         {
             this.name = name;
             this.game = game;
+            this.actors = new Array();
+            this.mainCamera = new CameraComponent();
         }
 
         public Instantiate(actorToInstantiate : Actor, transform: Transform = null) : Actor
@@ -27,11 +29,16 @@ namespace XEngine2
             return instancedActor;
         }
 
-        public Render(camera = this.mainCamera)
+        public Update(deltaTime: number)
+        {
+
+        }
+
+        public Render(renderer: Renderer, camera = this.mainCamera)
         {
             if(camera != null)
             {
-                
+                renderer.render(this, camera);
             }
         }
     }
