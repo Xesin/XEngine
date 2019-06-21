@@ -67,7 +67,7 @@ namespace XEngine2 {
 		}
 
 		public get attrStride() : number {
-			return this.attrStride;
+			return this.attributeStride;
 		}
 	}
 }

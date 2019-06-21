@@ -7,6 +7,7 @@ namespace XEngine2 {
         constructor()
         {
             super();
+            this.transform = new Transform();
         }
 
         public render(renderer: Renderer)

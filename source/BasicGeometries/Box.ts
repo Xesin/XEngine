@@ -123,6 +123,8 @@ namespace XEngine2.BasicGeometries
 			];
 
 			super(vertices, indices, UVs, normalData, new Array(material));
+
+			this.addGroup(0, vertices.length, 0);
 		}
     }
 }

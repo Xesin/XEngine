@@ -4,6 +4,7 @@ namespace XEngine2 {
 
 		public start()
 		{
+			this.game.time.frameLimit = 5;
 			this.Instantiate(XEngine2.TestActor);
 		}
 
