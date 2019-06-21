@@ -17,7 +17,7 @@ namespace XEngine2
 
         public Instantiate(actorToInstantiate : typeof Actor, transform: Transform = null) : Actor
         {
-            let instancedActor = Object.create(actorToInstantiate.prototype) as Actor;
+            let instancedActor = new actorToInstantiate() as Actor;
 
             if (transform)
             {
