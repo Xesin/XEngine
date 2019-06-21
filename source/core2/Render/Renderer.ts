@@ -144,6 +144,9 @@ namespace XEngine2 {
 			this.transparentRenderQueue = new Array();
 
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			this.gl.enable(this.gl.DEPTH_TEST);
+			this.gl.cullFace(this.gl.BACK);
+			this.gl.enable(this.gl.CULL_FACE);
 
 			this.PopulateRenderQueues(scene);
 
@@ -168,24 +171,25 @@ namespace XEngine2 {
 					let components = actor.GetComponents<SceneComponent>();
 					for (let j = 0; j < components.length; j++) {
 						const sceneComponent = components[j];
-						
-						let groups = sceneComponent.getAllRenderableGroups();
-						if(groups != null)
-						{
-							for (let k = 0; k < groups.length; k++) 
+						if(!sceneComponent.hidden){
+							let groups = sceneComponent.getAllRenderableGroups();
+							if(groups != null)
 							{
-								const group = groups[k];
-								let renderObject = new RenderObject(group, sceneComponent.transform.Matrix);
-								switch(group.Mesh.materials[group.materialIndex].renderQueue)
+								for (let k = 0; k < groups.length; k++) 
 								{
-									case RenderQueue.OPAQUE:
-										if(this.opaqueRenderQueue.indexOf(renderObject) === -1)
-											this.opaqueRenderQueue.push(renderObject);
-										break;
-									case RenderQueue.TRANSPARENT:
-										if(this.transparentRenderQueue.indexOf(renderObject) === -1)
-											this.transparentRenderQueue.push(renderObject);
-										break;
+									const group = groups[k];
+									let renderObject = new RenderObject(group, sceneComponent.transform.Matrix);
+									switch(group.Mesh.materials[group.materialIndex].renderQueue)
+									{
+										case RenderQueue.OPAQUE:
+											if(this.opaqueRenderQueue.indexOf(renderObject) === -1)
+												this.opaqueRenderQueue.push(renderObject);
+											break;
+										case RenderQueue.TRANSPARENT:
+											if(this.transparentRenderQueue.indexOf(renderObject) === -1)
+												this.transparentRenderQueue.push(renderObject);
+											break;
+									}
 								}
 							}
 						}

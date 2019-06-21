@@ -26,9 +26,13 @@ namespace XEngine2
 
         }
 
-        public Tick(deltaTime: number) : void
+        public update(deltaTime: number) 
         {
-            
+            let components = this.GetComponents<Component>();
+            components.forEach(component => {
+                if(component.bCanUpdate)
+                    component.update(deltaTime);
+            });
         }
 
         public GetComponents<T extends Component>(): Array<T>{

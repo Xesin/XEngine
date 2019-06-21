@@ -43,6 +43,44 @@ namespace XEngine2.BasicGeometries
 				-sizeW,  sizeH, -sizeZ, 
 			];
 
+			let colors = [
+				// Cara delantera
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+
+				// Cara trasera
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+
+				// Top face
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+
+				// Bottom face
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+
+				// Right face
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+
+				// Left face
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+				0.1, 0, 0.5, 1,
+			];
+
 			let UVs = [
 				// Cara enfrente
 				0, 0,
@@ -122,9 +160,9 @@ namespace XEngine2.BasicGeometries
 				-1, 0, 0,
 			];
 
-			super(vertices, indices, UVs, normalData, new Array(material));
+			super(vertices, indices, UVs, normalData, colors, new Array(material));
 
-			this.addGroup(0, vertices.length, 0, indices);
+			this.addGroup(0, vertices.length / 3, 0, indices);
 		}
     }
 }

@@ -6,6 +6,7 @@ namespace XEngine2 {
         public shader : Shader;
 
         public vertexPositionName = "aVertexPosition";
+        public colorsPositionName = "aVertexColor";
         public modelMatrixName = "modelMatrix";
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
@@ -71,7 +72,7 @@ namespace XEngine2 {
 
         public get HasColor(): boolean
         {
-            return false;
+            return this.colorsPositionName in this.shader.vertexAttrs;;
         }
 
         public get HasNormals(): boolean

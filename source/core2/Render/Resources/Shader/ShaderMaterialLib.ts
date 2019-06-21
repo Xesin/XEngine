@@ -6,7 +6,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"#version 300 es",
 			"in vec3 aVertexPosition;",
 			// "in vec2 vUv;",
-			// "in vec4 aVertexColor;",
+			"in vec4 aVertexColor;",
 			"uniform mediump mat4 modelMatrix;",
 			"uniform mediump mat4 viewMatrix;",
 			"uniform mediump mat4 pMatrix;",
@@ -16,7 +16,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"out vec4 vWorldPos;",
 			"out vec4 vClipPos;",
 			// "out vec4 vViewPos;",
-			// "out mediump vec4 vColor;",
+			"out mediump vec4 vColor;",
 			// "out mediump float alpha;",
 			"out mediump mat4 mvpMatrix;",
 			"out mediump mat4 mvMatrix;",
@@ -33,7 +33,7 @@ namespace XEngine2.ShaderMaterialLib{
 				// "vViewPos = -(mvMatrix * vObjectPos);",
 				"gl_Position = vClipPos;",
 	   			// "uv = vUv;",
-				// "vColor = aVertexColor;",
+				"vColor = aVertexColor;",
 			"}",
         ];
 
@@ -44,6 +44,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"in vec4 vWorldPos;",
 			// "in vec4 vViewPos;",
 			"in vec4 vClipPos;",
+			"in vec4 vColor;",
 			"uniform mediump mat4 modelMatrix;",
 			"uniform mediump mat4 viewMatrix;",
 			"uniform mediump mat4 pMatrix;",
@@ -62,7 +63,7 @@ namespace XEngine2.ShaderMaterialLib{
 
             "void main(void) {",
                 "fragColor.a = 1.0;",
-                "fragColor.xyz = vec3(0.5,0.1,0.1);",
+                "fragColor.xyz = vec3(vColor.xyz);",
             "}",
         ];
     }

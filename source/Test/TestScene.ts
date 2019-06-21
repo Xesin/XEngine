@@ -7,15 +7,19 @@ namespace XEngine2 {
 		{
 			// this.game.time.frameLimit = 60;
 			actor = this.Instantiate(XEngine2.TestActor);
-			actor.rootComponent.transform.position.x = 0.5;
+			actor.rootComponent.transform.position.x = 0;
+			actor.rootComponent.transform.position.y = -0.5;
+			actor.rootComponent.transform.position.z = -5;
+			actor.rootComponent.transform.scale.setTo(0.5);
+			actor = this.Instantiate(XEngine2.TestActor);
+			actor.rootComponent.transform.position.x = -2;
 			actor.rootComponent.transform.position.y = -0.5;
 			actor.rootComponent.transform.position.z = -5;
 			
 		}
 
 		public update (deltaTime: number) {
-			actor.rootComponent.transform.rotation.y += 25 * deltaTime;
-			actor.rootComponent.transform.rotation.x -= 25 * deltaTime;
+			super.update(deltaTime);
 		}
 	}
 }

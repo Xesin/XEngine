@@ -11,6 +11,7 @@ namespace XEngine2
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
+		protected colorData: Array<number>;
 		protected indexData: Array<number>;
 		protected normalData: Array<number>;
 		protected indexDataBuffer: XEngine.DataBuffer16;
@@ -21,11 +22,12 @@ namespace XEngine2
 		protected vertexBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
-		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES) {
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
 			this.normalData = normalData;
+			this.colorData = colorData;
 			this.indexed = indexData != null ? true : false;
 			this.groups = new Array();
 			this.vertexBuffer = new Array();
@@ -55,12 +57,13 @@ namespace XEngine2
 				let material = this.materials[this.groups[i].materialIndex];
 				material.initialize(renderer.gl);
 				let stride = material.AttrStride;
-				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount) * 4);
+				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
 
 				let index = this.vertDataBuffer[i].allocate(this.vertexData.length);
 				let uvIndex = 0;
 				let normalIndex = 0;
+				let colorIndex = 0;
 				let floatBuffer = this.vertDataBuffer[i].floatView;
 				
 				for (const key in material.VertexAttributes) {
@@ -73,6 +76,7 @@ namespace XEngine2
 				let vertices = this.vertexData;
 				let normals = this.normalData;
 				let uv = this.uvData;
+				let colors = this.colorData;
 				// tslint:disable-next-line:forin
 				for (let i = 0; i < vertices.length; i++) {
 
@@ -81,6 +85,15 @@ namespace XEngine2
 						floatBuffer[index++] = vertices[i++];
 						floatBuffer[index++] = vertices[i++];
 						floatBuffer[index++] = vertices[i];
+					}
+
+					// Colors
+					if(material.HasColor)
+					{
+						floatBuffer[index++] = colors[colorIndex++];
+						floatBuffer[index++] = colors[colorIndex++];
+						floatBuffer[index++] = colors[colorIndex++];
+						floatBuffer[index++] = colors[colorIndex];
 					}
 				}
 

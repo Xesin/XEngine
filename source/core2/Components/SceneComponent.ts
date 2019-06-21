@@ -3,11 +3,13 @@
 namespace XEngine2 {
     export class SceneComponent extends Component {
         public transform: Transform;
+        public hidden: boolean;
 
         constructor()
         {
             super();
             this.transform = new Transform();
+            this.hidden = false;
         }
 
         public render(renderer: Renderer)

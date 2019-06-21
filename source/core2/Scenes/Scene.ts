@@ -36,7 +36,9 @@ namespace XEngine2
 
         public update(deltaTime: number)
         {
-
+            this.actors.forEach(actor => {
+                actor.update(deltaTime);
+            });
         }
 
         public Render(renderer: Renderer, camera = this.mainCamera)
