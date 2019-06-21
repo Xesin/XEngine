@@ -93,7 +93,14 @@ namespace XEngine2
 						floatBuffer[index++] = colors[colorIndex++];
 						floatBuffer[index++] = colors[colorIndex++];
 						floatBuffer[index++] = colors[colorIndex++];
-						floatBuffer[index++] = colors[colorIndex];
+						floatBuffer[index++] = colors[colorIndex++];
+					}
+
+					if(material.HasNormals)
+					{
+						floatBuffer[index++] = normals[normalIndex++];
+						floatBuffer[index++] = normals[normalIndex++];
+						floatBuffer[index++] = normals[normalIndex++];
 					}
 				}
 
