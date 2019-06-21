@@ -30,10 +30,10 @@ namespace XEngine2 {
 			let gl = this.gl;
 			let buffer = this.buffer;
 
-			if (IndexBuffer.CurrentIndexBuffer !== this) {
+			// if (IndexBuffer.CurrentIndexBuffer !== this) {
 				IndexBuffer.CurrentIndexBuffer = this;
 				gl.bindBuffer(this.bufferType, buffer);
-			}
+			// }
 		}
 
 		public unbind()

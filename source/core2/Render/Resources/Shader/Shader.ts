@@ -44,7 +44,7 @@ namespace XEngine2 {
 				let type = attribute.type as ShaderType;
 				let result = new VertexAttribute(i, attribute.name, type, null, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride);
 				this.vertexAttrs[attribute.name] = result;
-				switch(result.type)
+				switch(type)
 				{
 					case ShaderType.INT:
 					case ShaderType.FLOAT:
@@ -58,10 +58,12 @@ namespace XEngine2 {
 					case ShaderType.INT_VEC3:
 					case ShaderType.FLOAT_VEC3:
 						this.attributeStride += 12;
+						break;
 					case ShaderType.INT_VEC4:
 					case ShaderType.FLOAT_VEC4:
 					case ShaderType.FLOAT_MAT2:
 						this.attributeStride += 16;
+						break;
 				}
 			}
 		}

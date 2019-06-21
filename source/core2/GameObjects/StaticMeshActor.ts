@@ -11,7 +11,7 @@ namespace XEngine2
             super();
 
             this.staticMesh = new StaticMeshComponent();
-            this.staticMesh.setupAttachtment(this.rootComponent);
+            this.rootComponent = this.staticMesh;
         }
     }
 }

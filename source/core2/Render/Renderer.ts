@@ -179,10 +179,12 @@ namespace XEngine2 {
 								switch(group.Mesh.materials[group.materialIndex].renderQueue)
 								{
 									case RenderQueue.OPAQUE:
-										this.opaqueRenderQueue.push(renderObject);
+										if(this.opaqueRenderQueue.indexOf(renderObject) === -1)
+											this.opaqueRenderQueue.push(renderObject);
 										break;
 									case RenderQueue.TRANSPARENT:
-										this.transparentRenderQueue.push(renderObject);
+										if(this.transparentRenderQueue.indexOf(renderObject) === -1)
+											this.transparentRenderQueue.push(renderObject);
 										break;
 								}
 							}
@@ -192,7 +194,7 @@ namespace XEngine2 {
 			}
 		}
 
-		public renderMeshImmediate(renderObject: RenderObject, camera = this.currentCamera)
+		private renderMeshImmediate(renderObject: RenderObject, camera = this.currentCamera)
 		{
 			let meshGroup = renderObject.group;
 			let modelMatrix = renderObject.modelMatrix;
@@ -206,12 +208,25 @@ namespace XEngine2 {
 				let material = meshGroup.Mesh.materials[meshGroup.materialIndex];
 
 				material.modelMatrix.value = modelMatrix;
-				material.viewMatrix.value = camera.transform.Matrix;
+				material.viewMatrix.value = camera.transform.Matrix.FPSView(
+					camera.transform.position, 
+					camera.transform.rotation.x * Mathf.TO_RADIANS, 
+					camera.transform.rotation.y * Mathf.TO_RADIANS
+				);;
 				material.projectionMatrix.value = camera.projectionMatrix;
 
 				gl.useProgram(material.ShaderProgram);
 
-				gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
+				material.updateUniforms(gl);
+
+				if(meshGroup.indices){
+					gl.drawElements(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0);
+				}
+				else
+				{
+					gl.drawArrays(gl.TRIANGLES, meshGroup.firstVertex, meshGroup.vertexCount);
+				}
+				// gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
 
 				gl.useProgram(null);
 				meshGroup.Mesh.unBind(meshGroup.materialIndex);

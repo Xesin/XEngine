@@ -12,9 +12,9 @@ namespace XEngine2 {
 
 		constructor () {
 			this.dirty = true;
-			this.position = new Vector3();
+			this.position = new Vector3(0,0,0);
 			this.scale = new Vector3();
-			this.rotation = new Vector3();
+			this.rotation = new Vector3(0,0,0);
 		}
 
 		public get Matrix() : Mat4x4 {

@@ -49,6 +49,7 @@ namespace XEngine {
 			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
 				gl.bindVertexArray(this.vao);
+				gl.bindBuffer(this.bufferType, this.buffer);
 			}
 		}
 	}

@@ -35,7 +35,7 @@ namespace XEngine2
             let result = new Array<T>();
             Object.keys(this).forEach(key => {
                 let object = this[key];
-                if(object as T)
+                if((object as T) && result.indexOf(object) === -1)
                 {
                     result.push(object);
                 }

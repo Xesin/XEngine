@@ -1,15 +1,21 @@
 /// <reference path="../core2/Scenes/Scene.ts" />
+let actor : XEngine2.Actor = null;
 namespace XEngine2 {
 	export class TestScene extends Scene {
 
 		public start()
 		{
-			this.game.time.frameLimit = 5;
-			this.Instantiate(XEngine2.TestActor);
+			// this.game.time.frameLimit = 60;
+			actor = this.Instantiate(XEngine2.TestActor);
+			actor.rootComponent.transform.position.x = 0.5;
+			actor.rootComponent.transform.position.y = -0.5;
+			actor.rootComponent.transform.position.z = -5;
+			
 		}
 
 		public update (deltaTime: number) {
-
+			actor.rootComponent.transform.rotation.y += 25 * deltaTime;
+			actor.rootComponent.transform.rotation.x -= 25 * deltaTime;
 		}
 	}
 }

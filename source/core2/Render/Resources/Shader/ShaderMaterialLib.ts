@@ -3,7 +3,7 @@ namespace XEngine2.ShaderMaterialLib{
 
     export class BasicShader {
         public static readonly vertexShader = [
-            "#define MAX_LIGHTS 5",
+			"#version 300 es",
 			"in vec3 aVertexPosition;",
 			// "in vec2 vUv;",
 			// "in vec4 aVertexColor;",
@@ -25,7 +25,7 @@ namespace XEngine2.ShaderMaterialLib{
             // "out vec3 normal;",
 
             "void main(void) {",
-				"vObjectPos = vec4(aVertexPosition, 1.0);",
+				"vec4 vObjectPos = vec4(aVertexPosition, 1.0);",
 				"vWorldPos = modelMatrix * vObjectPos;",
 				"mvMatrix = viewMatrix * modelMatrix;",
 				"mvpMatrix = pMatrix * mvMatrix;",
@@ -38,8 +38,9 @@ namespace XEngine2.ShaderMaterialLib{
         ];
 
         public static readonly fragmentShader = [
-            "#define MAX_LIGHTS 5",
-			"in vec4 vObjectPos;",
+			"#version 300 es",
+			"precision mediump float;",
+			// "in vec4 vObjectPos;",
 			"in vec4 vWorldPos;",
 			// "in vec4 vViewPos;",
 			"in vec4 vClipPos;",

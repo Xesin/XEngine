@@ -7,40 +7,40 @@ namespace XEngine2.BasicGeometries
         constructor(material: Material, sizeW = 1, sizeH = 1, sizeZ = 1) {
 			let vertices = [
 				// Cara delantera
-				-sizeW, -sizeH, sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH, sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH, sizeZ, 0, 0, 0, 1,
-				-sizeW,  sizeH, sizeZ, 0, 0, 0, 1,
+				-sizeW, -sizeH, sizeZ,
+				sizeW, -sizeH, sizeZ,
+				sizeW,  sizeH, sizeZ,
+				-sizeW,  sizeH, sizeZ,
 
 				// Cara trasera
-				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				-sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW, -sizeH, -sizeZ,
+				-sizeW,  sizeH, -sizeZ,
+				sizeW,  sizeH, -sizeZ, 
+				sizeW, -sizeH, -sizeZ, 
 
 				// Top face
-				-sizeW, sizeH, -sizeZ, 0, 0, 0, 1,
-				-sizeW, sizeH,  sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW, sizeH, -sizeZ,
+				-sizeW, sizeH,  sizeZ,
+				sizeW,  sizeH,  sizeZ,
+				sizeW,  sizeH, -sizeZ,
 
 				// Bottom face
-				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
-				-sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
+				-sizeW, -sizeH, -sizeZ,
+				sizeW, -sizeH, -sizeZ, 
+				sizeW, -sizeH,  sizeZ, 
+				-sizeW, -sizeH,  sizeZ,
 
 				// Right face
-				sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
-				sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
-				sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
+				sizeW, -sizeH, -sizeZ,
+				sizeW,  sizeH, -sizeZ,
+				sizeW,  sizeH,  sizeZ,
+				sizeW, -sizeH,  sizeZ,
 
 				// Left face
-				-sizeW, -sizeH, -sizeZ, 0, 0, 0, 1,
-				-sizeW, -sizeH,  sizeZ, 0, 0, 0, 1,
-				-sizeW,  sizeH,  sizeZ, 0, 0, 0, 1,
-				-sizeW,  sizeH, -sizeZ, 0, 0, 0, 1,
+				-sizeW, -sizeH, -sizeZ, 
+				-sizeW, -sizeH,  sizeZ, 
+				-sizeW,  sizeH,  sizeZ, 
+				-sizeW,  sizeH, -sizeZ, 
 			];
 
 			let UVs = [
@@ -82,7 +82,7 @@ namespace XEngine2.BasicGeometries
 			];
 
 			let indices = [
-				0,  1,  2,	  0,  2,  3,	// enfrente
+				0,  1,  2,	  	0, 2, 3,// enfrente
 				4,  5,  6,	  4,  6,  7,	// atrรกs
 				8,  9,  10,	 8,  10, 11,   // arriba
 				12, 13, 14,	 12, 14, 15,   // fondo
@@ -124,7 +124,7 @@ namespace XEngine2.BasicGeometries
 
 			super(vertices, indices, UVs, normalData, new Array(material));
 
-			this.addGroup(0, vertices.length, 0);
+			this.addGroup(0, vertices.length, 0, indices);
 		}
     }
 }

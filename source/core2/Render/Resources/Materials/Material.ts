@@ -17,10 +17,15 @@ namespace XEngine2 {
             this.shader = shader;
         }
 
+        public initialize(gl: WebGL2RenderingContext)
+        {
+            this.shader.initializeShader(gl);
+        }
+
         public updateUniforms(gl: WebGL2RenderingContext)
         {
-            for (let i = 0; i < this.shader.uniforms.length; i++) {
-                const uniform = this.shader.uniforms[i];
+            for (let key in this.shader.uniforms) {
+                const uniform = this.shader.uniforms[key];
                 this.setUniform(uniform, gl);
             }
         }

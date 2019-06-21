@@ -3,16 +3,22 @@
 namespace XEngine2 {
     export class CameraComponent extends SceneComponent {
         
-        public projectionMatrix: Mat4x4;
+        private _projectionMatrix: Mat4x4;
 
         constructor()
         {
             super();
             this.bCanUpdate = true;
+            this._projectionMatrix = new Mat4x4;
         }
 
         public update(deltaTime: number)
         {
+            
+        }
+
+        
+        public get projectionMatrix() : Mat4x4 {
             let game = Game.GetInstance();
             const fieldOfView = 45 * Math.PI / 180;   // in radians
             const aspect = game.width / game.height;
@@ -20,12 +26,15 @@ namespace XEngine2 {
             const zFar = 2500.0;
 
         
-            this.projectionMatrix.perspective(
+            this._projectionMatrix.perspective(
                 fieldOfView,
                 aspect,
                 zNear,
                 zFar
             );
+
+            return this._projectionMatrix;
         }
+        
     }
 }
