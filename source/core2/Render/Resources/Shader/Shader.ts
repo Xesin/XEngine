@@ -6,6 +6,8 @@ namespace XEngine2 {
 		private vertextCode: string;
 		private fragmentCode: string;
 
+		private attributeStride: number;
+
 		public uniforms: Uniform[];
 		public vertexAttrs: VertexAttribute[];
 
@@ -16,6 +18,7 @@ namespace XEngine2 {
 			this.fragmentCode = fragmentCode;
 			this.uniforms = new Array<Uniform>();
 			this.vertexAttrs = new Array<VertexAttribute>();
+			this.attributeStride = 0;
 		}
 
 		public initializeShader(gl: WebGL2RenderingContext) {
@@ -39,10 +42,32 @@ namespace XEngine2 {
 			for (var i=0; i < activeAttributes; i++) {
 				var attribute = gl.getActiveAttrib(this._shaderProgram, i);
 				let type = attribute.type as ShaderType;
-				let result = new VertexAttribute(attribute.name, type, null, gl.getAttribLocation(this._shaderProgram, attribute.name));
+				let result = new VertexAttribute(i, attribute.name, type, null, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride);
 				this.vertexAttrs[attribute.name] = result;
+				switch(result.type)
+				{
+					case ShaderType.INT:
+					case ShaderType.FLOAT:
+					case ShaderType.SHORT:
+						this.attributeStride += 4;
+						break;
+					case ShaderType.INT_VEC2:
+					case ShaderType.FLOAT_VEC2:
+						this.attributeStride += 8;
+						break;
+					case ShaderType.INT_VEC3:
+					case ShaderType.FLOAT_VEC3:
+						this.attributeStride += 12;
+					case ShaderType.INT_VEC4:
+					case ShaderType.FLOAT_VEC4:
+					case ShaderType.FLOAT_MAT2:
+						this.attributeStride += 16;
+				}
 			}
+		}
 
+		public get attrStride() : number {
+			return this.attrStride;
 		}
 	}
 }

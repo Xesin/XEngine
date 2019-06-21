@@ -57,6 +57,10 @@ namespace XEngine2
 				let normalIndex = 0;
 				let floatBuffer = this.vertDataBuffer[i].floatView;
 
+				this.materials[this.groups[i].materialIndex].VertexAttributes.forEach(vertexAttr => {
+					this.vertexBuffer[i].addAttribute(vertexAttr, this.materials[this.groups[i].materialIndex].AttrStride);
+				});
+
 				let vertices = this.vertexData;
 				let normals = this.normalData;
 				let uv = this.uvData;

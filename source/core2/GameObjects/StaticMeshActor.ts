@@ -1,3 +1,5 @@
+/// <reference path="Actor.ts" />
+
 namespace XEngine2
 {
     export class StaticMeshActor extends Actor

@@ -22,17 +22,17 @@ namespace XEngine2 {
 			this.attributes = new Array<any>();
 		}
 
-		public addAttribute(index: number, size: number, type: number, normalized: boolean, stride: number, offset: number) {
+		public addAttribute(vertexAttribute: VertexAttribute, stride: number) {
 			let gl = this.gl;
 			this.bind();
-			gl.enableVertexAttribArray(index);
+			gl.enableVertexAttribArray(vertexAttribute.index);
 			gl.vertexAttribPointer(
-				index,
-				size,
-				type,
-				normalized,
+				vertexAttribute.index,
+				vertexAttribute.numItems,
+				vertexAttribute.type,
+				vertexAttribute.normalized,
 				stride,
-				offset,
+				vertexAttribute.offset,
 			);
 		}
 

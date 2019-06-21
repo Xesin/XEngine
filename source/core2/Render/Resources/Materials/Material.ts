@@ -46,7 +46,12 @@ namespace XEngine2 {
 
         public get AttrStride() : number
         {
-            return 0;
+            return this.shader.attrStride;
+        }
+
+        public get VertexAttributes() : Array<VertexAttribute>
+        {
+            return this.shader.vertexAttrs;
         }
 
         public get HasPosition(): boolean
