@@ -63,7 +63,7 @@ namespace XEngine2.ShaderMaterialLib{
 
             "void main(void) {",
 				"fragColor.a = 1.0;",
-				"float ndl = dot(vec3(0.0,0.0,1.0), vNormal);",
+				"float ndl = dot(vec3(1.0,0.0,1.0), vNormal);",
                 "fragColor.xyz = ndl * vColor.xyz;",
             "}",
         ];
