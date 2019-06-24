@@ -22,8 +22,10 @@ namespace XEngine2 {
 		}
 
 		public initializeShader(gl: WebGL2RenderingContext) {
-			this._shaderProgram = ShaderCompiler.compileShader(gl, this.vertextCode, this.fragmentCode);
-			this.extractUniformsFromCode(gl);
+			if(this._shaderProgram == null || this._shaderProgram == undefined){
+				this._shaderProgram = ShaderCompiler.compileShader(gl, this.vertextCode, this.fragmentCode);
+				this.extractUniformsFromCode(gl);
+			}
 		}
 
 		private extractUniformsFromCode(gl: WebGL2RenderingContext)
@@ -42,7 +44,8 @@ namespace XEngine2 {
 			for (var i=0; i < activeAttributes; i++) {
 				var attribute = gl.getActiveAttrib(this._shaderProgram, i);
 				let type = attribute.type as ShaderType;
-				let result = new VertexAttribute(i, attribute.name, type, null, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride);
+				let normalized = attribute.name.toLowerCase().indexOf('uv') != -1;
+				let result = new VertexAttribute(i, attribute.name, type, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride, normalized);
 				this.vertexAttrs[attribute.name] = result;
 				switch(type)
 				{

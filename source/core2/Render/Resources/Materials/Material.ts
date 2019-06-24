@@ -8,11 +8,14 @@ namespace XEngine2 {
         public vertexPositionName = "aVertexPosition";
         public colorsAttrName = "aVertexColor";
         public normalAttrName = "aVertexNormal";
+        public uvAttrName = "aUV";
         public modelMatrixName = "modelMatrix";
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
 
         public renderQueue = RenderQueue.OPAQUE;
+
+        public static currentMaterial: Material;
 
         constructor(shader: Shader)
         {
@@ -68,7 +71,7 @@ namespace XEngine2 {
 
         public get HasUVs(): boolean
         {
-            return false;
+            return this.uvAttrName in this.shader.vertexAttrs;
         }
 
         public get HasColor(): boolean
@@ -86,8 +89,18 @@ namespace XEngine2 {
             return this.shader._shaderProgram;
         }
 
+        public bind(gl: WebGL2RenderingContext)
+        {
+            if(Material.currentMaterial !== this)
+            {
+                gl.useProgram(this.ShaderProgram);
+                Material.currentMaterial = this;
+            }    
+        }
+
 
         private setUniform(uniform: Uniform, gl:WebGL2RenderingContext) {
+            if(!uniform.bDirty) return;
 			let valueType = uniform.type;
 			switch (valueType) {
 				case ShaderType.INT:
@@ -118,7 +131,8 @@ namespace XEngine2 {
 				default:
 					gl.uniform1f(uniform._gpuPos, uniform.value as number);
 					break;
-			}
+            }
+            uniform.bDirty = false;
 		}
     }
 }

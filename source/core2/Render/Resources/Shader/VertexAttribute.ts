@@ -6,20 +6,18 @@ namespace XEngine2 {
         public offset: number;
         public normalized: boolean;
         public numItems: number;
-        public value: number | Mat4x4 | Vector3 | Vector4;
         
         public _gpuPos: WebGLUniformLocation;
         private _type: ShaderType;
 
-        constructor(index: number, name: string, type: ShaderType, value: number | Mat4x4 | Vector3 | Vector4, _gpuPos: WebGLUniformLocation, offset: number, normalized = false)
+        constructor(index: number, name: string, type: ShaderType, _gpuPos: WebGLUniformLocation, offset: number, normalized = false)
         {
             this.index = index;
             this.name = name;
             this._type = type;
-            this.value = value;
             this._gpuPos = _gpuPos;
             this.offset = offset;
-            this.normalized = false;
+            this.normalized = normalized;
             this.numItems = 0;
 
             switch(type)

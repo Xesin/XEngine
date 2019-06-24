@@ -8,7 +8,7 @@ namespace XEngine2
         {
             super();
 
-            this.staticMesh.Mesh = new XEngine2.BasicGeometries.BoxMesh(new BasicMaterial());
+            this.staticMesh.Mesh = new XEngine2.BasicGeometries.BoxMesh(BasicMaterial.SharedInstance);
         }
     }
 }

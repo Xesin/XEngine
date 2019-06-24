@@ -154,5 +154,18 @@ namespace XEngine2 {
 
 			return this;
 		}
+
+		public Equal(otherMat: Mat4x4): boolean
+		{
+			let el = this.elements;
+			let otherEl = otherMat.elements;
+
+			for (let i = 0; i < el.length; i++) {
+				const element = el[i];
+				if(element != otherEl[i]) return false;
+			}
+
+			return true;
+		}
 	}
 }

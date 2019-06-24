@@ -90,20 +90,53 @@ namespace XEngine2
 					// Colors
 					if(material.HasColor)
 					{
-						floatBuffer[index++] = colors[colorIndex++];
-						floatBuffer[index++] = colors[colorIndex++];
-						floatBuffer[index++] = colors[colorIndex++];
-						floatBuffer[index++] = colors[colorIndex++];
+						if(colors && colors.length > 0)
+						{
+							floatBuffer[index++] = colors[colorIndex++];
+							floatBuffer[index++] = colors[colorIndex++];
+							floatBuffer[index++] = colors[colorIndex++];
+							floatBuffer[index++] = colors[colorIndex++];
+						}
+						else
+						{
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+						}
 					}
 
 					if(material.HasNormals)
 					{
-						floatBuffer[index++] = normals[normalIndex++];
-						floatBuffer[index++] = normals[normalIndex++];
-						floatBuffer[index++] = normals[normalIndex++];
+						if(normals && normals.length > 0)
+						{
+							floatBuffer[index++] = normals[normalIndex++];
+							floatBuffer[index++] = normals[normalIndex++];
+							floatBuffer[index++] = normals[normalIndex++];
+						}
+						else
+						{
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+						}
+					}
+
+					if(material.HasUVs)
+					{
+						if(uv && uv.length > 0)
+						{
+							floatBuffer[index++] = uv[uvIndex++];
+							floatBuffer[index++] = uv[uvIndex++];
+						}
+						else
+						{
+							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 0;
+						}
 					}
 				}
-
+				this.vertexBuffer[i].bind();
 				this.vertexBuffer[i].updateResource(floatBuffer, 0);
 
 				if (this.groups[i].indices) {
@@ -128,9 +161,9 @@ namespace XEngine2
 		}
 
 		public bind(materialIndex = 0) {
-			this.vertexBuffer[materialIndex].bind();
+			this.vertexBuffer[0].bind();
 			if (this.indexed) {
-				this.indexBuffer[materialIndex].bind();
+				this.indexBuffer[0].bind();
 			}
 		}
 

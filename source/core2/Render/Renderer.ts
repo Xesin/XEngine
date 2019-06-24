@@ -2,8 +2,8 @@ namespace XEngine2 {
 
 	class RenderObject
 	{
-		group: MeshGroup;
-		modelMatrix: Mat4x4;
+		public group: MeshGroup;
+		public modelMatrix: Mat4x4;
 
 		constructor(group: MeshGroup, modelMatrix: Mat4x4)
 		{
@@ -159,6 +159,8 @@ namespace XEngine2 {
 				const transparentObject = this.transparentRenderQueue[i];
 				this.renderMeshImmediate(transparentObject);
 			}
+
+			Material.currentMaterial = null;
 		}
 
 		private PopulateRenderQueues(scene: Scene)
@@ -202,15 +204,14 @@ namespace XEngine2 {
 		{
 			let meshGroup = renderObject.group;
 			let modelMatrix = renderObject.modelMatrix;
+			let gl = this.gl;
+			
 			if(!meshGroup.Mesh.initialized)
 				meshGroup.Mesh.initialize(this);
 
 				meshGroup.Mesh.bind(meshGroup.materialIndex);
-				
-				let gl = this.gl;
-
 				let material = meshGroup.Mesh.materials[meshGroup.materialIndex];
-
+				material.bind(gl);
 				material.modelMatrix.value = modelMatrix;
 				material.viewMatrix.value = camera.transform.Matrix.FPSView(
 					camera.transform.position, 
@@ -218,8 +219,6 @@ namespace XEngine2 {
 					camera.transform.rotation.y * Mathf.TO_RADIANS
 				);;
 				material.projectionMatrix.value = camera.projectionMatrix;
-
-				gl.useProgram(material.ShaderProgram);
 
 				material.updateUniforms(gl);
 
@@ -232,8 +231,7 @@ namespace XEngine2 {
 				}
 				// gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
 
-				gl.useProgram(null);
-				meshGroup.Mesh.unBind(meshGroup.materialIndex);
+				// meshGroup.Mesh.unBind(meshGroup.materialIndex);
 			
 		}
 	}
