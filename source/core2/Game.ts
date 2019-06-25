@@ -62,6 +62,7 @@ namespace XEngine2 {
 		public sceneManager: SceneManager;
 		public cache: Cache;
 		public loader: Loader;
+		public input: InputManager;
 
 		public renderer: Renderer;
 
@@ -77,6 +78,7 @@ namespace XEngine2 {
 		private init() {
 			this.pause = false;
 			this.time.init();
+			this.input._initializeKeys();
 			this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 			console.log("Game engine " + XEngine2.version + " arrancado con webgl!!!");
 			Game.game = this;
@@ -108,6 +110,7 @@ namespace XEngine2 {
 			this.sceneManager = new SceneManager(this);
 			this.cache = new Cache(this);
 			this.loader = new Loader(this);
+			this.input = new InputManager(this);
 
 			this.pause = false;
 			this.isMobile = false;

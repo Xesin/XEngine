@@ -18,6 +18,9 @@ namespace XEngine2 {
 			actor.rootComponent.transform.position.y = -0.5;
 			actor.rootComponent.transform.position.z = -5;
 			actor.rootComponent.transform.scale.setTo(0.5);
+
+
+
 			// actor = this.Instantiate(XEngine2.TestActor);
 			// actor.rootComponent.transform.position.x = -2;
 			// actor.rootComponent.transform.position.y = -0.5;
@@ -27,6 +30,17 @@ namespace XEngine2 {
 
 		public update (deltaTime: number) {
 			super.update(deltaTime);
+
+			if(this.game.input.isDown(KEY_CODE.W))
+			{
+				this.mainCamera.transform.position.z += 100 * deltaTime;
+
+			}
+			if(this.game.input.isDown(KEY_CODE.S))
+			{
+				this.mainCamera.transform.position.z -= 100 * deltaTime;
+
+			}
 		}
 	}
 }
