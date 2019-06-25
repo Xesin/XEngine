@@ -264,15 +264,14 @@ namespace XEngine2 {
 			for (let mat in this.state.materials) {
 
 				let objMat = this.state.materials[ mat ];
-				let material = objMat.createMaterial(this.loader.game.cache, this.loader.game.renderer.gl);
+				let material = objMat.createMaterial(this.loader.game, this.loader.game.renderer.gl);
 				this.loader.game.cache.materials[objMat.name] = material;
 			}
 
 			for ( let i = 0, l = this.state.objects.length; i < l; i ++ ) {
 
 				let object = this.state.objects[ i ];
-				let geometry = object.createGeometry();
-				let hasVertexColors = false;
+				let geometry = object.createGeometry(this.loader.game);
 				this.loader.game.cache.geometries[object.name] = geometry;
 			}
 		}

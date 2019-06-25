@@ -54,11 +54,8 @@ namespace XEngine2 {
 			let dst = this.currentObject.vertices;
 
 			dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
-			dst.push(0, 0, 0, 1);
 			dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );
-			dst.push(0, 0, 0, 1);
 			dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );
-			dst.push(0, 0, 0, 1);
 		}
 
 		public addFaceNormal(a: number, b: number, c: number ) {

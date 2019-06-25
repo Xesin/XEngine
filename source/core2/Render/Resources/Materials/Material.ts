@@ -37,9 +37,20 @@ namespace XEngine2 {
             }
             for (let i = 0; i < this.shader.samplers.length; i++) {
                 const sampler = this.shader.samplers[i];
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
+                gl.activeTexture(this.sampleIndexToGL_Sample(i, gl));
+                if(sampler != undefined && sampler.value != undefined){
+                    gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
+                }
+                else
+                {
+                    gl.bindTexture(gl.TEXTURE_2D, Texture2D.whiteTexture._texture);
+                }
             }
+        }
+
+        private sampleIndexToGL_Sample(samplerIndex: number, gl: WebGL2RenderingContext)
+        {
+            return gl.TEXTURE0 + samplerIndex;
         }
         
         public get vPosition() : VertexAttribute {

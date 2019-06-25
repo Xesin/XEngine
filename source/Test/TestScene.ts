@@ -6,12 +6,13 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
 		{
 			BasicMaterial.SharedInstance.albedo.value = this.game.cache.image('test');
-			// this.game.time.frameLimit = 60;
+			this.game.time.frameLimit = 5;
 			actor = this.Instantiate(XEngine2.TestActor);
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -0.5;

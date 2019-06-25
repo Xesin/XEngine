@@ -4,7 +4,7 @@ namespace XEngine2.BasicGeometries
 {
     export class BoxMesh extends StaticMesh
     {
-        constructor(material: Material, sizeW = 1, sizeH = 1, sizeZ = 1) {
+        constructor(material: Material, sizeW = 0.5, sizeH = 0.5, sizeZ = 0.5) {
 			let vertices = [
 				// Cara delantera
 				-sizeW, -sizeH, sizeZ,

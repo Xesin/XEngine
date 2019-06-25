@@ -15,6 +15,10 @@ namespace XEngine2 {
 		public wrapMode: WRAP_MODE;
 		public image: any;
 
+		public static blackTexture: Texture2D;
+		public static whiteTexture: Texture2D;
+		public static normalTexture: Texture2D;
+
 		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean, generateMipmaps = true) {
 			this.imageName = name;
 			this.width = width;
@@ -64,6 +68,29 @@ namespace XEngine2 {
 			texture2D._texture = texture;
 
 			return texture2D;
+		}
+
+		public static CreateDefaultTextures(gl: WebGL2RenderingContext)
+		{
+			let blackData = new Uint8Array(4);
+			blackData[0] = 0;
+			blackData[1] = 0;
+			blackData[2] = 0;
+			blackData[3] = 255;
+			let whiteData = new Uint8Array(4);
+			whiteData[0] = 255;
+			whiteData[1] = 255;
+			whiteData[2] = 255;
+			whiteData[3] = 255;
+			let normalData = new Uint8Array(4);
+			normalData[0] = 0;
+			normalData[1] = 0;
+			normalData[2] = 255;
+			normalData[3] = 255;
+
+			Texture2D.blackTexture = Texture2D.createTexture('defaultBlackTexture', 1, 1, blackData, WRAP_MODE.REPEAT, true, gl);
+			Texture2D.whiteTexture = Texture2D.createTexture('defaultWhiteTexture', 1, 1, whiteData, WRAP_MODE.REPEAT, true, gl);
+			Texture2D.normalTexture = Texture2D.createTexture('defaultNormalTexture', 1, 1, normalData, WRAP_MODE.REPEAT, true, gl, true);
 		}
 
 		public Equals(other: Texture2D)

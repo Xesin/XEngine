@@ -35,7 +35,7 @@ namespace XEngine2 {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
-			let options = {stencil: true, antialias: true};
+			let options = {stencil: true, antialias: true, alpha: false};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
@@ -56,6 +56,7 @@ namespace XEngine2 {
 
 			this.game.scale.onResized.add(this.OnResize, this);
 			Material.initStaticMaterials(this.gl);
+			Texture2D.CreateDefaultTextures(this.gl);
 		}
 
 		private OnResize(width: number, height: number)
@@ -146,6 +147,8 @@ namespace XEngine2 {
 
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 			this.gl.enable(this.gl.DEPTH_TEST);
+			// this.gl.enable(this.gl.BLEND);
+			// this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 			this.gl.cullFace(this.gl.BACK);
 			this.gl.enable(this.gl.CULL_FACE);
 
@@ -228,7 +231,7 @@ namespace XEngine2 {
 				}
 				else
 				{
-					gl.drawArrays(gl.TRIANGLES, meshGroup.firstVertex, meshGroup.vertexCount);
+					gl.drawArrays(gl.TRIANGLES, 0, meshGroup.vertexCount);
 				}
 				// gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
 

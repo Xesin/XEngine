@@ -4,17 +4,20 @@ namespace XEngine2
 {
     export class TestActor extends StaticMeshActor
     {
-        public boxMesh: StaticMeshComponent;
         constructor()
         {
             super();
-            this.boxMesh = new StaticMeshComponent();
-            this.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BasicMaterial.SharedInstance, 1.25, 12, 12);
-
-            this.boxMesh.Mesh = new XEngine2.BasicGeometries.BoxMesh(BasicMaterial.SharedInstance);
-            this.boxMesh.transform.position.x = -2;
-            this.boxMesh.transform.position.y = -0.5;
-            this.boxMesh.transform.position.z = -5;
+            this.staticMesh.Mesh = XEngine2.Game.GetInstance().cache.geometries["sponza_117.000"];
+            let thisAny: any;
+            thisAny = this;
+            let numItems = 0;
+            // for (const meshName in XEngine2.Game.GetInstance().cache.geometries) 
+            // {
+                
+            //     const mesh = XEngine2.Game.GetInstance().cache.geometries[meshName];
+            //     thisAny[meshName] = new StaticMeshComponent();
+            //     thisAny[meshName].Mesh = mesh;
+            // }            
         }
     }
 }

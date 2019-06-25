@@ -15,8 +15,9 @@ namespace XEngine2 {
 			this.name = name;
 		}
 
-		public createMaterial(cache: Cache, gl: WebGL2RenderingContext): Material {
-			let mat = new BasicMaterial();
+		public createMaterial(game: Game, gl: WebGL2RenderingContext): Material {
+			let mat = game.createMaterialFromBase(BasicMaterial);
+			
 			// if (this.albedoTexture) {
 			// 	mat.setAlbedo(cache.image(this.albedoTexture), gl);
 			// }
@@ -34,6 +35,7 @@ namespace XEngine2 {
 			// }
 			// mat.baseUniforms.smoothness.value = 0.55;
 			// mat.baseUniforms.metallic.value = 0;
+			
 			return mat;
 		}
 	}

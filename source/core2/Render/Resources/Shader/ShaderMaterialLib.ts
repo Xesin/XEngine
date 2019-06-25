@@ -55,10 +55,10 @@ namespace XEngine2.ShaderMaterialLib{
 			"out vec4 fragColor;",
 
             "void main(void) {",
-				"vec4 albedo = texture(albedoTex, uv);",
-				"fragColor = albedo;",
+				"vec4 albedo = texture(albedoTex, uv, -1.0);",
+				"fragColor = albedo * albedo.a;",
 				"float ndl = dot(vec3(1.0,0.0,1.0), vNormal);",
-                "fragColor.xyz = albedo.xyz;",
+                "fragColor.xyz = vNormal.xyz;",
             "}",
         ];
     }

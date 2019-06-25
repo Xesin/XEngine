@@ -1,6 +1,7 @@
 namespace XEngine2 {
 	export class ObjObject {
 		public vertices: Array<number>;
+		public colors: Array<number>;
 		public normals: Array<number>;
 		public uvs: Array<number>;
 		public name: string;
@@ -13,6 +14,7 @@ namespace XEngine2 {
 		constructor(name: string) {
 			this.name = name;
 			this.vertices = new Array();
+			this.colors = new Array();
 			this.normals = new Array();
 			this.uvs = new Array();
 			this.materials = new Array();
@@ -22,7 +24,7 @@ namespace XEngine2 {
 		public addMaterial(materialName: string) {
 			this.materials.push(materialName);
 			if (this.previusMat !== undefined) {
-				this.previusMat.end = this.vertices.length / 7;
+				this.previusMat.end = this.vertices.length / 3;
 				this.previusMat.count = this.previusMat.end  - this.previusMat.start;
 			}
 			this.previusMat = {
@@ -34,12 +36,18 @@ namespace XEngine2 {
 			this.groups.push(this.previusMat);
 		}
 
-		public createGeometry(): StaticMesh {
+		public createGeometry(game: Game): StaticMesh {
 			if (this.previusMat !== undefined) {
-				this.previusMat.end = this.vertices.length / 7;
+				this.previusMat.end = this.vertices.length / 3;
 				this.previusMat.count = this.previusMat.end  - this.previusMat.start;
 			}
-			let geometry = new StaticMesh(this.vertices, null, this.uvs, this.normals, null);
+			let materials = new Array<Material>();
+
+			for (let i = 0; i < this.materials.length; i++) {
+				const material = this.materials[i];
+				materials.push(game.cache.materials[material]);
+			}
+			let geometry = new StaticMesh(this.vertices, null, this.uvs, this.normals, this.colors, materials, Topology.TRIANGLES, this.name);
 			for (let i = 0; i < this.groups.length; i++) {
 				let group = this.groups[i];
 				geometry.addGroup(group.start, group.count, group.materialIndex);

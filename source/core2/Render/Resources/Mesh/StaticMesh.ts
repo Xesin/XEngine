@@ -8,6 +8,7 @@ namespace XEngine2
 		public groups: Array<MeshGroup>;
 		public materials: Material[];
 		public topology: Topology;
+		public name: string;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
@@ -22,7 +23,7 @@ namespace XEngine2
 		protected vertexBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
-		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES) {
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "") {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
@@ -35,6 +36,7 @@ namespace XEngine2
 			this.indexBuffer = new Array();
 			this.materials = materials;
 			this.topology = topology;
+			this.name = name;
 		}
 
 		public destroy () {
@@ -60,7 +62,7 @@ namespace XEngine2
 				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
 
-				let index = this.vertDataBuffer[i].allocate(this.vertexData.length);
+				let index = this.vertDataBuffer[i].allocate(this.groups[i].vertexCount);
 				let uvIndex = 0;
 				let normalIndex = 0;
 				let colorIndex = 0;
@@ -78,13 +80,13 @@ namespace XEngine2
 				let uv = this.uvData;
 				let colors = this.colorData;
 				// tslint:disable-next-line:forin
-				for (let i = 0; i < vertices.length; i++) {
+				for (let j = this.groups[i].firstVertex * 3; j < (this.groups[i].firstVertex + this.groups[i].vertexCount) * 3; j++) {
 
 					// Positions
 					if(material.HasPosition){
-						floatBuffer[index++] = vertices[i++];
-						floatBuffer[index++] = vertices[i++];
-						floatBuffer[index++] = vertices[i];
+						floatBuffer[index++] = vertices[j++];
+						floatBuffer[index++] = vertices[j++];
+						floatBuffer[index++] = vertices[j];
 					}
 
 					// Colors
@@ -99,10 +101,10 @@ namespace XEngine2
 						}
 						else
 						{
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
+							floatBuffer[index++] = 1;
+							floatBuffer[index++] = 1;
+							floatBuffer[index++] = 1;
+							floatBuffer[index++] = 1;
 						}
 					}
 
@@ -161,9 +163,9 @@ namespace XEngine2
 		}
 
 		public bind(materialIndex = 0) {
-			this.vertexBuffer[0].bind();
+			this.vertexBuffer[materialIndex].bind();
 			if (this.indexed) {
-				this.indexBuffer[0].bind();
+				this.indexBuffer[materialIndex].bind();
 			}
 		}
 

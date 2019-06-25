@@ -47,10 +47,11 @@ namespace XEngine2 {
 		public bind() {
 			let gl = this.gl;
 
-			if (VertexBuffer.CurrentVertexBuffer !== this) {
+			// if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
 				gl.bindVertexArray(this.vao);
-			}
+				gl.bindBuffer(this.bufferType, this.buffer);
+			// }
 		}
 
 		public unbind()
