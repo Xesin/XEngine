@@ -138,5 +138,19 @@ namespace XEngine2 {
 		public destroy() {
 			
 		}
+
+		public createMaterial(material: typeof Material, shader: Shader) : Material
+		{
+			let mat = new material(shader);
+			mat.initialize(this.renderer.gl);
+			return mat;
+		}
+
+		public createMaterialFromBase(material: typeof BasicMaterial) : Material
+		{
+			let mat = new material();
+			mat.initialize(this.renderer.gl);
+			return mat;
+		}
 	}
 }
