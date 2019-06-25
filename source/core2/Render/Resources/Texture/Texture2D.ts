@@ -13,6 +13,7 @@ namespace XEngine2 {
 		public dirty: boolean;
 		public generateMipmaps: boolean;
 		public wrapMode: WRAP_MODE;
+		public image: any;
 
 		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean, generateMipmaps = true) {
 			this.imageName = name;

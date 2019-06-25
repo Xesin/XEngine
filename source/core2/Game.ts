@@ -34,6 +34,14 @@ Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 namespace XEngine2 {
 
+	export class IHash<T> {
+		[id: number]: T;
+	}
+	
+	export class IDict<T> {
+		[id: string]: T;
+	}
+
 	export var version = "3.0";
 	export class Game {
 
@@ -52,8 +60,10 @@ namespace XEngine2 {
 		public time: TimeManager;
 		public scale: ScaleManager;
 		public sceneManager: SceneManager;
+		public cache: Cache;
+		public loader: Loader;
 
-		private renderer: Renderer;
+		public renderer: Renderer;
 
 		private timer: number;
 
@@ -96,6 +106,8 @@ namespace XEngine2 {
 			this.scale = new ScaleManager(this, scaleType);
 			this.renderer = new Renderer(this, this.canvas);
 			this.sceneManager = new SceneManager(this);
+			this.cache = new Cache(this);
+			this.loader = new Loader(this);
 
 			this.pause = false;
 			this.isMobile = false;

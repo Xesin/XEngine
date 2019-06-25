@@ -3,6 +3,11 @@ let actor : XEngine2.Actor = null;
 namespace XEngine2 {
 	export class TestScene extends Scene {
 
+		public preload()
+		{
+			this.game.loader.image('test', 'img/angry_unicorn.png');
+		}
+
 		public start()
 		{
 			// this.game.time.frameLimit = 60;

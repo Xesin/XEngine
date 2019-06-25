@@ -12,6 +12,7 @@ namespace XEngine2 {
         public modelMatrixName = "modelMatrix";
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
+        public mvpMatrixName = "mvpMatrix";
 
         public renderQueue = RenderQueue.OPAQUE;
 
@@ -52,6 +53,11 @@ namespace XEngine2 {
         public get projectionMatrix() : Uniform
         {
             return this.shader.uniforms[this.projMatrixName];
+        }
+
+        public get mvpMatrix() : Uniform
+        {
+            return this.shader.uniforms[this.mvpMatrixName];
         }
 
         public get AttrStride() : number

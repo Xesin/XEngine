@@ -29,6 +29,11 @@ namespace XEngine2
             return instancedActor;
         }
 
+        public preload()
+        {
+            
+        }
+
         public start()
         {
 

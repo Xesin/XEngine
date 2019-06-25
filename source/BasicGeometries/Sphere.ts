@@ -8,6 +8,7 @@ namespace XEngine2.BasicGeometries
 			let normalData: Array<number> = [];
 			let textureCoordData: Array<number> = [];
 			let colors: Array<number> = [];
+			let lengthInv = 1.0 / radius;
 			for (let latNumber = 0; latNumber <= horizontalSlices; latNumber++) {
 				let theta = latNumber * Math.PI / horizontalSlices;
 				let sinTheta = Math.sin(theta);
@@ -18,21 +19,22 @@ namespace XEngine2.BasicGeometries
 					let sinPhi = Math.sin(phi);
 					let cosPhi = Math.cos(phi);
 
-					let x = cosPhi * sinTheta;
-					let y = cosTheta;
-					let z = sinPhi * sinTheta;
-					let u = 1 - (longNumber / horizontalSlices);
-					let v = 1 - (latNumber / horizontalSlices);
+					let x = cosPhi * sinTheta * radius;
+					let y = cosTheta * radius;
+					let z = sinPhi * sinTheta * radius;
 
-					normalData.push(x);
-					normalData.push(y);
-					normalData.push(z);
+					let u = 1 - (latNumber / horizontalSlices);
+					let v = 1 - (longNumber / verticalSlices);
+
+					normalData.push(x * lengthInv);
+					normalData.push(y * lengthInv);
+					normalData.push(z * lengthInv);
 					textureCoordData.push(u);
 					textureCoordData.push(v);
 					// Position
-					vertexPositionData.push(radius * x);
-					vertexPositionData.push(radius * y);
-					vertexPositionData.push(radius * z);
+					vertexPositionData.push(x);
+					vertexPositionData.push(y);
+					vertexPositionData.push(z);
 					// ColorData
 					colors.push(0.4);
 					colors.push(0.5);
@@ -56,7 +58,7 @@ namespace XEngine2.BasicGeometries
 				}
 			}
 
-			super(vertexPositionData, indexData, vertexPositionData, normalData, colors, new Array<Material>(material));
+			super(vertexPositionData, indexData, textureCoordData, normalData, colors, new Array<Material>(material));
 			this.indexed = true;
 			this.addGroup(0, vertexPositionData.length / 3, 0, indexData);
 		}

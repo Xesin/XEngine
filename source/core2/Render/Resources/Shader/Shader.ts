@@ -44,8 +44,7 @@ namespace XEngine2 {
 			for (var i=0; i < activeAttributes; i++) {
 				var attribute = gl.getActiveAttrib(this._shaderProgram, i);
 				let type = attribute.type as ShaderType;
-				let normalized = attribute.name.toLowerCase().indexOf('uv') != -1;
-				let result = new VertexAttribute(i, attribute.name, type, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride, normalized);
+				let result = new VertexAttribute(i, attribute.name, type, gl.getAttribLocation(this._shaderProgram, attribute.name), this.attributeStride, false);
 				this.vertexAttrs[attribute.name] = result;
 				switch(type)
 				{

@@ -39,7 +39,8 @@ namespace XEngine2 {
 			}
 
 			_this.currentScene = scene;			
-			_this.currentScene.start();
+			_this.currentScene.preload();
+			_this.game.loader._startPreload();
 			_this.game.scale.updateScale();
 		}
 
