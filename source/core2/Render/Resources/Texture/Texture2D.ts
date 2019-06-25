@@ -26,8 +26,9 @@ namespace XEngine2 {
 			this.generateMipmaps = generateMipmaps;
 		}
 
-		public static createTexture(width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean, gl: WebGL2RenderingContext, isNormal = false) {
+		public static createTexture(name: string, width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean, gl: WebGL2RenderingContext, isNormal = false): Texture2D {
 			let texture = gl.createTexture();
+			let texture2D = new Texture2D(name, width, height, wrap, isNormal, generateMipMaps);
 
 			let internalFormat = gl.SRGB8_ALPHA8;
 			let srcFormat = gl.RGBA;
@@ -60,8 +61,14 @@ namespace XEngine2 {
 			}
 
 			gl.bindTexture(gl.TEXTURE_2D, null);
+			texture2D._texture = texture;
 
-			return texture;
+			return texture2D;
+		}
+
+		public Equals(other: Texture2D)
+		{
+			return this.imageName == other.imageName;
 		}
 	}
 }

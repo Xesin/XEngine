@@ -26,6 +26,7 @@ namespace XEngine2 {
         public initialize(gl: WebGL2RenderingContext)
         {
             this.shader.initializeShader(gl);
+           
         }
 
         public updateUniforms(gl: WebGL2RenderingContext)
@@ -33,6 +34,11 @@ namespace XEngine2 {
             for (let key in this.shader.uniforms) {
                 const uniform = this.shader.uniforms[key];
                 this.setUniform(uniform, gl);
+            }
+            for (let i = 0; i < this.shader.samplers.length; i++) {
+                const sampler = this.shader.samplers[i];
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
             }
         }
         
@@ -101,19 +107,24 @@ namespace XEngine2 {
             {
                 gl.useProgram(this.ShaderProgram);
                 Material.currentMaterial = this;
+
+                // for (let i = 0; i < this.shader.samplers.length; i++) {
+                //     const sampler = this.shader.samplers[i];
+                //     gl.bindTexture(sampler.samplerNumber, (sampler.value as Texture2D)._texture);
+                // }
             }    
         }
 
 
         private setUniform(uniform: Uniform, gl:WebGL2RenderingContext) {
-            if(!uniform.bDirty) return;
+            // if(!uniform.bDirty) return;
 			let valueType = uniform.type;
 			switch (valueType) {
 				case ShaderType.INT:
 					gl.uniform1i(uniform._gpuPos, uniform.value as number);
 					break;
 				case ShaderType.SAMPLER_2D:
-					gl.uniform1i(uniform._gpuPos, uniform.value as number);
+					gl.uniform1i(uniform._gpuPos, uniform.samplerNumber);
 					break;
 				case ShaderType.FLOAT:
 					gl.uniform1f(uniform._gpuPos, uniform.value as number);
@@ -139,6 +150,11 @@ namespace XEngine2 {
 					break;
             }
             uniform.bDirty = false;
-		}
+        }
+        
+        public static initStaticMaterials(gl: WebGL2RenderingContext)
+        {
+            BasicMaterial.SharedInstance.initialize(gl);
+        }
     }
 }

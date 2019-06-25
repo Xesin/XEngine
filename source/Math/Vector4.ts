@@ -181,7 +181,7 @@ namespace XEngine2 {
 			return Vector4._zero;
 		}
 		
-		public Equal(otherVect: Vector4): boolean
+		public Equals(otherVect: Vector4): boolean
 		{
 			return this.x == otherVect.x && this.y == otherVect.y && this.z == otherVect.z && this.w == otherVect.w;
 		}

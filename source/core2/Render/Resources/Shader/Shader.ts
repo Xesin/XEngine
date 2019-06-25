@@ -9,6 +9,7 @@ namespace XEngine2 {
 		private attributeStride: number;
 
 		public uniforms: Uniform[];
+		public samplers: Uniform[];
 		public vertexAttrs: VertexAttribute[];
 
 		public _shaderProgram: WebGLProgram;
@@ -18,6 +19,7 @@ namespace XEngine2 {
 			this.fragmentCode = fragmentCode;
 			this.uniforms = new Array<Uniform>();
 			this.vertexAttrs = new Array<VertexAttribute>();
+			this.samplers = new Array<Uniform>();
 			this.attributeStride = 0;
 		}
 
@@ -37,6 +39,11 @@ namespace XEngine2 {
 			for (var i = 0; i < activeUniforms; i++) {
 				var uniform = gl.getActiveUniform(this._shaderProgram, i);
 				let result = new Uniform(uniform.name, uniform.type, null, gl.getUniformLocation(this._shaderProgram, uniform.name));
+				if(uniform.type == gl.SAMPLER_2D)
+				{
+					result.samplerNumber = this.samplers.length;
+					this.samplers.push(result);
+				}
 				this.uniforms[uniform.name] = result;
 			}
 			

@@ -49,23 +49,16 @@ namespace XEngine2.ShaderMaterialLib{
 			"uniform mediump mat4 viewMatrix;",
 			"uniform mediump mat4 pMatrix;",
 			// "uniform mediump mat4 normalMatrix;",
+			"uniform sampler2D albedoTex;",
 			"in mat4 mvpMatrix;",
 			"in mat4 mvMatrix;",
 			"out vec4 fragColor;",
 
-            "struct Light{",
-                "highp float intensity;",
-                "highp vec3 position;",
-                "highp vec3 color;",
-                "highp float range;",
-                "int type;",
-            "};",
-
             "void main(void) {",
-				"fragColor.a = 1.0;",
-				"fragColor.xyz = vec3(uv.x, uv.y, 0.0);",
+				"vec4 albedo = texture(albedoTex, uv);",
+				"fragColor = albedo;",
 				"float ndl = dot(vec3(1.0,0.0,1.0), vNormal);",
-                "fragColor.xyz = fragColor.xyz;",
+                "fragColor.xyz = albedo.xyz;",
             "}",
         ];
     }

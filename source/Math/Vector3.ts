@@ -224,7 +224,7 @@ namespace XEngine2 {
 			return this._z;
 		}
 		
-		public Equal(otherVect: Vector3): boolean
+		public Equals(otherVect: Vector3): boolean
 		{
 			return this.x == otherVect.x && this.y == otherVect.y && this.z == otherVect.z;
 		}

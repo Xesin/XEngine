@@ -8,9 +8,17 @@ namespace XEngine2
     {
         public static SharedInstance = new BasicMaterial();
 
+        public albedoSamplerName = "albedoTex";
+
         constructor()
         {
             super(new Shader(ShaderMaterialLib.BasicShader.vertexShader.join('\n'), ShaderMaterialLib.BasicShader.fragmentShader.join('\n')));
         }
+
+        
+        public get albedo(): Uniform{
+            return this.shader.uniforms[this.albedoSamplerName];
+        }
+        
     }
 }

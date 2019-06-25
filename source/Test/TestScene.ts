@@ -10,6 +10,7 @@ namespace XEngine2 {
 
 		public start()
 		{
+			BasicMaterial.SharedInstance.albedo.value = this.game.cache.image('test');
 			// this.game.time.frameLimit = 60;
 			actor = this.Instantiate(XEngine2.TestActor);
 			actor.rootComponent.transform.position.x = 0;

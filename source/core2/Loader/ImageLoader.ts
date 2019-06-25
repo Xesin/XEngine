@@ -31,34 +31,23 @@ namespace XEngine2 {
 				_this.loader._notifyCompleted();
 				return;
 			}
-			let newImage = new Texture2D(_this.imageName, _this.frameWidth, _this.frameHeight, 1, this.isNormal);
 			let isTga = false;
 			if (_this.imageUrl.split(".").indexOf("tga") !== -1) {
 				isTga = true;
 			}
 			if (!isTga) {
-				_this.loadCommon(newImage);
+				_this.loadCommon();
 			} else {
-				_this.loadTGA(newImage);
+				_this.loadTGA();
 			}
-			_this.loader.game.cache.images[newImage.imageName] = newImage;
 		}
 
-		private loadCommon(newImage: Texture2D) {
+		private loadCommon() {
 			let _this = this;
 			let img1 = new Image();
 			let handler = function () {
-				let imageRef : Texture2D;
-				imageRef = _this.loader.game.cache.images[_this.imageName];
-				imageRef.image = this;
+				_this.loader.game.cache.images[_this.imageName] = Texture2D.createTexture(_this.imageName, this.width, this.height, this, WRAP_MODE.REPEAT, !_this.isNormal, _this.loader.game.renderer.gl, _this.isNormal);
 				_this.completed = true;
-
-				imageRef.width = this.width;
-				newImage.wrapMode = WRAP_MODE.REPEAT;
-
-				imageRef.height = this.height;
-				newImage.wrapMode = WRAP_MODE.REPEAT;
-
 				_this.loader._notifyCompleted();
 			};
 			img1.onload = handler;
@@ -66,7 +55,7 @@ namespace XEngine2 {
 			img1.src = _this.imageUrl;
 		}
 
-		private loadTGA(newImage: Texture2D) {
+		private loadTGA() {
 			let _this = this;
 			let xhr = new XMLHttpRequest();
 
@@ -75,22 +64,7 @@ namespace XEngine2 {
 			xhr.onload = function() {
 				if (this.status === 200) {
 					let imageData = TGAParser.parse(this.response);
-					let imageRef = _this.loader.game.cache.images[_this.imageName];
-					imageRef.image = imageData.data;
-
-					if (_this.frameWidth === 0) {
-						imageRef.frameWidth = imageData.width;
-						newImage.wrapMode = WRAP_MODE.REPEAT;
-					} else {
-						imageRef.frameWidth = _this.frameWidth;
-					}
-
-					if (_this.frameHeight === 0) {
-						imageRef.frameHeight = imageData.height;
-						newImage.wrapMode = WRAP_MODE.REPEAT;
-					} else {
-						imageRef.frameHeight = _this.frameHeight;
-					}
+					_this.loader.game.cache.images[_this.imageName] = Texture2D.createTexture(_this.imageName, imageData.width, imageData.height, imageData.data, WRAP_MODE.REPEAT, !_this.isNormal, _this.loader.game.renderer.gl, _this.isNormal);
 					_this.completed = true;
 					_this.loader._notifyCompleted();
 				}
