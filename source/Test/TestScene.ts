@@ -12,7 +12,7 @@ namespace XEngine2 {
 		public start()
 		{
 			BasicMaterial.SharedInstance.albedo.value = this.game.cache.image('test');
-			this.game.time.frameLimit = 5;
+			this.game.time.frameLimit = 60;
 			actor = this.Instantiate(XEngine2.TestActor);
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -0.5;
@@ -33,12 +33,39 @@ namespace XEngine2 {
 
 			if(this.game.input.isDown(KEY_CODE.W))
 			{
-				this.mainCamera.transform.position.z += 100 * deltaTime;
+				let fwVector = this.mainCamera.transform.forward();
+				fwVector.scalar(100 * deltaTime);
+				this.mainCamera.transform.position.sub(fwVector);
 
 			}
 			if(this.game.input.isDown(KEY_CODE.S))
 			{
-				this.mainCamera.transform.position.z -= 100 * deltaTime;
+				let fwVector = this.mainCamera.transform.forward();
+				fwVector.scalar(100 * deltaTime);
+				this.mainCamera.transform.position.add(fwVector);
+			}
+
+			if(this.game.input.isDown(KEY_CODE.SPACE))
+			{
+				this.mainCamera.transform.position.y += 100 * deltaTime;
+
+			}
+
+			if(this.game.input.isDown(KEY_CODE.CTRL))
+			{
+				this.mainCamera.transform.position.y -= 100 * deltaTime;
+
+			}
+
+			if(this.game.input.isDown(KEY_CODE.Q))
+			{
+				this.mainCamera.transform.rotation.y -= 50 * deltaTime;
+
+			}
+
+			if(this.game.input.isDown(KEY_CODE.E))
+			{
+				this.mainCamera.transform.rotation.y += 50 * deltaTime;
 
 			}
 		}

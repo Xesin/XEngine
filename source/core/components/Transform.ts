@@ -12,9 +12,9 @@ namespace XEngine {
 		private _scale: Vector3;
 		private _rotation: Vector3;
 
-		private vf = new Vector3();
 		private readonly reflectV = new Vector3(1, 0, 0);
-
+		
+		private vf = new Vector3();
 		private helperMatrix: Mat4;
 		constructor() {
 			this._position = new Vector3(0, 0, 0);

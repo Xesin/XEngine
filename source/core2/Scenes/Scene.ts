@@ -12,12 +12,12 @@ namespace XEngine2
             this.name = name;
             this.game = game;
             this.actors = new Array();
-            this.mainCamera = new CameraComponent();
+            this.mainCamera = new CameraComponent(game);
         }
 
         public Instantiate(actorToInstantiate : typeof Actor, transform: Transform = null) : Actor
         {
-            let instancedActor = new actorToInstantiate() as Actor;
+            let instancedActor = new actorToInstantiate(this.game) as Actor;
 
             if (transform)
             {

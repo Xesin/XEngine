@@ -6,11 +6,11 @@ namespace XEngine2
     {
        public staticMesh: StaticMeshComponent;
 
-        constructor()
+       constructor(game: Game)
         {
-            super();
+            super(game);
 
-            this.staticMesh = new StaticMeshComponent();
+            this.staticMesh = new StaticMeshComponent(game);
             this.rootComponent = this.staticMesh;
         }
     }

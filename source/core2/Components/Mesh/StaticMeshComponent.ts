@@ -6,9 +6,9 @@ namespace XEngine2 {
         
         private speed: number;
 
-        constructor()
+        constructor(game: Game)
         {
-            super();
+            super(game);
             this.speed = Mathf.randomRange(-60, 60);
             this.bCanUpdate = true;
         }

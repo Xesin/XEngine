@@ -2,22 +2,21 @@
 
 namespace XEngine2
 {
-    export class TestActor extends StaticMeshActor
+    export class TestActor extends Actor
     {
-        constructor()
+        constructor(game: Game)
         {
-            super();
-            this.staticMesh.Mesh = XEngine2.Game.GetInstance().cache.geometries["sponza_117.000"];
+            super(game);
             let thisAny: any;
             thisAny = this;
             let numItems = 0;
-            // for (const meshName in XEngine2.Game.GetInstance().cache.geometries) 
-            // {
+            for (const meshName in this.game.cache.geometries) 
+            {
                 
-            //     const mesh = XEngine2.Game.GetInstance().cache.geometries[meshName];
-            //     thisAny[meshName] = new StaticMeshComponent();
-            //     thisAny[meshName].Mesh = mesh;
-            // }            
+                const mesh = this.game.cache.geometries[meshName];
+                thisAny[meshName] = new StaticMeshComponent(this.game);
+                thisAny[meshName].Mesh = mesh;
+            }            
         }
     }
 }

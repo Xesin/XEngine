@@ -174,7 +174,7 @@ namespace XEngine2 {
 				const actor = actors[i];
 				if (!actor.hidden)
 				{
-					let components = actor.GetComponents<SceneComponent>();
+					let components = actor.GetComponents<SceneComponent>(SceneComponent);
 					for (let j = 0; j < components.length; j++) {
 						const sceneComponent = components[j];
 						if(!sceneComponent.hidden){

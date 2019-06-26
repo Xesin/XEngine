@@ -5,9 +5,9 @@ namespace XEngine2 {
         public transform: Transform;
         public hidden: boolean;
 
-        constructor()
+        constructor(game: Game)
         {
-            super();
+            super(game);
             this.transform = new Transform();
             this.hidden = false;
         }

@@ -29,7 +29,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"mat4 normalMatrix = transpose(inverse(modelMatrix));",
 				"vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
 				// "vViewPos = -(mvMatrix * vObjectPos);",
-				"gl_Position = vClipPos / vClipPos.w;",
+				"gl_Position = vClipPos;",
 	   			"uv = aUV;",
 				"vColor = aVertexColor;",
 			"}",
@@ -58,7 +58,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec4 albedo = texture(albedoTex, uv, -1.0);",
 				"fragColor = albedo * albedo.a;",
 				"float ndl = dot(vec3(1.0,0.0,1.0), vNormal);",
-                "fragColor.xyz = vNormal.xyz;",
+                "fragColor.xyz = ndl * fragColor.xyz;",
             "}",
         ];
     }

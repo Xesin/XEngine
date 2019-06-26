@@ -10,11 +10,14 @@ namespace XEngine2 {
 		private dirty: boolean;
 		private cachedMatrix: Mat4x4;
 
+		private helperMatrix: Mat4x4;
+
 		constructor () {
 			this.dirty = true;
 			this.position = new Vector3(0,0,0);
 			this.scale = new Vector3();
 			this.rotation = new Vector3(0,0,0);
+			this.helperMatrix = new Mat4x4();
 		}
 
 		public get Matrix() : Mat4x4 {
@@ -44,6 +47,21 @@ namespace XEngine2 {
 			|| this.scale.Dirty 
 			|| this.cachedMatrix === undefined 
 			|| this.cachedMatrix === null;
+		}
+
+		public forward(): Vector3 {
+			let forwardVector = new Vector3(0,0,1);
+			if(this.Dirty){
+				this.helperMatrix.extractRotation(this.Matrix);
+				this.Dirty = true;
+			}
+			else
+			{
+				this.helperMatrix.extractRotation(this.Matrix);
+			}
+
+			forwardVector.multiplyMatrix(this.helperMatrix.elements);
+			return forwardVector;
 		}
 		
 		

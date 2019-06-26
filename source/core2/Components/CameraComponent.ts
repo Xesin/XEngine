@@ -5,9 +5,9 @@ namespace XEngine2 {
         
         private _projectionMatrix: Mat4x4;
 
-        constructor()
+        constructor(game: Game)
         {
-            super();
+            super(game);
             this.bCanUpdate = true;
             this._projectionMatrix = new Mat4x4;
         }
