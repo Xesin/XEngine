@@ -37,6 +37,7 @@ namespace XEngine2 {
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
 			let options = {stencil: true, antialias: true, alpha: false};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
+			
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
 			this.init();
@@ -51,6 +52,7 @@ namespace XEngine2 {
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT
 					| this.gl.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
+					this.gl.colorMask(true, true, true, false);
 				this.gl.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 			}
 

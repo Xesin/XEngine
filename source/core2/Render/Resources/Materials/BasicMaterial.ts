@@ -9,10 +9,11 @@ namespace XEngine2
         public static SharedInstance = new BasicMaterial();
 
         public albedoSamplerName = "albedoTex";
+        public opacitySamplerName = "opacityTex";
 
-        constructor()
+        constructor(shader = new Shader(ShaderMaterialLib.BasicShader.vertexShader.join('\n'), ShaderMaterialLib.BasicShader.fragmentShader.join('\n')))
         {
-            super(new Shader(ShaderMaterialLib.BasicShader.vertexShader.join('\n'), ShaderMaterialLib.BasicShader.fragmentShader.join('\n')));
+            super(shader);
         }
 
         
@@ -20,5 +21,8 @@ namespace XEngine2
             return this.shader.uniforms[this.albedoSamplerName];
         }
         
+        public get opacityMask(): Uniform{
+            return this.shader.uniforms[this.opacitySamplerName];
+        }
     }
 }

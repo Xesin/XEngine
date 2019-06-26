@@ -16,17 +16,22 @@ namespace XEngine2 {
 		}
 
 		public createMaterial(game: Game, gl: WebGL2RenderingContext): Material {
-			let mat = game.createMaterialFromBase(BasicMaterial);
+			let mat = game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
 			
+			if(this.albedoTexture)
+			{
+				mat.albedo.value = game.cache.image(this.albedoTexture);
+			}
+
 			// if (this.albedoTexture) {
 			// 	mat.setAlbedo(cache.image(this.albedoTexture), gl);
 			// }
 			// if (this.normalTexture) {
 			// 	mat.setNormal(cache.image(this.normalTexture), gl);
 			// }
-			// if (this.opacityMask) {
-			// 	mat.setOpacityMask(cache.image(this.opacityMask), gl);
-			// }
+			if (this.opacityMask) {
+				mat.opacityMask.value = game.cache.image(this.opacityMask);
+			}
 			// if (this.ambientTexture) {
 			// 	mat.setAmbient(cache.image(this.ambientTexture), gl);
 			// }

@@ -12,7 +12,7 @@ namespace XEngine2 {
 		public start()
 		{
 			BasicMaterial.SharedInstance.albedo.value = this.game.cache.image('test');
-			this.game.time.frameLimit = 60;
+			// this.game.time.frameLimit = 60;
 			actor = this.Instantiate(XEngine2.TestActor);
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -0.5;
@@ -38,7 +38,7 @@ namespace XEngine2 {
 				this.mainCamera.transform.position.sub(fwVector);
 
 			}
-			if(this.game.input.isDown(KEY_CODE.S))
+			else if(this.game.input.isDown(KEY_CODE.S))
 			{
 				let fwVector = this.mainCamera.transform.forward();
 				fwVector.scalar(100 * deltaTime);
@@ -50,8 +50,7 @@ namespace XEngine2 {
 				this.mainCamera.transform.position.y += 100 * deltaTime;
 
 			}
-
-			if(this.game.input.isDown(KEY_CODE.CTRL))
+			else if(this.game.input.isDown(KEY_CODE.CTRL))
 			{
 				this.mainCamera.transform.position.y -= 100 * deltaTime;
 
@@ -59,14 +58,27 @@ namespace XEngine2 {
 
 			if(this.game.input.isDown(KEY_CODE.Q))
 			{
+				this.mainCamera.transform.rotation.y += 50 * deltaTime;
+
+			} 
+			else if(this.game.input.isDown(KEY_CODE.E))
+			{
 				this.mainCamera.transform.rotation.y -= 50 * deltaTime;
 
 			}
 
-			if(this.game.input.isDown(KEY_CODE.E))
+			if(this.game.input.isDown(KEY_CODE.D))
 			{
-				this.mainCamera.transform.rotation.y += 50 * deltaTime;
+				let rightVector = this.mainCamera.transform.right();
+				rightVector.scalar(100 * deltaTime);
+				this.mainCamera.transform.position.add(rightVector);
 
+			}
+			else if(this.game.input.isDown(KEY_CODE.A))
+			{
+				let rightVector = this.mainCamera.transform.right();
+				rightVector.scalar(100 * deltaTime);
+				this.mainCamera.transform.position.sub(rightVector);
 			}
 		}
 	}

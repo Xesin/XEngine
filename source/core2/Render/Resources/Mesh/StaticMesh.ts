@@ -62,10 +62,6 @@ namespace XEngine2
 				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
 
-				let index = this.vertDataBuffer[i].allocate(this.groups[i].vertexCount);
-				let uvIndex = 0;
-				let normalIndex = 0;
-				let colorIndex = 0;
 				let floatBuffer = this.vertDataBuffer[i].floatView;
 				
 				for (const key in material.VertexAttributes) {
@@ -80,7 +76,13 @@ namespace XEngine2
 				let uv = this.uvData;
 				let colors = this.colorData;
 				// tslint:disable-next-line:forin
-				for (let j = this.groups[i].firstVertex * 3; j < (this.groups[i].firstVertex + this.groups[i].vertexCount) * 3; j++) {
+				let index = this.vertDataBuffer[i].allocate(this.groups[i].vertexCount);
+				let uvIndex = this.groups[i].firstVertex * 2;
+				let startVertexData = this.groups[i].firstVertex * 3;
+				let normalIndex = startVertexData;
+				let colorIndex = this.groups[i].firstVertex * 4;
+				let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount) * 3
+				for (let j = startVertexData; j < endVertexData; j++) {
 
 					// Positions
 					if(material.HasPosition){

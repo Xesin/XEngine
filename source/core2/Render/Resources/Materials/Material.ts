@@ -128,7 +128,7 @@ namespace XEngine2 {
 
 
         private setUniform(uniform: Uniform, gl:WebGL2RenderingContext) {
-            // if(!uniform.bDirty) return;
+            if(!uniform.bDirty) return;
 			let valueType = uniform.type;
 			switch (valueType) {
 				case ShaderType.INT:
