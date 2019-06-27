@@ -10,6 +10,7 @@ namespace XEngine2 {
 
 		constructor() {
 			this.elements = new Float32Array(4 * 4);
+			this.identity();
 		}
 
 		// tslint:disable-next-line:max-line-length
@@ -34,7 +35,7 @@ namespace XEngine2 {
 		}
 
 		public extractRotation(rotMat: Mat4x4) {
-			this.v0.setTo(0);
+			this.v0.setTo(0, 0, 0);
 
 			let te = this.elements;
 			let me = rotMat.elements;
@@ -134,13 +135,15 @@ namespace XEngine2 {
 
 		}
 
-		public FPSView( eye: Vector3, pitch: number, yaw: number ) {
+		public FPSView( eye: Vector3, pitch: number, yaw: number, roll: number) {
 			let te = this.elements;
 
 			let cosPitch = Math.cos(pitch);
 			let sinPitch = Math.sin(pitch);
 			let cosYaw = Math.cos(yaw);
 			let sinYaw = Math.sin(yaw);
+			let cosRoll = Math.cos(roll);
+			let sinRoll = Math.sin(roll);
 
 			this.vX.setTo(cosYaw, 0, -sinYaw);
 			this.vY.setTo(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch);

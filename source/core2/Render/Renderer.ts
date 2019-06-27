@@ -219,11 +219,7 @@ namespace XEngine2 {
 				let material = meshGroup.Mesh.materials[meshGroup.materialIndex];
 				material.bind(gl);
 				material.modelMatrix.value = modelMatrix;
-				material.viewMatrix.value = camera.transform.Matrix.FPSView(
-					camera.transform.position, 
-					camera.transform.rotation.x * Mathf.TO_RADIANS, 
-					camera.transform.rotation.y * Mathf.TO_RADIANS
-				);;
+				material.viewMatrix.value = camera.transform.Matrix;
 				material.projectionMatrix.value = camera.projectionMatrix;
 
 				material.updateUniforms(gl);

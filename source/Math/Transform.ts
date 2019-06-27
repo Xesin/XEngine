@@ -24,11 +24,10 @@ namespace XEngine2 {
 			if(this.Dirty){
 				let translation =  this.position.toArray();
 				let matrix = new Mat4x4();
-				matrix.identity();
-				mat4.translate(matrix.elements, matrix.elements, translation);
-				mat4.rotateY(matrix.elements, matrix.elements, this.rotation.y * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateX(matrix.elements, matrix.elements, this.rotation.x * XEngine.Mathf.TO_RADIANS);
+				mat4.rotateY(matrix.elements, matrix.elements, this.rotation.y * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateZ(matrix.elements, matrix.elements, this.rotation.z * XEngine.Mathf.TO_RADIANS);
+				mat4.translate(matrix.elements, matrix.elements, translation);
 				mat4.scale(matrix.elements, matrix.elements, this.scale.toArray());
 
 				this.cachedMatrix = matrix;
@@ -52,14 +51,8 @@ namespace XEngine2 {
 		public forward(): Vector3 {
 			let forwardVector = new Vector3(0,0,1);
 			this.helperMatrix.identity();
-			if(this.Dirty){
-				this.helperMatrix.extractRotation(this.Matrix);
-				this.Dirty = true;
-			}
-			else
-			{
-				this.helperMatrix.extractRotation(this.Matrix);
-			}
+
+			this.helperMatrix.extractRotation(this.Matrix);
 
 			forwardVector.multiplyMatrix(this.helperMatrix.elements);
 			return forwardVector;
@@ -69,14 +62,7 @@ namespace XEngine2 {
 			let rightVector = new Vector3(1, 0, 0);
 			this.helperMatrix.identity();
 
-			if(this.Dirty){
-				this.helperMatrix.extractRotation(this.Matrix);
-				this.Dirty = true;
-			}
-			else
-			{
-				this.helperMatrix.extractRotation(this.Matrix);
-			}
+			this.helperMatrix.extractRotation(this.Matrix);
 
 			rightVector.multiplyMatrix(this.helperMatrix.elements);
 			// this.vf.reflect(this.reflectV);

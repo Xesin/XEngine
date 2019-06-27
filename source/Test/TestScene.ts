@@ -31,54 +31,55 @@ namespace XEngine2 {
 		public update (deltaTime: number) {
 			super.update(deltaTime);
 
-			if(this.game.input.isDown(KEY_CODE.W))
+			if( this.game.input.isDown(KEY_CODE.W) )
 			{
 				let fwVector = this.mainCamera.transform.forward();
 				fwVector.scalar(100 * deltaTime);
-				this.mainCamera.transform.position.sub(fwVector);
+				this.mainCamera.transform.position.add(fwVector);
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.S))
 			{
 				let fwVector = this.mainCamera.transform.forward();
 				fwVector.scalar(100 * deltaTime);
-				this.mainCamera.transform.position.add(fwVector);
+				this.mainCamera.transform.position.sub(fwVector);
 			}
 
 			if(this.game.input.isDown(KEY_CODE.SPACE))
 			{
-				this.mainCamera.transform.position.y += 100 * deltaTime;
+				this.mainCamera.transform.position.y -= 100 * deltaTime;
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.CTRL))
 			{
-				this.mainCamera.transform.position.y -= 100 * deltaTime;
+				this.mainCamera.transform.position.y += 100 * deltaTime;
 
 			}
 
 			if(this.game.input.isDown(KEY_CODE.Q))
 			{
-				this.mainCamera.transform.rotation.y += 50 * deltaTime;
+				this.mainCamera.transform.rotation.y -= 50 * deltaTime;
 
 			} 
 			else if(this.game.input.isDown(KEY_CODE.E))
 			{
-				this.mainCamera.transform.rotation.y -= 50 * deltaTime;
+				this.mainCamera.transform.rotation.y += 50 * deltaTime;
 
 			}
 
 			if(this.game.input.isDown(KEY_CODE.D))
 			{
 				let rightVector = this.mainCamera.transform.right();
+				console.log("right vector: ", rightVector.x, rightVector.y, rightVector.z)
 				rightVector.scalar(100 * deltaTime);
-				this.mainCamera.transform.position.add(rightVector);
+				this.mainCamera.transform.position.sub(rightVector);
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.A))
 			{
 				let rightVector = this.mainCamera.transform.right();
 				rightVector.scalar(100 * deltaTime);
-				this.mainCamera.transform.position.sub(rightVector);
+				this.mainCamera.transform.position.add(rightVector);
 			}
 		}
 	}
