@@ -26,45 +26,46 @@ namespace XEngine2 {
 
         
         public set value(v : number | Mat4x4 | Vector3 | Vector4 | Texture2D) {
-            if((v as number) && v != this._value){
-                this._value = v;
-                this.bDirty = true;
-            }
-            else if ((v as Mat4x4))
+            switch(this.type)
             {
-                let tmpVal = v as Mat4x4;
-                if(!tmpVal.Equals(this.value as Mat4x4))
-                {
-                    this.bDirty = true;
-                    this.value = v;
-                }
-            }
-            else if(v as Vector3)
-            {
-                let tmpVal = v as Vector3;
-                if(!tmpVal.Equals(this.value as Vector3))
-                {
-                    this.bDirty = true;
-                    this.value = v;
-                }
-            } 
-            else if(v as Vector4)
-            {
-                let tmpVal = v as Vector4;
-                if(!tmpVal.Equals(this.value as Vector4))
-                {
-                    this.bDirty = true;
-                    this.value = v;
-                }
-            }
-            else if(v as Texture2D)
-            {
-                let tmpVal = v as Texture2D;
-                if(!tmpVal.Equals(this.value as Texture2D))
-                {
-                    this.bDirty = true;
-                    this.value = v;
-                }
+                case ShaderType.FLOAT_MAT4:
+                    let tmpVal = v as Mat4x4;
+                    if(!tmpVal.Equals(this.value as Mat4x4))
+                    {
+                        this.bDirty = true;
+                        this._value = v;
+                    }
+                    break;
+                case ShaderType.FLOAT_VEC3:
+                    let vec3 = v as Vector3;
+                    if(!vec3.Equals(this.value as Vector3))
+                    {
+                        this.bDirty = true;
+                        this._value = v;
+                    }
+                    break;
+                case ShaderType.FLOAT_VEC4:
+                    let vec4 = v as Vector4;
+                    if(!vec4.Equals(this.value as Vector4))
+                    {
+                        this.bDirty = true;
+                        this._value = v;
+                    }
+                    break;
+                case ShaderType.SAMPLER_2D:
+                    let sampler = v as Texture2D;
+                    if(!sampler.Equals(this.value as Texture2D))
+                    {
+                        this.bDirty = true;
+                        this._value = v;
+                    }
+                    break;
+                default:
+                    if(v != this._value){
+                        this._value = v;
+                        this.bDirty = true;
+                    }
+
             }
         }
         

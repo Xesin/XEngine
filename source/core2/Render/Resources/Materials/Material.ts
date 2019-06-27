@@ -12,11 +12,12 @@ namespace XEngine2 {
         public modelMatrixName = "modelMatrix";
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
-        public mvpMatrixName = "mvpMatrix";
 
         public renderQueue = RenderQueue.OPAQUE;
 
         public static currentMaterial: Material;
+
+        public defaults: any;
 
         constructor(shader: Shader)
         {
@@ -25,7 +26,7 @@ namespace XEngine2 {
 
         public initialize(gl: WebGL2RenderingContext)
         {
-            this.shader.initializeShader(gl);
+           this.shader.initializeShader(gl);
            
         }
 
@@ -70,11 +71,6 @@ namespace XEngine2 {
         public get projectionMatrix() : Uniform
         {
             return this.shader.uniforms[this.projMatrixName];
-        }
-
-        public get mvpMatrix() : Uniform
-        {
-            return this.shader.uniforms[this.mvpMatrixName];
         }
 
         public get AttrStride() : number
@@ -166,6 +162,7 @@ namespace XEngine2 {
         public static initStaticMaterials(gl: WebGL2RenderingContext)
         {
             BasicMaterial.SharedInstance.initialize(gl);
+            PhongMaterial.SharedInstance.initialize(gl);
         }
     }
 }

@@ -183,7 +183,7 @@ namespace XEngine2 {
 		
 		public Equals(otherVect: Vector4): boolean
 		{
-			return this.x == otherVect.x && this.y == otherVect.y && this.z == otherVect.z && this.w == otherVect.w;
+			return otherVect != null && this.x == otherVect.x && this.y == otherVect.y && this.z == otherVect.z && this.w == otherVect.w;
 		}
 	}
 }

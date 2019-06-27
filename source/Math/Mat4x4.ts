@@ -160,6 +160,7 @@ namespace XEngine2 {
 
 		public Equals(otherMat: Mat4x4): boolean
 		{
+			if(otherMat == null) return false;
 			let el = this.elements;
 			let otherEl = otherMat.elements;
 

@@ -16,16 +16,13 @@ namespace XEngine2 {
 		}
 
 		public createMaterial(game: Game, gl: WebGL2RenderingContext): Material {
-			let mat = game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+			let mat = game.createMaterialFromBase(PhongMaterial) as PhongMaterial;
 			
 			if(this.albedoTexture)
 			{
 				mat.albedo.value = game.cache.image(this.albedoTexture);
 			}
 
-			// if (this.albedoTexture) {
-			// 	mat.setAlbedo(cache.image(this.albedoTexture), gl);
-			// }
 			// if (this.normalTexture) {
 			// 	mat.setNormal(cache.image(this.normalTexture), gl);
 			// }
