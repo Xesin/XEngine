@@ -18,7 +18,7 @@ namespace XEngine2 {
 			this.deltaTimeMillis = 0;
 			this.frameTime = 0;
 			this.elapsedTime = 0;
-			this.frameLimit = 60;
+			this.frameLimit = 144;
 			this.timers = new Array<Timer>();
 		}
 

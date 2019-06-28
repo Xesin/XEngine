@@ -26,6 +26,7 @@ namespace XEngine2.ShaderMaterialLib{
 		public static readonly fragmentShader =
 		ShaderBlocks.glVersion300
 		.concat(["precision mediump float;"])
+		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.PhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
 		.concat(ShaderBlocks.PhongFunctions)
@@ -37,10 +38,11 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec4 opacity = texture(opacityTex, uv);",
 				"float alpha = min(albedo.a, opacity.x);",
 				"if(alpha < 0.6) discard;",
-				"vec3 surfaceNormal = normalize(vNormal);",
+				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
 				"float PhongTerm = PhongDiffuseTerm(vec3(0.7,0.5,1.0), surfaceNormal);",
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
-				"fragColor.xyz = PhongTerm * albedo.xyz + albedo.xyz * ambientColor;",
+				"vec3 finalColor = PhongTerm * albedo.xyz + albedo.xyz * ambientColor;",
+				"fragColor.xyz = pow(finalColor, vec3(0.4545));",
 				"fragColor.a = alpha;",
             "}",
         ]);

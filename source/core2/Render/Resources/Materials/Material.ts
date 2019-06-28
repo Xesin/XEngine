@@ -31,9 +31,26 @@ namespace XEngine2 {
            for (const key in this.defaults) {
                if (this.defaults.hasOwnProperty(key)) {
                    const defValue = this.defaults[key];
-                   if(this.shader.uniforms[key])
+                   if(this[key])
                    {
-                       this.shader.uniforms[key].value = defValue;
+                        if(this[key].type == ShaderType.SAMPLER_2D)
+                        {
+                            
+                            switch(defValue )
+                            {
+                                case "white":
+                                    this[key].value = Texture2D.whiteTexture;
+                                    break;
+                                case "black":
+                                this[key].value = Texture2D.blackTexture;
+                                    break;
+                                case "normal":
+                                this[key].value = Texture2D.normalTexture;
+                                    break;
+                            }
+                        }
+                        else
+                        this[key].value = defValue;
                    }
                }
            }
@@ -47,13 +64,14 @@ namespace XEngine2 {
             }
             for (let i = 0; i < this.shader.samplers.length; i++) {
                 const sampler = this.shader.samplers[i];
-                gl.activeTexture(this.sampleIndexToGL_Sample(i, gl));
                 if(sampler != undefined && sampler.value != undefined){
+                    gl.activeTexture(this.sampleIndexToGL_Sample(sampler.samplerNumber, gl));
                     gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
                 }
                 else
                 {
-                    gl.bindTexture(gl.TEXTURE_2D, Texture2D.whiteTexture._texture);
+                    gl.activeTexture(this.sampleIndexToGL_Sample(i, gl));
+                    gl.bindTexture(gl.TEXTURE_2D, Texture2D.normalTexture._texture);
                 }
             }
         }

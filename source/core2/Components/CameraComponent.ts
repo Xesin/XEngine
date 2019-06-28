@@ -23,7 +23,7 @@ namespace XEngine2 {
             const fieldOfView = 45 * Math.PI / 180;   // in radians
             const aspect = game.width / game.height;
             const zNear = 0.1;
-            const zFar = 2000.0;
+            const zFar = 1000.0;
 
         
             this._projectionMatrix.perspective(

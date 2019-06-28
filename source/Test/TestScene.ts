@@ -11,7 +11,7 @@ namespace XEngine2 {
 
 		public start()
 		{
-			// this.game.time.frameLimit = 60;
+			this.game.time.frameLimit = 60;
 			actor = this.Instantiate(XEngine2.TestActor);
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -0.5;
@@ -33,50 +33,50 @@ namespace XEngine2 {
 			if( this.game.input.isDown(KEY_CODE.W) )
 			{
 				let fwVector = this.mainCamera.transform.forward();
-				fwVector.scalar(100 * deltaTime);
+				fwVector.scalar(50 * deltaTime);
 				this.mainCamera.transform.position.add(fwVector);
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.S))
 			{
 				let fwVector = this.mainCamera.transform.forward();
-				fwVector.scalar(100 * deltaTime);
+				fwVector.scalar(50 * deltaTime);
 				this.mainCamera.transform.position.sub(fwVector);
 			}
 
 			if(this.game.input.isDown(KEY_CODE.SPACE))
 			{
-				this.mainCamera.transform.position.y -= 100 * deltaTime;
+				this.mainCamera.transform.position.y -= 50 * deltaTime;
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.CTRL))
 			{
-				this.mainCamera.transform.position.y += 100 * deltaTime;
+				this.mainCamera.transform.position.y += 50 * deltaTime;
 
 			}
 
 			if(this.game.input.isDown(KEY_CODE.Q))
 			{
-				this.mainCamera.transform.rotation.y -= 50 * deltaTime;
+				this.mainCamera.transform.rotation.y -= 90 * deltaTime;
 
 			} 
 			else if(this.game.input.isDown(KEY_CODE.E))
 			{
-				this.mainCamera.transform.rotation.y += 50 * deltaTime;
+				this.mainCamera.transform.rotation.y += 90 * deltaTime;
 
 			}
 
 			if(this.game.input.isDown(KEY_CODE.D))
 			{
 				let rightVector = this.mainCamera.transform.right();
-				rightVector.scalar(100 * deltaTime);
+				rightVector.scalar(50 * deltaTime);
 				this.mainCamera.transform.position.sub(rightVector);
 
 			}
 			else if(this.game.input.isDown(KEY_CODE.A))
 			{
 				let rightVector = this.mainCamera.transform.right();
-				rightVector.scalar(100 * deltaTime);
+				rightVector.scalar(50 * deltaTime);
 				this.mainCamera.transform.position.add(rightVector);
 			}
 		}

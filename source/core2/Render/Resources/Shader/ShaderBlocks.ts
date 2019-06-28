@@ -84,7 +84,7 @@ namespace XEngine2
             "{",
                 "return max(dot(LightDir, objectNormal), 0.0);",
             "}"
-        ]
+        ];
 
         public static mvpAndPosCalc = 
         [
@@ -92,6 +92,32 @@ namespace XEngine2
             "mvpMatrix = pMatrix * mvMatrix;",
             "gl_Position = mvpMatrix * aVertexPosition;",
             "vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
+        ];
+
+        public static perturbNormals =
+        [
+            "uniform sampler2D normalTex;",
+
+            "vec3 decodeNormals(sampler2D normalSampler, vec2 uv){",
+                "vec3 texCol = texture(normalTex, uv).xyz;",
+                "return texCol * 2.0 - 1.0;",
+            "}",
+
+            "vec3 perturbNormalPerPixel(vec3 worldPosition, vec3 surf_norm, vec2 uv) {",
+                "vec3 q0 = vec3( dFdx( worldPosition.x ), dFdx( worldPosition.y ), dFdx( worldPosition.z ) );",
+                "vec3 q1 = vec3( dFdy( worldPosition.x ), dFdy( worldPosition.y ), dFdy( worldPosition.z ) );",
+                "vec2 st0 = dFdx( uv.st );",
+                "vec2 st1 = dFdy( uv.st );",
+                "vec3 S = normalize( q0 * st1.t - q1 * st0.t );",
+                "vec3 T = normalize( -q0 * st1.s + q1 * st0.s );",
+                "vec3 N = normalize( surf_norm );",
+                "vec3 crs = cross(S, T);",
+                "if(dot(crs, N) < 0.0) T *= -1.0;",
+                "vec3 mapN = decodeNormals( normalTex, uv );",
+                "mapN.xy = 0.5 * mapN.xy;",
+                "mat3 tsn = mat3( S, T, N );",
+                "return normalize( tsn * mapN );",
+            "}",
         ]
     }
 }

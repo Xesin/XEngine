@@ -62,8 +62,8 @@ namespace XEngine2 {
 			}
 
 			this.game.scale.onResized.add(this.OnResize, this);
-			Material.initStaticMaterials(this.gl);
 			Texture2D.CreateDefaultTextures(this.gl);
+			Material.initStaticMaterials(this.gl);
 		}
 
 		private OnResize(width: number, height: number)

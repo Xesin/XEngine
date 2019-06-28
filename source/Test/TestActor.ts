@@ -15,6 +15,7 @@ namespace XEngine2
                 
                 const mesh = this.game.cache.geometries[meshName];
                 thisAny[meshName] = new StaticMeshComponent(this.game);
+                thisAny[meshName].transform.scale.setTo(0.10);
                 thisAny[meshName].Mesh = mesh;
             }            
         }

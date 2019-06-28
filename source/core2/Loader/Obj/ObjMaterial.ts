@@ -24,12 +24,13 @@ namespace XEngine2 {
 					mat.albedo.value = game.cache.image(this.albedoTexture);
 			}
 
-			// if (this.normalTexture) {
-			// 	mat.setNormal(cache.image(this.normalTexture), gl);
-			// }
+			if (this.normalTexture) {
+				if(mat.normal)
+					mat.normal.value = game.cache.image(this.normalTexture);
+			}
 			if (this.opacityMask) {
-				if(mat.opacityMask)
-					mat.opacityMask.value = game.cache.image(this.opacityMask);
+				if(mat.opacityTex)
+					mat.opacityTex.value = game.cache.image(this.opacityMask);
 			}
 			// if (this.ambientTexture) {
 			// 	mat.setAmbient(cache.image(this.ambientTexture), gl);

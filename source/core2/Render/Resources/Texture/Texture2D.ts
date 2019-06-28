@@ -83,8 +83,8 @@ namespace XEngine2 {
 			whiteData[2] = 255;
 			whiteData[3] = 255;
 			let normalData = new Uint8Array(4);
-			normalData[0] = 0;
-			normalData[1] = 0;
+			normalData[0] = 128;
+			normalData[1] = 128;
 			normalData[2] = 255;
 			normalData[3] = 255;
 
