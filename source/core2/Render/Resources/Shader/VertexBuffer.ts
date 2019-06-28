@@ -8,7 +8,7 @@ namespace XEngine2 {
 		public buffer: WebGLBuffer;
 		public vao: WebGLVertexArrayObject;
 		private gl: WebGL2RenderingContext;
-		private attributes: Array<any>;
+		public attributes: Array<any>;
 
 		public static SetDiry() {
 			VertexBuffer.CurrentVertexBuffer = null;
@@ -34,6 +34,7 @@ namespace XEngine2 {
 				stride,
 				vertexAttribute.offset,
 			);
+			this.attributes.push(vertexAttribute);
 		}
 
 		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
@@ -71,6 +72,7 @@ namespace XEngine2 {
 				this.unbind();
 				gl.deleteBuffer(this.buffer);
 				gl.deleteVertexArray(this.vao);
+				this.attributes = new Array();
 			}
 		}
 

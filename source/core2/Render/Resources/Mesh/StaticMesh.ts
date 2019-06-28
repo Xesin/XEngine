@@ -52,11 +52,14 @@ namespace XEngine2
 			}
 		}
 
-		public initialize(renderer: Renderer, overrideMaterial: Material = null) {
+		public updateResources(renderer: Renderer, overrideMaterial: Material = null) {
 			this.gl = renderer.gl;
 
 			for(let i = 0; i < this.groups.length; i++){
 				let material = overrideMaterial != null ? overrideMaterial: this.materials[this.groups[i].materialIndex];
+
+				if(this.initialized && this.vertexBuffer[i].attributes.length == Object.keys(material.VertexAttributes).length) continue;
+
 				let stride = material.AttrStride;
 				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);

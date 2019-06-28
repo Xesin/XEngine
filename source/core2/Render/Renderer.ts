@@ -222,8 +222,8 @@ namespace XEngine2 {
 				{
 					material = this.errorMat;
 				}
-				if(!meshGroup.Mesh.initialized)
-						meshGroup.Mesh.initialize(this, material);
+
+				meshGroup.Mesh.updateResources(this, material);
 				meshGroup.Mesh.bind(meshGroup.materialIndex);
 				material.bind(gl);
 				material.modelMatrix.value = modelMatrix;

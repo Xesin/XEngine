@@ -93,7 +93,7 @@ namespace XEngine2 {
             return this.shader.attrStride;
         }
 
-        public get VertexAttributes() : Array<VertexAttribute>
+        public get VertexAttributes() : IDict<VertexAttribute>
         {
             return this.shader.vertexAttrs;
         }

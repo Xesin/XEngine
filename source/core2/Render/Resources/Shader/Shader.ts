@@ -10,7 +10,7 @@ namespace XEngine2 {
 
 		public uniforms: IDict<Uniform>;
 		public samplers: Uniform[];
-		public vertexAttrs: VertexAttribute[];
+		public vertexAttrs: IDict<VertexAttribute>;
 
 		public _shaderProgram: WebGLProgram;
 
@@ -18,7 +18,7 @@ namespace XEngine2 {
 			this.vertextCode = vertextCode;
 			this.fragmentCode = fragmentCode;
 			this.uniforms = new IDict<Uniform>();
-			this.vertexAttrs = new Array<VertexAttribute>();
+			this.vertexAttrs = new IDict<VertexAttribute>();
 			this.samplers = new Array<Uniform>();
 			this.attributeStride = 0;
 		}
