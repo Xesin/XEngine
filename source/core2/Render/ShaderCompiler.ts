@@ -20,12 +20,12 @@ namespace XEngine2 {
 			gl.compileShader(fragmentShader);
 
 			if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-				alert("vertex shader error: " + gl.getShaderInfoLog(vertexShader) + "\n" + vertexShader);
+				console.error(("vertex shader error: " + gl.getShaderInfoLog(vertexShader) + "\n" + vertexShader));
 				return null;
 			}
 
 			if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-				alert("fragment shader error: " + gl.getShaderInfoLog(fragmentShader) + "\n" + fragmentShader);
+				console.error(("fragment shader error: " + gl.getShaderInfoLog(fragmentShader) + "\n" + fragmentShader));
 				return null;
 			}
 
@@ -35,7 +35,8 @@ namespace XEngine2 {
 			gl.linkProgram(shaderProgram);
 
 			if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-				alert("Could not initialise shaders" + gl.getProgramInfoLog(shaderProgram));
+				console.error("Could not initialise shaders" + gl.getProgramInfoLog(shaderProgram));
+				shaderProgram = null;
 			}
 			return shaderProgram;
 		}

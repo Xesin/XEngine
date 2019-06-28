@@ -31,6 +31,8 @@ namespace XEngine2 {
 		private opaqueRenderQueue: Array<RenderObject>;
 		private transparentRenderQueue: Array<RenderObject>;
 
+		private errorMat: Material;
+
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
@@ -54,6 +56,9 @@ namespace XEngine2 {
 					| this.gl.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
 					this.gl.colorMask(true, true, true, false);
 				this.gl.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
+
+				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader.join('\n'), ShaderMaterialLib.ErrorShader.fragmentShader.join('\n')))
+				this.errorMat.initialize(this.gl);
 			}
 
 			this.game.scale.onResized.add(this.OnResize, this);
@@ -212,15 +217,20 @@ namespace XEngine2 {
 			let modelMatrix = renderObject.modelMatrix;
 			let gl = this.gl;
 			
-			if(!meshGroup.Mesh.initialized)
-				meshGroup.Mesh.initialize(this);
-
-				meshGroup.Mesh.bind(meshGroup.materialIndex);
 				let material = meshGroup.Mesh.materials[meshGroup.materialIndex];
+				if(!material.ShaderProgram)
+				{
+					material = this.errorMat;
+				}
+				if(!meshGroup.Mesh.initialized)
+						meshGroup.Mesh.initialize(this, material);
+				meshGroup.Mesh.bind(meshGroup.materialIndex);
 				material.bind(gl);
 				material.modelMatrix.value = modelMatrix;
 				material.viewMatrix.value = camera.transform.Matrix;
 				material.projectionMatrix.value = camera.projectionMatrix;
+				if(material.normalMatrix)
+					material.normalMatrix.value = modelMatrix.transposed();
 
 				material.updateUniforms(gl);
 

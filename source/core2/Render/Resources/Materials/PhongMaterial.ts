@@ -11,13 +11,12 @@ namespace XEngine2
         public albedoSamplerName = "albedoTex";
         public opacitySamplerName = "opacityTex";
         public colorName = "color";
-        public ambientName = "color";
+        public ambientName = "ambient";
 
         public defaults = 
         {
             "color": new Vector4(1,1,1,1),
-            "ambient" : 1,
-
+            "ambient" : new Vector4(1,1,1,0.2),
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.PhongShader.vertexShader.join('\n'), ShaderMaterialLib.PhongShader.fragmentShader.join('\n')))

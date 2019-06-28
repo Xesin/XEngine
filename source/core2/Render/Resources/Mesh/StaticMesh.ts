@@ -52,12 +52,11 @@ namespace XEngine2
 			}
 		}
 
-		public initialize(renderer: Renderer) {
+		public initialize(renderer: Renderer, overrideMaterial: Material = null) {
 			this.gl = renderer.gl;
 
 			for(let i = 0; i < this.groups.length; i++){
-				let material = this.materials[this.groups[i].materialIndex];
-				material.initialize(renderer.gl);
+				let material = overrideMaterial != null ? overrideMaterial: this.materials[this.groups[i].materialIndex];
 				let stride = material.AttrStride;
 				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
 				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
@@ -89,6 +88,7 @@ namespace XEngine2
 						floatBuffer[index++] = vertices[j++];
 						floatBuffer[index++] = vertices[j++];
 						floatBuffer[index++] = vertices[j];
+						floatBuffer[index++] = 1;
 					}
 
 					// Colors

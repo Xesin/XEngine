@@ -25,6 +25,20 @@ namespace XEngine2 {
 			return this;
 		}
 
+		public static fromMatrix(mat : Mat4x4): Mat4x4
+		{
+			let newMat = new Mat4x4;
+			let te = mat.elements;
+			newMat.set(
+				te[ 0 ],  te[ 4 ],  te[ 8 ], te[ 12 ],
+				te[ 1 ],  te[ 5 ],  te[ 9 ], te[ 13 ],
+				te[ 2 ],  te[ 6 ],  te[ 10 ],  te[ 14 ],
+				te[ 3 ],  te[ 7 ],  te[ 11 ],  te[ 15 ]
+			);
+
+			return newMat;
+		}
+
 		public identity(): Mat4x4 {
 			this.set(
 				1, 0, 0, 0,
@@ -135,27 +149,21 @@ namespace XEngine2 {
 
 		}
 
-		public FPSView( eye: Vector3, pitch: number, yaw: number, roll: number) {
-			let te = this.elements;
+		public transposed(): Mat4x4
+		{
+			let transposed = Mat4x4.fromMatrix(this);
+			
+			let a = transposed.elements;
+			let a01 = a[4], a02 = a[8], a03 = a[12];
+			let a12 = a[9], a13 = a[13];
+			let a23 = a[14];
 
-			let cosPitch = Math.cos(pitch);
-			let sinPitch = Math.sin(pitch);
-			let cosYaw = Math.cos(yaw);
-			let sinYaw = Math.sin(yaw);
-			let cosRoll = Math.cos(roll);
-			let sinRoll = Math.sin(roll);
+							a[4] = a[1];	a[8] = a[2];	a[12] = a[3];
+			a[1] = a01;						a[9] = a[6];	a[13] = a[7];
+			a[2] = a02;		a[6] = a12;						a[14] = a[11];
+			a[3] = a03;		a[7] = a13;		a[11] = a23;
 
-			this.vX.setTo(cosYaw, 0, -sinYaw);
-			this.vY.setTo(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch);
-			this.vZ.setTo(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw);
-
-			te[ 0 ] = this.vX.x; te[ 1 ] = this.vY.x; te[ 2 ] = this.vZ.x;
-			te[ 4 ] = this.vX.y; te[ 5 ] = this.vY.y; te[ 6 ] = this.vZ.y;
-			te[ 8 ] = this.vX.z; te[ 9 ] = this.vY.z; te[ 10 ] = this.vZ.z;
-			te[ 12 ] = -this.vX.dot(eye); te[ 13 ] = -this.vY.dot(eye); te[ 14 ] = -this.vZ.dot(eye);
-			te[ 15 ] = 1;
-
-			return this;
+			return transposed;
 		}
 
 		public Equals(otherMat: Mat4x4): boolean

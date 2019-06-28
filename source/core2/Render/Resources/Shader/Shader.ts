@@ -8,7 +8,7 @@ namespace XEngine2 {
 
 		private attributeStride: number;
 
-		public uniforms: Uniform[];
+		public uniforms: IDict<Uniform>;
 		public samplers: Uniform[];
 		public vertexAttrs: VertexAttribute[];
 
@@ -17,7 +17,7 @@ namespace XEngine2 {
 		constructor(vertextCode: string, fragmentCode: string) {
 			this.vertextCode = vertextCode;
 			this.fragmentCode = fragmentCode;
-			this.uniforms = new Array<Uniform>();
+			this.uniforms = new IDict<Uniform>();
 			this.vertexAttrs = new Array<VertexAttribute>();
 			this.samplers = new Array<Uniform>();
 			this.attributeStride = 0;
@@ -26,7 +26,8 @@ namespace XEngine2 {
 		public initializeShader(gl: WebGL2RenderingContext) {
 			if(this._shaderProgram == null || this._shaderProgram == undefined){
 				this._shaderProgram = ShaderCompiler.compileShader(gl, this.vertextCode, this.fragmentCode);
-				this.extractUniformsFromCode(gl);
+				if(this._shaderProgram)
+					this.extractUniformsFromCode(gl);
 			}
 		}
 

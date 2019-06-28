@@ -12,6 +12,7 @@ namespace XEngine2 {
         public modelMatrixName = "modelMatrix";
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
+        public normalMatrixName = "normalMatrix";
 
         public renderQueue = RenderQueue.OPAQUE;
 
@@ -27,7 +28,15 @@ namespace XEngine2 {
         public initialize(gl: WebGL2RenderingContext)
         {
            this.shader.initializeShader(gl);
-           
+           for (const key in this.defaults) {
+               if (this.defaults.hasOwnProperty(key)) {
+                   const defValue = this.defaults[key];
+                   if(this.shader.uniforms[key])
+                   {
+                       this.shader.uniforms[key].value = defValue;
+                   }
+               }
+           }
         }
 
         public updateUniforms(gl: WebGL2RenderingContext)
@@ -72,6 +81,12 @@ namespace XEngine2 {
         {
             return this.shader.uniforms[this.projMatrixName];
         }
+
+        
+        public get normalMatrix() : Uniform {
+            return this.shader.uniforms[this.normalMatrixName];
+        }
+        
 
         public get AttrStride() : number
         {

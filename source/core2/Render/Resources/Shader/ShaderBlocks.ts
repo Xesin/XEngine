@@ -9,7 +9,7 @@ namespace XEngine2
 
         public static VertexInputNoUVs = 
         [
-            "in vec3 aVertexPosition;",
+            "in vec4 aVertexPosition;",
 			"in vec4 aVertexColor;",
 			"in vec3 aVertexNormal;",
         ];
@@ -39,9 +39,9 @@ namespace XEngine2
         public static FragmentInputNoUVs =
         [
             "in vec4 vColor;",
-            "in vec3 vNormal;",
 			"in mat4 mvpMatrix;",
-			"in mat4 mvMatrix;"
+			"in mat4 mvMatrix;",
+            "in vec3 vNormal;"
         ];
 
         public static FragmentInput = 
@@ -56,6 +56,7 @@ namespace XEngine2
             "uniform mediump mat4 modelMatrix;",
 			"uniform mediump mat4 viewMatrix;",
 			"uniform mediump mat4 pMatrix;",
+			"uniform mediump mat4 normalMatrix;",
         ];
 
         public static PhongVertexOutputs = 
@@ -74,7 +75,7 @@ namespace XEngine2
             "uniform sampler2D albedoTex;",
             "uniform sampler2D opacityTex;",
             "uniform vec4 color;",
-            "uniform float ambient;"
+            "uniform vec4 ambient;"
         ]);
 
         public static PhongFunctions = 
@@ -87,11 +88,9 @@ namespace XEngine2
 
         public static mvpAndPosCalc = 
         [
-            "vec4 vObjectPos = vec4(aVertexPosition, 1.0);",
             "mvMatrix = viewMatrix * modelMatrix;",
             "mvpMatrix = pMatrix * mvMatrix;",
-            "gl_Position = mvpMatrix * vObjectPos;",
-            "mat4 normalMatrix = transpose(inverse(modelMatrix));",
+            "gl_Position = mvpMatrix * aVertexPosition;",
             "vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
         ]
     }
