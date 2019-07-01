@@ -9,6 +9,7 @@ namespace XEngine2
 		public materials: Material[];
 		public topology: Topology;
 		public name: string;
+		public bounds: Bounds;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;
@@ -37,6 +38,41 @@ namespace XEngine2
 			this.materials = materials;
 			this.topology = topology;
 			this.name = name;
+			this.computeBounds();
+		}
+
+		public computeBounds()
+		{
+			let minX: number;
+			let minY: number;
+			let minZ: number;
+			let maxX: number;
+			let maxY: number;
+			let maxZ: number;
+
+			for(let i = 0; i < this.vertexData.length; i++)
+			{
+				let x = this.vertexData[i++];
+				let y = this.vertexData[i++];
+				let z = this.vertexData[i];
+
+				if(minX == null || x < minX)
+					minX = x;
+				if(maxX == null || x > maxX)
+					maxX = x;
+
+				if(minY == null || y< minY)
+					minY = y;
+				if(maxY == null || y > maxY)
+					maxY = y;
+
+				if(minZ == null || z < minZ)
+					minZ = z;
+				if(maxZ == null || z > maxZ)
+					maxZ = z;
+			}
+
+			this.bounds = new Bounds(minX, minY, minZ, maxX, maxZ, maxY);
 		}
 
 		public destroy () {
