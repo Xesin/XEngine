@@ -3,8 +3,8 @@ namespace XEngine2 {
 
 	export class Shader {
 
-		private vertextCode: string;
-		private fragmentCode: string;
+		private vertextCode: string[];
+		private fragmentCode: string[];
 
 		private attributeStride: number;
 
@@ -14,7 +14,7 @@ namespace XEngine2 {
 
 		public _shaderProgram: WebGLProgram;
 
-		constructor(vertextCode: string, fragmentCode: string) {
+		constructor(vertextCode: string[], fragmentCode: string[]) {
 			this.vertextCode = vertextCode;
 			this.fragmentCode = fragmentCode;
 			this.uniforms = new IDict<Uniform>();
@@ -25,7 +25,7 @@ namespace XEngine2 {
 
 		public initializeShader(gl: WebGL2RenderingContext) {
 			if(this._shaderProgram == null || this._shaderProgram == undefined){
-				this._shaderProgram = ShaderCompiler.compileShader(gl, this.vertextCode, this.fragmentCode);
+				this._shaderProgram = ShaderCompiler.compileShader(gl, this.vertextCode.join("\n"), this.fragmentCode.join("\n"));
 				if(this._shaderProgram)
 					this.extractUniformsFromCode(gl);
 			}

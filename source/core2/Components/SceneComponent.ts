@@ -12,6 +12,12 @@ namespace XEngine2 {
             this.hidden = false;
         }
 
+        public setupAttachtment(component: SceneComponent)
+        {
+            super.setupAttachtment(component);
+            this.transform.parent = component.transform;
+        }
+
         public render(renderer: Renderer)
         {
             

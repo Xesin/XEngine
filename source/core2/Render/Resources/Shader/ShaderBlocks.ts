@@ -146,6 +146,22 @@ namespace XEngine2
                 "mat3 tsn = mat3( S, T, N );",
                 "return normalize( tsn * mapN );",
             "}",
+        ];
+
+        public static enableLightning =
+        [
+            "#define LIGHTNING_ON",
+            "#define MAX_LIGHTS 5",
+            "struct Light{",
+                "highp float intensity;",
+                "highp vec3 position;",
+                "highp vec3 color;",
+                "highp float range;",
+                "int type;",
+                "bool isActive;",
+            "};",
+
+            "uniform Light light[MAX_LIGHTS];",
         ]
     }
 }

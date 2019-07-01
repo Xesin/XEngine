@@ -7,9 +7,9 @@ namespace XEngine2 {
         public samplerNumber: number;
         
         public _gpuPos: WebGLUniformLocation;
-        private _value: number | Mat4x4 | Vector3 | Vector4 | Texture2D;
+        private _value: number | Mat4x4 | Vector3 | Vector4 | Texture2D | boolean;
 
-        constructor(name: string, type: ShaderType, value: number | Mat4x4 | Vector3 | Vector4, _gpuPos: WebGLUniformLocation, samplerNumber = -1)
+        constructor(name: string, type: ShaderType, value: number | Mat4x4 | Vector3 | Vector4 | Texture2D | boolean, _gpuPos: WebGLUniformLocation, samplerNumber = -1)
         {
             this.name = name;
             this.type = type;
@@ -20,12 +20,17 @@ namespace XEngine2 {
         }
 
         
-        public get value() : number | Mat4x4 | Vector3 | Vector4 | Texture2D {
+        public get value() : number | Mat4x4 | Vector3 | Vector4 | Texture2D | boolean {
             return this._value;
         }
 
+        public get Dirty()
+        {
+            return this.bDirty || ((this.value instanceof Vector3) ? (this.value as Vector3).Dirty : false)
+        }
+
         
-        public set value(v : number | Mat4x4 | Vector3 | Vector4 | Texture2D) {
+        public set value(v : number | Mat4x4 | Vector3 | Vector4 | Texture2D | boolean ) {
             switch(this.type)
             {
                 case ShaderType.FLOAT_MAT4:
@@ -60,14 +65,21 @@ namespace XEngine2 {
                         this._value = v;
                     }
                     break;
+                case ShaderType.BOOL:
+                        let boolean = v as boolean;
+                        if(boolean != (this.value as boolean))
+                        {
+                            this.bDirty = true;
+                            this._value = v;
+                        }
+                        break;
                 default:
                     if(v != this._value){
                         this._value = v;
                         this.bDirty = true;
                     }
-
             }
-        }
+        }   
         
         
     }

@@ -21,7 +21,7 @@ namespace XEngine2
             "albedo": "white"
         }
 
-        constructor(shader = new Shader(ShaderMaterialLib.BlinnPhongShader.vertexShader.join('\n'), ShaderMaterialLib.BlinnPhongShader.fragmentShader.join('\n')))
+        constructor(shader = new Shader(ShaderMaterialLib.BlinnPhongShader.vertexShader, ShaderMaterialLib.BlinnPhongShader.fragmentShader))
         {
             super(shader);
         }

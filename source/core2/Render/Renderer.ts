@@ -4,11 +4,13 @@ namespace XEngine2 {
 	{
 		public group: MeshGroup;
 		public modelMatrix: Mat4x4;
+		public affectedLights: Array<Light>;
 
-		constructor(group: MeshGroup, modelMatrix: Mat4x4)
+		constructor(group: MeshGroup, modelMatrix: Mat4x4, affectedLights: Array<Light>)
 		{
 			this.group = group;
 			this.modelMatrix = modelMatrix;
+			this.affectedLights = affectedLights;
 		}
 	}
 
@@ -57,7 +59,7 @@ namespace XEngine2 {
 					this.gl.colorMask(true, true, true, false);
 				this.gl.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 
-				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader.join('\n'), ShaderMaterialLib.ErrorShader.fragmentShader.join('\n')))
+				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader, ShaderMaterialLib.ErrorShader.fragmentShader))
 				this.errorMat.initialize(this.gl);
 			}
 
@@ -191,7 +193,8 @@ namespace XEngine2 {
 								for (let k = 0; k < groups.length; k++) 
 								{
 									const group = groups[k];
-									let renderObject = new RenderObject(group, sceneComponent.transform.Matrix);
+									let affectedLights = this.findAffectedLights(group);
+									let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights);
 									switch(group.Mesh.materials[group.materialIndex].renderQueue)
 									{
 										case RenderQueue.OPAQUE:
@@ -209,6 +212,12 @@ namespace XEngine2 {
 					}
 				}
 			}
+		}
+
+		private findAffectedLights(meshGroup: MeshGroup)
+		{
+			let lights = this.currentScene.FindComponents<Light>(Light);
+			return lights.slice(0,4);
 		}
 
 		private renderMeshImmediate(renderObject: RenderObject, camera = this.currentCamera)
@@ -232,6 +241,34 @@ namespace XEngine2 {
 				if(material.normalMatrix)
 					material.normalMatrix.value = modelMatrix.transposed();
 
+				for(let i = 0; i < 5; i++)
+				{
+					let light = renderObject.affectedLights[i];
+					let lightActiverUniform = material.getLightUniform(i, 'isActive');
+					if(lightActiverUniform)
+					{
+						if(light){
+							let lightPositionUniform = material.getLightUniform(i, 'position');
+							let lightColorUniform = material.getLightUniform(i, 'color');
+							let lightIntensityUniform = material.getLightUniform(i, 'intensity');
+							if(light instanceof DirectionalLight)
+							{
+								let rotMatrix = new Mat4x4();
+								rotMatrix.extractRotation(light.transform.Matrix)
+								let dirLight = new Vector3(1.0, 0.0, 0.0);
+								lightPositionUniform.value =  dirLight.multiplyMatrix(rotMatrix.elements).normalize();
+							}
+							lightIntensityUniform.value = light.intensity;
+							lightColorUniform.value = light.color.getVector3();
+							lightActiverUniform.value = true;
+						}
+						else
+						{
+							lightActiverUniform.value = false;
+						}
+					}
+				}
+
 				material.updateUniforms(gl);
 
 				if(meshGroup.indices){
@@ -244,7 +281,6 @@ namespace XEngine2 {
 				// gl.drawArrays(meshGroup.Mesh.topology, meshGroup.firstVertex, meshGroup.vertexCount);
 
 				// meshGroup.Mesh.unBind(meshGroup.materialIndex);
-			
 		}
 	}
 }

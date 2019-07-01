@@ -53,5 +53,54 @@ namespace XEngine2
                 renderer.render(this, camera);
             }
         }
+
+
+        public FindAll<T extends Actor>(className: typeof Actor): Array<T>{
+            let result = new Array<Actor>();
+            this.actors.forEach(actor => {
+                if((actor instanceof className) && result.indexOf(actor) === -1)
+                {
+                    result.push(actor);
+                }
+            });
+            return result as Array<T>;
+        }
+
+        public Find<T extends Actor>(className: typeof Actor): T{
+            this.actors.forEach(actor => {
+                if(actor instanceof className)
+                {
+                    return actor;
+                }
+            });
+            return null;
+        }
+
+        public FindComponents<T extends Component>(className: typeof Component): Array<T>{
+            let result = new Array<Component>();
+            this.actors.forEach(actor => {
+                Object.keys(actor).forEach(key => {
+                    let object = actor[key] as Component;
+                    if((object instanceof className) && result.indexOf(object) === -1)
+                    {
+                        result.push(object);
+                    }
+                });
+            });
+            return result as Array<T>;
+        }
+
+        public FindComponent<T extends Component>(): T{
+            this.actors.forEach(actor => {
+            Object.keys(actor).forEach(key => {
+                    let object = actor[key];
+                    if(object as T)
+                    {
+                        return object;
+                    }
+                });
+            });
+            return null;
+        }
     }
 }

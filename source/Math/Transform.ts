@@ -1,7 +1,6 @@
 namespace XEngine2 {
 
 	export class Transform {
-
 		public parent: Transform;
 		public position: Vector3;
 		public scale: Vector3;
@@ -23,7 +22,19 @@ namespace XEngine2 {
 		public get Matrix() : Mat4x4 {
 			if(this.Dirty){
 				let translation =  this.position.toArray();
+				
 				let matrix = new Mat4x4();
+				if(this.parent != null)
+				{
+					if(this.parent.Dirty)
+					{
+						matrix = this.parent.Matrix;
+						this.parent.Dirty = true;
+					}
+					else
+						matrix = this.parent.Matrix;
+				}
+				
 				mat4.rotateX(matrix.elements, matrix.elements, this.rotation.x * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateY(matrix.elements, matrix.elements, this.rotation.y * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateZ(matrix.elements, matrix.elements, this.rotation.z * XEngine.Mathf.TO_RADIANS);
@@ -45,7 +56,8 @@ namespace XEngine2 {
 			|| this.rotation.Dirty 
 			|| this.scale.Dirty 
 			|| this.cachedMatrix === undefined 
-			|| this.cachedMatrix === null;
+			|| this.cachedMatrix === null
+			|| (this.parent != null && this.parent.Dirty);
 		}
 
 		public forward(): Vector3 {
@@ -75,7 +87,6 @@ namespace XEngine2 {
 			this.rotation.Dirty = v;
 			this.scale.Dirty = v;
 			this.dirty = v;
-		}
-		
+		}		
 	}
 }

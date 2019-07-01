@@ -13,6 +13,7 @@ namespace XEngine2 {
         public viewMatrixName = "viewMatrix";
         public projMatrixName = "pMatrix";
         public normalMatrixName = "normalMatrix";
+        public lightsUniformName = "light";
 
         public renderQueue = RenderQueue.OPAQUE;
 
@@ -60,7 +61,8 @@ namespace XEngine2 {
         {
             for (let key in this.shader.uniforms) {
                 const uniform = this.shader.uniforms[key];
-                this.setUniform(uniform, gl);
+                if(uniform.value != null)
+                    this.setUniform(uniform, gl);
             }
             for (let i = 0; i < this.shader.samplers.length; i++) {
                 const sampler = this.shader.samplers[i];
@@ -99,12 +101,10 @@ namespace XEngine2 {
         {
             return this.shader.uniforms[this.projMatrixName];
         }
-
         
         public get normalMatrix() : Uniform {
             return this.shader.uniforms[this.normalMatrixName];
         }
-        
 
         public get AttrStride() : number
         {
@@ -155,9 +155,14 @@ namespace XEngine2 {
             }    
         }
 
+        public getLightUniform(index: number, name: string)
+        {
+            return this.shader.uniforms[this.lightsUniformName+'[' + index + '].'+name];            
+        }
+
 
         private setUniform(uniform: Uniform, gl:WebGL2RenderingContext) {
-            if(!uniform.bDirty) return;
+            if(!uniform.Dirty) return;
 			let valueType = uniform.type;
 			switch (valueType) {
 				case ShaderType.INT:
@@ -184,7 +189,11 @@ namespace XEngine2 {
 				case ShaderType.FLOAT_MAT4:
                     let mat4x4 = uniform.value as Mat4x4;
 					gl.uniformMatrix4fv(uniform._gpuPos, false, mat4x4.elements);
-					break;
+                    break;
+                case ShaderType.BOOL:
+                    let boolean = uniform.value as boolean;
+                    gl.uniform1i(uniform._gpuPos, boolean ? 1 : 0);
+                    break;
 				default:
 					gl.uniform1f(uniform._gpuPos, uniform.value as number);
 					break;

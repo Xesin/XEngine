@@ -8,7 +8,7 @@ namespace XEngine2
     {
         public static SharedInstance = new BasicMaterial();
 
-        constructor(shader = new Shader(ShaderMaterialLib.BasicShader.vertexShader.join('\n'), ShaderMaterialLib.BasicShader.fragmentShader.join('\n')))
+        constructor(shader = new Shader(ShaderMaterialLib.BasicShader.vertexShader, ShaderMaterialLib.BasicShader.fragmentShader))
         {
             super(shader);
         }

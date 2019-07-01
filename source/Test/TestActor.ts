@@ -4,12 +4,16 @@ namespace XEngine2
 {
     export class TestActor extends Actor
     {
+
+        public dirLight: DirectionalLight;
+
         constructor(game: Game)
         {
             super(game);
             let thisAny: any;
             thisAny = this;
-            let numItems = 0;
+
+            this.dirLight = new DirectionalLight(game);
             for (const meshName in this.game.cache.geometries) 
             {
                 
