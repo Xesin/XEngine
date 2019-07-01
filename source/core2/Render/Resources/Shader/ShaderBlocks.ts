@@ -67,6 +67,14 @@ namespace XEngine2
         ]
         );
 
+        public static BlinnPhongVertexOutputs = 
+        ShaderBlocks.PhongVertexOutputs
+        .concat(
+        [
+            "out vec3 viewPos;",
+        ]
+        );
+
         public static PhongFragmentInputs =
         ShaderBlocks.FragmentInput
         .concat(
@@ -78,6 +86,13 @@ namespace XEngine2
             "uniform vec4 ambient;"
         ]);
 
+        public static BlinnPhongFragmentInputs =
+        ShaderBlocks.PhongFragmentInputs
+        .concat(
+        [
+            "in vec3 viewPos;",
+        ]);
+
         public static PhongFunctions = 
         [
             "float PhongDiffuseTerm(vec3 LightDir, vec3 objectNormal)",
@@ -85,6 +100,19 @@ namespace XEngine2
                 "return max(dot(LightDir, objectNormal), 0.0);",
             "}"
         ];
+
+        public static BlinnPhongFunctions = 
+        ShaderBlocks.PhongFunctions
+        .concat(
+        [
+            "vec3 BlinnSpecularColor(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, vec3 specular, float glosiness)",
+            "{",
+                "vec3 halfDir = normalize(lightDir + viewDir);",
+                "float ndh = dot(surfaceNormal, halfDir);",
+                "float specularTerm = pow(max(ndh, 0.0), glosiness);",
+                "return specular * specularTerm;",
+            "}",
+        ]);
 
         public static mvpAndPosCalc = 
         [

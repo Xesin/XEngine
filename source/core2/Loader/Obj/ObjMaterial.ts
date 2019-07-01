@@ -16,7 +16,7 @@ namespace XEngine2 {
 		}
 
 		public createMaterial(game: Game, gl: WebGL2RenderingContext): Material {
-			let mat = game.createMaterialFromBase(PhongMaterial) as PhongMaterial;
+			let mat = game.createMaterialFromBase(BlinnPhongMaterial) as BlinnPhongMaterial;
 			
 			if(this.albedoTexture)
 			{
