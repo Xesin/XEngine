@@ -42,7 +42,8 @@ namespace XEngine2
         public update(deltaTime: number)
         {
             this.actors.forEach(actor => {
-                actor.update(deltaTime);
+                if(actor.canUpdate)
+                    actor.update(deltaTime);
             });
         }
 

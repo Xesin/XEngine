@@ -51,15 +51,19 @@ namespace XEngine2.ShaderMaterialLib{
 						"Light curLight = light[i];",
 						"if(curLight.isActive){",
 							"vec3 lightDir = curLight.position;",
+							"float atten = 1.0;",
 							"if(curLight.type != 0){",
-								"lightDir = normalize(curLight.position - vWorldPos);",
+								"vec3 dir = curLight.position - vWorldPos;",
+								"lightDir = normalize(dir);",
+								"float distance = length(dir);",
+								"atten = inversesqrt(distance);",
 							"}",
 							"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
 
-							"vec3 DiffuseLightColor = PhongDiffuseTerm(lightDir, surfaceNormal) * curLight.color * curLight.intensity;",
+							"vec3 DiffuseLightColor = PhongDiffuseTerm(lightDir, surfaceNormal) * curLight.intensity * atten * curLight.color;",
 
 							"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
-							"vec3 specularColor = BlinnSpecularColor(lightDir, viewDir, surfaceNormal, vec3(0.2), 13.0) * curLight.color * curLight.intensity;",
+							"vec3 specularColor = BlinnSpecularColor(lightDir, viewDir, surfaceNormal, vec3(0.2), 13.0) * curLight.intensity * atten * curLight.color;",
 
 							"lightsColor += DiffuseLightColor * albedo.xyz ",
 											"+ specularColor;",

@@ -4,6 +4,7 @@ namespace XEngine2
     {
         public rootComponent: SceneComponent;
         public hidden: boolean;
+        public canUpdate: boolean;
         public game: Game;
 
         constructor(game: Game)
@@ -11,6 +12,7 @@ namespace XEngine2
             this.rootComponent = new SceneComponent(game);
             this.hidden = false;
             this.game = game;
+            this.canUpdate = false;
         }
 
         public OnSpawn(): void

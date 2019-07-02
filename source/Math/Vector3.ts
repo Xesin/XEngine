@@ -55,7 +55,6 @@ namespace XEngine2 {
 			y = this.y;
 			let z = this.z;
 
-			let out = new Array(3);
 			this.x = x * matrix[0] + y * matrix[1] + z * matrix[2] + matrix[3];
 			this.y = x * matrix[4] + y * matrix[5] + z * matrix[6] + matrix[7];
 			this.z = x * matrix[8] + y * matrix[9] + z * matrix[10] + matrix[11];

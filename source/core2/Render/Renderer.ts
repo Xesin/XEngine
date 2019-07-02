@@ -236,7 +236,7 @@ namespace XEngine2 {
 				meshGroup.Mesh.bind(meshGroup.materialIndex);
 				material.bind(gl);
 				material.modelMatrix.value = modelMatrix;
-				material.viewMatrix.value = camera.transform.Matrix;
+				material.viewMatrix.value = camera.viewMatrix;
 				material.projectionMatrix.value = camera.projectionMatrix;
 				if(material.normalMatrix)
 					material.normalMatrix.value = modelMatrix.transposed();
@@ -251,12 +251,19 @@ namespace XEngine2 {
 							let lightPositionUniform = material.getLightUniform(i, 'position');
 							let lightColorUniform = material.getLightUniform(i, 'color');
 							let lightIntensityUniform = material.getLightUniform(i, 'intensity');
+							let lightTypeUniform = material.getLightUniform(i, 'type');
 							if(light instanceof DirectionalLight)
 							{
 								let rotMatrix = new Mat4x4();
 								rotMatrix.extractRotation(light.transform.Matrix)
 								let dirLight = new Vector3(1.0, 0.0, 0.0);
 								lightPositionUniform.value =  dirLight.multiplyMatrix(rotMatrix.elements).normalize();
+								lightTypeUniform.value = 0;
+							}
+							else if(light instanceof PointLight)
+							{
+								lightTypeUniform.value = 1;
+								lightPositionUniform.value = light.transform.position;
 							}
 							lightIntensityUniform.value = light.intensity;
 							lightColorUniform.value = light.color.getVector3();

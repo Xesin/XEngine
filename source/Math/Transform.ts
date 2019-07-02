@@ -35,10 +35,10 @@ namespace XEngine2 {
 						matrix = this.parent.Matrix;
 				}
 				
+				mat4.translate(matrix.elements, matrix.elements, translation);
 				mat4.rotateX(matrix.elements, matrix.elements, this.rotation.x * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateY(matrix.elements, matrix.elements, this.rotation.y * XEngine.Mathf.TO_RADIANS);
 				mat4.rotateZ(matrix.elements, matrix.elements, this.rotation.z * XEngine.Mathf.TO_RADIANS);
-				mat4.translate(matrix.elements, matrix.elements, translation);
 				mat4.scale(matrix.elements, matrix.elements, this.scale.toArray());
 
 				this.cachedMatrix = matrix;
@@ -87,6 +87,36 @@ namespace XEngine2 {
 			this.rotation.Dirty = v;
 			this.scale.Dirty = v;
 			this.dirty = v;
-		}		
+		}
+
+		public get WorldPosition() : Vector3{
+			let res = new Vector3(this.position.x, this.position.y, this.position.z);
+			if(this.parent) 
+			{
+				res.add(this.parent.WorldPosition)
+			}
+
+			return res;
+		}
+
+		public get WorldRotation() : Vector3{
+			let res = new Vector3(this.rotation.x, this.rotation.y, this.rotation.z);
+			if(this.parent) 
+			{
+				res.add(this.parent.WorldRotation)
+			}
+
+			return res;
+		}
+
+		public get WorldScale() : Vector3{
+			let res = new Vector3(this.scale.x, this.scale.y, this.scale.z);
+			if(this.parent) 
+			{
+				res.add(this.parent.WorldRotation)
+			}
+
+			return res;
+		}
 	}
 }

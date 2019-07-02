@@ -59,17 +59,44 @@ namespace XEngine2 {
 			let scaleZ = 1 / this.v0.setTo(rotMat.elements[2], rotMat.elements[6], rotMat.elements[10]).length();
 
 			te[ 0 ] = me[ 0 ] * scaleX;
-			te[ 4 ] = me[ 4 ] * scaleX;
-			te[ 8 ] = me[ 8 ] * scaleX;
+			te[ 4 ] = me[ 4 ] * scaleY;
+			te[ 8 ] = me[ 8 ] * scaleZ;
 
-			te[ 1 ] = me[ 1 ] * scaleY;
+			te[ 1 ] = me[ 1 ] * scaleX;
 			te[ 5 ] = me[ 5 ] * scaleY;
-			te[ 9 ] = me[ 9 ] * scaleY;
+			te[ 9 ] = me[ 9 ] * scaleZ;
 
-			te[ 2 ] = me[ 2 ] * scaleZ;
-			te[ 6 ] = me[ 6 ] * scaleZ;
+			te[ 2 ] = me[ 2 ] * scaleX;
+			te[ 6 ] = me[ 6 ] * scaleY;
 			te[ 10 ] = me[ 10 ] * scaleZ;
 
+			return this;
+		}
+
+		public rotateX()
+		{
+
+		}
+
+		public rotateY()
+		{
+
+		}
+
+		public rotateZ()
+		{
+
+		}
+
+		public translate(vector: Vector3) : Mat4x4
+		{
+			let x = vector.x, y = vector.y, z = vector.z;
+
+			let te = this.elements;
+			te[12] = te[0] * x + te[1] * y + te[2] * z + te[3];
+			te[13] = te[4] * x + te[5] * y + te[6] * z + te[7];
+			te[14] = te[8] * x + te[9] * y + te[10] * z + te[11];
+			te[15] = te[12] * x + te[13] * y + te[14] * z + te[15];
 			return this;
 		}
 
@@ -164,6 +191,44 @@ namespace XEngine2 {
 			a[3] = a03;		a[7] = a13;		a[11] = a23;
 
 			return transposed;
+		}
+
+		public multiply(otherMat: Mat4x4) : Mat4x4
+		{
+			let te = this.elements;
+			let ote = otherMat.elements
+
+			let a00 = te[0], a01 = te[4], a02 = te[8], a03 = te[12];
+			let a10 = te[1], a11 = te[5], a12 = te[9], a13 = te[13];
+			let a20 = te[2], a21 = te[6], a22 = te[10], a23 =te[14];
+			let a30 = te[3], a31 =te[7], a32 =te[11], a33 =te[15];
+
+			// Cache only the current line of the second matrix
+			let b0  = ote[0], b1 = ote[4], b2 = ote[8], b3 = ote[12];
+			te[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+			te[4] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+			te[8] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+			te[12] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+			b0 = ote[1]; b1 = ote[5]; b2 = ote[9]; b3 = ote[13];
+			te[1] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+			te[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+			te[9] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+			te[13] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+			b0 = ote[2]; b1 = ote[6]; b2 = ote[10]; b3 = ote[14];
+			te[2] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+			te[6] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+			te[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+			te[14] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+			b0 = ote[3]; b1 = ote[7]; b2 = ote[11]; b3 = ote[15];
+			te[3] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+			te[7] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+			te[11] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+			te[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+			return this;
 		}
 
 		public Equals(otherMat: Mat4x4): boolean
