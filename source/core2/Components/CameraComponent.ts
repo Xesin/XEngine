@@ -19,15 +19,14 @@ namespace XEngine2 {
 
         public get viewMatrix() : Mat4x4 {
             let translation =  this.transform.WorldPosition.toArray();
-            
             let matrix = new Mat4x4();
             
             mat4.translate(matrix.elements, matrix.elements, translation);
-            mat4.rotateX(matrix.elements, matrix.elements, this.transform.WorldRotation.x * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateY(matrix.elements, matrix.elements, this.transform.WorldRotation.y * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateZ(matrix.elements, matrix.elements, this.transform.WorldRotation.z * XEngine.Mathf.TO_RADIANS);
-            mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
-            mat4.invert(matrix.elements, matrix.elements);
+            // mat4.rotateX(matrix.elements, matrix.elements, this.transform.WorldRotation.x * XEngine.Mathf.TO_RADIANS);
+            // mat4.rotateY(matrix.elements, matrix.elements, this.transform.WorldRotation.y * XEngine.Mathf.TO_RADIANS);
+            // mat4.rotateZ(matrix.elements, matrix.elements, this.transform.WorldRotation.z * XEngine.Mathf.TO_RADIANS);
+            // mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
+            // mat4.invert(matrix.elements, matrix.elements);
 
             return matrix;
         }

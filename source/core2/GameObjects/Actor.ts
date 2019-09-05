@@ -6,13 +6,15 @@ namespace XEngine2
         public hidden: boolean;
         public canUpdate: boolean;
         public game: Game;
+        public name: string;
 
-        constructor(game: Game)
+        constructor(game: Game, name: string = "")
         {
-            this.rootComponent = new SceneComponent(game);
+            this.rootComponent = new SceneComponent(game, name);
             this.hidden = false;
             this.game = game;
             this.canUpdate = false;
+            this.name = name;
         }
 
         public OnSpawn(): void
@@ -38,6 +40,21 @@ namespace XEngine2
                     component.update(deltaTime);
             });
         }
+
+        public getActorForwardVector() : Vector3
+        {
+            if(this.Transform)
+            {
+                return this.Transform.forward();
+            }
+            return new Vector3(0,0,0);
+        }
+
+        
+        public get Transform() : Transform {
+            return this.rootComponent ? this.rootComponent.transform : null;
+        }
+        
 
         public GetComponents<T extends Component>(className: typeof Component): Array<T>{
             let result = new Array<Component>();

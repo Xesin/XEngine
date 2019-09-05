@@ -6,9 +6,9 @@ namespace XEngine2 {
         
         private speed: number;
 
-        constructor(game: Game)
+        constructor(game: Game, name = "StaticMeshComponent")
         {
-            super(game);
+            super(game, name);
             this.speed = Mathf.randomRange(-60, 60);
             this.bCanUpdate = true;
         }

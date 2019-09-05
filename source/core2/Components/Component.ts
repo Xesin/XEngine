@@ -3,11 +3,13 @@ namespace XEngine2 {
         public parent: Component;
         public bCanUpdate: boolean;
         public game: Game;
+        public name: string;
 
-        constructor(game: Game)
+        constructor(game: Game, name: string = "")
         {
             this.bCanUpdate = false;
             this.game = game;
+            this.name = name;
         }
 
         public setupAttachtment(parent: Component){

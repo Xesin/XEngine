@@ -6,9 +6,9 @@ namespace XEngine2
     {
        public staticMesh: StaticMeshComponent;
 
-       constructor(game: Game)
+       constructor(game: Game, name: string = "StaticMeshActor")
         {
-            super(game);
+            super(game, name);
 
             this.staticMesh = new StaticMeshComponent(game);
             this.rootComponent = this.staticMesh;

@@ -15,10 +15,9 @@ namespace XEngine2
             this.mainCamera = new CameraComponent(game);
         }
 
-        public Instantiate(actorToInstantiate : typeof Actor, transform: Transform = null) : Actor
+        public Instantiate(actorToInstantiate : typeof Actor, name: string = "", transform: Transform = null) : Actor
         {
-            let instancedActor = new actorToInstantiate(this.game) as Actor;
-
+            let instancedActor = new actorToInstantiate(this.game, name) as Actor;
             if (transform)
             {
                 instancedActor.rootComponent.transform = transform;

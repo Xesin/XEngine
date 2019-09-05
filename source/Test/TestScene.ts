@@ -20,7 +20,18 @@ namespace XEngine2 {
 			actor.rootComponent.transform.position.y = -20;
 			actor.rootComponent.transform.position.z = -5;
 			actor.rootComponent.transform.scale.setTo(0.5);
+			let thisAny : any;
 
+			thisAny = this;
+			for (const meshName in this.game.cache.geometries) 
+            {
+               
+				const mesh = this.game.cache.geometries[meshName];
+				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
+				meshActor = meshActor;
+				meshActor.rootComponent.transform.scale.setTo(0.10);
+				meshActor.staticMesh.Mesh = mesh;
+            }
 
 
 			// actor = this.Instantiate(XEngine2.TestActor);
