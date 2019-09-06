@@ -170,12 +170,15 @@ namespace XEngine2 {
 			};
 
 			if (this.game.isMobile) {
-				newEvent = {
-					position: {
-						x: event.touches[0].pageX - (document.documentElement.scrollLeft || document.body.scrollLeft) - rect.left,
-						y: event.touches[0].pageY - (document.documentElement.scrollTop || document.body.scrollTop) - rect.top,
-					},
-				};
+				if(event.touches)
+				{
+					newEvent = {
+						position: {
+							x: event.touches[0].pageX - (document.documentElement.scrollLeft || document.body.scrollLeft) - rect.left,
+							y: event.touches[0].pageY - (document.documentElement.scrollTop || document.body.scrollTop) - rect.top,
+						},
+					};
+				}
 			}
 			newEvent.position.x /= this.game.scale.scale.x;
 			newEvent.position.y /= this.game.scale.scale.y;
