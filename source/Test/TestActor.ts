@@ -23,7 +23,9 @@ namespace XEngine2
             
 
             this.camera = new CameraComponent(game);
-            this.camera.setupAttachtment(this.rootComponent);
+			this.camera.setupAttachtment(this.rootComponent);
+			
+			
 
             game.sceneManager.currentScene.mainCamera = this.camera;
         }
@@ -32,30 +34,30 @@ namespace XEngine2
         {
             super.update(deltaTime);
 
-			if( this.game.input.isDown(KEY_CODE.W) )
-			{
-				let fwVector = this.getActorForwardVector();
-				fwVector.scalar(50 * deltaTime);
-				this.rootComponent.transform.position.add(fwVector);
+			// if( this.game.input.isDown(KEY_CODE.W) )
+			// {
+			// 	let fwVector = this.getActorForwardVector();
+			// 	fwVector.scalar(50 * deltaTime);
+			// 	this.rootComponent.transform.position.add(fwVector);
 
-			}
-			else if(this.game.input.isDown(KEY_CODE.S))
-			{
-				let fwVector = this.getActorForwardVector();
-				fwVector.scalar(50 * deltaTime);
-				this.rootComponent.transform.position.sub(fwVector);
-			}
+			// }
+			// else if(this.game.input.isDown(KEY_CODE.S))
+			// {
+			// 	let fwVector = this.getActorForwardVector();
+			// 	fwVector.scalar(50 * deltaTime);
+			// 	this.rootComponent.transform.position.sub(fwVector);
+			// }
 
-			if(this.game.input.isDown(KEY_CODE.SPACE))
-			{
-				this.rootComponent.transform.position.y += 50 * deltaTime;
+			// if(this.game.input.isDown(KEY_CODE.SPACE))
+			// {
+			// 	this.rootComponent.transform.position.y += 50 * deltaTime;
 
-			}
-			else if(this.game.input.isDown(KEY_CODE.CTRL))
-			{
-				this.rootComponent.transform.position.y -= 50 * deltaTime;
+			// }
+			// else if(this.game.input.isDown(KEY_CODE.CTRL))
+			// {
+			// 	this.rootComponent.transform.position.y -= 50 * deltaTime;
 
-			}
+			// }
 
 			// if(this.game.input.isDown(KEY_CODE.Q))
 			// {

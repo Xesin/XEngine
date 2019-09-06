@@ -35,8 +35,12 @@ namespace XEngine2 {
 
 		public dispatch(..._eventArguments: any[]) {
 			for (let i = 0; i < this.bindings.length; i++) {
-				if (this.bindings[i] != null || this.bindings[i] !== undefined){
-					this.bindings[i].dispatch.apply(this.bindings[i], arguments);
+				if (this.bindings[i]){
+					try {
+						this.bindings[i].dispatch.apply(this.bindings[i], arguments);
+					} catch (error) {
+						console.warn("Exception thrown by dispatching event on: ", this.bindings[i].listenerContext);
+					}
 				}
 			}
 		}

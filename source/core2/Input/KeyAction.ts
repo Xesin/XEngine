@@ -1,6 +1,6 @@
 namespace XEngine2 {
-	export enum KeyAction {
+	export enum KEY_ACTION {
 		PRESSED = 0,
-		RELEASED = 0
+		RELEASED = 1
 	}
 }

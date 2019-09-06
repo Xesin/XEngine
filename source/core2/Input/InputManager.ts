@@ -11,6 +11,7 @@ namespace XEngine2 {
 		public pointer: Vector3;
 
 		private keysPressed: Array<boolean>;
+		private actionMappings: IDict<IHash<ActionMapping>>;
 		private game: Game;
 
 		constructor(game: Game) {
@@ -23,6 +24,7 @@ namespace XEngine2 {
 			this.onInputMove = new Signal();
 			this.pointerDown = false;
 			this.pointer = new Vector3(0);
+			this.actionMappings = new IDict();
 
 			let _this = this;
 			document.addEventListener("keydown", function (event) {
@@ -85,12 +87,34 @@ namespace XEngine2 {
 			if (!this.keysPressed[event.keyCode]) {
 				this.keysPressed[event.keyCode] = true;
 				this.onKeyDown.dispatch(event);
+
+				for (const name in this.actionMappings) {
+					if (this.actionMappings.hasOwnProperty(name)) {
+						const element = this.actionMappings[name];
+						if(element.hasOwnProperty(event.keyCode))
+						{
+							element[event.keyCode].executeForAction(KEY_ACTION.PRESSED);
+						}
+					}
+				}
 			}
+
+			
 		}
 
 		private keyUpHandler(event: any) {
 			this.keysPressed[event.keyCode] = false;
 			this.onKeyUp.dispatch(event);
+			for (const name in this.actionMappings) {
+				if (this.actionMappings.hasOwnProperty(name)) {
+					const element = this.actionMappings[name];
+					if(element.hasOwnProperty(event.keyCode))
+					{
+						element[event.keyCode].executeForAction(KEY_ACTION.RELEASED);
+					}
+				}
+			}
+			
 		}
 
 		private inputDownHandler() {
@@ -156,6 +180,65 @@ namespace XEngine2 {
 			newEvent.position.x /= this.game.scale.scale.x;
 			newEvent.position.y /= this.game.scale.scale.y;
 			return newEvent;
+		}
+
+		public createAction(name: string, keyCode: KEY_CODE | Array<KEY_CODE>)
+		{
+			if(!(name in this.actionMappings))
+			{
+				this.actionMappings[name] = new IHash<ActionMapping>();
+			}
+
+			if(typeof(keyCode) == "number")
+			{
+				if(!(keyCode in this.actionMappings[name]))
+				{
+					this.actionMappings[name][keyCode] = new ActionMapping(name);
+				}
+				else
+				{
+					console.warn("The crate action requested already exists");
+				}
+			}
+			else
+			{
+				keyCode.forEach(element => {
+					this.createAction(name, element);
+				});
+			}
+
+			
+		}
+
+		public bindAction(name: string,  keyAction: KEY_ACTION,  context: Object, callback: Function)
+		{
+			if(!(name in this.actionMappings))
+			{
+				console.error("Action ", name, " didn't exists");
+				return
+			}
+			
+			for (const key in this.actionMappings[name]) {
+				if (this.actionMappings[name].hasOwnProperty(key)) {
+					const element = this.actionMappings[name][key];
+					element.bindAction(context, callback, keyAction);
+				}
+			}
+		}
+
+		public unBindAction(name: string, keyAction: KEY_ACTION,  context: Object)
+		{
+			if(!(name in this.actionMappings))
+			{
+				console.error("Action ", name, " didn't exists");
+			}
+
+			for (const key in this.actionMappings[name]) {
+				if (this.actionMappings[name].hasOwnProperty(key)) {
+					const element = this.actionMappings[name][key];
+					element.unBindAction(context,  keyAction);
+				}
+			}
 		}
 	}
 }

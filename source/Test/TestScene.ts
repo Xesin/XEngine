@@ -9,12 +9,17 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
 		{
 			this.game.time.frameLimit = 60;
+
+			this.game.input.createAction("Fire", [KEY_CODE.F, KEY_CODE.SPACE, KEY_CODE.C]);
+			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, () => {this.game.input.unBindAction("Fire", KEY_ACTION.PRESSED, this); console.log("dsalfkjdsf")});
+			// this.game.input.bindAction("Fire", KEY_ACTION.RELEASED, this, () => console.log("Fire released from scene"));
+
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -20;
@@ -23,15 +28,15 @@ namespace XEngine2 {
 			let thisAny : any;
 
 			thisAny = this;
-			for (const meshName in this.game.cache.geometries) 
-            {
+			// for (const meshName in this.game.cache.geometries) 
+            // {
                
-				const mesh = this.game.cache.geometries[meshName];
-				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
-				meshActor = meshActor;
-				meshActor.rootComponent.transform.scale.setTo(0.10);
-				meshActor.staticMesh.Mesh = mesh;
-            }
+			// 	const mesh = this.game.cache.geometries[meshName];
+			// 	let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
+			// 	meshActor = meshActor;
+			// 	meshActor.rootComponent.transform.scale.setTo(0.10);
+			// 	meshActor.staticMesh.Mesh = mesh;
+            // }
 
 
 			// actor = this.Instantiate(XEngine2.TestActor);
