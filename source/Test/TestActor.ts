@@ -60,45 +60,5 @@ namespace XEngine2
 		{
 			this.rootComponent.transform.rotation.y += axisValue * 3 * this.game.time.deltaTime;
 		}
-
-        public update(deltaTime: number)
-        {
-            super.update(deltaTime);
-
-			// if(this.game.input.isDown(KEY_CODE.SPACE))
-			// {
-			// 	this.rootComponent.transform.position.y += 50 * deltaTime;
-
-			// }
-			// else if(this.game.input.isDown(KEY_CODE.CTRL))
-			// {
-			// 	this.rootComponent.transform.position.y -= 50 * deltaTime;
-
-			// }
-
-			// if(this.game.input.isDown(KEY_CODE.Q))
-			// {
-			// 	this.rootComponent.transform.rotation.y -= 90 * deltaTime;
-
-			// } 
-			// else if(this.game.input.isDown(KEY_CODE.E))
-			// {
-			// 	this.rootComponent.transform.rotation.y += 90 * deltaTime;
-			// }
-
-			// if(this.game.input.isDown(KEY_CODE.D))
-			// {
-			// 	let rightVector = this.rootComponent.transform.right();
-			// 	rightVector.scalar(50 * deltaTime);
-			// 	this.rootComponent.transform.position.add(rightVector);
-
-			// }
-			// else if(this.game.input.isDown(KEY_CODE.A))
-			// {
-			// 	let rightVector = this.rootComponent.transform.right();
-			// 	rightVector.scalar(50 * deltaTime);
-			// 	this.rootComponent.transform.position.sub(rightVector);
-			// }
-        }
     }
 }
