@@ -78,6 +78,13 @@ namespace XEngine2
 
         public FindComponents<T extends Component>(className: typeof Component): Array<T>{
             let result = new Array<Component>();
+            Object.keys(this).forEach(key => {
+                let object = this[key] as Component;
+                if((object instanceof className) && result.indexOf(object) === -1)
+                {
+                    result.push(object);
+                }
+            });
             this.actors.forEach(actor => {
                 Object.keys(actor).forEach(key => {
                     let object = actor[key] as Component;

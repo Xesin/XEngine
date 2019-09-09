@@ -50,6 +50,15 @@ namespace XEngine2
             return new Vector3(0,0,0);
         }
 
+        public getActorRightVector() : Vector3
+        {
+            if(this.Transform)
+            {
+                return this.Transform.right();
+            }
+            return new Vector3(0,0,0);
+        }
+
         
         public get Transform() : Transform {
             return this.rootComponent ? this.rootComponent.transform : null;

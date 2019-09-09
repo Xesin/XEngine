@@ -5,38 +5,44 @@ namespace XEngine2 {
 	export class TestScene extends Scene {
 
 		private lightColor: string;
+		public dirLight: DirectionalLight;
 
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
 		{
 			this.game.time.frameLimit = 60;
 
-			this.game.input.createAction("Fire", [KEY_CODE.F, KEY_CODE.SPACE, KEY_CODE.C]);
-			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, () => {this.game.input.unBindAction("Fire", KEY_ACTION.PRESSED, this); console.log("dsalfkjdsf")});
-			// this.game.input.bindAction("Fire", KEY_ACTION.RELEASED, this, () => console.log("Fire released from scene"));
+			this.game.input.createAction("Fire", [KEY_CODE.L]);
+			this.game.input.createAxis("MoveForward", [KEY_CODE.W, KEY_CODE.S, KEY_CODE.UP, KEY_CODE.DOWN], [1, -1, 1, -1]);
+			this.game.input.createAxis("MoveRight", [KEY_CODE.A, KEY_CODE.D], [1, -1]);
+			this.game.input.createAxis("LookLeft", [KEY_CODE.MOUSE_X], [1]);
+			this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [1]);
 
+			this.dirLight = new DirectionalLight(game);
+            this.dirLight.transform.rotation.y = 45;
+            this.dirLight.transform.rotation.z = -75;
+			this.dirLight.intensity = 0.7;
+			this.dirLight.color.fromHexString("#f0dc81");
+			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = -20;
 			actor.rootComponent.transform.position.z = -5;
 			actor.rootComponent.transform.scale.setTo(0.5);
-			let thisAny : any;
-
-			thisAny = this;
-			// for (const meshName in this.game.cache.geometries) 
-            // {
+			for (const meshName in this.game.cache.geometries) 
+            {
                
-			// 	const mesh = this.game.cache.geometries[meshName];
-			// 	let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
-			// 	meshActor = meshActor;
-			// 	meshActor.rootComponent.transform.scale.setTo(0.10);
-			// 	meshActor.staticMesh.Mesh = mesh;
-            // }
+				const mesh = this.game.cache.geometries[meshName];
+				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
+				meshActor = meshActor;
+				meshActor.rootComponent.transform.scale.setTo(0.10);
+				meshActor.staticMesh.Mesh = mesh;
+            }
 
 
 			// actor = this.Instantiate(XEngine2.TestActor);
@@ -48,7 +54,7 @@ namespace XEngine2 {
 			let gui = new dat.GUI();
 			let _that = this;
 
-			let controller = gui.add(actor.dirLight, 'intensity', 0, 10);
+			let controller = gui.add(this.dirLight, 'intensity', 0, 10);
 			controller.name('intensity');
 			controller.listen();
 			controller.onChange(function(value){
@@ -56,7 +62,7 @@ namespace XEngine2 {
 			});
 
 			
-			this.lightColor = '#' + actor.dirLight.color.getHexString();
+			this.lightColor = '#' + this.dirLight.color.getHexString();
 			
 			controller = gui.addColor( this, 'lightColor', this.lightColor).name('color1');
 			controller.onChange(function(value)
@@ -72,7 +78,7 @@ namespace XEngine2 {
 		}
 
 		private onValueChange(object: any, value: any) {
-			actor.dirLight.color.fromHexString(value);
+			this.dirLight.color.fromHexString(value);
 		}
 	}
 }

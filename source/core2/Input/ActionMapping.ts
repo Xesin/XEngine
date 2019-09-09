@@ -2,8 +2,8 @@ namespace XEngine2 {
     export class ActionMapping {
 
         public name:string;
-        public onKeyDown: Signal;
-        public onKeyUp: Signal;
+        private onKeyDown: Signal;
+        private onKeyUp: Signal;
 
         constructor(name: string)
         {

@@ -133,6 +133,7 @@ namespace XEngine2 {
 			}
 			if (this.time.update()) {
 				if (this.pause) { return; }
+				this.input.update();
 				this.sceneManager.update(this.time.deltaTime);
 				this.sceneManager.render(this.renderer);
 			}
