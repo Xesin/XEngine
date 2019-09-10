@@ -39,7 +39,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"float alpha = min(albedo.a, opacity.x);",
 				"if(alpha < alphaClip) discard;",
 				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
-				"float PhongTerm = PhongDiffuseTerm(vec3(0.7,0.5,1.0), surfaceNormal);",
+				"float PhongTerm = PhongDiffuseTerm(vec3(0.7,0.5,1.0), surfaceNormal, 1.0);",
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
 				"vec3 finalColor = PhongTerm * albedo.xyz + albedo.xyz * ambientColor;",
 				"fragColor.xyz = pow(finalColor * alpha, vec3(0.4545));",

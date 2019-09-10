@@ -96,9 +96,9 @@ namespace XEngine2
 
         public static PhongFunctions = 
         [
-            "float PhongDiffuseTerm(vec3 LightDir, vec3 objectNormal)",
+            "float PhongDiffuseTerm(vec3 LightDir, vec3 objectNormal, float atten)",
             "{",
-                "return max(dot(LightDir, objectNormal), 0.0);",
+                "return max(dot(LightDir, objectNormal), 0.0) / atten;",
             "}"
         ];
 
@@ -106,11 +106,11 @@ namespace XEngine2
         ShaderBlocks.PhongFunctions
         .concat(
         [
-            "vec3 BlinnSpecularColor(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, vec3 specular, float glosiness)",
+            "vec3 BlinnSpecularColor(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, vec3 specular, float glosiness, float atten)",
             "{",
                 "vec3 halfDir = normalize(lightDir + viewDir);",
                 "float ndh = dot(surfaceNormal, halfDir);",
-                "float specularTerm = pow(max(ndh, 0.0), glosiness);",
+                "float specularTerm = pow(max(ndh, 0.0), glosiness) / atten;",
                 "return specular * specularTerm;",
             "}",
         ]);

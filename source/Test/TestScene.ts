@@ -30,6 +30,19 @@ namespace XEngine2 {
             this.dirLight.transform.rotation.z = -75;
 			this.dirLight.intensity = 0.7;
 			this.dirLight.color.fromHexString("#f0dc81");
+
+			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
+            pointLightColor.fromHexString("#f2f7a5");
+			
+			let pointLight = new PointLight(game);
+
+			this["pointLight"] = pointLight;
+			pointLight.transform.position.y = 20;
+			pointLight.color = pointLightColor;
+
+			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, () => {
+				pointLight.hidden = !pointLight.hidden;
+			});
 			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
@@ -38,7 +51,6 @@ namespace XEngine2 {
 			actor.rootComponent.transform.scale.setTo(0.5);
 			for (const meshName in this.game.cache.geometries) 
             {
-               
 				const mesh = this.game.cache.geometries[meshName];
 				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
 				meshActor = meshActor;
@@ -51,13 +63,6 @@ namespace XEngine2 {
 			this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
 			this.columnsMat.alphaClip.value = 0;
 			this.columnsMat.blendMode = BlendMode.Multiply;
-
-
-			// actor = this.Instantiate(XEngine2.TestActor);
-			// actor.rootComponent.transform.position.x = -2;
-			// actor.rootComponent.transform.position.y = -0.5;
-			// actor.rootComponent.transform.position.z = -5;
-
 
 			let gui = new dat.GUI();
 			let _that = this;
@@ -83,6 +88,13 @@ namespace XEngine2 {
 			controller.listen();
 			controller.onChange(function(value){
 				_that.onAlphaChange(this.object, value);
+			});
+
+			controller = gui.add(pointLight, 'intensity', 0, 2000);
+			controller.name('pointLight intensity');
+			controller.listen();
+			controller.onChange(function(value){
+				this.object.value = value;
 			});
 
 		}

@@ -158,7 +158,7 @@ namespace XEngine2 {
 
 		private findAffectedLights(meshGroup: MeshGroup, sceneLights : Array<Light>)
 		{
-			return sceneLights.slice(0,4);
+			return sceneLights.filter((light) => !light.hidden).slice(0,4);
 		}
 
 		private renderMeshImmediate(renderObject: RenderObject, viewMatrix: Mat4x4, projectionMatrix: Mat4x4, material : Material = null)

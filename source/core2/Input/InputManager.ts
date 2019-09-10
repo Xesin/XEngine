@@ -97,7 +97,7 @@ namespace XEngine2 {
 				if (this.axisMappings.hasOwnProperty(name)) {
 					const element = this.axisMappings[name];
 					for (const keyCode in element) {
-						const keyCodeNum = keyCode as unknown as number;
+						const keyCodeNum = keyCode as any as number;
 						const axisMapping = element[keyCodeNum];
 						let axisvalue = 0;
 
@@ -178,7 +178,7 @@ namespace XEngine2 {
 				if (this.axisMappings.hasOwnProperty(name)) {
 					const element = this.axisMappings[name];
 					for (const keyCode in element) {
-						const keyCodeNum = keyCode as unknown as number;
+						const keyCodeNum = keyCode as any as number;
 						const axisMapping = element[keyCodeNum];
 						let axisvalue = 0;
 						
