@@ -56,6 +56,10 @@ namespace XEngine2 {
 					}
 					_this.inputDownHandler.call(_this, event);
 				});
+				document.addEventListener('pointerlockchange', function(event)
+				{
+					_this.pointerLocked = !_this.pointerLocked;
+				});
 				this.game.canvas.addEventListener("mouseup", function (event) {
 					_this.inputUpHandler.call(_this, event);
 				});
@@ -174,20 +178,22 @@ namespace XEngine2 {
 			this.pointer.y = inputPos.position.y;
 			this.onInputMove.dispatch(inputPos);
 
-			for (const name in this.axisMappings) {
-				if (this.axisMappings.hasOwnProperty(name)) {
-					const element = this.axisMappings[name];
-					for (const keyCode in element) {
-						const keyCodeNum = keyCode as any as number;
-						const axisMapping = element[keyCodeNum];
-						let axisvalue = 0;
-						
-						if(keyCodeNum == KEY_CODE.MOUSE_X)
-							axisvalue = inputPos.deltaX;
-						else if(keyCodeNum == KEY_CODE.MOUSE_Y)
-							axisvalue = inputPos.deltaY;
+			if(this.pointerLocked){
+				for (const name in this.axisMappings) {
+					if (this.axisMappings.hasOwnProperty(name)) {
+						const element = this.axisMappings[name];
+						for (const keyCode in element) {
+							const keyCodeNum = keyCode as any as number;
+							const axisMapping = element[keyCodeNum];
+							let axisvalue = 0;
+							
+							if(keyCodeNum == KEY_CODE.MOUSE_X)
+								axisvalue = inputPos.deltaX;
+							else if(keyCodeNum == KEY_CODE.MOUSE_Y)
+								axisvalue = inputPos.deltaY;
 
-						axisMapping.execute(axisvalue);
+							axisMapping.execute(axisvalue);
+						}
 					}
 				}
 			}
