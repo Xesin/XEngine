@@ -17,5 +17,11 @@ namespace XEngine2
             this.Mesh = Mesh;
             this.indices = indices;
         }
+
+        
+        public get castShadows() : boolean {
+            return this.Mesh.castShadows;
+        }
+        
     }
 }

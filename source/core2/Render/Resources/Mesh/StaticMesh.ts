@@ -10,6 +10,8 @@ namespace XEngine2
 		public topology: Topology;
 		public name: string;
 		public bounds: Bounds;
+		public castShadows = true;
+		public recieveShadows = true;
 
 		protected uvData: Array<number>;
 		protected vertexData: Array<number>;

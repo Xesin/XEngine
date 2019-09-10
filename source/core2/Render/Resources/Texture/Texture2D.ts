@@ -70,6 +70,11 @@ namespace XEngine2 {
 			return texture2D;
 		}
 
+		public release(gl: WebGL2RenderingContext)
+		{
+			gl.deleteTexture(this._texture);
+		}
+
 		public static CreateDefaultTextures(gl: WebGL2RenderingContext)
 		{
 			let blackData = new Uint8Array(4);
