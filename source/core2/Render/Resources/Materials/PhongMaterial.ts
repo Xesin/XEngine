@@ -17,6 +17,7 @@ namespace XEngine2
         public opacitySamplerName = "opacityTex";
         public colorName = "color";
         public ambientName = "ambient";
+        public alphaClipName = "alphaClip"
 
         public defaults = 
         {
@@ -24,7 +25,8 @@ namespace XEngine2
             "ambient" : new Vector4(1,1,1,0.025),
             "opacityTex" : "white",
             "normal" : "normal",
-            "albedo": "white"
+            "albedo": "white",
+            "alphaClip" : 0.6
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.PhongShader.vertexShader, ShaderMaterialLib.PhongShader.fragmentShader))
@@ -55,6 +57,11 @@ namespace XEngine2
         public get opacityTex(): Uniform
         {
             return this.shader.uniforms[this.opacitySamplerName];
+        }
+
+        public get alphaClip(): Uniform
+        {
+            return this.shader.uniforms[this.alphaClipName];
         }
     }
 }

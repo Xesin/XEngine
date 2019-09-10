@@ -39,7 +39,7 @@ namespace XEngine2 {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
-			let options = {stencil: true, antialias: true, alpha: false};
+			let options = {stencil: true, antialias: true, alpha: false, premultipliedAlpha: false};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
 			
 			this.opaqueRenderQueue = new Array();

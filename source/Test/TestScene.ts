@@ -7,6 +7,8 @@ namespace XEngine2 {
 		private lightColor: string;
 		public dirLight: DirectionalLight;
 
+		private columnsMat: BlinnPhongMaterial;
+
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
@@ -42,7 +44,13 @@ namespace XEngine2 {
 				meshActor = meshActor;
 				meshActor.rootComponent.transform.scale.setTo(0.10);
 				meshActor.staticMesh.Mesh = mesh;
-            }
+			}
+			
+			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
+
+			this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
+			this.columnsMat.alphaClip.value = 0;
+			this.columnsMat.blendMode = BlendMode.Multiply;
 
 
 			// actor = this.Instantiate(XEngine2.TestActor);
@@ -70,6 +78,13 @@ namespace XEngine2 {
 				_that.onValueChange(this.object, value);
 			});
 
+			controller = gui.add(this.columnsMat.color.value, 'w', 0, 1);
+			controller.name('alpha');
+			controller.listen();
+			controller.onChange(function(value){
+				_that.onAlphaChange(this.object, value);
+			});
+
 		}
 
 		private onFloatValueChange(object: any, value: any) {
@@ -79,6 +94,11 @@ namespace XEngine2 {
 
 		private onValueChange(object: any, value: any) {
 			this.dirLight.color.fromHexString(value);
+		}
+
+		private onAlphaChange(object: any, value: any)
+		{
+			(this.columnsMat.color.value as Vector4).w = value;
 		}
 	}
 }

@@ -80,10 +80,11 @@ namespace XEngine2
         .concat(
         [
             "in vec3 vWorldPos;",
-            "uniform sampler2D albedoTex;",
-            "uniform sampler2D opacityTex;",
             "uniform vec4 color;",
-            "uniform vec4 ambient;"
+            "uniform vec4 ambient;",
+            "uniform float alphaClip;",
+            "uniform sampler2D albedoTex;",
+            "uniform sampler2D opacityTex;"
         ]);
 
         public static BlinnPhongFragmentInputs =

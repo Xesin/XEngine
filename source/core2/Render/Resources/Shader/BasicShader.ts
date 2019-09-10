@@ -31,7 +31,7 @@ namespace XEngine2.ShaderMaterialLib{
             "void main(void) {",
 				"float alpha = vColor.a;",
 				"fragColor = vColor;",
-				"if(alpha < 0.9) discard;",
+				"if(alpha < 0.6) discard;",
             "}",
         ]);
     }

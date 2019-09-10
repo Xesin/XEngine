@@ -3,5 +3,6 @@ namespace XEngine2{
         Multiply,
         Add,
         Substract,
+        None
     }
 }

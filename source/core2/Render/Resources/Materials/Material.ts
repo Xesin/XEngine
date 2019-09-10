@@ -16,6 +16,10 @@ namespace XEngine2 {
         public lightsUniformName = "light";
 
         public renderQueue = RenderQueue.OPAQUE;
+        public cullMode = CullMode.BACK;
+        public blendMode = BlendMode.Multiply;
+        public writeDepthEnabled = true;
+        public depthTestEnabled = true;
 
         public static currentMaterial: Material;
 
@@ -147,11 +151,56 @@ namespace XEngine2 {
             {
                 gl.useProgram(this.ShaderProgram);
                 Material.currentMaterial = this;
+                
+                gl.depthMask(this.writeDepthEnabled);
+                if(this.depthTestEnabled)
+                {
+                    gl.enable(gl.DEPTH_TEST);
+                    gl.depthFunc(gl.LEQUAL);
+                }
+                else
+                {
+                    gl.disable(gl.DEPTH_TEST);
+                }
 
-                // for (let i = 0; i < this.shader.samplers.length; i++) {
-                //     const sampler = this.shader.samplers[i];
-                //     gl.bindTexture(sampler.samplerNumber, (sampler.value as Texture2D)._texture);
-                // }
+                if(this.renderQueue == RenderQueue.TRANSPARENT)
+                {
+                    gl.enable(gl.BLEND);
+                    gl.blendEquation(gl.FUNC_ADD);
+                    switch (this.blendMode) {
+    					case BlendMode.Multiply:
+                            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                            break;
+                        case BlendMode.Add:
+                            gl.blendFunc(gl.ONE, gl.ONE);
+                            break;
+                        case BlendMode.Substract:
+                            gl.blendFunc(gl.ONE, gl.ONE);
+                            gl.blendEquation(gl.FUNC_SUBTRACT);
+                            break;
+                        case BlendMode.None:
+                            gl.disable(gl.BLEND);
+    				}
+                }
+                else
+                {
+                    gl.disable(gl.BLEND);
+                }
+
+                switch (this.cullMode) {
+                    case CullMode.BACK:
+                        gl.cullFace(gl.BACK);
+                        break;
+                    case CullMode.FRONT:
+                        gl.cullFace(gl.FRONT);
+                        break;
+                    case CullMode.BOTH:
+                        gl.cullFace(gl.FRONT_AND_BACK);
+                        break;
+                    case CullMode.NONE:
+                        gl.cullFace(gl.NONE);
+                        break;
+                }                
             }    
         }
 

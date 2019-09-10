@@ -5,10 +5,11 @@ namespace XEngine2 {
 		private static readonly _zero = new Vector4(0);
 		public zOffset = 0;
 
-		public x: number;
-		public y: number;
-		public z: number;
-		public w: number;
+		private dirty = true;
+		private _x: number;
+		private _y: number;
+		private _z: number;
+		private _w: number;
 		private arr: Array<number>;
 
 		constructor (x = 1, y = x, z = x, w = x) {
@@ -19,6 +20,58 @@ namespace XEngine2 {
 			this.arr = new Array(3);
 
 			this.zOffset = 0;
+		}
+
+		public get Dirty() : boolean {
+			return this.dirty;
+		}
+		
+		
+		public set Dirty(v : boolean) {
+			this.dirty = v;
+		}
+
+		
+		public set x(v : number) {
+			this.Dirty = true;
+			this._x = v;
+		}
+		
+		
+		public get x() : number {
+			return this._x;
+		}
+
+		public set y(v : number) {
+			this.Dirty = true;
+			this._y = v;
+		}
+		
+		
+		public get y() : number {
+			return this._y;
+		}
+
+		public set z(v : number) 
+		{
+			this.Dirty = true;
+			this._z = v;
+		}
+		
+		
+		public get z() : number {
+			return this._z;
+		}
+
+		public set w(v : number) 
+		{
+			this.Dirty = true;
+			this._w = v;
+		}
+		
+		
+		public get w() : number {
+			return this._w;
 		}
 
 		public setTo(x: number, y = x, z = x, w = x): Vector4 {

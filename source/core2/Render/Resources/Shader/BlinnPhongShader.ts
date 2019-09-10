@@ -42,7 +42,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec4 opacity = texture(opacityTex, uv);",
 				"float alpha = min(albedo.a, opacity.x);",
 
-				"if(alpha < 0.6) discard;",
+				"if(alpha < alphaClip) discard;",
 				"vec3 finalColor = albedo.xyz;",
 				"#ifdef LIGHTNING_ON",
 					"vec3 lightsColor = vec3(0.0);",
@@ -75,7 +75,7 @@ namespace XEngine2.ShaderMaterialLib{
 					"finalColor = lightsColor",
 						"+ albedo.xyz * ambientColor;",
 				"#endif",
-				"fragColor.xyz = pow(finalColor, vec3(0.4545));",
+				"fragColor.xyz = pow(finalColor * alpha, vec3(0.4545));",
 				"fragColor.a = alpha;",
             "}",
         ]);

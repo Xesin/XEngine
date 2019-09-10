@@ -26,7 +26,7 @@ namespace XEngine2 {
 
         public get Dirty()
         {
-            return this.bDirty || ((this.value instanceof Vector3) ? (this.value as Vector3).Dirty : false)
+            return this.bDirty || ((this.value instanceof Vector3 || this.value instanceof Vector4) ? (this.value as Vector3 | Vector4).Dirty : false)
         }
 
         
