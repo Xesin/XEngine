@@ -13,14 +13,7 @@ namespace XEngine2
             super(game);
             this.canUpdate = true;
 
-            let pointLightColor = new Color(0.9,0.4,0.8,1.0);
-            pointLightColor.fromHexString("#f2f7a5");
-			
-			let pointLight = new PointLight(game);
-
-			this["pointLight"] = pointLight;
-			pointLight.transform.position.y = 20;
-			pointLight.color = pointLightColor;
+            
 
             this.camera = new CameraComponent(game);
 			this.camera.setupAttachtment(this.rootComponent);
@@ -29,10 +22,6 @@ namespace XEngine2
 			this.game.input.bindAxis("MoveRight", this, this.moveRight);
 			this.game.input.bindAxis("LookUp", this, this.lookUp);
 			this.game.input.bindAxis("LookLeft", this, this.lookLeft);
-
-			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, () => {
-				pointLight.hidden != pointLight.hidden;
-			});
 
             game.sceneManager.currentScene.mainCamera = this.camera;
 		}
