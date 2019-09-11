@@ -32,9 +32,10 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.BlinnPhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
-		.concat(ShaderBlocks.BlinnPhongFunctions)
 		.concat([			
 			"out vec4 fragColor;",
+			"uniform float smoothness;",
+			"uniform vec4 specularColor;",
 
 			"void main(void) {",
 
@@ -44,40 +45,22 @@ namespace XEngine2.ShaderMaterialLib{
 
 				"if(alpha < alphaClip) discard;",
 				"vec3 finalColor = albedo.xyz;",
-				"#ifdef LIGHTNING_ON",
-					"vec3 lightsColor = vec3(0.0);",
-					"for(int i = 0; i < MAX_LIGHTS; i++)",
-					"{",
-						"Light curLight = light[i];",
-						"vec3 lightVector = curLight.position.xyz - vWorldPos * curLight.position.w;",
-						"vec3 lightDir = normalize(lightVector);",
-						"vec3 lightColor = curLight.color * curLight.intensity;",
-						"vec3 spotDirection = curLight.spotLightDirection.xyz;",
-						"float atten = 1.0;",
-						"float rangeFade = dot(lightVector, lightVector) * curLight.lightAttenuation.x;",
-						"rangeFade = min(1.0, max(0.0, 1.0 - rangeFade * rangeFade));",
-						"rangeFade *= rangeFade;",
 
-						"float spotFade = dot(spotDirection, lightDir);",
-						"spotFade = min(1.0, max(0.0,spotFade * curLight.lightAttenuation.z + curLight.lightAttenuation.w));",
-						"spotFade *= spotFade;",
+				"vec3 lightsColor = vec3(0.0);",
+				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
+				"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
+				"for(int i = 0; i < MAX_LIGHTS; i++)",
+				"{",
+					"Light curLight = light[i];",
+					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor.xyz, albedo.xyz);",
+					"lightsColor += DiffuseLightColor; ",
+				"}",
 
-						"atten = spotFade * rangeFade / max(dot(lightVector, lightVector), 0.00001);",
-						"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
-						"vec3 DiffuseLightColor = PhongDiffuseTerm(lightDir, surfaceNormal, atten) * lightColor;",
+				"vec3 ambientColor = ambient.xyz * ambient.w;",
 
-						"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
-						"vec3 specularColor = BlinnSpecularColor(lightDir, viewDir, surfaceNormal, vec3(0.2), 13.0, atten) * lightColor;",
+				"finalColor = lightsColor",
+					"+ albedo.xyz * ambientColor;",
 
-						"lightsColor += DiffuseLightColor * albedo.xyz ",
-										"+ specularColor;",
-					"}",
-
-					"vec3 ambientColor = ambient.xyz * ambient.w;",
-
-					"finalColor = lightsColor",
-						"+ albedo.xyz * ambientColor;",
-				"#endif",
 				"fragColor.xyz = pow(finalColor , vec3(0.4545)) * alpha;",
 				"fragColor.a = alpha;",
             "}",

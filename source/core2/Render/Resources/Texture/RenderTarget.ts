@@ -23,6 +23,14 @@ namespace XEngine2 {
 		{
 			let texture = Texture2D.createTexture("", this.width, this.height, null, this.wrapMode, this.generateMipmaps, gl, false);
 
+
+			if(!this.frameBuffer)
+			{
+				this.frameBuffer = gl.createFramebuffer();
+			}
+
+			gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+
 			if(!this.renderBuffer)
 			{
 				this.renderBuffer = gl.createRenderbuffer();
@@ -35,12 +43,7 @@ namespace XEngine2 {
 				gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
 			}
 
-			if(!this.frameBuffer)
-			{
-				this.frameBuffer = gl.createFramebuffer();
-			}
-
-			gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+			
 
 			gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentType, gl.TEXTURE_2D, texture._texture, 0);
 			this.attachedTextures[attachmentType] = texture;

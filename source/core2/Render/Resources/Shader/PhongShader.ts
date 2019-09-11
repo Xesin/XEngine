@@ -29,7 +29,7 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.PhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
-		.concat(ShaderBlocks.PhongFunctions)
+		.concat(ShaderBlocks.Lightning)
 		.concat([			
 			"out vec4 fragColor;",
 
@@ -38,11 +38,16 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec4 opacity = texture(opacityTex, uv);",
 				"float alpha = min(albedo.a, opacity.x);",
 				"if(alpha < alphaClip) discard;",
+				"vec3 lightsColor = vec3(0.0);",
 				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
-				"float PhongTerm = PhongDiffuseTerm(vec3(0.7,0.5,1.0), surfaceNormal, 1.0);",
+				"for(int i = 0; i < MAX_LIGHTS; i++)",
+				"{",
+					"Light curLight = light[i];",
+					"lightsColor += PhongLightning(i, surfaceNormal, vWorldPos, albedo.xyz);",
+				"}",
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
-				"vec3 finalColor = PhongTerm * albedo.xyz + albedo.xyz * ambientColor;",
-				"fragColor.xyz = pow(finalColor * alpha, vec3(0.4545));",
+				"vec3 finalColor = lightsColor + albedo.xyz * ambientColor;",
+				"fragColor.xyz = pow(lightsColor * alpha, vec3(0.4545));",
 				"fragColor.a = alpha;",
             "}",
         ]);
