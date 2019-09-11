@@ -97,6 +97,13 @@ namespace XEngine2 {
 				this.object.value = value;
 			});
 
+			controller = gui.add(pointLight, 'radius', 0, 200);
+			controller.name('radius');
+			controller.listen();
+			controller.onChange(function(value){
+				this.object.value = value;
+			});
+
 		}
 
 		private onFloatValueChange(object: any, value: any) {

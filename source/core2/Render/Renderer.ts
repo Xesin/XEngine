@@ -193,6 +193,7 @@ namespace XEngine2 {
 						let lightColorUniform = material.getLightUniform(i, 'color');
 						let lightIntensityUniform = material.getLightUniform(i, 'intensity');
 						let lightTypeUniform = material.getLightUniform(i, 'type');
+						let lightRangeUniform = material.getLightUniform(i, 'range');
 						if(light instanceof DirectionalLight)
 						{
 							let rotMatrix = new Mat4x4();
@@ -200,11 +201,13 @@ namespace XEngine2 {
 							let dirLight = new Vector3(1.0, 0.0, 0.0);
 							lightPositionUniform.value =  dirLight.multiplyMatrix(rotMatrix.elements).normalize();
 							lightTypeUniform.value = 0;
+							lightRangeUniform.value = 1;
 						}
 						else if(light instanceof PointLight)
 						{
 							lightTypeUniform.value = 1;
 							lightPositionUniform.value = light.transform.position;
+							lightRangeUniform.value = 1 / Math.max(light.radius * light.radius, 0.00001);
 						}
 						lightIntensityUniform.value = light.intensity;
 						lightColorUniform.value = light.color.getVector3();

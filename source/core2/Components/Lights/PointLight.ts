@@ -8,6 +8,7 @@ namespace XEngine2 {
         constructor(game: Game)
         {
             super(game);
+            this.radius = 100;
         }
     }
 }

@@ -98,7 +98,7 @@ namespace XEngine2
         [
             "float PhongDiffuseTerm(vec3 LightDir, vec3 objectNormal, float atten)",
             "{",
-                "return max(dot(LightDir, objectNormal), 0.0) / atten;",
+                "return max(dot(LightDir, objectNormal), 0.0) * atten;",
             "}"
         ];
 
@@ -110,7 +110,7 @@ namespace XEngine2
             "{",
                 "vec3 halfDir = normalize(lightDir + viewDir);",
                 "float ndh = dot(surfaceNormal, halfDir);",
-                "float specularTerm = pow(max(ndh, 0.0), glosiness) / atten;",
+                "float specularTerm = pow(max(ndh, 0.0), glosiness) * atten;",
                 "return specular * specularTerm;",
             "}",
         ]);
