@@ -26,8 +26,8 @@ namespace XEngine2 {
 			this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [1]);
 
 			this.dirLight = new DirectionalLight(game);
-            this.dirLight.transform.rotation.y = 45;
-            this.dirLight.transform.rotation.z = -75;
+            this.dirLight.transform.rotation.y = -30;
+            this.dirLight.transform.rotation.x = 50;
 			this.dirLight.intensity = 0.7;
 			this.dirLight.color.fromHexString("#f0dc81");
 

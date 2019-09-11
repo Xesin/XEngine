@@ -28,7 +28,7 @@ namespace XEngine2.ShaderMaterialLib{
 		public static readonly fragmentShader =
 		ShaderBlocks.glVersion300
 		.concat(["precision mediump float;"])
-		.concat(ShaderBlocks.enableLightning)
+		.concat(ShaderBlocks.Lightning)
 		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.BlinnPhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
@@ -49,27 +49,28 @@ namespace XEngine2.ShaderMaterialLib{
 					"for(int i = 0; i < MAX_LIGHTS; i++)",
 					"{",
 						"Light curLight = light[i];",
-						"if(curLight.isActive){",
-							"vec3 lightDir = curLight.position;",
-							"float atten = 1.0;",
-							"if(curLight.type != 0){",
-								"vec3 dir = curLight.position - vWorldPos;",
-								"lightDir = normalize(dir);",
-								"float rangeFade = dot(dir, dir) * curLight.range;",
-								"rangeFade = min(1.0, max(0.0, 1.0 - rangeFade * rangeFade));",
-								"rangeFade *= rangeFade;",
-								"atten = rangeFade / max(dot(dir, dir), 0.00001);",
-							"}",
-							"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
-							"vec3 lightColor = curLight.color * curLight.intensity;",
-							"vec3 DiffuseLightColor = PhongDiffuseTerm(lightDir, surfaceNormal, atten) * lightColor;",
+						"vec3 lightVector = curLight.position.xyz - vWorldPos * curLight.position.w;",
+						"vec3 lightDir = normalize(lightVector);",
+						"vec3 lightColor = curLight.color * curLight.intensity;",
+						"vec3 spotDirection = curLight.spotLightDirection.xyz;",
+						"float atten = 1.0;",
+						"float rangeFade = dot(lightVector, lightVector) * curLight.lightAttenuation.x;",
+						"rangeFade = min(1.0, max(0.0, 1.0 - rangeFade * rangeFade));",
+						"rangeFade *= rangeFade;",
 
-							"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
-							"vec3 specularColor = BlinnSpecularColor(lightDir, viewDir, surfaceNormal, vec3(0.2), 13.0, atten) * lightColor;",
+						"float spotFade = dot(spotDirection, lightDir);",
+						"spotFade = min(1.0, max(0.0,spotFade * curLight.lightAttenuation.z + curLight.lightAttenuation.w));",
+						"spotFade *= spotFade;",
 
-							"lightsColor += DiffuseLightColor * albedo.xyz ",
-											"+ specularColor;",
-						"}",
+						"atten = spotFade * rangeFade / max(dot(lightVector, lightVector), 0.00001);",
+						"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
+						"vec3 DiffuseLightColor = PhongDiffuseTerm(lightDir, surfaceNormal, atten) * lightColor;",
+
+						"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
+						"vec3 specularColor = BlinnSpecularColor(lightDir, viewDir, surfaceNormal, vec3(0.2), 13.0, atten) * lightColor;",
+
+						"lightsColor += DiffuseLightColor * albedo.xyz ",
+										"+ specularColor;",
 					"}",
 
 					"vec3 ambientColor = ambient.xyz * ambient.w;",

@@ -73,6 +73,17 @@ namespace XEngine2 {
 			return this;
 		}
 
+		public getColumn(columnIndex) : Vector4 
+		{
+			let te = this.elements;
+			return new Vector4 (
+				te[ 0 + 4 * columnIndex],
+				te[ 1 + 4 * columnIndex],
+				te[ 2 + 4 * columnIndex],
+				te[ 3 + 4 * columnIndex]
+			)
+		}
+
 		public rotateX()
 		{
 

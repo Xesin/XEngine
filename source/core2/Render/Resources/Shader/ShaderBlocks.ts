@@ -149,15 +149,16 @@ namespace XEngine2
             "}",
         ];
 
-        public static enableLightning =
+        public static Lightning =
         [
             "#define LIGHTNING_ON",
             "#define MAX_LIGHTS 5",
             "struct Light{",
-                "highp float intensity;",
-                "highp vec3 position;",
+                "highp vec4 position;",
+                "highp vec4 lightAttenuation;",
+                "highp vec4 spotLightDirection;",
                 "highp vec3 color;",
-                "highp float range;",
+                "highp float intensity;",
                 "int type;",
                 "bool isActive;",
             "};",

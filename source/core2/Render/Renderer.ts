@@ -185,37 +185,53 @@ namespace XEngine2 {
 			for(let i = 0; i < 5; i++)
 			{
 				let light = renderObject.affectedLights[i];
-				let lightActiverUniform = material.getLightUniform(i, 'isActive');
-				if(lightActiverUniform)
+				let lightPositionUniform = material.getLightUniform(i, 'position');
+				if(lightPositionUniform)
 				{
+					let lightColorUniform = material.getLightUniform(i, 'color');
+					let lightIntensityUniform = material.getLightUniform(i, 'intensity');
+					let lightAttenuationUniform = material.getLightUniform(i, 'lightAttenuation');
+					let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
+					spotLightDirectionUniform.value = new Vector4(0,0,0,0);
+					lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
 					if(light){
-						let lightPositionUniform = material.getLightUniform(i, 'position');
-						let lightColorUniform = material.getLightUniform(i, 'color');
-						let lightIntensityUniform = material.getLightUniform(i, 'intensity');
-						let lightTypeUniform = material.getLightUniform(i, 'type');
-						let lightRangeUniform = material.getLightUniform(i, 'range');
 						if(light instanceof DirectionalLight)
 						{
-							let rotMatrix = new Mat4x4();
-							rotMatrix.extractRotation(light.transform.Matrix)
-							let dirLight = new Vector3(1.0, 0.0, 0.0);
-							lightPositionUniform.value =  dirLight.multiplyMatrix(rotMatrix.elements).normalize();
-							lightTypeUniform.value = 0;
-							lightRangeUniform.value = 1;
+							let dirLight = light.transform.Matrix.getColumn(2);
+							dirLight.x = -dirLight.x;
+							dirLight.y = -dirLight.y;
+							dirLight.z = -dirLight.z;
+							lightPositionUniform.value =  dirLight;
 						}
 						else if(light instanceof PointLight)
 						{
-							lightTypeUniform.value = 1;
-							lightPositionUniform.value = light.transform.position;
-							lightRangeUniform.value = 1 / Math.max(light.radius * light.radius, 0.00001);
+							lightPositionUniform.value = light.transform.Matrix.getColumn(3);;
+							lightAttenuationUniform.value.x = 1 / Math.max(light.radius * light.radius, 0.00001);
+							if(light instanceof SpotLight)
+							{
+								let v = light.transform.Matrix.getColumn(2);
+								v.x = -v.x;
+								v.y = -v.y;
+								v.z = -v.z;
+								spotLightDirectionUniform.value = v;
+
+								let outerRad = Mathf.TO_RADIANS * 0.5 * light.spotAngle;
+								let outerCos = Math.cos(outerRad);
+								let outerTan = Math.tan(outerRad);
+								let innerCos =
+									Math.cos(Math.atan(((46 / 64) * outerTan)));
+
+								let angleRange = Math.max(innerCos - outerCos, 0.001);
+								lightAttenuationUniform.value.z = 1 / angleRange;
+								lightAttenuationUniform.value.w = -outerCos * lightAttenuationUniform.value.z;
+							}
 						}
 						lightIntensityUniform.value = light.intensity;
 						lightColorUniform.value = light.color.getVector3();
-						lightActiverUniform.value = true;
 					}
 					else
 					{
-						lightActiverUniform.value = false;
+						lightColorUniform.value = new Vector3(0,0,0);
 					}
 				}
 			}
