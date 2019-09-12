@@ -66,7 +66,7 @@ namespace XEngine2 {
 
 			this.helperMatrix.extractRotation(this.Matrix);
 
-			forwardVector.multiplyMatrix(this.helperMatrix.elements);
+			forwardVector.multiplyMatrix(this.helperMatrix);
 			return forwardVector;
 		}
 
@@ -76,8 +76,7 @@ namespace XEngine2 {
 
 			this.helperMatrix.extractRotation(this.Matrix);
 
-			rightVector.multiplyMatrix(this.helperMatrix.elements);
-			// this.vf.reflect(this.reflectV);
+			rightVector.multiplyMatrix(this.helperMatrix);
 			return rightVector;
 		}
 		

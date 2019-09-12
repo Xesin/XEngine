@@ -50,14 +50,14 @@ namespace XEngine2 {
 			return this;
 		}
 
-		public multiplyMatrix(matrix: Array<number> | Float32Array): Vector3 {
+		public multiplyMatrix(matrix:Mat4x4): Vector3 {
 			let x = this.x,
 			y = this.y;
 			let z = this.z;
 
-			this.x = x * matrix[0] + y * matrix[1] + z * matrix[2] + matrix[3];
-			this.y = x * matrix[4] + y * matrix[5] + z * matrix[6] + matrix[7];
-			this.z = x * matrix[8] + y * matrix[9] + z * matrix[10] + matrix[11];
+			this.x = x * matrix.getValue(0, 0) + y * matrix.getValue(0, 1) + z * matrix.getValue(0, 2) + matrix.getValue(0, 3);
+			this.y = x * matrix.getValue(1, 0) + y * matrix.getValue(1, 1) + z * matrix.getValue(1, 2) + matrix.getValue(1, 3);
+			this.z = x * matrix.getValue(2, 0) + y * matrix.getValue(2, 1) + z * matrix.getValue(2, 2) + matrix.getValue(2, 3);
 			return this;
 		}
 

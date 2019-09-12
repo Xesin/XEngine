@@ -84,6 +84,11 @@ namespace XEngine2 {
 			)
 		}
 
+		public getValue(column: number, row: number) : number
+		{
+			return this.elements[ row + 4 * column];
+		}
+
 		public rotateX()
 		{
 

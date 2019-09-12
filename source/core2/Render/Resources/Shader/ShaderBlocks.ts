@@ -163,17 +163,16 @@ namespace XEngine2
                 "return max(dot(LightDir, objectNormal), 0.0);",
             "}",
 
-            "float SpecularAttenuation(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float roughness)",
+            "float SpecularAttenuation(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float smoothness, float specular)",
             "{",
                 "vec3 halfDir = normalize(lightDir + viewDir);",
                 "float nh = max(dot(surfaceNormal, halfDir), 0.0);",
-                "float lh = max(dot(lightDir, halfDir), 0.0);",
-                "float d = nh * nh * (roughness * roughness - 1.0) + 1.00001;",
-                "float normalizationTerm = roughness * 4.0 + 2.0;",
-                "float specularTerm = roughness * roughness;",
+
+
                 "float cosAngIncidence = dot(surfaceNormal, lightDir);",
                 "cosAngIncidence = clamp(cosAngIncidence, 0.0, 1.0);",
-                "specularTerm /= (d * d) * max(0.1, lh * lh) * normalizationTerm;",
+
+                "float specularTerm = pow(nh, specular*128.0) * smoothness;",
                 "specularTerm = cosAngIncidence != 0.0 ? specularTerm : 0.0;",
                 "return specularTerm;",
             "}",
@@ -190,7 +189,7 @@ namespace XEngine2
                 "return finalColor;",
             "}",
 
-            "vec3 BlinnPhongLightning(int i, vec3 surfaceNormal, vec3 vWorldPos, vec3 viewDir, float smoothness, vec3 specularColor, vec3 albedo){",
+            "vec3 BlinnPhongLightning(int i, vec3 surfaceNormal, vec3 vWorldPos, vec3 viewDir, float smoothness, vec4 specularColor, vec3 albedo){",
                 "Light curLight = light[i];",
                 "vec3 lightVector = curLight.position.xyz - vWorldPos * curLight.position.w;",
                 "vec3 lightDir = normalize(lightVector);",
@@ -198,12 +197,9 @@ namespace XEngine2
                 "float atten = getLightAttenuation(curLight, lightVector, lightDir);",
                 "float diffuse = DiffuseAttenuation(lightDir, surfaceNormal);",
 
-                "float perceptualRoughness = 1.0 - smoothness;",
-                "float roughness = perceptualRoughness * perceptualRoughness;",
+                "float specular = SpecularAttenuation(lightDir, viewDir, surfaceNormal, smoothness, specularColor.w);",
 
-                "float specular = SpecularAttenuation(lightDir, viewDir, surfaceNormal, roughness);",
-
-                "vec3 finalSpecular = specular * specularColor * lightColor;",
+                "vec3 finalSpecular = specular * specularColor.xyz * lightColor;",
                 
                 "vec3 finalColor = (albedo * diffuse * lightColor) + (finalSpecular * atten);",
                 "return finalColor;",
