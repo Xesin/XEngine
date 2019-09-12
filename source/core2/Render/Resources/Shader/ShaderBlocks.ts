@@ -167,12 +167,10 @@ namespace XEngine2
             "{",
                 "vec3 halfDir = normalize(lightDir + viewDir);",
                 "float nh = max(dot(surfaceNormal, halfDir), 0.0);",
-
-
                 "float cosAngIncidence = dot(surfaceNormal, lightDir);",
                 "cosAngIncidence = clamp(cosAngIncidence, 0.0, 1.0);",
 
-                "float specularTerm = pow(nh, specular*128.0) * smoothness;",
+                "float specularTerm = pow(nh, smoothness*128.0) * specular;",
                 "specularTerm = cosAngIncidence != 0.0 ? specularTerm : 0.0;",
                 "return specularTerm;",
             "}",
@@ -201,7 +199,7 @@ namespace XEngine2
 
                 "vec3 finalSpecular = specular * specularColor.xyz * lightColor;",
                 
-                "vec3 finalColor = (albedo * diffuse * lightColor) + (finalSpecular * atten);",
+                "vec3 finalColor = (albedo * diffuse * lightColor * atten) + (finalSpecular * atten);",
                 "return finalColor;",
             "}",
 

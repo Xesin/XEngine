@@ -23,8 +23,8 @@ namespace XEngine2
             "normal" : "normal",
             "albedo": "white",
             "alphaClip" : 0.6,
-            "smoothness" : 0.3,
-            "specularColor": new Vector4(0.3,0.3,0.3,1.0)
+            "smoothness" : 0.2,
+            "specularColor": new Vector4(1,1,1,0.2)
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.BlinnPhongShader.vertexShader, ShaderMaterialLib.BlinnPhongShader.fragmentShader))
