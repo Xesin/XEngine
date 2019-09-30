@@ -42,7 +42,7 @@ namespace XEngine {
 		}
 
 		public initialize(material: Material, renderer: Renderer) {
-			this.gl = renderer.context;
+			this.gl = renderer.gl;
 			renderer.bindMaterial(material);
 			let attributes = material.getAttributes(renderer);
 			let stride = material.getAttrStride();

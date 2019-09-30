@@ -61,8 +61,9 @@ namespace XEngine2.ShaderMaterialLib{
 				"finalColor = lightsColor",
 					"+ albedo.xyz * ambientColor;",
 
-				"fragColor.xyz = pow(finalColor , vec3(0.4545)) * alpha;",
+				"fragColor.xyz = pow(finalColor , vec3(0.4545));",
 				"fragColor.a = alpha;",
+				"fragColor.rgb *= fragColor.a;",
             "}",
         ]);
     }

@@ -21,34 +21,39 @@ namespace XEngine2 {
 
 		public addAttachment(gl: WebGL2RenderingContext ,attachmentType: number)
 		{
-			let texture = Texture2D.createTexture("", this.width, this.height, null, this.wrapMode, this.generateMipmaps, gl, false);
+			if(!this.attachedTextures[attachmentType]){
+				let texture = Texture2D.createTexture("", this.width, this.height, null, this.wrapMode, this.generateMipmaps, gl, false);
 
 
-			if(!this.frameBuffer)
+				if(!this.frameBuffer)
+				{
+					this.frameBuffer = gl.createFramebuffer();
+				}
+
+				gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+
+				if(!this.renderBuffer)
+				{
+					this.renderBuffer = gl.createRenderbuffer();
+					gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+					gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.width, this.height);
+					gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+				}
+				else
+				{
+					gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+				}
+
+				
+
+				gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentType, gl.TEXTURE_2D, texture._texture, 0);
+				this.attachedTextures[attachmentType] = texture;
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			} else
 			{
-				this.frameBuffer = gl.createFramebuffer();
+				console.warn("Attachment of type ", attachmentType, " already attached");
 			}
-
-			gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-
-			if(!this.renderBuffer)
-			{
-				this.renderBuffer = gl.createRenderbuffer();
-				gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
-				gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.width, this.height);
-				gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
-			}
-			else
-			{
-				gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
-			}
-
-			
-
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentType, gl.TEXTURE_2D, texture._texture, 0);
-			this.attachedTextures[attachmentType] = texture;
-			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		}
 
 		public bind(gl: WebGL2RenderingContext)

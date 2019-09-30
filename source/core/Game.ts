@@ -213,7 +213,7 @@ namespace XEngine {
 			this.load = new XEngine.Loader(this);
 			this.camera = new Camera(this);
 			this.renderer = new Renderer(this, this.canvas);
-			this.context = this.renderer.context;
+			this.context = this.renderer.gl;
 			this.resourceManager = new ResourceManager(this.context);
 			this.renderer.init();
 			this.scale = new ScaleManager(this);

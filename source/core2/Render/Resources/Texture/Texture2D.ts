@@ -44,6 +44,7 @@ namespace XEngine2 {
 
 			gl.bindTexture(gl.TEXTURE_2D, texture);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+			// gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 
 			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, gl.UNSIGNED_BYTE, data);
 

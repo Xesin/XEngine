@@ -41,7 +41,7 @@ namespace XEngine2 {
 			this.game = game;
 			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 1.0 };
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
-			let options = {stencil: true, antialias: true, alpha: false, premultipliedAlpha: false};
+			let options = {stencil: true, antialias: true, alpha: false};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
 			
 			this.opaqueRenderQueue = new Array();
@@ -58,9 +58,14 @@ namespace XEngine2 {
 				this.gl = null;
 			} else {
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
+
+				this.gl.colorMask(false, false, false, true);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+				this.gl.colorMask(true, true, true, false);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT
 					| this.gl.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
-					this.gl.colorMask(true, true, true, true);
+
 				this.gl.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
 
 				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader, ShaderMaterialLib.ErrorShader.fragmentShader))

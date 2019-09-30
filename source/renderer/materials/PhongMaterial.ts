@@ -161,31 +161,31 @@ namespace XEngine {
 		public bind(renderer: Renderer) {
 			XEngine.Material.prototype.bind.call(this, renderer);
 			if (this.albedoTexture) {
-				renderer.bindTexture(this.albedoTexture, renderer.context.TEXTURE0);
+				renderer.bindTexture(this.albedoTexture, renderer.gl.TEXTURE0);
 			} else {
-				renderer.bindTexture(null, renderer.context.TEXTURE0);
+				renderer.bindTexture(null, renderer.gl.TEXTURE0);
 			}
 			if (this.normalTexture) {
-				renderer.bindTexture(this.normalTexture, renderer.context.TEXTURE1);
+				renderer.bindTexture(this.normalTexture, renderer.gl.TEXTURE1);
 			} else {
-				renderer.bindTexture(null, renderer.context.TEXTURE1);
+				renderer.bindTexture(null, renderer.gl.TEXTURE1);
 			}
 			if (this.opacityMask) {
-				renderer.bindTexture(this.opacityMask, renderer.context.TEXTURE2);
+				renderer.bindTexture(this.opacityMask, renderer.gl.TEXTURE2);
 			} else {
-				renderer.bindTexture(null, renderer.context.TEXTURE2);
+				renderer.bindTexture(null, renderer.gl.TEXTURE2);
 			}
 
 			if (this.ambientTexture) {
-				renderer.bindTexture(this.ambientTexture, renderer.context.TEXTURE3);
+				renderer.bindTexture(this.ambientTexture, renderer.gl.TEXTURE3);
 			} else {
-				renderer.bindTexture(null, renderer.context.TEXTURE3);
+				renderer.bindTexture(null, renderer.gl.TEXTURE3);
 			}
 
 			if (this.specularTexture) {
-				renderer.bindTexture(this.specularTexture, renderer.context.TEXTURE4);
+				renderer.bindTexture(this.specularTexture, renderer.gl.TEXTURE4);
 			} else {
-				renderer.bindTexture(null, renderer.context.TEXTURE4);
+				renderer.bindTexture(null, renderer.gl.TEXTURE4);
 			}
 		}
 
@@ -198,9 +198,9 @@ namespace XEngine {
 			let attrs = super.getAttributes(renderer);
 			let baseStride = super.getAttrStride();
 			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "aNormal"),
+				gpuLoc: this.getAttribLocation(renderer.gl, "aNormal"),
 				items: 3,
-				type: renderer.context.FLOAT,
+				type: renderer.gl.FLOAT,
 				normalized: true,
 				offset: baseStride,
 			});

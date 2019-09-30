@@ -83,27 +83,27 @@ namespace XEngine {
 		public getAttributes(renderer: Renderer): Array<any> {
 			let attrs = new Array();
 			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "aVertexPosition"),
+				gpuLoc: this.getAttribLocation(renderer.gl, "aVertexPosition"),
 				items: 3,
 				normalized: false,
 				offset: 0,
-				type: renderer.context.FLOAT,
+				type: renderer.gl.FLOAT,
 			},
 			);
 			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "vUv"),
+				gpuLoc: this.getAttribLocation(renderer.gl, "vUv"),
 				items: 2,
 				normalized: false,
 				offset: 12,
-				type: renderer.context.FLOAT,
+				type: renderer.gl.FLOAT,
 			},
 			);
 			attrs.push({
-				gpuLoc: this.getAttribLocation(renderer.context, "aVertexColor"),
+				gpuLoc: this.getAttribLocation(renderer.gl, "aVertexColor"),
 				items: 4,
 				normalized: false,
 				offset: 20,
-				type: renderer.context.FLOAT,
+				type: renderer.gl.FLOAT,
 			},
 			);
 
@@ -157,7 +157,7 @@ namespace XEngine {
 		}
 
 		public bind(renderer: Renderer) {
-			if (!this.compiled) { this.initializeShader(renderer.context); }
+			if (!this.compiled) { this.initializeShader(renderer.gl); }
 		}
 
 		public _setUniform(uniform, gl) {

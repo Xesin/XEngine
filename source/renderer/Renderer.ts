@@ -4,7 +4,7 @@ namespace XEngine {
 
 		public clearColor: any;
 		public scale: Vector3;
-		public context: WebGL2RenderingContext;
+		public gl: WebGL2RenderingContext;
 		public currentMaterial: Material;
 
 		public depthWriteEnabled: boolean;
@@ -20,31 +20,34 @@ namespace XEngine {
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
-			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 0.0 };
+			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 1.0 };
 			this.scale = new Vector3(1);
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
-			let options = {stencil: true, antialias: true};
-			this.context = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
+			let options = {stencil: true, antialias: true, alpha: false};
+			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
 		}
 
 		public init() {
 			// Si no tenemos ningun contexto GL, date por vencido ahora
-			if (!this.context) {
+			if (!this.gl) {
 				alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
-				this.context = null;
+				this.gl = null;
 			} else {
-				this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
-				this.context.clear(this.context.COLOR_BUFFER_BIT
-					| this.context.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
-				this.context.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
-				// this.rectBatch = new RectBatcher.RectBatch(this.game, this.context, this);
+				this.gl.colorMask(false, false, false, true);
+				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+				this.gl.colorMask(true, true, true, false);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT
+					| this.gl.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
+				this.gl.viewport(0, 0, Number(this.game.canvas.getAttribute("width")), Number(this.game.canvas.getAttribute("height")));
+
 				this.renderer = null;
 			}
 		}
 
 		public render(objects: Array<GameObject>, camera: Camera) {
 			// Clear the canvas before we start drawing on it.
-			this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 			this.renderLoop(objects, camera);
 			if (this.renderer) {
 				this.renderer.flush();
@@ -59,8 +62,8 @@ namespace XEngine {
 
 		public bindTexture(texture: Texture2D, position: number) {
 			if(texture == null){
-				this.context.activeTexture(position);
-				this.context.bindTexture(this.context.TEXTURE_2D, null);
+				this.gl.activeTexture(position);
+				this.gl.bindTexture(this.gl.TEXTURE_2D, null);
 				return;
 			}
 			if (this.currentTexture !== texture || texture.dirty) {
@@ -69,7 +72,7 @@ namespace XEngine {
 				{
 					if(texture.texture != null)
 					{
-						this.context.deleteTexture(texture.texture);
+						this.gl.deleteTexture(texture.texture);
 					}
 					texture.texture = this.game.resourceManager.createTexture(
 						texture.frameWidth
@@ -80,10 +83,10 @@ namespace XEngine {
 					  , texture.isNormal);
 					texture.dirty = false;
 				}
-				this.context.activeTexture(position);
+				this.gl.activeTexture(position);
 
 				// Bind the texture to texture unit 0
-				this.context.bindTexture(this.context.TEXTURE_2D, texture.texture);
+				this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
 			}
 		}
 
@@ -91,21 +94,21 @@ namespace XEngine {
 			if (this.currentMaterial !== material || this.currentMaterial.dirty) {
 				this.currentMaterial = material;
 				this.currentMaterial.dirty = false;
-				this.context.useProgram(material.shaderProgram);
+				this.gl.useProgram(material.shaderProgram);
 				this.currentMaterial.bind(this);
 
 				if (this.currentMaterial.depthWrite !== this.depthWriteEnabled) {
 					this.depthWriteEnabled = this.currentMaterial.depthWrite;
-					this.context.depthMask(this.currentMaterial.depthWrite);
+					this.gl.depthMask(this.currentMaterial.depthWrite);
 				}
 
 				if (this.currentMaterial.depthTest !== this.depthTestEnabled) {
 					this.depthTestEnabled = this.currentMaterial.depthTest;
 					if (this.currentMaterial.depthTest) {
-						this.context.enable(this.context.DEPTH_TEST);
-						this.context.depthFunc(this.context.LEQUAL);
+						this.gl.enable(this.gl.DEPTH_TEST);
+						this.gl.depthFunc(this.gl.LEQUAL);
 					} else {
-						this.context.disable(this.context.DEPTH_TEST);
+						this.gl.disable(this.gl.DEPTH_TEST);
 					}
 				}
 
@@ -114,11 +117,11 @@ namespace XEngine {
 					if (this.currentMaterial.transparent) {
 						switch (this.currentMaterial.blendMode) {
 							case BlendMode.Multiply:
-								this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
+								this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
 						}
-						this.context.enable(this.context.BLEND);
+						this.gl.enable(this.gl.BLEND);
 					} else {
-						this.context.disable(this.context.BLEND);
+						this.gl.disable(this.gl.BLEND);
 					}
 				}
 
@@ -127,27 +130,27 @@ namespace XEngine {
 						this.currentCullMode = this.currentMaterial.cullMode;
 						switch (this.currentMaterial.cullMode) {
 							case CullMode.BACK:
-								this.context.cullFace(this.context.BACK);
+								this.gl.cullFace(this.gl.BACK);
 								break;
 							case CullMode.FRONT:
-								this.context.cullFace(this.context.FRONT);
+								this.gl.cullFace(this.gl.FRONT);
 								break;
 							case CullMode.BOTH:
-								this.context.cullFace(this.context.FRONT_AND_BACK);
+								this.gl.cullFace(this.gl.FRONT_AND_BACK);
 								break;
 							case CullMode.NONE:
-								this.context.cullFace(this.context.NONE);
+								this.gl.cullFace(this.gl.NONE);
 								break;
 						}
 						if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
 							this.cullFaceEnabled = this.currentMaterial.cullFace;
-							this.context.enable(this.context.CULL_FACE);
+							this.gl.enable(this.gl.CULL_FACE);
 						}
 					}
 				} else {
 					if (this.currentMaterial.cullFace !== this.cullFaceEnabled) {
 						this.cullFaceEnabled = this.currentMaterial.cullFace;
-						this.context.disable(this.context.CULL_FACE);
+						this.gl.disable(this.gl.CULL_FACE);
 					}
 				}
 			}
@@ -158,7 +161,7 @@ namespace XEngine {
 			this.clearColor.g = g;
 			this.clearColor.b = b;
 			this.clearColor.a = a;
-			this.context.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
+			this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 		}
 
 		public renderLoop(arrayObjects, camera: Camera) {
@@ -169,15 +172,15 @@ namespace XEngine {
 				let object = arrayObjects[i];
 				if (!object.visible) {continue; }
 				if (Group.prototype.isPrototypeOf(object)) {
-					object.beginRender(_this.context);
+					object.beginRender(_this.gl);
 					_this.renderLoop(object.children, camera);
-					object.endRender(_this.context);
+					object.endRender(_this.gl);
 				} else if (!Audio.prototype.isPrototypeOf(object)) {
 					let go = object as GameObject;
 					if (!go.alive) {continue; }
-					go.beginRender(_this.context);
-					go.render(_this.context, camera);
-					go.endRender(_this.context);
+					go.beginRender(_this.gl);
+					go.render(_this.gl, camera);
+					go.endRender(_this.gl);
 				}
 			}
 			VertexBuffer.SetDiry();
