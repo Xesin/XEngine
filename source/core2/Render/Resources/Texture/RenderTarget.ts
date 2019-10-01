@@ -23,7 +23,8 @@ namespace XEngine2 {
 		{
 			if(!this.attachedTextures[attachmentType]){
 				let texture = Texture2D.createTexture("", this.width, this.height, null, this.wrapMode, this.generateMipmaps, gl, false);
-
+				
+				gl.bindTexture(gl.TEXTURE_2D, texture._texture);
 
 				if(!this.frameBuffer)
 				{
@@ -50,6 +51,7 @@ namespace XEngine2 {
 				this.attachedTextures[attachmentType] = texture;
 				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+				gl.bindTexture(gl.TEXTURE_2D, null);
 			} else
 			{
 				console.warn("Attachment of type ", attachmentType, " already attached");
@@ -59,12 +61,14 @@ namespace XEngine2 {
 		public bind(gl: WebGL2RenderingContext)
 		{
 			gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+			gl.bindTexture(gl.TEXTURE_2D, this.attachedTextures[gl.COLOR_ATTACHMENT0]._texture);
 			gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
 		}
 
 		public unBind(gl: WebGL2RenderingContext)
 		{
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.bindTexture(gl.TEXTURE_2D, null);
 			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		}
 

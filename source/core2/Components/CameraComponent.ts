@@ -4,12 +4,14 @@ namespace XEngine2 {
     export class CameraComponent extends SceneComponent {
         
         private _projectionMatrix: Mat4x4;
+        public renderTarget : RenderTarget;
 
         constructor(game: Game)
         {
             super(game);
             this.bCanUpdate = true;
             this._projectionMatrix = new Mat4x4;
+            this.renderTarget = null;
         }
 
         public update(deltaTime: number)

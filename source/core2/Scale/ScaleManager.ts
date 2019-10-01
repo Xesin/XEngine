@@ -9,6 +9,8 @@ namespace XEngine2 {
 		public onResized: Signal;
 		public scale: Vector3;
 		private game: Game;
+		public currentWidth : number;
+		public currentHeight : number;
 
 		constructor(game, scaleType = ScaleType.NO_SCALE) {
 			this.game = game;
@@ -22,6 +24,8 @@ namespace XEngine2 {
 
 		private init() {
 			let _this = this;
+			this.currentHeight = this.game.height;
+			this.currentWidth = this.game.width;
 			let onWindowsResize = function (event) {
 				_this.onWindowsResize();
 			};
@@ -53,6 +57,8 @@ namespace XEngine2 {
 			if (this.scaleType !== ScaleType.NO_SCALE) {
 				newWidth = Math.round(newWidth);
 				newHeight = Math.round(newHeight);
+				this.currentHeight = newHeight;
+				this.currentWidth = newWidth;
 				this.resizeCanvas(newWidth, newHeight);
 				this.onResized.dispatch(newWidth, newHeight);
 			}

@@ -35,6 +35,9 @@ namespace XEngine2 {
 		private shadowCasterRenderQueue: Array<RenderObject>;
 		private shadowMap : RenderTarget;
 
+		private dstRenderTarget : RenderTarget;
+		private quadMesh : StaticMeshComponent;
+
 		private errorMat: Material;
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
@@ -57,6 +60,9 @@ namespace XEngine2 {
 				alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
 				this.gl = null;
 			} else {
+				this.dstRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
+				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+				this.dstRenderTarget.bind(this.gl);
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 
 				this.gl.colorMask(false, false, false, true);
@@ -70,12 +76,20 @@ namespace XEngine2 {
 
 				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader, ShaderMaterialLib.ErrorShader.fragmentShader))
 				this.errorMat.initialize(this.gl);
+				this.dstRenderTarget.unBind(this.gl);
+
+				
 			}
 
 			this.game.scale.onResized.add(this.OnResize, this);
 			Texture2D.CreateDefaultTextures(this.gl);
 			Material.initStaticMaterials(this.gl);
 			this.shadowMap.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+
+
+			FinalRenderMaterial.SharedInstance.mainTex.value = this.dstRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+			this.quadMesh = new StaticMeshComponent(this.game);
+			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(FinalRenderMaterial.SharedInstance, 2, 2);
 		}
 
 		private OnResize(width: number, height: number)
@@ -101,6 +115,16 @@ namespace XEngine2 {
 
 			let sceneLights = this.currentScene.FindComponents<Light>(Light);
 
+			if(camera.renderTarget)
+			{
+				camera.renderTarget.bind(this.gl);
+			}
+			else
+			{
+				this.dstRenderTarget.bind(this.gl);
+			}
+			
+			this.gl.viewport(0, 0, this.game.width, this.game.height);
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 			this.gl.enable(this.gl.DEPTH_TEST);
 			this.gl.cullFace(this.gl.BACK);
@@ -116,6 +140,22 @@ namespace XEngine2 {
 			for (let i = 0; i < this.transparentRenderQueue.length; i++) {
 				const transparentObject = this.transparentRenderQueue[i];
 				this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
+			}
+
+			if(camera.renderTarget)
+			{
+				camera.renderTarget.unBind(this.gl);
+			}
+			else
+			{
+				this.dstRenderTarget.unBind(this.gl);
+				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+				this.gl.disable(this.gl.DEPTH_TEST);
+				this.gl.disable(this.gl.CULL_FACE);
+				
+				let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
+				this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
 			}
 		}
 
@@ -181,9 +221,12 @@ namespace XEngine2 {
 			meshGroup.Mesh.updateResources(this, material);
 			meshGroup.Mesh.bind(meshGroup.materialIndex);
 			material.bind(gl);
-			material.modelMatrix.value = modelMatrix;
-			material.viewMatrix.value = viewMatrix;
-			material.projectionMatrix.value = projectionMatrix;
+			if(material.modelMatrix)
+				material.modelMatrix.value = modelMatrix;
+			if(material.viewMatrix)
+				material.viewMatrix.value = viewMatrix;
+			if(material.projectionMatrix)
+				material.projectionMatrix.value = projectionMatrix;
 			if(material.normalMatrix)
 				material.normalMatrix.value = modelMatrix.transposed();
 
