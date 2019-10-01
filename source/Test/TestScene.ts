@@ -57,9 +57,6 @@ namespace XEngine2 {
 				meshActor.rootComponent.transform.scale.setTo(0.10);
 				meshActor.staticMesh.Mesh = mesh;
 			}
-
-			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.QuadMesh(BlinnPhongMaterial.SharedInstance, 5, 5);
 			
 			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 
@@ -129,7 +126,7 @@ let game = null;
 
 function initGame(){
 	console.log('Arrancando El juego');
-	game = new XEngine2.Game(1280, 720, 'contenedor', XEngine2.ScaleType.PRESERVE_ASPECT);							//iniciamos el juego
+	game = new XEngine2.Game(1920, 1080, 'contenedor', XEngine2.ScaleType.PRESERVE_ASPECT);							//iniciamos el juego
 	game.sceneManager.add(new XEngine2.TestScene('test', game));
 	game.sceneManager.start('test');
  

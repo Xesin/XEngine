@@ -61,15 +61,11 @@ namespace XEngine2 {
 		public bind(gl: WebGL2RenderingContext)
 		{
 			gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-			gl.bindTexture(gl.TEXTURE_2D, this.attachedTextures[gl.COLOR_ATTACHMENT0]._texture);
-			gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
 		}
 
 		public unBind(gl: WebGL2RenderingContext)
 		{
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-			gl.bindTexture(gl.TEXTURE_2D, null);
-			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		}
 
 		public release(gl: WebGL2RenderingContext)
