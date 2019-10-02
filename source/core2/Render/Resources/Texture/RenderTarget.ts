@@ -30,7 +30,7 @@ namespace XEngine2 {
 				if (attachmentType == gl.DEPTH_ATTACHMENT){
 					let texture = gl.createTexture();
 					gl.bindTexture(gl.TEXTURE_2D, texture);
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT16 , this.width, this.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT32F , this.width, this.height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
 					gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 
 					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
