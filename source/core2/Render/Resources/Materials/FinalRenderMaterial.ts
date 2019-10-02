@@ -13,10 +13,12 @@ namespace XEngine2
         public static SharedInstance = new FinalRenderMaterial();
 
         public mainTexSamplerName = "mainTex";
+        public depthTexSamplerName = "depthTex";
 
         public defaults = 
         {
             "mainTex": "white",
+            "depthTex" : "white"
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.FinalRenderShader.vertexShader, ShaderMaterialLib.FinalRenderShader.fragmentShader))
@@ -27,6 +29,11 @@ namespace XEngine2
         public get mainTex(): Uniform
         {
             return this.shader.uniforms[this.mainTexSamplerName];
+        }
+
+        public get depthTex(): Uniform
+        {
+            return this.shader.uniforms[this.depthTexSamplerName];
         }
     }
 }

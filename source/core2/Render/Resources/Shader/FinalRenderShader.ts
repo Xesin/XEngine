@@ -23,12 +23,17 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat([			
 			"in vec2 uv;",
 			"uniform sampler2D mainTex;",
+			"uniform sampler2D depthTex;",
 			"out vec4 fragColor;",
 
 			"void main(void) {",
-
+				"float n = 1.0;",
+				"float f = 1000.0;",
+				"float z = texture(depthTex, uv).x;",
+				"float grey = (2.0 * n) / (f + n - z*(f-n));",
 				"vec3 color = texture(mainTex, uv).xyz;",
-				"fragColor = vec4(color, 1.0);",
+				"fragColor = vec4(grey,grey,grey, 1.0);",
+				// "fragColor = depth;",
             "}",
         ]);
     }

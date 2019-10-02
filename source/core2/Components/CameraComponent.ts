@@ -38,7 +38,7 @@ namespace XEngine2 {
             let game = Game.GetInstance();
             const fieldOfView = 45 * Math.PI / 180;   // in radians
             const aspect = game.width / game.height;
-            const zNear = 0.1;
+            const zNear = 1.0;
             const zFar = 1000.0;
 
         

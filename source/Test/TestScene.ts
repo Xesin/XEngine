@@ -57,6 +57,9 @@ namespace XEngine2 {
 				meshActor.rootComponent.transform.scale.setTo(0.10);
 				meshActor.staticMesh.Mesh = mesh;
 			}
+
+			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
+			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.QuadMesh(BlinnPhongMaterial.SharedInstance, 5, 5);
 			
 			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 
