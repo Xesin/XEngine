@@ -91,6 +91,18 @@ namespace XEngine2 {
             return this.shader.vertexAttrs[this.vertexPositionName];
         }
 
+        public get vColor() : VertexAttribute {
+            return this.shader.vertexAttrs[this.colorsAttrName];
+        }
+
+        public get vNormal() : VertexAttribute {
+            return this.shader.vertexAttrs[this.normalAttrName];
+        }
+
+        public get vUv() : VertexAttribute {
+            return this.shader.vertexAttrs[this.uvAttrName];
+        }
+
         public get modelMatrix() : Uniform
         {
             return this.shader.uniforms[this.modelMatrixName];
@@ -132,7 +144,7 @@ namespace XEngine2 {
 
         public get HasColor(): boolean
         {
-            return this.colorsAttrName in this.shader.vertexAttrs;;
+            return this.colorsAttrName in this.shader.vertexAttrs;
         }
 
         public get HasNormals(): boolean
@@ -150,8 +162,8 @@ namespace XEngine2 {
             if(Material.currentMaterial !== this)
             {
                 gl.useProgram(this.ShaderProgram);
-                Material.currentMaterial = this;
-                
+                Material.currentMaterial = this;               
+
                 gl.depthMask(this.writeDepthEnabled);
                 if(this.depthTestEnabled)
                 {

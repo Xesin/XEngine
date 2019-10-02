@@ -27,7 +27,8 @@ namespace XEngine2 {
 
         public get viewMatrix() : Mat4x4 {
             let translationVector = this.transform.forward();
-            let translation = translationVector.scalar(-500);
+            translationVector.z *= -1;
+            let translation = translationVector.scalar(200);
             let matrix = new Mat4x4();
 
             matrix.lookAt(translation, new Vector3(0,0,0), new Vector3(0,1,0));
@@ -52,15 +53,14 @@ namespace XEngine2 {
 
         
         public get projectionMatrix() : Mat4x4 {
-            let game = Game.GetInstance();
-            const zNear = 1.0;
-            const zFar = 1000.0;
+            const zNear = -40.0;
+            const zFar = 256.0;
             
             this._projectionMatrix.ortho(
-                - game.width / 2,
-                game.width / 2,
-                - game.height / 2,
-                game.height  / 2,
+                -256,
+                256,
+                -256,
+                256,
                 zNear,
                 zFar
             )

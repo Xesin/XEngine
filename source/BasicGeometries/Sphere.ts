@@ -36,9 +36,9 @@ namespace XEngine2.BasicGeometries
 					vertexPositionData.push(y);
 					vertexPositionData.push(z);
 					// ColorData
-					colors.push(0.4);
-					colors.push(0.5);
-					colors.push(0);
+					colors.push(1);
+					colors.push(1);
+					colors.push(1);
 					colors.push(1);
 				}
 			}

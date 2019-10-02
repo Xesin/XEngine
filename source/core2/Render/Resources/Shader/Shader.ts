@@ -59,19 +59,23 @@ namespace XEngine2 {
 					case ShaderType.INT:
 					case ShaderType.FLOAT:
 					case ShaderType.SHORT:
+						result.itemSize = 4;
 						this.attributeStride += 4;
 						break;
 					case ShaderType.INT_VEC2:
 					case ShaderType.FLOAT_VEC2:
+						result.itemSize = 8;
 						this.attributeStride += 8;
 						break;
 					case ShaderType.INT_VEC3:
 					case ShaderType.FLOAT_VEC3:
+						result.itemSize = 12;
 						this.attributeStride += 12;
 						break;
 					case ShaderType.INT_VEC4:
 					case ShaderType.FLOAT_VEC4:
 					case ShaderType.FLOAT_MAT2:
+						result.itemSize = 16;
 						this.attributeStride += 16;
 						break;
 				}

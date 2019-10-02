@@ -16,7 +16,7 @@ namespace XEngine2 {
 
 	export class Renderer {
 
-		public clearColor: any;
+		public clearColor: Color;
 		public gl: WebGL2RenderingContext;
 
 		public depthWriteEnabled: boolean;
@@ -42,7 +42,7 @@ namespace XEngine2 {
 
 		constructor (game: Game, canvas: HTMLCanvasElement) {
 			this.game = game;
-			this.clearColor = {r: 0.0 , g: 0.0, b: 0.0, a: 1.0 };
+			this.clearColor = new Color(0.0, 0.0, 0.0, 1.0);
 			// Tratar de tomar el contexto estandar. Si falla, probar otros.
 			let options = {stencil: true, antialias: true, alpha: false};
 			this.gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
@@ -89,8 +89,8 @@ namespace XEngine2 {
 			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
 
 
-			FinalRenderMaterial.SharedInstance.mainTex.value = this.shadowMap.attachedTextures[this.gl.COLOR_ATTACHMENT0];
-			FinalRenderMaterial.SharedInstance.depthTex.value = this.shadowMap.attachedTextures[this.gl.DEPTH_ATTACHMENT];
+			FinalRenderMaterial.SharedInstance.mainTex.value = this.dstRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+			FinalRenderMaterial.SharedInstance.depthTex.value = this.dstRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
 			this.quadMesh = new StaticMeshComponent(this.game);
 			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(FinalRenderMaterial.SharedInstance, 2, 2);
 		}
@@ -121,29 +121,24 @@ namespace XEngine2 {
 			this.PopulateRenderQueues(scene, sceneLights);
 
 			let testLight = sceneLights[0] as DirectionalLight;
-			this.shadowMap.bind(this.gl);
+			
+
+			// if(testLight)
+			// {
+			// 	this.shadowMap.bind(this.gl);
+			// 	this.gl.clearColor(0,0,0,1);
 			// 	this.gl.viewport(0, 0, this.game.width, this.game.height);
-			// this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			// this.gl.enable(this.gl.DEPTH_TEST);
-			// this.gl.disable(this.gl.CULL_FACE);
-
-				this.gl.viewport(0, 0, this.game.width, this.game.height);
-				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-				this.gl.enable(this.gl.DEPTH_TEST);
-				this.gl.cullFace(this.gl.BACK);
-				this.gl.enable(this.gl.CULL_FACE);
-
-			if(testLight)
-			{
+			// 	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			// 	this.gl.enable(this.gl.DEPTH_TEST);
+			// 	this.gl.cullFace(this.gl.BACK);
+			// 	this.gl.enable(this.gl.CULL_FACE);
+			// 	for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
+			// 		const casterObject = this.shadowCasterRenderQueue[i];
+			// 		this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
+			// 	}
 				
-				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
-					const casterObject = this.shadowCasterRenderQueue[i];
-					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix);
-				}
-				
-			}
-			this.shadowMap.unBind(this.gl);
-
+			// }
+			// this.shadowMap.unBind(this.gl);
 			// if(camera.renderTarget)
 			// {
 			// 	camera.renderTarget.bind(this.gl);
@@ -152,39 +147,40 @@ namespace XEngine2 {
 			// {
 			// 	this.dstRenderTarget.bind(this.gl);
 			// }
-
 			
+			
+			this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, this.clearColor.a);
 			// this.gl.viewport(0, 0, this.game.width, this.game.height);
-			// this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			// this.gl.enable(this.gl.DEPTH_TEST);
-			// this.gl.cullFace(this.gl.BACK);
-			// this.gl.enable(this.gl.CULL_FACE);
+			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			this.gl.enable(this.gl.DEPTH_TEST);
+			this.gl.cullFace(this.gl.BACK);
+			this.gl.enable(this.gl.CULL_FACE);
 
-			// // for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
-			// // 	const opaqueObject = this.opaqueRenderQueue[i];
-			// // 	this.renderMeshImmediate(opaqueObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
-			// // }
-
-			// // for (let i = 0; i < this.transparentRenderQueue.length; i++) {
-			// // 	const transparentObject = this.transparentRenderQueue[i];
-			// // 	this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
-			// // }
-
-			if(camera.renderTarget)
-			{
-				// camera.renderTarget.unBind(this.gl);
+			for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
+				const opaqueObject = this.opaqueRenderQueue[i];
+				this.renderMeshImmediate(opaqueObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
 			}
-			else
-			{
-				// this.dstRenderTarget.unBind(this.gl);
-				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
-				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-				this.gl.disable(this.gl.DEPTH_TEST);
-				this.gl.disable(this.gl.CULL_FACE);
+
+			for (let i = 0; i < this.transparentRenderQueue.length; i++) {
+				const transparentObject = this.transparentRenderQueue[i];
+				this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
+			}
+
+			// if(camera.renderTarget)
+			// {
+			// 	camera.renderTarget.unBind(this.gl);
+			// }
+			// else
+			// {
+			// 	this.dstRenderTarget.unBind(this.gl);
+			// 	this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
+			// 	this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+			// 	this.gl.disable(this.gl.DEPTH_TEST);
+			// 	this.gl.disable(this.gl.CULL_FACE);
 				
-				let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
-				this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
-			}
+			// 	let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
+			// 	this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
+			// }
 		}
 
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)
@@ -234,7 +230,7 @@ namespace XEngine2 {
 			return sceneLights.filter((light) => !light.hidden).slice(0,4);
 		}
 
-		private renderMeshImmediate(renderObject: RenderObject, viewMatrix: Mat4x4, projectionMatrix: Mat4x4, material : Material = null)
+		private renderMeshImmediate(renderObject: RenderObject, viewMatrix: Mat4x4, projectionMatrix: Mat4x4, material : Material = null, skipLights = false)
 		{
 			let meshGroup = renderObject.group;
 			let modelMatrix = renderObject.modelMatrix;
@@ -247,8 +243,8 @@ namespace XEngine2 {
 			}
 
 			meshGroup.Mesh.updateResources(this, material);
-			meshGroup.Mesh.bind(meshGroup.materialIndex);
 			material.bind(gl);
+			meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
 			if(material.modelMatrix)
 				material.modelMatrix.value = modelMatrix;
 			if(material.viewMatrix)
@@ -258,56 +254,59 @@ namespace XEngine2 {
 			if(material.normalMatrix)
 				material.normalMatrix.value = modelMatrix.transposed();
 
-			for(let i = 0; i < 5; i++)
+			if(!skipLights)
 			{
-				let light = renderObject.affectedLights[i];
-				let lightPositionUniform = material.getLightUniform(i, 'position');
-				if(lightPositionUniform)
+				for(let i = 0; i < 5; i++)
 				{
-					let lightColorUniform = material.getLightUniform(i, 'color');
-					let lightIntensityUniform = material.getLightUniform(i, 'intensity');
-					let lightAttenuationUniform = material.getLightUniform(i, 'lightAttenuation');
-					let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
-					spotLightDirectionUniform.value = new Vector4(0,0,0,0);
-					lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
-					if(light){
-						if(light instanceof DirectionalLight)
-						{
-							let dirLight = light.dirLight;
-							dirLight.x = -dirLight.x;
-							dirLight.y = -dirLight.y;
-							dirLight.z = -dirLight.z;
-							lightPositionUniform.value =  dirLight;
-						}
-						else if(light instanceof PointLight)
-						{
-							lightPositionUniform.value = light.transform.Matrix.getColumn(3);;
-							lightAttenuationUniform.value.x = 1 / Math.max(light.radius * light.radius, 0.00001);
-							if(light instanceof SpotLight)
-							{
-								let v = light.transform.Matrix.getColumn(2);
-								v.x = -v.x;
-								v.y = -v.y;
-								v.z = -v.z;
-								spotLightDirectionUniform.value = v;
-
-								let outerRad = Mathf.TO_RADIANS * 0.5 * light.spotAngle;
-								let outerCos = Math.cos(outerRad);
-								let outerTan = Math.tan(outerRad);
-								let innerCos =
-									Math.cos(Math.atan(((46 / 64) * outerTan)));
-
-								let angleRange = Math.max(innerCos - outerCos, 0.001);
-								lightAttenuationUniform.value.z = 1 / angleRange;
-								lightAttenuationUniform.value.w = -outerCos * lightAttenuationUniform.value.z;
-							}
-						}
-						lightIntensityUniform.value = light.intensity;
-						lightColorUniform.value = light.color.getVector3();
-					}
-					else
+					let light = renderObject.affectedLights[i];
+					let lightPositionUniform = material.getLightUniform(i, 'position');
+					if(lightPositionUniform)
 					{
-						lightColorUniform.value = new Vector3(0,0,0);
+						let lightColorUniform = material.getLightUniform(i, 'color');
+						let lightIntensityUniform = material.getLightUniform(i, 'intensity');
+						let lightAttenuationUniform = material.getLightUniform(i, 'lightAttenuation');
+						let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
+						spotLightDirectionUniform.value = new Vector4(0,0,0,0);
+						lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
+						if(light){
+							if(light instanceof DirectionalLight)
+							{
+								let dirLight = light.dirLight;
+								dirLight.x = -dirLight.x;
+								dirLight.y = -dirLight.y;
+								dirLight.z = -dirLight.z;
+								lightPositionUniform.value =  dirLight;
+							}
+							else if(light instanceof PointLight)
+							{
+								lightPositionUniform.value = light.transform.Matrix.getColumn(3);;
+								lightAttenuationUniform.value.x = 1 / Math.max(light.radius * light.radius, 0.00001);
+								if(light instanceof SpotLight)
+								{
+									let v = light.transform.Matrix.getColumn(2);
+									v.x = -v.x;
+									v.y = -v.y;
+									v.z = -v.z;
+									spotLightDirectionUniform.value = v;
+
+									let outerRad = Mathf.TO_RADIANS * 0.5 * light.spotAngle;
+									let outerCos = Math.cos(outerRad);
+									let outerTan = Math.tan(outerRad);
+									let innerCos =
+										Math.cos(Math.atan(((46 / 64) * outerTan)));
+
+									let angleRange = Math.max(innerCos - outerCos, 0.001);
+									lightAttenuationUniform.value.z = 1 / angleRange;
+									lightAttenuationUniform.value.w = -outerCos * lightAttenuationUniform.value.z;
+								}
+							}
+							lightIntensityUniform.value = light.intensity;
+							lightColorUniform.value = light.color.getVector3();
+						}
+						else
+						{
+							lightColorUniform.value = new Vector3(0,0,0);
+						}
 					}
 				}
 			}

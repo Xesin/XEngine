@@ -22,26 +22,25 @@ namespace XEngine2 {
 			this.attributes = new Array<any>();
 		}
 
-		public addAttribute(vertexAttribute: VertexAttribute, stride: number) {
+		public addAttribute(vertexAttribute: VertexAttribute, stride: number, offset: number) {
 			let gl = this.gl;
 			this.bind();
-			gl.enableVertexAttribArray(vertexAttribute.index);
 			gl.vertexAttribPointer(
 				vertexAttribute.index,
 				vertexAttribute.numItems,
 				vertexAttribute.type,
 				vertexAttribute.normalized,
 				stride,
-				vertexAttribute.offset,
-			);
-			this.attributes.push(vertexAttribute);
+				offset,
+				);
+			gl.enableVertexAttribArray(vertexAttribute.index);
 		}
 
 		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
 			let gl = this.gl;
 
 			gl.bindBuffer(this.bufferType, this.buffer);
-			gl.bufferSubData(this.bufferType, offset, bufferData);
+			gl.bufferData(this.bufferType, bufferData, gl.STATIC_DRAW);
 			gl.bindBuffer(this.bufferType, null);
 		}
 
@@ -50,7 +49,7 @@ namespace XEngine2 {
 
 			if (VertexBuffer.CurrentVertexBuffer !== this) {
 				VertexBuffer.CurrentVertexBuffer = this;
-				gl.bindVertexArray(this.vao);
+				gl.bindBuffer(this.bufferType, this.buffer);
 			}
 		}
 
@@ -72,7 +71,6 @@ namespace XEngine2 {
 				this.unbind();
 				gl.deleteBuffer(this.buffer);
 				gl.deleteVertexArray(this.vao);
-				this.attributes = new Array();
 			}
 		}
 

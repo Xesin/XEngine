@@ -6,6 +6,7 @@ namespace XEngine2 {
         public offset: number;
         public normalized: boolean;
         public numItems: number;
+        public itemSize: number;
         
         public _gpuPos: WebGLUniformLocation;
         private _type: ShaderType;

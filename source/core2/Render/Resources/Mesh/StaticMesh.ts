@@ -18,12 +18,13 @@ namespace XEngine2
 		protected colorData: Array<number>;
 		protected indexData: Array<number>;
 		protected normalData: Array<number>;
-		protected indexDataBuffer: XEngine.DataBuffer16;
-		protected vertDataBuffer: DataBuffer32[];
 		protected gl: WebGL2RenderingContext;
 
 		protected indexBuffer: IndexBuffer[];
-		protected vertexBuffer: VertexBuffer[];
+		protected positionBuffer: VertexBuffer[];
+		protected uvBuffer: VertexBuffer[];
+		protected normalBuffer: VertexBuffer[];
+		protected colorBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
 		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "") {
@@ -34,8 +35,10 @@ namespace XEngine2
 			this.colorData = colorData;
 			this.indexed = indexData != null ? true : false;
 			this.groups = new Array();
-			this.vertexBuffer = new Array();
-			this.vertDataBuffer = new Array();
+			this.positionBuffer = new Array();
+			this.uvBuffer = new Array();
+			this.normalBuffer = new Array();
+			this.colorBuffer = new Array();
 			this.indexBuffer = new Array();
 			this.materials = materials;
 			this.topology = topology;
@@ -83,9 +86,9 @@ namespace XEngine2
 					this.gl.deleteBuffer(this.indexBuffer[i].buffer);
 				}
 			}
-			if (this.vertexBuffer.length > 0) {
-				for(let i = 0; i < this.vertexBuffer.length ; i++){
-					this.gl.deleteBuffer(this.vertexBuffer[i].buffer);
+			if (this.positionBuffer.length > 0) {
+				for(let i = 0; i < this.positionBuffer.length ; i++){
+					this.gl.deleteBuffer(this.positionBuffer[i].buffer);
 				}
 			}
 		}
@@ -96,103 +99,130 @@ namespace XEngine2
 			for(let i = 0; i < this.groups.length; i++){
 				let material = overrideMaterial != null ? overrideMaterial: this.materials[this.groups[i].materialIndex];
 
-				if(this.initialized && this.vertexBuffer[i].attributes.length == Object.keys(material.VertexAttributes).length) continue;
+				if(this.initialized && this.positionBuffer[i].attributes.length == Object.keys(material.VertexAttributes).length) continue;
 
 				let stride = material.AttrStride;
-				this.vertDataBuffer[i] = new DataBuffer32((this.groups[i].vertexCount * material.AttrStride));
-				this.vertexBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, this.vertDataBuffer[i].getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-
-				let floatBuffer = this.vertDataBuffer[i].floatView;
-				
-				for (const key in material.VertexAttributes) {
-					if (material.VertexAttributes.hasOwnProperty(key)) {
-						const vertexAttr = material.VertexAttributes[key];
-						this.vertexBuffer[i].addAttribute(vertexAttr, stride);
-					}
-				}
-
-				let vertices = this.vertexData;
-				let normals = this.normalData;
-				let uv = this.uvData;
-				let colors = this.colorData;
-				// tslint:disable-next-line:forin
-				let index = this.vertDataBuffer[i].allocate(this.groups[i].vertexCount);
-				let uvIndex = this.groups[i].firstVertex * 2;
 				let startVertexData = this.groups[i].firstVertex * 3;
-				let normalIndex = startVertexData;
-				let colorIndex = this.groups[i].firstVertex * 4;
-				let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount) * 3
-				for (let j = startVertexData; j < endVertexData; j++) {
+				let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount);
+				
+				if(material.HasPosition)
+				{
+					if(!this.positionBuffer[i]){
+						let vertices = this.vertexData;
+						let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vPosition.itemSize));
+						this.positionBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
+						this.positionBuffer[i].addAttribute(material.vPosition, material.vPosition.itemSize, 0);
+						let floatBuffer = dataBuffer.floatView;
 
-					// Positions
-					if(material.HasPosition){
-						floatBuffer[index++] = vertices[j++];
-						floatBuffer[index++] = vertices[j++];
-						floatBuffer[index++] = vertices[j];
-						floatBuffer[index++] = 1;
-					}
-
-					// Colors
-					if(material.HasColor)
-					{
-						if(colors && colors.length > 0)
-						{
-							floatBuffer[index++] = colors[colorIndex++];
-							floatBuffer[index++] = colors[colorIndex++];
-							floatBuffer[index++] = colors[colorIndex++];
-							floatBuffer[index++] = colors[colorIndex++];
-						}
-						else
-						{
-							floatBuffer[index++] = 1;
-							floatBuffer[index++] = 1;
-							floatBuffer[index++] = 1;
+						let index = dataBuffer.allocate(this.groups[i].vertexCount);
+						for (let j = startVertexData; j < endVertexData * 3; j++) {
+							floatBuffer[index++] = vertices[j++];
+							floatBuffer[index++] = vertices[j++];
+							floatBuffer[index++] = vertices[j];
 							floatBuffer[index++] = 1;
 						}
-					}
-
-					if(material.HasNormals)
-					{
-						if(normals && normals.length > 0)
-						{
-							floatBuffer[index++] = normals[normalIndex++];
-							floatBuffer[index++] = normals[normalIndex++];
-							floatBuffer[index++] = normals[normalIndex++];
-						}
-						else
-						{
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
-						}
-					}
-
-					if(material.HasUVs)
-					{
-						if(uv && uv.length > 0)
-						{
-							floatBuffer[index++] = uv[uvIndex++];
-							floatBuffer[index++] = uv[uvIndex++];
-						}
-						else
-						{
-							floatBuffer[index++] = 0;
-							floatBuffer[index++] = 0;
-						}
+						this.positionBuffer[i].bind();
+						this.positionBuffer[i].updateResource(floatBuffer, 0);
 					}
 				}
-				this.vertexBuffer[i].bind();
-				this.vertexBuffer[i].updateResource(floatBuffer, 0);
 
-				if (this.groups[i].indices) {
-					this.indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
+				if(material.HasColor)
+				{
+					if(!this.colorBuffer[i]){
+						let colors = this.colorData;
+						let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vColor.itemSize));
+						this.colorBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
+						this.colorBuffer[i].addAttribute(material.vColor, material.vColor.itemSize, 0);
+						let floatBuffer = dataBuffer.floatView;
+
+						let index = dataBuffer.allocate(this.groups[i].vertexCount);
+						for (let j = startVertexData; j < endVertexData * 4; j++) {
+							if(colors && colors.length >= 4)
+							{
+								floatBuffer[index++] = colors[j++];
+								floatBuffer[index++] = colors[j++];
+								floatBuffer[index++] = colors[j++];
+								floatBuffer[index++] = colors[j];
+							}
+							else
+							{
+								floatBuffer[index++] = 1;
+								floatBuffer[index++] = 1;
+								floatBuffer[index++] = 1;
+								floatBuffer[index++] = 1;
+							}
+						}
+
+						this.colorBuffer[i].bind();
+						this.colorBuffer[i].updateResource(floatBuffer, 0);
+					}
+				}
+				
+				if(material.HasNormals)
+				{
+					if(!this.normalBuffer[i]){
+						let normals = this.normalData;
+						let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vNormal.itemSize));
+						this.normalBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
+						this.normalBuffer[i].addAttribute(material.vNormal, material.vNormal.itemSize, 0);
+						let floatBuffer = dataBuffer.floatView;
+
+						let index = dataBuffer.allocate(this.groups[i].vertexCount);
+						for (let j = startVertexData; j < endVertexData * 3; j++) {
+							if(normals && normals.length >= 3)
+							{
+								floatBuffer[index++] = normals[j++];
+								floatBuffer[index++] = normals[j++];
+								floatBuffer[index++] = normals[j];
+							}
+							else
+							{
+								floatBuffer[index++] = 1;
+								floatBuffer[index++] = 1;
+								floatBuffer[index++] = 1;
+							}
+						}
+						this.normalBuffer[i].bind();
+						this.normalBuffer[i].updateResource(floatBuffer, 0);
+					}
+				}
+
+				if(material.HasUVs)
+				{
+					if(!this.uvBuffer[i]){
+						let uvs = this.uvData;
+						let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vUv.itemSize));
+						this.uvBuffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
+						this.uvBuffer[i].addAttribute(material.vUv, material.vUv.itemSize, 0);
+						let floatBuffer = dataBuffer.floatView;
+
+						let index = dataBuffer.allocate(this.groups[i].vertexCount);
+						for (let j = startVertexData; j < endVertexData * 2; j++) {
+							if(uvs && uvs.length >= 3)
+							{
+								floatBuffer[index++] = uvs[j++];
+								floatBuffer[index++] = uvs[j];
+							}
+							else
+							{
+								floatBuffer[index++] = 0;
+								floatBuffer[index++] = 0;
+							}
+						}
+						this.uvBuffer[i].bind();
+						this.uvBuffer[i].updateResource(floatBuffer, 0);
+					}
+				}
+
+				if (this.groups[i].indices && !this.indexBuffer[i]) {
+					let indexDataBuffer = new DataBuffer16(2 * this.groups[i].indices.length);
 					this.indexBuffer[i] = IndexBuffer.Create(
-						this.gl.ELEMENT_ARRAY_BUFFER, this.indexDataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
-					let uintIndexBuffer = this.indexDataBuffer.uintView;
+						this.gl.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
+					let uintIndexBuffer = indexDataBuffer.uintView;
 					let indices = this.indexData;
-					this.indexDataBuffer.allocate(indices.length);
-					for (let i = 0; i < indices.length; i++) {
-						uintIndexBuffer[i] = indices[i];
+					indexDataBuffer.allocate(this.groups[i].indices.length);
+					for (let i = 0; i < this.groups[i].indices.length; i++) {
+						uintIndexBuffer[i] = this.groups[i].indices[i];
 					}
 					this.indexBuffer[i].updateResource(uintIndexBuffer, 0);
 				}
@@ -205,15 +235,67 @@ namespace XEngine2
 			this.groups.push(new MeshGroup(materialIndex, start, count, this, indices));
 		}
 
-		public bind(materialIndex = 0) {
-			this.vertexBuffer[materialIndex].bind();
+		public bind(gl: WebGL2RenderingContext, material: Material, materialIndex = 0) {
+			this.positionBuffer[materialIndex].unbind();
+			this.positionBuffer[materialIndex].bind();
+			const vertexAttr = material.vPosition;
+			gl.vertexAttribPointer(
+				vertexAttr.index,
+				vertexAttr.numItems,
+				vertexAttr.type,
+				vertexAttr.normalized,
+				vertexAttr.itemSize,
+				0,
+				);
+			gl.enableVertexAttribArray(vertexAttr.index);
+			if(this.colorBuffer[materialIndex] && material.HasColor){
+				this.colorBuffer[materialIndex].bind();
+				const vertexAttr = material.vColor;
+				gl.vertexAttribPointer(
+					vertexAttr.index,
+					vertexAttr.numItems,
+					vertexAttr.type,
+					vertexAttr.normalized,
+					vertexAttr.itemSize,
+					0,
+					);
+				gl.enableVertexAttribArray(vertexAttr.index);
+			}
+			if(this.uvBuffer[materialIndex] && material.HasUVs)
+			{
+				this.uvBuffer[materialIndex].bind();
+				const vertexAttr = material.vUv;
+				gl.vertexAttribPointer(
+					vertexAttr.index,
+					vertexAttr.numItems,
+					vertexAttr.type,
+					vertexAttr.normalized,
+					vertexAttr.itemSize,
+					0,
+					);
+				gl.enableVertexAttribArray(vertexAttr.index);
+			}
+			if(this.normalBuffer[materialIndex] && material.HasNormals)
+			{
+				this.normalBuffer[materialIndex].bind();
+				const vertexAttr = material.vNormal;
+				gl.vertexAttribPointer(
+					vertexAttr.index,
+					vertexAttr.numItems,
+					vertexAttr.type,
+					vertexAttr.normalized,
+					vertexAttr.itemSize,
+					0,
+					);
+				gl.enableVertexAttribArray(vertexAttr.index);
+			}
 			if (this.indexed) {
 				this.indexBuffer[materialIndex].bind();
 			}
 		}
 
 		public unBind(materialIndex = 0) {
-			this.vertexBuffer[materialIndex].unbind();
+			this.positionBuffer[materialIndex].unbind();
 			if (this.indexed) {
 				this.indexBuffer[materialIndex].unbind();
 			}
