@@ -26,30 +26,41 @@ namespace XEngine2 {
         }
 
         public get viewMatrix() : Mat4x4 {
-            let translation =  this.transform.WorldPosition.toArray();
+            let translationVector = this.transform.forward();
+            let translation = translationVector.scalar(-500);
             let matrix = new Mat4x4();
-            
-            mat4.rotateX(matrix.elements, matrix.elements, this.transform.WorldRotation.x * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateY(matrix.elements, matrix.elements, this.transform.WorldRotation.y * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateZ(matrix.elements, matrix.elements, this.transform.WorldRotation.z * XEngine.Mathf.TO_RADIANS);
-            mat4.translate(matrix.elements, matrix.elements, translation);
+
+            matrix.lookAt(translation, new Vector3(0,0,0), new Vector3(0,1,0));
+
             // mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
             // mat4.invert(matrix.elements, matrix.elements);
 
             return matrix;
         }
 
+        public get dirLight() : Vector4 {
+            let matrix = new Mat4x4();
+            
+            mat4.rotateY(matrix.elements, matrix.elements, this.transform.WorldRotation.y * XEngine.Mathf.TO_RADIANS);
+            mat4.rotateX(matrix.elements, matrix.elements, this.transform.WorldRotation.x * XEngine.Mathf.TO_RADIANS);
+            mat4.rotateZ(matrix.elements, matrix.elements, this.transform.WorldRotation.z * XEngine.Mathf.TO_RADIANS);
+            // mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
+            // mat4.invert(matrix.elements, matrix.elements);
+
+            return matrix.getColumn(2);
+        }
+
         
         public get projectionMatrix() : Mat4x4 {
             let game = Game.GetInstance();
-            const zNear = 0.1;
+            const zNear = 1.0;
             const zFar = 1000.0;
             
             this._projectionMatrix.ortho(
-                0,
-                game.width,
-                0,
-                game.height,
+                - game.width / 2,
+                game.width / 2,
+                - game.height / 2,
+                game.height  / 2,
                 zNear,
                 zFar
             )

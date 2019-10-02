@@ -50,7 +50,7 @@ namespace XEngine2 {
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
 			this.shadowCasterRenderQueue = new Array();
-			this.shadowMap = new RenderTarget(1280, 720, WRAP_MODE.CLAMP, false);
+			this.shadowMap = new RenderTarget(1920, 1080, WRAP_MODE.CLAMP, false);
 			this.init();
 		}
 
@@ -86,10 +86,11 @@ namespace XEngine2 {
 			Texture2D.CreateDefaultTextures(this.gl);
 			Material.initStaticMaterials(this.gl);
 			this.shadowMap.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
 
 
-			FinalRenderMaterial.SharedInstance.mainTex.value = this.dstRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
-			FinalRenderMaterial.SharedInstance.depthTex.value = this.dstRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
+			FinalRenderMaterial.SharedInstance.mainTex.value = this.shadowMap.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+			FinalRenderMaterial.SharedInstance.depthTex.value = this.shadowMap.attachedTextures[this.gl.DEPTH_ATTACHMENT];
 			this.quadMesh = new StaticMeshComponent(this.game);
 			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(FinalRenderMaterial.SharedInstance, 2, 2);
 		}
@@ -117,40 +118,65 @@ namespace XEngine2 {
 
 			let sceneLights = this.currentScene.FindComponents<Light>(Light);
 
-			if(camera.renderTarget)
-			{
-				camera.renderTarget.bind(this.gl);
-			}
-			else
-			{
-				this.dstRenderTarget.bind(this.gl);
-			}
-			
-			this.gl.viewport(0, 0, this.game.width, this.game.height);
-			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			this.gl.enable(this.gl.DEPTH_TEST);
-			this.gl.cullFace(this.gl.BACK);
-			this.gl.enable(this.gl.CULL_FACE);
-
 			this.PopulateRenderQueues(scene, sceneLights);
 
-			for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
-				const opaqueObject = this.opaqueRenderQueue[i];
-				this.renderMeshImmediate(opaqueObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
-			}
+			let testLight = sceneLights[0] as DirectionalLight;
+			this.shadowMap.bind(this.gl);
+			// 	this.gl.viewport(0, 0, this.game.width, this.game.height);
+			// this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			// this.gl.enable(this.gl.DEPTH_TEST);
+			// this.gl.disable(this.gl.CULL_FACE);
 
-			for (let i = 0; i < this.transparentRenderQueue.length; i++) {
-				const transparentObject = this.transparentRenderQueue[i];
-				this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
+				this.gl.viewport(0, 0, this.game.width, this.game.height);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+				this.gl.enable(this.gl.DEPTH_TEST);
+				this.gl.cullFace(this.gl.BACK);
+				this.gl.enable(this.gl.CULL_FACE);
+
+			if(testLight)
+			{
+				
+				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
+					const casterObject = this.shadowCasterRenderQueue[i];
+					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix);
+				}
+				
 			}
+			this.shadowMap.unBind(this.gl);
+
+			// if(camera.renderTarget)
+			// {
+			// 	camera.renderTarget.bind(this.gl);
+			// }
+			// else
+			// {
+			// 	this.dstRenderTarget.bind(this.gl);
+			// }
+
+			
+			// this.gl.viewport(0, 0, this.game.width, this.game.height);
+			// this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			// this.gl.enable(this.gl.DEPTH_TEST);
+			// this.gl.cullFace(this.gl.BACK);
+			// this.gl.enable(this.gl.CULL_FACE);
+
+			// // for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
+			// // 	const opaqueObject = this.opaqueRenderQueue[i];
+			// // 	this.renderMeshImmediate(opaqueObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
+			// // }
+
+			// // for (let i = 0; i < this.transparentRenderQueue.length; i++) {
+			// // 	const transparentObject = this.transparentRenderQueue[i];
+			// // 	this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
+			// // }
 
 			if(camera.renderTarget)
 			{
-				camera.renderTarget.unBind(this.gl);
+				// camera.renderTarget.unBind(this.gl);
 			}
 			else
 			{
-				this.dstRenderTarget.unBind(this.gl);
+				// this.dstRenderTarget.unBind(this.gl);
 				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 				this.gl.disable(this.gl.DEPTH_TEST);
@@ -247,7 +273,7 @@ namespace XEngine2 {
 					if(light){
 						if(light instanceof DirectionalLight)
 						{
-							let dirLight = light.transform.Matrix.getColumn(2);
+							let dirLight = light.dirLight;
 							dirLight.x = -dirLight.x;
 							dirLight.y = -dirLight.y;
 							dirLight.z = -dirLight.z;

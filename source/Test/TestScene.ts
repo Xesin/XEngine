@@ -12,7 +12,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -49,23 +49,23 @@ namespace XEngine2 {
 			actor.rootComponent.transform.position.y = -20;
 			actor.rootComponent.transform.position.z = -5;
 			actor.rootComponent.transform.scale.setTo(0.5);
-			for (const meshName in this.game.cache.geometries) 
-            {
-				const mesh = this.game.cache.geometries[meshName];
-				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
-				meshActor = meshActor;
-				meshActor.rootComponent.transform.scale.setTo(0.10);
-				meshActor.staticMesh.Mesh = mesh;
-			}
+			// for (const meshName in this.game.cache.geometries) 
+            // {
+			// 	const mesh = this.game.cache.geometries[meshName];
+			// 	let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
+			// 	meshActor = meshActor;
+			// 	meshActor.rootComponent.transform.scale.setTo(0.10);
+			// 	meshActor.staticMesh.Mesh = mesh;
+			// }
 
 			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.QuadMesh(BlinnPhongMaterial.SharedInstance, 5, 5);
+			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 15, 25,25);
 			
-			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
+			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 
-			this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
-			this.columnsMat.alphaClip.value = 0;
-			this.columnsMat.blendMode = BlendMode.Multiply;
+			// this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
+			// this.columnsMat.alphaClip.value = 0;
+			// this.columnsMat.blendMode = BlendMode.Multiply;
 
 			let gui = new dat.GUI();
 			let _that = this;
@@ -86,12 +86,12 @@ namespace XEngine2 {
 				_that.onValueChange(this.object, value);
 			});
 
-			controller = gui.add(this.columnsMat.color.value, 'w', 0, 1);
-			controller.name('alpha');
-			controller.listen();
-			controller.onChange(function(value){
-				_that.onAlphaChange(this.object, value);
-			});
+			// controller = gui.add(this.columnsMat.color.value, 'w', 0, 1);
+			// controller.name('alpha');
+			// controller.listen();
+			// controller.onChange(function(value){
+			// 	_that.onAlphaChange(this.object, value);
+			// });
 
 			controller = gui.add(pointLight, 'intensity', 0, 2000);
 			controller.name('pointLight intensity');

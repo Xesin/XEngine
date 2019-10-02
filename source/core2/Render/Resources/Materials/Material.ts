@@ -256,6 +256,7 @@ namespace XEngine2 {
             PhongMaterial.SharedInstance.initialize(gl);
             BlinnPhongMaterial.SharedInstance.initialize(gl);
             FinalRenderMaterial.SharedInstance.initialize(gl);
+            ShadowCasterMaterial.SharedInstance.initialize(gl);
         }
     }
 }
