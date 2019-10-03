@@ -123,38 +123,35 @@ namespace XEngine2 {
 			let testLight = sceneLights[0] as DirectionalLight;
 			
 
-			// if(testLight)
-			// {
-			// 	this.shadowMap.bind(this.gl);
-			// 	this.gl.clearColor(0,0,0,1);
-			// 	this.gl.viewport(0, 0, this.game.width, this.game.height);
-			// 	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			// 	this.gl.enable(this.gl.DEPTH_TEST);
-			// 	this.gl.cullFace(this.gl.BACK);
-			// 	this.gl.enable(this.gl.CULL_FACE);
-			// 	for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
-			// 		const casterObject = this.shadowCasterRenderQueue[i];
-			// 		this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
-			// 	}
+			if(testLight)
+			{
+				this.shadowMap.bind(this.gl);
+				this.gl.clearColor(0,0,0,1);
+				this.gl.viewport(0, 0, this.game.width, this.game.height);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+				this.gl.enable(this.gl.DEPTH_TEST);
+				this.gl.cullFace(this.gl.BACK);
+				this.gl.enable(this.gl.CULL_FACE);
+				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
+					const casterObject = this.shadowCasterRenderQueue[i];
+					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
+				}
 				
-			// }
-			// this.shadowMap.unBind(this.gl);
-			// if(camera.renderTarget)
-			// {
-			// 	camera.renderTarget.bind(this.gl);
-			// }
-			// else
-			// {
-			// 	this.dstRenderTarget.bind(this.gl);
-			// }
+			}
+			this.shadowMap.unBind(this.gl);
+			if(camera.renderTarget)
+			{
+				camera.renderTarget.bind(this.gl);
+			}
+			else
+			{
+				this.dstRenderTarget.bind(this.gl);
+			}
 			
 			
 			this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, this.clearColor.a);
-			// this.gl.viewport(0, 0, this.game.width, this.game.height);
+			this.gl.viewport(0, 0, this.game.width, this.game.height);
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			this.gl.enable(this.gl.DEPTH_TEST);
-			this.gl.cullFace(this.gl.BACK);
-			this.gl.enable(this.gl.CULL_FACE);
 
 			for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
 				const opaqueObject = this.opaqueRenderQueue[i];
@@ -166,21 +163,19 @@ namespace XEngine2 {
 				this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
 			}
 
-			// if(camera.renderTarget)
-			// {
-			// 	camera.renderTarget.unBind(this.gl);
-			// }
-			// else
-			// {
-			// 	this.dstRenderTarget.unBind(this.gl);
-			// 	this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
-			// 	this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-			// 	this.gl.disable(this.gl.DEPTH_TEST);
-			// 	this.gl.disable(this.gl.CULL_FACE);
-				
-			// 	let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
-			// 	this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
-			// }
+			if(camera.renderTarget)
+			{
+				camera.renderTarget.unBind(this.gl);
+			}
+			else
+			{
+				this.dstRenderTarget.unBind(this.gl);
+				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+								
+				let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
+				this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
+			}
 		}
 
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)
@@ -254,6 +249,11 @@ namespace XEngine2 {
 			if(material.normalMatrix)
 				material.normalMatrix.value = modelMatrix.transposed();
 
+			if(material instanceof BlinnPhongMaterial)
+			{
+				(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.COLOR_ATTACHMENT0];
+			}
+
 			if(!skipLights)
 			{
 				for(let i = 0; i < 5; i++)
@@ -266,6 +266,8 @@ namespace XEngine2 {
 						let lightIntensityUniform = material.getLightUniform(i, 'intensity');
 						let lightAttenuationUniform = material.getLightUniform(i, 'lightAttenuation');
 						let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
+						let lightViewMatrixUniform = material.getLightUniform(i, 'lightViewMatrix');
+						let lightProjectionUniform = material.getLightUniform(i, 'lightProjection');
 						spotLightDirectionUniform.value = new Vector4(0,0,0,0);
 						lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
 						if(light){
@@ -276,6 +278,8 @@ namespace XEngine2 {
 								dirLight.y = -dirLight.y;
 								dirLight.z = -dirLight.z;
 								lightPositionUniform.value =  dirLight;
+								lightViewMatrixUniform.value = light.viewMatrix;
+								lightProjectionUniform.value = light.projectionMatrix;
 							}
 							else if(light instanceof PointLight)
 							{

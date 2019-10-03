@@ -201,16 +201,19 @@ namespace XEngine2 {
 
                 switch (this.cullMode) {
                     case CullMode.BACK:
+                        gl.enable(gl.CULL_FACE);
                         gl.cullFace(gl.BACK);
                         break;
                     case CullMode.FRONT:
+                        gl.enable(gl.CULL_FACE);
                         gl.cullFace(gl.FRONT);
                         break;
                     case CullMode.BOTH:
+                        gl.enable(gl.CULL_FACE);
                         gl.cullFace(gl.FRONT_AND_BACK);
                         break;
                     case CullMode.NONE:
-                        gl.cullFace(gl.NONE);
+                        gl.disable(gl.CULL_FACE);
                         break;
                 }                
             }    
@@ -259,7 +262,7 @@ namespace XEngine2 {
 					gl.uniform1f(uniform._gpuPos, uniform.value as number);
 					break;
             }
-            uniform.bDirty = false;
+            uniform.Dirty = false;
         }
         
         public static initStaticMaterials(gl: WebGL2RenderingContext)

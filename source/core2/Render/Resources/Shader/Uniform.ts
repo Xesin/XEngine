@@ -29,6 +29,14 @@ namespace XEngine2 {
             return this.bDirty || ((this.value instanceof Vector3 || this.value instanceof Vector4) ? (this.value as Vector3 | Vector4).Dirty : false)
         }
 
+        public set Dirty(newValue: boolean)
+        {
+            this.bDirty = newValue;
+            if(this.value instanceof Vector3 || this.value instanceof Vector4) 
+                 (this.value as Vector3 | Vector4).Dirty = newValue;
+
+        }
+
         
         public set value(v : number | Mat4x4 | Vector3 | Vector4 | Texture2D | boolean ) {
             switch(this.type)
@@ -37,7 +45,7 @@ namespace XEngine2 {
                     let tmpVal = v as Mat4x4;
                     if(!tmpVal.Equals(this.value as Mat4x4))
                     {
-                        this.bDirty = true;
+                        this.Dirty = true;
                         this._value = v;
                     }
                     break;
@@ -45,7 +53,7 @@ namespace XEngine2 {
                     let vec3 = v as Vector3;
                     if(!vec3.Equals(this.value as Vector3))
                     {
-                        this.bDirty = true;
+                        this.Dirty = true;
                         this._value = v;
                     }
                     break;
@@ -53,7 +61,7 @@ namespace XEngine2 {
                     let vec4 = v as Vector4;
                     if(!vec4.Equals(this.value as Vector4))
                     {
-                        this.bDirty = true;
+                        this.Dirty = true;
                         this._value = v;
                     }
                     break;
@@ -61,7 +69,7 @@ namespace XEngine2 {
                     let sampler = v as Texture2D;
                     if(!sampler.Equals(this.value as Texture2D))
                     {
-                        this.bDirty = true;
+                        this.Dirty = true;
                         this._value = v;
                     }
                     break;
@@ -69,14 +77,14 @@ namespace XEngine2 {
                         let boolean = v as boolean;
                         if(boolean != (this.value as boolean))
                         {
-                            this.bDirty = true;
+                            this.Dirty = true;
                             this._value = v;
                         }
                         break;
                 default:
                     if(v != this._value){
                         this._value = v;
-                        this.bDirty = true;
+                        this.Dirty = true;
                     }
             }
         }   

@@ -6,7 +6,6 @@ namespace XEngine2 {
 
 		public bufferType: number;
 		public buffer: WebGLBuffer;
-		public vao: WebGLVertexArrayObject;
 		private gl: WebGL2RenderingContext;
 		public attributes: Array<any>;
 
@@ -18,7 +17,6 @@ namespace XEngine2 {
 			this.gl = gl;
 			this.bufferType = gl.ARRAY_BUFFER;
 			this.buffer = buffer;
-			this.vao = gl.createVertexArray();
 			this.attributes = new Array<any>();
 		}
 
@@ -58,7 +56,6 @@ namespace XEngine2 {
 			let gl = this.gl;
 
 			if (VertexBuffer.CurrentVertexBuffer == this) {
-				gl.bindVertexArray(null);
 				gl.bindBuffer(this.bufferType, null);
 				VertexBuffer.SetDiry();
 			}
@@ -70,7 +67,6 @@ namespace XEngine2 {
 			if (VertexBuffer.CurrentVertexBuffer == this) {
 				this.unbind();
 				gl.deleteBuffer(this.buffer);
-				gl.deleteVertexArray(this.vao);
 			}
 		}
 

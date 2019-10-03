@@ -20,11 +20,11 @@ namespace XEngine2
 		protected normalData: Array<number>;
 		protected gl: WebGL2RenderingContext;
 
-		protected indexBuffer: IndexBuffer[];
-		protected positionBuffer: VertexBuffer[];
-		protected uvBuffer: VertexBuffer[];
-		protected normalBuffer: VertexBuffer[];
-		protected colorBuffer: VertexBuffer[];
+		public indexBuffer: IndexBuffer[];
+		public positionBuffer: VertexBuffer[];
+		public uvBuffer: VertexBuffer[];
+		public normalBuffer: VertexBuffer[];
+		public colorBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
 		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "") {
@@ -101,8 +101,7 @@ namespace XEngine2
 
 				if(this.initialized && this.positionBuffer[i].attributes.length == Object.keys(material.VertexAttributes).length) continue;
 
-				let stride = material.AttrStride;
-				let startVertexData = this.groups[i].firstVertex * 3;
+				let startVertexData = this.groups[i].firstVertex;
 				let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount);
 				
 				if(material.HasPosition)
@@ -115,7 +114,7 @@ namespace XEngine2
 						let floatBuffer = dataBuffer.floatView;
 
 						let index = dataBuffer.allocate(this.groups[i].vertexCount);
-						for (let j = startVertexData; j < endVertexData * 3; j++) {
+						for (let j = startVertexData * 3; j < endVertexData * 3; j++) {
 							floatBuffer[index++] = vertices[j++];
 							floatBuffer[index++] = vertices[j++];
 							floatBuffer[index++] = vertices[j];
@@ -136,7 +135,7 @@ namespace XEngine2
 						let floatBuffer = dataBuffer.floatView;
 
 						let index = dataBuffer.allocate(this.groups[i].vertexCount);
-						for (let j = startVertexData; j < endVertexData * 4; j++) {
+						for (let j = startVertexData * 4; j < endVertexData * 4; j++) {
 							if(colors && colors.length >= 4)
 							{
 								floatBuffer[index++] = colors[j++];
@@ -168,7 +167,7 @@ namespace XEngine2
 						let floatBuffer = dataBuffer.floatView;
 
 						let index = dataBuffer.allocate(this.groups[i].vertexCount);
-						for (let j = startVertexData; j < endVertexData * 3; j++) {
+						for (let j = startVertexData * 3; j < endVertexData * 3; j++) {
 							if(normals && normals.length >= 3)
 							{
 								floatBuffer[index++] = normals[j++];
@@ -197,8 +196,8 @@ namespace XEngine2
 						let floatBuffer = dataBuffer.floatView;
 
 						let index = dataBuffer.allocate(this.groups[i].vertexCount);
-						for (let j = startVertexData; j < endVertexData * 2; j++) {
-							if(uvs && uvs.length >= 3)
+						for (let j = startVertexData * 2; j < endVertexData * 2; j++) {
+							if(uvs && uvs.length >= 2)
 							{
 								floatBuffer[index++] = uvs[j++];
 								floatBuffer[index++] = uvs[j];
@@ -214,15 +213,15 @@ namespace XEngine2
 					}
 				}
 
-				if (this.groups[i].indices && !this.indexBuffer[i]) {
-					let indexDataBuffer = new DataBuffer16(2 * this.groups[i].indices.length);
+				if (this.indexData && !this.indexBuffer[i]) {
+					let indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
 					this.indexBuffer[i] = IndexBuffer.Create(
 						this.gl.ELEMENT_ARRAY_BUFFER, indexDataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
 					let uintIndexBuffer = indexDataBuffer.uintView;
 					let indices = this.indexData;
-					indexDataBuffer.allocate(this.groups[i].indices.length);
-					for (let i = 0; i < this.groups[i].indices.length; i++) {
-						uintIndexBuffer[i] = this.groups[i].indices[i];
+					indexDataBuffer.allocate(this.indexData.length);
+					for (let j = 0; j < indices.length; j++) {
+						uintIndexBuffer[j] = indices[j];
 					}
 					this.indexBuffer[i].updateResource(uintIndexBuffer, 0);
 				}
@@ -236,7 +235,6 @@ namespace XEngine2
 		}
 
 		public bind(gl: WebGL2RenderingContext, material: Material, materialIndex = 0) {
-			this.positionBuffer[materialIndex].unbind();
 			this.positionBuffer[materialIndex].bind();
 			const vertexAttr = material.vPosition;
 			gl.vertexAttribPointer(

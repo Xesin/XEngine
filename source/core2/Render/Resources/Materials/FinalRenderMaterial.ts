@@ -24,6 +24,8 @@ namespace XEngine2
         constructor(shader = new Shader(ShaderMaterialLib.FinalRenderShader.vertexShader, ShaderMaterialLib.FinalRenderShader.fragmentShader))
         {
             super(shader);
+            this.depthTestEnabled = false;
+            this.cullMode = CullMode.NONE;
         }
 
         public get mainTex(): Uniform

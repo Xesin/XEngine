@@ -11,6 +11,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"in vec4 aVertexPosition;",
 			"in vec4 aVertexColor;",
 			"in vec3 aVertexNormal;",
+			"in vec2 aUV;",
 			"out mediump vec4 vColor;",
 			"out mediump mat4 mvMatrix;",
 			"out mediump mat4 mvpMatrix;",
@@ -24,6 +25,7 @@ namespace XEngine2.ShaderMaterialLib{
             "gl_Position = mvpMatrix * aVertexPosition;",
 				"vColor = aVertexColor;",
 				"vColor = vec4(aVertexNormal, 1.0);",
+				"vColor = vec4(aUV, 0.0, 1.0);",
 			"}",
         ]);
 

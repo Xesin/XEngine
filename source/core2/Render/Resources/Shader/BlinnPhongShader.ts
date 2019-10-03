@@ -9,6 +9,7 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.VertexInput)
 		.concat(ShaderBlocks.BlinnPhongVertexOutputs)
 		.concat(ShaderBlocks.MVPUniforms)
+		.concat(ShaderBlocks.VertexLightning)
 		.concat(
 		[
             "void main(void) {",
@@ -22,6 +23,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
+				"shadowPos = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * vec4(aVertexPosition);",
 			"}"
         ]);
 
@@ -53,6 +55,26 @@ namespace XEngine2.ShaderMaterialLib{
 				"{",
 					"Light curLight = light[i];",
 					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
+					// "if(i == 0){",
+					// 	"vec3 fragmentDepth = shadowPos.xyz;",
+					// 	"float shadowAcneRemover = 0.007;",
+					// 	"fragmentDepth.z -= shadowAcneRemover;",
+					// 	"float texelSize = 1.0 / 512.0;",
+					// 	  "float amountInLight = 0.0;",
+						  
+					// 	  "for (int x = -1; x <= 1; x++) {",
+					// 		"for (int y = -1; y <= 1; y++) {",
+					// 		  "float texelDepth = decodeFloat(texture(shadowMap,",
+					// 		  "fragmentDepth.xy + vec2(x, y) * texelSize));",
+					// 		  "if (fragmentDepth.z < texelDepth) {",
+					// 			"amountInLight += 1.0;",
+					// 		  "}",
+					// 		"}",
+					// 	  "}",
+					// 	  "float texelDepth = texture(shadowMap, fragmentDepth.xy);",
+					// 	  "amountInLight /= 9.0;",
+					// 	  "DiffuseLightColor = vec3(texture(shadowMap, fragmentDepth.xy).xyz);",
+					// "}",
 					"lightsColor += DiffuseLightColor; ",
 				"}",
 

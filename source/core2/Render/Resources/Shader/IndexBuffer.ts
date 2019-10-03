@@ -20,9 +20,8 @@ namespace XEngine2 {
 
 		public updateResource(bufferData: Uint16Array, offset: number) {
 			let gl = this.gl;
-
 			this.bind();
-			gl.bufferSubData(this.bufferType, offset, bufferData);
+			gl.bufferData(this.bufferType,  bufferData, gl.STATIC_DRAW);
 			this.unbind();
 		}
 

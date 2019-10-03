@@ -136,13 +136,28 @@ namespace XEngine2
                 "highp vec4 position;",
                 "highp vec4 lightAttenuation;",
                 "highp vec4 spotLightDirection;",
+                "highp mat4 lightProjection;",
+                "highp mat4 lightViewMatrix;",
                 "highp vec3 color;",
                 "highp float intensity;",
-                "int type;",
+                "lowp int type;",
                 "bool isActive;",
             "};",
 
             "uniform Light light[MAX_LIGHTS];",
+
+            "uniform sampler2D shadowMap;",
+            "in vec4 shadowPos;",
+
+			"float decodeFloat (vec4 color) {",
+				"const vec4 bitShift = vec4(",
+				  "1.0 / (256.0 * 256.0 * 256.0),",
+				  "1.0 / (256.0 * 256.0),",
+				  "1.0 / 256.0,",
+				  "1.0",
+				");",
+				"return dot(color, bitShift);",
+			  "}",
 
             "float getLightAttenuation(Light light, vec3 lightVector, vec3 lightDirection){",
                 "vec3 spotDirection = light.spotLightDirection.xyz;",
@@ -203,6 +218,30 @@ namespace XEngine2
                 "return finalColor;",
             "}",
 
+        ];
+
+        public static VertexLightning =
+        [
+            "#define LIGHTNING_ON",
+            "#define MAX_LIGHTS 5",
+            "struct Light{",
+                "highp vec4 position;",
+                "highp vec4 lightAttenuation;",
+                "highp vec4 spotLightDirection;",
+                "highp mat4 lightProjection;",
+                "highp mat4 lightViewMatrix;",
+                "highp vec3 color;",
+                "highp float intensity;",
+                "lowp int type;",
+                "bool isActive;",
+            "};",
+
+            "uniform Light light[MAX_LIGHTS];",
+
+            "uniform sampler2D shadowMap;",
+            "out vec4 shadowPos;",
+              
+              "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",
         ]
     }
 }
