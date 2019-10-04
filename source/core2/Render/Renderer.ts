@@ -50,7 +50,7 @@ namespace XEngine2 {
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
 			this.shadowCasterRenderQueue = new Array();
-			this.shadowMap = new RenderTarget(1920, 1080, WRAP_MODE.CLAMP, false);
+			this.shadowMap = new RenderTarget(1024, 1024, WRAP_MODE.CLAMP, false);
 			this.init();
 		}
 
@@ -126,8 +126,8 @@ namespace XEngine2 {
 			if(testLight)
 			{
 				this.shadowMap.bind(this.gl);
-				this.gl.clearColor(0,0,0,1);
-				this.gl.viewport(0, 0, this.game.width, this.game.height);
+				this.gl.clearColor(1,1,1,1);
+				this.gl.viewport(0, 0, 1024, 1024);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 				this.gl.enable(this.gl.DEPTH_TEST);
 				this.gl.cullFace(this.gl.BACK);

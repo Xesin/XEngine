@@ -23,7 +23,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
-				"shadowPos = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * vec4(aVertexPosition);",
+				"shadowPos = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * modelMatrix * vec4(aVertexPosition);",
 			"}"
         ]);
 
@@ -35,9 +35,9 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.BlinnPhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
 		.concat([			
-			"out vec4 fragColor;",
-			"uniform float smoothness;",
-			"uniform vec4 specularColor;",
+			"out highp vec4 fragColor;",
+			"uniform highp float smoothness;",
+			"uniform highp vec4 specularColor;",
 
 			"void main(void) {",
 
@@ -55,35 +55,36 @@ namespace XEngine2.ShaderMaterialLib{
 				"{",
 					"Light curLight = light[i];",
 					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
-					// "if(i == 0){",
-					// 	"vec3 fragmentDepth = shadowPos.xyz;",
-					// 	"float shadowAcneRemover = 0.007;",
-					// 	"fragmentDepth.z -= shadowAcneRemover;",
-					// 	"float texelSize = 1.0 / 512.0;",
-					// 	  "float amountInLight = 0.0;",
+					"if(i == 0){",
+						"vec3 fragmentDepth = shadowPos.xyz;",
+						"float shadowAcneRemover = 0.007;",
+						"fragmentDepth.z -= shadowAcneRemover;",
+						"float texelSize = 1.0 / 512.0;",
+						  "float amountInLight = 0.0;",
 						  
-					// 	  "for (int x = -1; x <= 1; x++) {",
-					// 		"for (int y = -1; y <= 1; y++) {",
-					// 		  "float texelDepth = decodeFloat(texture(shadowMap,",
-					// 		  "fragmentDepth.xy + vec2(x, y) * texelSize));",
-					// 		  "if (fragmentDepth.z < texelDepth) {",
-					// 			"amountInLight += 1.0;",
-					// 		  "}",
-					// 		"}",
-					// 	  "}",
-					// 	  "float texelDepth = texture(shadowMap, fragmentDepth.xy);",
-					// 	  "amountInLight /= 9.0;",
-					// 	  "DiffuseLightColor = vec3(texture(shadowMap, fragmentDepth.xy).xyz);",
-					// "}",
+						  "for (int x = -1; x <= 1; x++) {",
+							"for (int y = -1; y <= 1; y++) {",
+							  "float texelDepth = texture(shadowMap,",
+							  "fragmentDepth.xy + vec2(x, y) * texelSize).x;",
+							  "if (fragmentDepth.z < texelDepth) {",
+								"amountInLight += 1.0;",
+							  "}",
+							"}",
+						  "}",
+
+						  "amountInLight /= 9.0;",
+						  "DiffuseLightColor = DiffuseLightColor * amountInLight;",
+					"}",
 					"lightsColor += DiffuseLightColor; ",
 				"}",
 
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
 
 				"finalColor = lightsColor",
-					"+ albedo.xyz * ambientColor;",
+				"+ albedo.xyz * ambientColor;",
 
 				"fragColor.xyz = pow(finalColor , vec3(0.4545));",
+				// "fragColor.xyz =finalColor;",
 				"fragColor.a = alpha;",
 				"fragColor.rgb *= fragColor.a;",
             "}",

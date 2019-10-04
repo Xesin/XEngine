@@ -9,61 +9,61 @@ namespace XEngine2
 
         public static VertexInputNoUVs = 
         [
-            "in vec4 aVertexPosition;",
-			"in vec4 aVertexColor;",
-			"in vec3 aVertexNormal;",
+            "in highp vec4 aVertexPosition;",
+			"in highp vec4 aVertexColor;",
+			"in highp vec3 aVertexNormal;",
         ];
 
         public static VertexInput = 
         ShaderBlocks.VertexInputNoUVs
         .concat(
         [
-			"in vec2 aUV;"
+			"in highp vec2 aUV;"
         ]);
 
         public static VertexOutputNoUVs =
         [
-			"out vec3 vNormal;",
-			"out mediump vec4 vColor;",
-			"out mediump mat4 mvMatrix;",
-			"out mediump mat4 mvpMatrix;"
+			"out highp vec3 vNormal;",
+			"out highp vec4 vColor;",
+			"out highp mat4 mvMatrix;",
+			"out highp mat4 mvpMatrix;"
         ];
 
         public static VertexOutput =
         ShaderBlocks.VertexOutputNoUVs
         .concat(
         [
-            "out mediump vec2 uv;",
+            "out highp vec2 uv;",
         ]);
 
         public static FragmentInputNoUVs =
         [
-            "in vec4 vColor;",
-			"in mat4 mvpMatrix;",
-			"in mat4 mvMatrix;",
-            "in vec3 vNormal;"
+            "in highp vec4 vColor;",
+			"in highp mat4 mvpMatrix;",
+			"in highp mat4 mvMatrix;",
+            "in highp vec3 vNormal;"
         ];
 
         public static FragmentInput = 
         ShaderBlocks.FragmentInputNoUVs
         .concat(
         [
-            "in vec2 uv;"
+            "in highp vec2 uv;"
         ]);
 
         public static MVPUniforms = 
         [
-            "uniform mediump mat4 modelMatrix;",
-			"uniform mediump mat4 viewMatrix;",
-			"uniform mediump mat4 pMatrix;",
-			"uniform mediump mat4 normalMatrix;",
+            "uniform highp mat4 modelMatrix;",
+			"uniform highp mat4 viewMatrix;",
+			"uniform highp mat4 pMatrix;",
+			"uniform highp mat4 normalMatrix;",
         ];
 
         public static PhongVertexOutputs = 
         ShaderBlocks.VertexOutput
         .concat(
         [
-            "out vec3 vWorldPos;",
+            "out highp vec3 vWorldPos;",
         ]
         );
 
@@ -71,7 +71,7 @@ namespace XEngine2
         ShaderBlocks.PhongVertexOutputs
         .concat(
         [
-            "out vec3 viewPos;",
+            "out highp vec3 viewPos;",
         ]
         );
 
@@ -79,10 +79,10 @@ namespace XEngine2
         ShaderBlocks.FragmentInput
         .concat(
         [
-            "in vec3 vWorldPos;",
-            "uniform vec4 color;",
-            "uniform vec4 ambient;",
-            "uniform float alphaClip;",
+            "in highp vec3 vWorldPos;",
+            "uniform highp vec4 color;",
+            "uniform highp vec4 ambient;",
+            "uniform highp float alphaClip;",
             "uniform sampler2D albedoTex;",
             "uniform sampler2D opacityTex;"
         ]);
@@ -91,7 +91,7 @@ namespace XEngine2
         ShaderBlocks.PhongFragmentInputs
         .concat(
         [
-            "in vec3 viewPos;",
+            "in highp vec3 viewPos;",
         ]);
 
         public static mvpAndPosCalc = 
@@ -148,6 +148,24 @@ namespace XEngine2
 
             "uniform sampler2D shadowMap;",
             "in vec4 shadowPos;",
+
+            "vec4 encodeFloat (float depth) {",
+				"const vec4 bitShift = vec4(",
+					"256 * 256 * 256,",
+					"256 * 256,",
+					"256,",
+					"1.0",
+				");",
+				"const vec4 bitMask = vec4(",
+					"0,",
+					"1.0 / 256.0,",
+					"1.0 / 256.0,",
+					"1.0 / 256.0",
+				");",
+				"vec4 comp = fract(depth * bitShift);",
+				"comp -= comp.xxyz * bitMask;",
+				"return comp;",
+			"}",
 
 			"float decodeFloat (vec4 color) {",
 				"const vec4 bitShift = vec4(",
@@ -241,7 +259,7 @@ namespace XEngine2
             "uniform sampler2D shadowMap;",
             "out vec4 shadowPos;",
               
-              "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",
+            "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 1.0);",
         ]
     }
 }

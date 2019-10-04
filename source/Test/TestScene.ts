@@ -12,7 +12,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -49,17 +49,17 @@ namespace XEngine2 {
 			actor.rootComponent.transform.position.y = -20;
 			actor.rootComponent.transform.position.z = -5;
 			actor.rootComponent.transform.scale.setTo(0.5);
-			// for (const meshName in this.game.cache.geometries) 
-            // {
-			// 	const mesh = this.game.cache.geometries[meshName];
-			// 	let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
-			// 	meshActor = meshActor;
-			// 	meshActor.rootComponent.transform.scale.setTo(0.10);
-			// 	meshActor.staticMesh.Mesh = mesh;
-			// }
+			for (const meshName in this.game.cache.geometries) 
+            {
+				const mesh = this.game.cache.geometries[meshName];
+				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
+				meshActor = meshActor;
+				meshActor.rootComponent.transform.scale.setTo(0.10);
+				meshActor.staticMesh.Mesh = mesh;
+			}
 
-			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
+			// let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
+			// quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
 			
 			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 

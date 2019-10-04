@@ -8,12 +8,14 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.MVPUniforms)
 		.concat(
 		[
+			"out highp vec3 vWorldPos;",
 			"void main(void) {",
 		]
 		)
 		.concat(ShaderBlocks.mvpAndPosCalc)
 		.concat(
 		[
+				"vWorldPos = gl_Position.xyz;",
 				"vColor = aVertexColor;",
 			"}",
         ]);
@@ -41,11 +43,12 @@ namespace XEngine2.ShaderMaterialLib{
 				"comp -= comp.xxyz * bitMask;",
 				"return comp;",
 			"}",
+			"in highp vec3 vWorldPos;",
 
-			"out vec4 fragColor;",
+			"out highp vec4 fragColor;",
 
             "void main(void) {",
-				"fragColor = encodeFloat(gl_FragCoord.z);",
+				"fragColor = vec4(vWorldPos.zzz, 1.0);",
             "}",
         ]);
     }
