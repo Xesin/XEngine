@@ -59,7 +59,7 @@ namespace XEngine2.ShaderMaterialLib{
 						"vec3 fragmentDepth = shadowPos.xyz;",
 						"float shadowAcneRemover = 0.007;",
 						"fragmentDepth.z -= shadowAcneRemover;",
-						"float texelSize = 1.0 / 512.0;",
+						"float texelSize = 1.0 / 1024.0;",
 						  "float amountInLight = 0.0;",
 						  
 						  "for (int x = -1; x <= 1; x++) {",
