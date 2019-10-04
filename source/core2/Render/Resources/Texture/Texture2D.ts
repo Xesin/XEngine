@@ -34,7 +34,7 @@ namespace XEngine2 {
 			let texture = gl.createTexture();
 			let texture2D = new Texture2D(name, width, height, wrap, isNormal, generateMipMaps);
 
-			let internalFormat = gl.SRGB8_ALPHA8;
+			let internalFormat = gl.RGBA;
 			let srcFormat = gl.RGBA;
 
 			if (isNormal) {

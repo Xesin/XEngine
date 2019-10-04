@@ -19,7 +19,7 @@ namespace XEngine2
         public defaults = 
         {
             "color": new Vector4(1,1,1,1),
-            "ambient" : new Vector4(1,1,1,0.025),
+            "ambient" : new Vector4(1,1,1,0.15),
             "opacityTex" : "white",
             "normal" : "normal",
             "shadowMap" : "white",
