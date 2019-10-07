@@ -23,7 +23,8 @@ namespace XEngine2.ShaderMaterialLib{
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
-				"shadowPos = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * modelMatrix * vec4(aVertexPosition);",
+				"mat4 depthBiasMVP = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * modelMatrix;",
+				"shadowPos =  depthBiasMVP * vec4(aVertexPosition.xyz, 1.0);",
 			"}"
         ]);
 
@@ -39,6 +40,13 @@ namespace XEngine2.ShaderMaterialLib{
 			"layout(location = 1) out vec4 fragNormals;",
 			"uniform highp float smoothness;",
 			"uniform highp vec4 specularColor;",
+
+			"vec2 poissonDisk[4] = vec2[](",
+				"vec2( -0.94201624, -0.39906216 ),",
+				"vec2( 0.94558609, -0.76890725 ),",
+				"vec2( -0.094184101, -0.92938870 ),",
+				"vec2( 0.34495938, 0.29387760 )",
+			");",
 
 			"void main(void) {",
 
@@ -59,24 +67,19 @@ namespace XEngine2.ShaderMaterialLib{
 					"if(i == 0){",
 						"vec3 fragmentDepth = shadowPos.xyz;",
 						"float shadowAcneRemover = 0.005*tan(acos(DiffuseLightColor.w));",
-						"fragmentDepth.z -= shadowAcneRemover;",
-						"float texelSize = 1.0 / 1024.0;",
-						  "float amountInLight = 0.0;",
+						"float amountInLight = 1.0;",
 						  
-						  "for (int x = -1; x <= 1; x++) {",
-							"for (int y = -1; y <= 1; y++) {",
-							  "float texelDepth = texture(shadowMap,",
-							  "fragmentDepth.xy + vec2(x, y) * texelSize).x;",
-							  "if (fragmentDepth.z < texelDepth) {",
-								"amountInLight += 1.0;",
-							  "}",
+						"for (int x = 0; x < 4; x++) {",
+							"float texelDepth = decodeFloat(texture(shadowMap,",
+							"fragmentDepth.xy + poissonDisk[i]/700.0));",
+							"if (fragmentDepth.z - shadowAcneRemover > texelDepth) {",
+								"amountInLight -= 0.2;",
 							"}",
-						  "}",
+						"}",
 
-						  "amountInLight /= 9.0;",
-						  "DiffuseLightColor = DiffuseLightColor * amountInLight;",
+						"DiffuseLightColor = DiffuseLightColor * amountInLight;",
 					"}",
-					"lightsColor += DiffuseLightColor; ",
+					"lightsColor += DiffuseLightColor.xyz; ",
 				"}",
 
 				"vec3 ambientColor = ambient.xyz * ambient.w;",

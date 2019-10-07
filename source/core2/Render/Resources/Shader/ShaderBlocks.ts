@@ -233,7 +233,7 @@ namespace XEngine2
                 "vec3 finalSpecular = specular * specularColor.xyz * lightColor;",
                 
                 "vec3 finalColor = (albedo * diffuse * lightColor * atten) + (finalSpecular * atten);",
-                "return vec4(finalColor, clamp(dot(surfaceNormal, lightDir), 0.0, 1.0));",
+                "return vec4(finalColor.xyz, clamp(dot(surfaceNormal, lightDir), 0.0, 1.0));",
             "}",
 
         ];
@@ -259,7 +259,7 @@ namespace XEngine2
             "uniform sampler2D shadowMap;",
             "out vec4 shadowPos;",
               
-            "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 1.0);",
+            "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",
         ]
     }
 }
