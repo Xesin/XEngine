@@ -135,9 +135,6 @@ namespace XEngine2 {
 				this.gl.clearColor(1,1,1,0.0);
 				this.gl.viewport(0, 0, 1024, 1024);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-				this.gl.enable(this.gl.DEPTH_TEST);
-				this.gl.cullFace(this.gl.BACK);
-				this.gl.enable(this.gl.CULL_FACE);
 				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
 					const casterObject = this.shadowCasterRenderQueue[i];
 					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);

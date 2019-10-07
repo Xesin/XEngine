@@ -28,6 +28,7 @@ namespace XEngine2
         constructor(shader = new Shader(ShaderMaterialLib.ShadowCasterShader.vertexShader, ShaderMaterialLib.ShadowCasterShader.fragmentShader))
         {
             super(shader);
+            this.cullMode = CullMode.FRONT;
         }
 
         public get color(): Uniform
