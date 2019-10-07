@@ -101,7 +101,7 @@ namespace XEngine2 {
 
 		public Equals(other: Texture2D)
 		{
-			return other != null && this.imageName == other.imageName;
+			return other != null && other == this && this.imageName == other.imageName;
 		}
 	}
 }

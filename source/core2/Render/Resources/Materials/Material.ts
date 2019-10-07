@@ -270,8 +270,25 @@ namespace XEngine2 {
             BasicMaterial.SharedInstance.initialize(gl);
             PhongMaterial.SharedInstance.initialize(gl);
             BlinnPhongMaterial.SharedInstance.initialize(gl);
-            FinalRenderMaterial.SharedInstance.initialize(gl);
+            PostProcessMaterial.SharedInstance.initialize(gl);
             ShadowCasterMaterial.SharedInstance.initialize(gl);
+            NegativePostMaterial.SharedInstance.initialize(gl);
+        }
+
+        public setShaderParameter(name: string, value: any)
+        {
+            if(this.shader.uniforms[name])
+            {
+                this.shader.uniforms[name].value = value;
+            }
+        }
+
+        public setShaderSampler(name: number, value: any)
+        {
+            if(this.shader.samplers[name])
+            {
+                this.shader.samplers[name].value = value;
+            }
         }
     }
 }

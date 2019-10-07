@@ -36,6 +36,7 @@ namespace XEngine2 {
 		private shadowMap : RenderTarget;
 
 		private dstRenderTarget : RenderTarget;
+		private srcRenderTarget : RenderTarget;
 		private quadMesh : StaticMeshComponent;
 
 		private errorMat: Material;
@@ -63,7 +64,13 @@ namespace XEngine2 {
 				this.dstRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
-				this.dstRenderTarget.bind(this.gl);
+				this.dstRenderTarget.unBind(this.gl);
+
+				this.srcRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
+				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+				this.srcRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
+
+				this.srcRenderTarget.bind(this.gl);
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 
 				this.gl.colorMask(false, false, false, true);
@@ -77,7 +84,7 @@ namespace XEngine2 {
 
 				this.errorMat = new Material(new Shader(ShaderMaterialLib.ErrorShader.vertexShader, ShaderMaterialLib.ErrorShader.fragmentShader))
 				this.errorMat.initialize(this.gl);
-				this.dstRenderTarget.unBind(this.gl);
+				this.srcRenderTarget.unBind(this.gl);
 
 				
 			}
@@ -89,10 +96,10 @@ namespace XEngine2 {
 			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
 
 
-			FinalRenderMaterial.SharedInstance.mainTex.value = this.dstRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
-			FinalRenderMaterial.SharedInstance.depthTex.value = this.dstRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
+			PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+			PostProcessMaterial.SharedInstance.depthTex.value = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
 			this.quadMesh = new StaticMeshComponent(this.game);
-			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(FinalRenderMaterial.SharedInstance, 2, 2);
+			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(PostProcessMaterial.SharedInstance, 2, 2);
 		}
 
 		private OnResize(width: number, height: number)
@@ -145,7 +152,7 @@ namespace XEngine2 {
 			}
 			else
 			{
-				this.dstRenderTarget.bind(this.gl);
+				this.srcRenderTarget.bind(this.gl);
 			}
 			
 			
@@ -169,13 +176,46 @@ namespace XEngine2 {
 			}
 			else
 			{
-				this.dstRenderTarget.unBind(this.gl);
+				this.srcRenderTarget.unBind(this.gl);
+
 				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
-				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-								
+
+				this.currentScene.onWillRenderImage(this, this.srcRenderTarget, this.dstRenderTarget);
+
+				PostProcessMaterial.SharedInstance.bind(this.gl);
+				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+				PostProcessMaterial.SharedInstance.setShaderParameter("mainTex", this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+				PostProcessMaterial.SharedInstance.setShaderSampler(1, this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+				PostProcessMaterial.SharedInstance.setShaderParameter("depthTex", this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+				PostProcessMaterial.SharedInstance.updateUniforms(this.gl);
+										
 				let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
-				this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, FinalRenderMaterial.SharedInstance);
+				this.renderMeshImmediate(quadRenderObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix, PostProcessMaterial.SharedInstance);
 			}
+		}
+
+		public blit(src: RenderTarget, dst: RenderTarget, material: PostProcessMaterial = PostProcessMaterial.SharedInstance)
+		{
+			src.unBind(this.gl);
+			dst.bind(this.gl);
+
+			material.bind(this.gl);
+			material.setShaderSampler(0, src.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+			material.setShaderParameter("mainTex", src.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+			material.setShaderSampler(1, src.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+			material.setShaderParameter("depthTex", src.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+			material.updateUniforms(this.gl);
+
+			this.gl.viewport(0, 0, src.width, src.height);
+			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			
+			let identityMat = new Mat4x4().identity();
+			let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], identityMat, new Array());
+			this.renderMeshImmediate(quadRenderObject, identityMat, identityMat, material);
+
+			this.srcRenderTarget = dst;
+			this.dstRenderTarget = src;
+			dst.unBind(this.gl);
 		}
 
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)

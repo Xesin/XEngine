@@ -54,6 +54,11 @@ namespace XEngine2
             }
         }
 
+        public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget)
+        {
+            
+        }
+
 
         public FindAll<T extends Actor>(className: typeof Actor): Array<T>{
             let result = new Array<Actor>();

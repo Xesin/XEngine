@@ -8,9 +8,9 @@
 
 namespace XEngine2
 {
-    export class FinalRenderMaterial extends BasicMaterial
+    export class PostProcessMaterial extends BasicMaterial
     {
-        public static SharedInstance = new FinalRenderMaterial();
+        public static SharedInstance = new PostProcessMaterial();
 
         public mainTexSamplerName = "mainTex";
         public depthTexSamplerName = "depthTex";

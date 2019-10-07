@@ -122,6 +122,11 @@ namespace XEngine2 {
 		{
 			(this.columnsMat.color.value as Vector4).w = value;
 		}
+
+		public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget)
+		{
+			renderer.blit(src, dst, NegativePostMaterial.SharedInstance);
+		}
 	}
 }
 
