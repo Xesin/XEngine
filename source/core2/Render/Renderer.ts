@@ -61,6 +61,7 @@ namespace XEngine2 {
 				alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
 				this.gl = null;
 			} else {
+				this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0, this.gl.COLOR_ATTACHMENT1]);
 				this.dstRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
@@ -68,6 +69,7 @@ namespace XEngine2 {
 
 				this.srcRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT1);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
 
 				this.srcRenderTarget.bind(this.gl);
@@ -157,7 +159,7 @@ namespace XEngine2 {
 			
 			
 			this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, this.clearColor.a);
-			this.gl.viewport(0, 0, this.game.width, this.game.height);
+			this.gl.viewport(0, 0, this.srcRenderTarget.width, this.srcRenderTarget.height);
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
 			for (let i = 0; i < this.opaqueRenderQueue.length; i++) {
@@ -177,10 +179,9 @@ namespace XEngine2 {
 			else
 			{
 				this.srcRenderTarget.unBind(this.gl);
+				this.currentScene.onWillRenderImage(this, this.srcRenderTarget, this.dstRenderTarget);
 
 				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
-
-				this.currentScene.onWillRenderImage(this, this.srcRenderTarget, this.dstRenderTarget);
 
 				PostProcessMaterial.SharedInstance.bind(this.gl);
 				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);

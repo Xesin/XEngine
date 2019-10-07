@@ -273,6 +273,7 @@ namespace XEngine2 {
             PostProcessMaterial.SharedInstance.initialize(gl);
             ShadowCasterMaterial.SharedInstance.initialize(gl);
             NegativePostMaterial.SharedInstance.initialize(gl);
+            DesaturatePostMaterial.SharedInstance.initialize(gl);
         }
 
         public setShaderParameter(name: string, value: any)

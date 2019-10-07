@@ -34,8 +34,9 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.BlinnPhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
-		.concat([			
-			"out highp vec4 fragColor;",
+		.concat([
+			"layout(location = 0) out vec4 fragColor;",
+			"layout(location = 1) out vec4 fragNormals;",
 			"uniform highp float smoothness;",
 			"uniform highp vec4 specularColor;",
 
@@ -86,6 +87,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"fragColor.xyz =finalColor;",
 				"fragColor.a = alpha;",
 				"fragColor.rgb *= fragColor.a;",
+				"fragNormals = vec4(surfaceNormal, 1.0);",
             "}",
         ]);
     }

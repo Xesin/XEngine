@@ -9,6 +9,8 @@ namespace XEngine2 {
 
 		private columnsMat: BlinnPhongMaterial;
 
+		private activatedPost: boolean;
+
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
@@ -17,13 +19,19 @@ namespace XEngine2 {
 
 		public start()
 		{
+			this.activatedPost = false;
 			this.game.time.frameLimit = 60;
 
-			this.game.input.createAction("Fire", [KEY_CODE.L]);
+			this.game.input.createAction("Fire", [KEY_CODE.L, KEY_CODE.MOUSE_LEFT_CLICK]);
 			this.game.input.createAxis("MoveForward", [KEY_CODE.W, KEY_CODE.S, KEY_CODE.UP, KEY_CODE.DOWN], [1, -1, 1, -1]);
 			this.game.input.createAxis("MoveRight", [KEY_CODE.A, KEY_CODE.D], [1, -1]);
 			this.game.input.createAxis("LookLeft", [KEY_CODE.MOUSE_X], [1]);
 			this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [1]);
+
+			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, function()
+			{
+				this.activatedPost = !this.activatedPost;
+			});
 
 			this.dirLight = new DirectionalLight(game);
             this.dirLight.transform.rotation.y = 45;
@@ -39,10 +47,6 @@ namespace XEngine2 {
 			this["pointLight"] = pointLight;
 			pointLight.transform.position.y = 20;
 			pointLight.color = pointLightColor;
-
-			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, () => {
-				pointLight.hidden = !pointLight.hidden;
-			});
 			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
@@ -125,7 +129,9 @@ namespace XEngine2 {
 
 		public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget)
 		{
-			renderer.blit(src, dst, NegativePostMaterial.SharedInstance);
+			if(this.activatedPost){
+				renderer.blit(src, dst, DesaturatePostMaterial.SharedInstance);
+			}
 		}
 	}
 }
