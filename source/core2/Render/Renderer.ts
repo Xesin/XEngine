@@ -61,12 +61,12 @@ namespace XEngine2 {
 				alert("Imposible inicializar WebGL. Tu navegador puede no soportarlo.");
 				this.gl = null;
 			} else {
-				this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0, this.gl.COLOR_ATTACHMENT1]);
 				this.dstRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT1);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
 				this.dstRenderTarget.unBind(this.gl);
-
+				
 				this.srcRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT1);
@@ -75,10 +75,7 @@ namespace XEngine2 {
 				this.srcRenderTarget.bind(this.gl);
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
 
-				this.gl.colorMask(false, false, false, true);
-				this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
-				this.gl.colorMask(true, true, true, false);
+				this.gl.colorMask(true, true, true, true);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT
 					| this.gl.DEPTH_BUFFER_BIT); // Limpiar el buffer de color asi como el de profundidad
 
@@ -135,7 +132,7 @@ namespace XEngine2 {
 			if(testLight)
 			{
 				this.shadowMap.bind(this.gl);
-				this.gl.clearColor(1,1,1,1);
+				this.gl.clearColor(1,1,1,0.0);
 				this.gl.viewport(0, 0, 1024, 1024);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 				this.gl.enable(this.gl.DEPTH_TEST);
@@ -157,8 +154,8 @@ namespace XEngine2 {
 				this.srcRenderTarget.bind(this.gl);
 			}
 			
-			
-			this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, this.clearColor.a);
+			this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0, this.gl.COLOR_ATTACHMENT1]);
+			this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, 0.0);
 			this.gl.viewport(0, 0, this.srcRenderTarget.width, this.srcRenderTarget.height);
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -178,10 +175,13 @@ namespace XEngine2 {
 			}
 			else
 			{
+				this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0]);
 				this.srcRenderTarget.unBind(this.gl);
 				this.currentScene.onWillRenderImage(this, this.srcRenderTarget, this.dstRenderTarget);
 
 				this.gl.viewport(0, 0, this.game.scale.currentWidth, this.game.scale.currentHeight);
+				this.gl.clearColor(this.clearColor.r, this.clearColor.g,this.clearColor.b, this.clearColor.a);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
 				PostProcessMaterial.SharedInstance.bind(this.gl);
 				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);

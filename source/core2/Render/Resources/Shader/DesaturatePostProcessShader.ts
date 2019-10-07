@@ -35,9 +35,9 @@ namespace XEngine2.ShaderMaterialLib{
 
 			"void main(void) {",
 				"float baseSample = Linear01Depth(depthTex, uv);",
-				"vec3 color = texture(mainTex, uv).xyz;",
+				"vec4 color = texture(mainTex, uv);",
 				"float intensity = color.r * 0.3 + color.g * 0.59 + color.b * 0.11;",
-				"fragColor = vec4(intensity, intensity, intensity, 1.0);",
+				"fragColor = vec4(intensity, intensity, intensity, color.a);",
             "}",
         ]);
     }
