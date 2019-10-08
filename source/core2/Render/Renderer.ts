@@ -51,7 +51,7 @@ namespace XEngine2 {
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
 			this.shadowCasterRenderQueue = new Array();
-			this.shadowMap = new RenderTarget(1024, 1024, WRAP_MODE.CLAMP, false);
+			this.shadowMap = new RenderTarget(2048, 2048, WRAP_MODE.CLAMP, false);
 			this.init();
 		}
 
@@ -64,13 +64,13 @@ namespace XEngine2 {
 				this.dstRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
 				this.dstRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT1);
-				this.dstRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
+				this.dstRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT);
 				this.dstRenderTarget.unBind(this.gl);
 				
 				this.srcRenderTarget = new RenderTarget(this.game.width, this.game.height, WRAP_MODE.CLAMP, false);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
 				this.srcRenderTarget.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT1);
-				this.srcRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
+				this.srcRenderTarget.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT);
 
 				this.srcRenderTarget.bind(this.gl);
 				this.gl.clearColor(this.clearColor.r, this.clearColor.g, this.clearColor.b, this.clearColor.a);
@@ -91,8 +91,7 @@ namespace XEngine2 {
 			this.game.scale.onResized.add(this.OnResize, this);
 			Texture2D.CreateDefaultTextures(this.gl);
 			Material.initStaticMaterials(this.gl);
-			this.shadowMap.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
-			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT);
+			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
 
 
 			PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
@@ -131,9 +130,10 @@ namespace XEngine2 {
 
 			if(testLight)
 			{
+				
 				this.shadowMap.bind(this.gl);
 				this.gl.clearColor(1,1,1,0.0);
-				this.gl.viewport(0, 0, 1024, 1024);
+				this.gl.viewport(0, 0, this.shadowMap.width, this.shadowMap.height);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
 					const casterObject = this.shadowCasterRenderQueue[i];
@@ -289,7 +289,7 @@ namespace XEngine2 {
 
 			if(material instanceof BlinnPhongMaterial)
 			{
-				(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.COLOR_ATTACHMENT0];
+				(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
 			}
 
 			if(!skipLights)

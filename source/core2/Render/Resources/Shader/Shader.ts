@@ -40,7 +40,7 @@ namespace XEngine2 {
 			for (var i = 0; i < activeUniforms; i++) {
 				var uniform = gl.getActiveUniform(this._shaderProgram, i);
 				let result = new Uniform(uniform.name, uniform.type, null, gl.getUniformLocation(this._shaderProgram, uniform.name));
-				if(uniform.type == gl.SAMPLER_2D)
+				if(uniform.type == gl.SAMPLER_2D || uniform.type == gl.SAMPLER_2D_SHADOW)
 				{
 					result.samplerNumber = this.samplers.length;
 					this.samplers.push(result);

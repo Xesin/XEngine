@@ -146,7 +146,7 @@ namespace XEngine2
 
             "uniform Light light[MAX_LIGHTS];",
 
-            "uniform sampler2D shadowMap;",
+            "uniform highp sampler2DShadow shadowMap;",
             "in vec4 shadowPos;",
 
             "vec4 encodeFloat (float depth) {",
@@ -256,7 +256,6 @@ namespace XEngine2
 
             "uniform Light light[MAX_LIGHTS];",
 
-            "uniform sampler2D shadowMap;",
             "out vec4 shadowPos;",
               
             "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",

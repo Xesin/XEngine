@@ -45,10 +45,10 @@ namespace XEngine2.ShaderMaterialLib{
 			"}",
 			"in highp vec3 vWorldPos;",
 
-			"out highp vec4 fragColor;",
+			"out highp float fragColor;",
 
             "void main(void) {",
-				"fragColor = encodeFloat(gl_FragCoord.z);",
+				"fragColor = gl_FragCoord.z;",
             "}",
         ]);
     }

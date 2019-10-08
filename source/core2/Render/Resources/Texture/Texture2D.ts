@@ -30,12 +30,9 @@ namespace XEngine2 {
 			this.generateMipmaps = generateMipmaps;
 		}
 
-		public static createTexture(name: string, width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean, gl: WebGL2RenderingContext, isNormal = false): Texture2D {
+		public static createTexture(name: string, width: number, height: number, data: Uint8Array, wrap: WRAP_MODE, generateMipMaps: boolean, gl: WebGL2RenderingContext, isNormal = false, internalFormat: number = gl.RGBA, srcFormat :number = gl.RGBA, type: number = gl.UNSIGNED_BYTE): Texture2D {
 			let texture = gl.createTexture();
 			let texture2D = new Texture2D(name, width, height, wrap, isNormal, generateMipMaps);
-
-			let internalFormat = gl.RGBA;
-			let srcFormat = gl.RGBA;
 
 			if (isNormal) {
 				internalFormat = gl.RGBA;
@@ -46,7 +43,7 @@ namespace XEngine2 {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 			// gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, gl.UNSIGNED_BYTE, data);
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, srcFormat, type, data);
 
 			if (wrap === WRAP_MODE.REPEAT) {
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);

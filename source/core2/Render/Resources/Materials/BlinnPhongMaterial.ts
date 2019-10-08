@@ -26,7 +26,8 @@ namespace XEngine2
             "albedo": "white",
             "alphaClip" : 0.6,
             "smoothness" : 0.2,
-            "specularColor": new Vector4(1,1,1,0.2)
+            "specularColor": new Vector4(1,1,1,0.2),
+            "bias": 0.005
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.BlinnPhongShader.vertexShader, ShaderMaterialLib.BlinnPhongShader.fragmentShader))
@@ -38,6 +39,11 @@ namespace XEngine2
         public get smoothness(): Uniform
         {
             return this.shader.uniforms[this.smoothnessName];
+        }
+
+        public get bias(): Uniform
+        {
+            return this.shader.uniforms["bias"];
         }
 
         public get specularColor(): Uniform

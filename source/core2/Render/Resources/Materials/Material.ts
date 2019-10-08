@@ -38,7 +38,7 @@ namespace XEngine2 {
                    const defValue = this.defaults[key];
                    if(this[key])
                    {
-                        if(this[key].type == ShaderType.SAMPLER_2D)
+                        if(this[key].type == ShaderType.SAMPLER_2D || this[key].type == ShaderType.SAMPLER_2D_SHADOW )
                         {
                             
                             switch(defValue )
@@ -233,6 +233,7 @@ namespace XEngine2 {
 					gl.uniform1i(uniform._gpuPos, uniform.value as number);
 					break;
 				case ShaderType.SAMPLER_2D:
+                case ShaderType.SAMPLER_2D_SHADOW:
 					gl.uniform1i(uniform._gpuPos, uniform.samplerNumber);
 					break;
 				case ShaderType.FLOAT:

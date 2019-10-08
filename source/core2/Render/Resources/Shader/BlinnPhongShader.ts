@@ -40,6 +40,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"layout(location = 1) out vec4 fragNormals;",
 			"uniform highp float smoothness;",
 			"uniform highp vec4 specularColor;",
+			"uniform highp float bias;",
 
 			"vec2 poissonDisk[4] = vec2[](",
 				"vec2( -0.94201624, -0.39906216 ),",
@@ -47,6 +48,11 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec2( -0.094184101, -0.92938870 ),",
 				"vec2( 0.34495938, 0.29387760 )",
 			");",
+
+			"float random(vec4 seed4){",
+				"float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));",
+				"return fract(sin(dot_product) * 43758.5453);",
+			"}",
 
 			"void main(void) {",
 
@@ -65,16 +71,16 @@ namespace XEngine2.ShaderMaterialLib{
 					"Light curLight = light[i];",
 					"vec4 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
 					"if(i == 0){",
-						"vec3 fragmentDepth = shadowPos.xyz;",
-						"float shadowAcneRemover = 0.005*tan(acos(DiffuseLightColor.w));",
+						"vec4 fragmentDepth = shadowPos;",
+						"float shadowAcneRemover = bias*tan(acos(DiffuseLightColor.w));",
+						"shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
 						"float amountInLight = 1.0;",
 						  
 						"for (int x = 0; x < 4; x++) {",
-							"float texelDepth = decodeFloat(texture(shadowMap,",
-							"fragmentDepth.xy + poissonDisk[i]/700.0));",
-							"if (fragmentDepth.z - shadowAcneRemover > texelDepth) {",
-								"amountInLight -= 0.2;",
-							"}",
+							"int index = int(16.0*random(vec4(vWorldPos.xyz, x)))%16;",
+							"float texelDepth = 1.0 - texture(shadowMap,",
+							"vec3(fragmentDepth.xy + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
+							"amountInLight -= 0.2 * texelDepth;",
 						"}",
 
 						"DiffuseLightColor = DiffuseLightColor * amountInLight;",

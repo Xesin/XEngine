@@ -66,6 +66,7 @@ namespace XEngine2 {
                     }
                     break;
                 case ShaderType.SAMPLER_2D:
+                case ShaderType.SAMPLER_2D_SHADOW:
                     let sampler = v as Texture2D;
                     if(!sampler.Equals(this.value as Texture2D))
                     {

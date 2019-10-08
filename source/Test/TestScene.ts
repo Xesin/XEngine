@@ -62,14 +62,15 @@ namespace XEngine2 {
 				meshActor.staticMesh.Mesh = mesh;
 			}
 
-			// let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			// quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
+			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
+			quad.Transform.position.y = 10;
+			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
 			
-			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
+			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 
-			// this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
-			// this.columnsMat.alphaClip.value = 0;
-			// this.columnsMat.blendMode = BlendMode.Multiply;
+			this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
+			this.columnsMat.alphaClip.value = 0;
+			this.columnsMat.blendMode = BlendMode.Multiply;
 
 			let gui = new dat.GUI();
 			let _that = this;
@@ -96,6 +97,10 @@ namespace XEngine2 {
 			// controller.onChange(function(value){
 			// 	_that.onAlphaChange(this.object, value);
 			// });
+
+			controller = gui.add(this.columnsMat.bias, 'value', 0, 1);
+			controller.name('bias');
+			controller.listen();
 
 			controller = gui.add(pointLight, 'intensity', 0, 2000);
 			controller.name('pointLight intensity');
