@@ -5,6 +5,10 @@ namespace XEngine2 {
         
         public color: Color;
         public intensity: number;
+        public shadowBias: number;
+        public castShadow: boolean;
+
+        public _shadowMap: RenderTarget;
         private _projectionMatrix: Mat4x4;
 
         constructor(game: Game)
@@ -13,6 +17,8 @@ namespace XEngine2 {
             this.color = new Color(1.0);
             this.intensity = 1.0;
             this._projectionMatrix = new Mat4x4();
+            this.castShadow = true;
+            this.shadowBias = 0.005;
         }
 
         public getAllRenderableGroups(): Array<MeshGroup>

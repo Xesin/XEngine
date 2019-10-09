@@ -24,6 +24,7 @@ namespace XEngine2 {
 		public transparencyEnabled: boolean;
 		public cullFaceEnabled: boolean;
 		public currentCullMode: CullMode;
+		public shadowSize: number;
 
 		public game: Game;
 
@@ -33,8 +34,6 @@ namespace XEngine2 {
 		private opaqueRenderQueue: Array<RenderObject>;
 		private transparentRenderQueue: Array<RenderObject>;
 		private shadowCasterRenderQueue: Array<RenderObject>;
-		private shadowMap : RenderTarget;
-
 		private dstRenderTarget : RenderTarget;
 		private srcRenderTarget : RenderTarget;
 		private quadMesh : StaticMeshComponent;
@@ -51,7 +50,7 @@ namespace XEngine2 {
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
 			this.shadowCasterRenderQueue = new Array();
-			this.shadowMap = new RenderTarget(2048, 2048, WRAP_MODE.CLAMP, false);
+			this.shadowSize = 1024;
 			this.init();
 		}
 
@@ -91,8 +90,6 @@ namespace XEngine2 {
 			this.game.scale.onResized.add(this.OnResize, this);
 			Texture2D.CreateDefaultTextures(this.gl);
 			Material.initStaticMaterials(this.gl);
-			this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
-
 
 			PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
 			PostProcessMaterial.SharedInstance.depthTex.value = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
@@ -128,20 +125,24 @@ namespace XEngine2 {
 			let testLight = sceneLights[0] as DirectionalLight;
 			
 
-			if(testLight)
+			if(testLight && testLight.castShadow)
 			{
-				
-				this.shadowMap.bind(this.gl);
+				if(!testLight._shadowMap)
+				{
+					testLight._shadowMap = new RenderTarget(this.shadowSize, this.shadowSize, WRAP_MODE.CLAMP, false);
+					testLight._shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
+				}
+				testLight._shadowMap.bind(this.gl);
 				this.gl.clearColor(1,1,1,0.0);
-				this.gl.viewport(0, 0, this.shadowMap.width, this.shadowMap.height);
+				this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
 					const casterObject = this.shadowCasterRenderQueue[i];
 					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
 				}
-				
+				testLight._shadowMap.unBind(this.gl);
 			}
-			this.shadowMap.unBind(this.gl);
+			
 			if(camera.renderTarget)
 			{
 				camera.renderTarget.bind(this.gl);
@@ -287,11 +288,6 @@ namespace XEngine2 {
 			if(material.normalMatrix)
 				material.normalMatrix.value = modelMatrix.transposed();
 
-			if(material instanceof BlinnPhongMaterial)
-			{
-				(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
-			}
-
 			if(!skipLights)
 			{
 				for(let i = 0; i < 5; i++)
@@ -306,6 +302,7 @@ namespace XEngine2 {
 						let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
 						let lightViewMatrixUniform = material.getLightUniform(i, 'lightViewMatrix');
 						let lightProjectionUniform = material.getLightUniform(i, 'lightProjection');
+						let lightShadowBiasUniform = material.getLightUniform(i, 'shadowBias');
 						spotLightDirectionUniform.value = new Vector4(0,0,0,0);
 						lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
 						if(light){
@@ -318,6 +315,13 @@ namespace XEngine2 {
 								lightPositionUniform.value =  dirLight;
 								lightViewMatrixUniform.value = light.viewMatrix;
 								lightProjectionUniform.value = light.projectionMatrix;
+								if(light._shadowMap){
+									lightShadowBiasUniform.value = light.shadowBias;
+									if(material instanceof BlinnPhongMaterial)
+									{
+										(material as BlinnPhongMaterial).shadowMap.value = light._shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
+									}
+								}
 							}
 							else if(light instanceof PointLight)
 							{

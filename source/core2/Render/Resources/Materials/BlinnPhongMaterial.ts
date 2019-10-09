@@ -22,7 +22,7 @@ namespace XEngine2
             "ambient" : new Vector4(1,1,1,0.15),
             "opacityTex" : "white",
             "normal" : "normal",
-            "shadowMap" : "white",
+            "shadowMap" : "black",
             "albedo": "white",
             "alphaClip" : 0.6,
             "smoothness" : 0.2,
@@ -39,11 +39,6 @@ namespace XEngine2
         public get smoothness(): Uniform
         {
             return this.shader.uniforms[this.smoothnessName];
-        }
-
-        public get bias(): Uniform
-        {
-            return this.shader.uniforms["bias"];
         }
 
         public get specularColor(): Uniform

@@ -98,7 +98,7 @@ namespace XEngine2 {
 			// 	_that.onAlphaChange(this.object, value);
 			// });
 
-			controller = gui.add(this.columnsMat.bias, 'value', 0, 1);
+			controller = gui.add(this.dirLight, 'shadowBias', 0, 1);
 			controller.name('bias');
 			controller.listen();
 

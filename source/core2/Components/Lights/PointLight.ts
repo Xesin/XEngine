@@ -9,6 +9,7 @@ namespace XEngine2 {
         {
             super(game);
             this.radius = 100;
+            this.castShadow = false;
         }
     }
 }

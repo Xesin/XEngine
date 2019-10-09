@@ -40,7 +40,6 @@ namespace XEngine2.ShaderMaterialLib{
 			"layout(location = 1) out vec4 fragNormals;",
 			"uniform highp float smoothness;",
 			"uniform highp vec4 specularColor;",
-			"uniform highp float bias;",
 
 			"vec2 poissonDisk[4] = vec2[](",
 				"vec2( -0.94201624, -0.39906216 ),",
@@ -72,7 +71,7 @@ namespace XEngine2.ShaderMaterialLib{
 					"vec4 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
 					"if(i == 0){",
 						"vec4 fragmentDepth = shadowPos;",
-						"float shadowAcneRemover = bias*tan(acos(DiffuseLightColor.w));",
+						"float shadowAcneRemover = curLight.shadowBias*tan(acos(DiffuseLightColor.w));",
 						"shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
 						"float amountInLight = 1.0;",
 						  

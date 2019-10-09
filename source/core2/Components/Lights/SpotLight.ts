@@ -9,6 +9,7 @@ namespace XEngine2 {
         {
             super(game);
             this.spotAngle = 45;
+            this.castShadow = false;
         }
     }
 }
