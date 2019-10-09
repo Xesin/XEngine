@@ -4,6 +4,7 @@ namespace XEngine2 {
     export class SceneComponent extends Component {
         public transform: Transform;
         public hidden: boolean;
+        public bounds: Box;
 
         constructor(game: Game, name: string = "")
         {
@@ -26,6 +27,16 @@ namespace XEngine2 {
         public getAllRenderableGroups(): Array<MeshGroup>
         {
             return null;
+        }
+
+        public getBounds(): Box
+        {
+            if(!this.bounds)
+            {
+                this.bounds = new Box();
+            }
+
+            return this.bounds;
         }
     }
 }

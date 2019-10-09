@@ -3,7 +3,7 @@ namespace XEngine2 {
     export class StaticMeshComponent extends SceneComponent {
        
         public Mesh : StaticMesh;
-        public bounds: Box;
+        
         
         private speed: number;
 

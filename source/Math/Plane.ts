@@ -34,5 +34,10 @@ namespace XEngine2 {
 
             return this;
         }
+
+        public distanceToPoint(point: Vector3): number
+        {
+            return this.normal.dot( point ) + this.constant;
+        }
     }
 }

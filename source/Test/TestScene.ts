@@ -14,7 +14,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -66,11 +66,11 @@ namespace XEngine2 {
 			quad.Transform.position.y = 10;
 			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
 			
-			this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
+			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 
-			this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
-			this.columnsMat.alphaClip.value = 0;
-			this.columnsMat.blendMode = BlendMode.Multiply;
+			// this.columnsMat.renderQueue = RenderQueue.TRANSPARENT;
+			// this.columnsMat.alphaClip.value = 0;
+			// this.columnsMat.blendMode = BlendMode.Multiply;
 
 			let gui = new dat.GUI();
 			let _that = this;

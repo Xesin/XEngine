@@ -33,8 +33,8 @@ namespace XEngine2 {
 				{
                     let components = actor.GetComponents<SceneComponent>(SceneComponent);
                     for (let j = 0; j < components.length; j++) {
-						const sceneComponent = components[j];
-						if(!sceneComponent.hidden){
+                        const sceneComponent = components[j];
+						if(!sceneComponent.hidden && this.frustrum.intersectsBox(sceneComponent.getBounds())){
                             result.push(sceneComponent);
                         }
                     }

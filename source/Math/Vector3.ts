@@ -54,10 +54,10 @@ namespace XEngine2 {
 			let x = this.x,
 			y = this.y;
 			let z = this.z;
-
-			this.x = x * matrix.getValue(0, 0) + y * matrix.getValue(0, 1) + z * matrix.getValue(0, 2) + matrix.getValue(0, 3);
-			this.y = x * matrix.getValue(1, 0) + y * matrix.getValue(1, 1) + z * matrix.getValue(1, 2) + matrix.getValue(1, 3);
-			this.z = x * matrix.getValue(2, 0) + y * matrix.getValue(2, 1) + z * matrix.getValue(2, 2) + matrix.getValue(2, 3);
+			
+			this.x = x * matrix.getValue(0, 0) + y * matrix.getValue(1, 0) + z * matrix.getValue(2, 0) + matrix.getValue(3, 0);
+			this.y = x * matrix.getValue(0, 1) + y * matrix.getValue(1, 1) + z * matrix.getValue(2, 1) + matrix.getValue(3, 1);
+			this.z = x * matrix.getValue(0, 2) + y * matrix.getValue(1, 2) + z * matrix.getValue(2, 2) + matrix.getValue(3, 2);
 			return this;
 		}
 
