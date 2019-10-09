@@ -61,6 +61,24 @@ namespace XEngine2 {
 			return this;
 		}
 
+		public max(other: Vector3): Vector3
+		{
+			this.x = Math.max( this.x, other.x );
+			this.y = Math.max( this.y, other.y );
+			this.z = Math.max( this.z, other.z );
+
+			return this;
+		}
+
+		public min(other: Vector3): Vector3
+		{
+			this.x = Math.min( this.x, other.x );
+			this.y = Math.min( this.y, other.y );
+			this.z = Math.min( this.z, other.z );
+	
+			return this;
+		}
+
 		public rotate(angle: number): Vector3 {
 			let x = this.x;
 			let y = this.y;
