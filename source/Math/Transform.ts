@@ -79,6 +79,16 @@ namespace XEngine2 {
 			rightVector.multiplyMatrix(this.helperMatrix);
 			return rightVector;
 		}
+
+		public up(): Vector3 {
+			let rightVector = new Vector3(0, 1, 0);
+			this.helperMatrix.identity();
+
+			this.helperMatrix.extractRotation(this.Matrix);
+
+			rightVector.multiplyMatrix(this.helperMatrix);
+			return rightVector;
+		}
 		
 		
 		public set Dirty(v : boolean) {

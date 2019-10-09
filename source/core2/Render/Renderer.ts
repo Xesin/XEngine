@@ -219,40 +219,32 @@ namespace XEngine2 {
 
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)
 		{
-			let actors = scene.actors;
-			for (let i = 0; i < actors.length; i++) {
-				const actor = actors[i];
-				if (!actor.hidden)
+			let components = this.currentCamera.cull(scene);
+			for (let j = 0; j < components.length; j++) {
+				const sceneComponent = components[j];
+
+				let groups = sceneComponent.getAllRenderableGroups();
+				if(groups != null)
 				{
-					let components = actor.GetComponents<SceneComponent>(SceneComponent);
-					for (let j = 0; j < components.length; j++) {
-						const sceneComponent = components[j];
-						if(!sceneComponent.hidden){
-							let groups = sceneComponent.getAllRenderableGroups();
-							if(groups != null)
-							{
-								for (let k = 0; k < groups.length; k++) 
-								{
-									const group = groups[k];
-									let affectedLights = this.findAffectedLights(group, sceneLights);
-									let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights);
-									if(group.Mesh.castShadows)
-									{
-										this.shadowCasterRenderQueue.push(renderObject);
-									}
-									switch(group.Mesh.materials[group.materialIndex].renderQueue)
-									{
-										case RenderQueue.OPAQUE:
-											if(this.opaqueRenderQueue.indexOf(renderObject) === -1)
-												this.opaqueRenderQueue.push(renderObject);
-											break;
-										case RenderQueue.TRANSPARENT:
-											if(this.transparentRenderQueue.indexOf(renderObject) === -1)
-												this.transparentRenderQueue.push(renderObject);
-											break;
-									}
-								}
-							}
+					for (let k = 0; k < groups.length; k++) 
+					{
+						const group = groups[k];
+						let affectedLights = this.findAffectedLights(group, sceneLights);
+						let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights);
+						if(group.Mesh.castShadows)
+						{
+							this.shadowCasterRenderQueue.push(renderObject);
+						}
+						switch(group.Mesh.materials[group.materialIndex].renderQueue)
+						{
+							case RenderQueue.OPAQUE:
+								if(this.opaqueRenderQueue.indexOf(renderObject) === -1)
+									this.opaqueRenderQueue.push(renderObject);
+								break;
+							case RenderQueue.TRANSPARENT:
+								if(this.transparentRenderQueue.indexOf(renderObject) === -1)
+									this.transparentRenderQueue.push(renderObject);
+								break;
 						}
 					}
 				}

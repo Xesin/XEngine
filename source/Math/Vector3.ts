@@ -227,5 +227,10 @@ namespace XEngine2 {
 		{
 			return otherVect != null && this.x == otherVect.x && this.y == otherVect.y && this.z == otherVect.z;
 		}
+
+		public Clone(): Vector3
+		{
+			return new Vector3(this.x, this.y, this.z);
+		}
 	}
 }
