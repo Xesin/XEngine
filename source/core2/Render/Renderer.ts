@@ -314,7 +314,7 @@ namespace XEngine2 {
 										(material as BlinnPhongMaterial).shadowMap.value = light._shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
 									}
 								}
-								else
+								else if(light._shadowMap)
 								{
 									if(material instanceof BlinnPhongMaterial)
 									{
