@@ -18,6 +18,7 @@ namespace XEngine2 {
 		public static blackTexture: Texture2D;
 		public static whiteTexture: Texture2D;
 		public static normalTexture: Texture2D;
+		public static depthTexture: Texture2D;
 
 		constructor (name: string, width: number, height: number, wrapMode = WRAP_MODE.REPEAT, isNormal: boolean, generateMipmaps = true) {
 			this.imageName = name;
@@ -91,9 +92,16 @@ namespace XEngine2 {
 			normalData[2] = 255;
 			normalData[3] = 255;
 
+			let depthData = new Float32Array(1);
+			depthData[0] = 0;
+
 			Texture2D.blackTexture = Texture2D.createTexture('defaultBlackTexture', 1, 1, blackData, WRAP_MODE.REPEAT, true, gl);
 			Texture2D.whiteTexture = Texture2D.createTexture('defaultWhiteTexture', 1, 1, whiteData, WRAP_MODE.REPEAT, true, gl);
 			Texture2D.normalTexture = Texture2D.createTexture('defaultNormalTexture', 1, 1, normalData, WRAP_MODE.REPEAT, true, gl, true);
+			Texture2D.depthTexture = Texture2D.createTexture('defaultDepthTexture', 1, 1, depthData, WRAP_MODE.CLAMP, true, gl, false, gl.DEPTH_COMPONENT32F, gl.DEPTH_COMPONENT32F, gl.FLOAT);
+			gl.bindTexture(gl.TEXTURE_2D, Texture2D.depthTexture._texture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
+			gl.bindTexture(gl.TEXTURE_2D, null);
 		}
 
 		public Equals(other: Texture2D)

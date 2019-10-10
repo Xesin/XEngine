@@ -22,7 +22,7 @@ namespace XEngine2
             "ambient" : new Vector4(1,1,1,0.15),
             "opacityTex" : "white",
             "normal" : "normal",
-            "shadowMap" : "black",
+            "shadowMap" : "depth",
             "albedo": "white",
             "alphaClip" : 0.6,
             "smoothness" : 0.2,

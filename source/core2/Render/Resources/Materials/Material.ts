@@ -47,10 +47,13 @@ namespace XEngine2 {
                                     this[key].value = Texture2D.whiteTexture;
                                     break;
                                 case "black":
-                                this[key].value = Texture2D.blackTexture;
+                                    this[key].value = Texture2D.blackTexture;
                                     break;
                                 case "normal":
-                                this[key].value = Texture2D.normalTexture;
+                                    this[key].value = Texture2D.normalTexture;
+                                    break;
+                                case "depth":
+                                    this[key].value = Texture2D.depthTexture; 
                                     break;
                             }
                         }
