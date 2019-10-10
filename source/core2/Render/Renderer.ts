@@ -307,13 +307,20 @@ namespace XEngine2 {
 								lightPositionUniform.value =  dirLight;
 								lightViewMatrixUniform.value = light.viewMatrix;
 								lightProjectionUniform.value = light.projectionMatrix;
-								if(light._shadowMap){
+								if(light.castShadow){
 									lightShadowBiasUniform.value = light.shadowBias;
 									if(material instanceof BlinnPhongMaterial)
 									{
 										(material as BlinnPhongMaterial).shadowMap.value = light._shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
 									}
 								}
+								else
+								{
+									if(material instanceof BlinnPhongMaterial)
+									{
+										(material as BlinnPhongMaterial).shadowMap.value = Texture2D.depthTexture;
+									}
+								}	
 							}
 							else if(light instanceof PointLight)
 							{
