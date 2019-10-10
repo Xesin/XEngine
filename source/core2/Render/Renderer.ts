@@ -278,7 +278,7 @@ namespace XEngine2 {
 			if(material.projectionMatrix)
 				material.projectionMatrix.value = projectionMatrix;
 			if(material.normalMatrix)
-				material.normalMatrix.value = modelMatrix.transposed();
+				material.normalMatrix.value = modelMatrix.clone().invert().transpose();
 
 			if(!skipLights)
 			{

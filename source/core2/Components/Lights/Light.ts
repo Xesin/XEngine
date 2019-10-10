@@ -33,8 +33,8 @@ namespace XEngine2 {
 
         public get viewMatrix() : Mat4x4 {
             let translationVector = this.transform.forward();
-            translationVector.z *= -1;
             let translation = translationVector.scalar(200);
+            translation.z *= -1.0;
             let matrix = new Mat4x4();
 
             matrix.lookAt(translation, new Vector3(0,0,0), new Vector3(0,1,0));
@@ -47,12 +47,8 @@ namespace XEngine2 {
 
         public get dirLight() : Vector4 {
             let matrix = new Mat4x4();
-            
-            mat4.rotateY(matrix.elements, matrix.elements, this.transform.WorldRotation.y * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateX(matrix.elements, matrix.elements, this.transform.WorldRotation.x * XEngine.Mathf.TO_RADIANS);
-            mat4.rotateZ(matrix.elements, matrix.elements, this.transform.WorldRotation.z * XEngine.Mathf.TO_RADIANS);
-            // mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
-            // mat4.invert(matrix.elements, matrix.elements);
+
+            matrix.rotateAndTranslate(Quaternion.fromEulerVector(this.transform.rotation), this.transform.position);
 
             return matrix.getColumn(2);
         }

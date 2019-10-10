@@ -14,7 +14,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -26,7 +26,7 @@ namespace XEngine2 {
 			this.game.input.createAxis("MoveForward", [KEY_CODE.W, KEY_CODE.S, KEY_CODE.UP, KEY_CODE.DOWN], [1, -1, 1, -1]);
 			this.game.input.createAxis("MoveRight", [KEY_CODE.A, KEY_CODE.D], [1, -1]);
 			this.game.input.createAxis("LookLeft", [KEY_CODE.MOUSE_X], [1]);
-			this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [1]);
+			this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [-1]);
 
 			this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, function()
 			{
@@ -50,9 +50,8 @@ namespace XEngine2 {
 			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
-			actor.rootComponent.transform.position.y = -20;
-			actor.rootComponent.transform.position.z = -5;
-			actor.rootComponent.transform.scale.setTo(0.5);
+			actor.rootComponent.transform.position.y = 0;
+			actor.rootComponent.transform.position.z = 0;
 			for (const meshName in this.game.cache.geometries) 
             {
 				const mesh = this.game.cache.geometries[meshName];
@@ -63,7 +62,7 @@ namespace XEngine2 {
 			}
 
 			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			quad.Transform.position.y = 10;
+			quad.Transform.position.y = 0;
 			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
 			
 			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;

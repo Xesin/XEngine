@@ -44,5 +44,12 @@ namespace XEngine2 {
 
 			return (Math.atan2(y, x));
 		}
+
+		public static hypot(...args: number[])
+		{
+			var y = 0, i = args.length;
+			while (i--) y += args[i] * args[i];
+			return Math.sqrt(y);
+		}
 	}
 }

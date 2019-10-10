@@ -108,17 +108,13 @@ namespace XEngine2 {
 			return this;
 		}
 
-		public multiplyMatrix(matrix: Array<number> | Float32Array): Vector4 {
-			let x = this.x,
-			 y = this.y,
-			 z = this.z,
-			 w = this.w;
+		public multiplyMatrix(matrix: Mat4x4): Vector4 {
+			let x = this.x, y = this.y, z = this.z, w = this.w;
 
-			let out = new Array(3);
-			this.x = x * matrix[0] + y * matrix[1] + z * matrix[2] + w * matrix[3];
-			this.y = x * matrix[4] + y * matrix[5] + z * matrix[6] + w * matrix[7];
-			this.z = x * matrix[8] + y * matrix[9] + z * matrix[10] + w * matrix[11];
-			this.w = x * matrix[12] + y * matrix[13] + z * matrix[14] + w * matrix[15];
+			this.x = matrix.elements[0] * x + matrix.elements[4] * y + matrix.elements[8] * z +  matrix.elements[12] * w;
+			this.y = matrix.elements[1] * x + matrix.elements[5] * y + matrix.elements[9] * z +  matrix.elements[13] * w;
+			this.z = matrix.elements[2] * x + matrix.elements[6] * y + matrix.elements[10] * z + matrix.elements[14] * w;
+			this.w = matrix.elements[3] * x + matrix.elements[7] * y + matrix.elements[11] * z + matrix.elements[15] * w;
 			return this;
 		}
 

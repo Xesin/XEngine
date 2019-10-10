@@ -5,8 +5,8 @@ namespace XEngine2
     export class TestActor extends Actor
     {
 
-        
-        public camera: CameraComponent;
+        public mesh: StaticMeshComponent;
+		public camera: CameraComponent;
 
         constructor(game: Game)
         {
@@ -14,8 +14,11 @@ namespace XEngine2
             this.canUpdate = true;
 
             
-
-            this.camera = new CameraComponent(game);
+			this.mesh = new StaticMeshComponent(game, "meshComp");
+			this.rootComponent = this.mesh;
+			this.mesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 5, 25,25);
+			this.camera = new CameraComponent(game);
+			this.camera.transform.position.z = 10;
 			this.camera.setupAttachtment(this.rootComponent);
 
 			this.game.input.bindAxis("MoveForward", this, this.moveForward);
@@ -47,7 +50,7 @@ namespace XEngine2
 
 		private lookLeft(axisValue: number)
 		{
-			this.rootComponent.transform.rotation.y += axisValue * 3 * this.game.time.deltaTime;
+			this.rootComponent.transform.rotation.y -= axisValue * 3 * this.game.time.deltaTime;
 		}
     }
 }

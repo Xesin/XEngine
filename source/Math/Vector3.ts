@@ -51,13 +51,15 @@ namespace XEngine2 {
 		}
 
 		public multiplyMatrix(matrix:Mat4x4): Vector3 {
-			let x = this.x,
-			y = this.y;
-			let z = this.z;
+			let x = this.x, y = this.y, z = this.z;
 			
-			this.x = x * matrix.getValue(0, 0) + y * matrix.getValue(1, 0) + z * matrix.getValue(2, 0) + matrix.getValue(3, 0);
-			this.y = x * matrix.getValue(0, 1) + y * matrix.getValue(1, 1) + z * matrix.getValue(2, 1) + matrix.getValue(3, 1);
-			this.z = x * matrix.getValue(0, 2) + y * matrix.getValue(1, 2) + z * matrix.getValue(2, 2) + matrix.getValue(3, 2);
+
+			let w = matrix.elements[3] * x + matrix.elements[7] * y + matrix.elements[11] * z + matrix.elements[15];
+			w = w || 1.0;
+
+			this.x = (matrix.elements[0] * x + matrix.elements[4] * y + matrix.elements[8] * z + matrix.elements[12]) / w;
+			this.y = (matrix.elements[1] * x + matrix.elements[5] * y + matrix.elements[9] * z + matrix.elements[13]) / w;
+			this.z = (matrix.elements[2] * x + matrix.elements[6] * y + matrix.elements[10] * z + matrix.elements[14]) / w;
 			return this;
 		}
 
