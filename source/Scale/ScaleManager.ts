@@ -1,4 +1,4 @@
-/// <reference path="../Events/Signal.ts" />
+/// <reference path="../Signals/Signal.ts" />
 
 namespace XEngine2 {
 	export class ScaleManager {

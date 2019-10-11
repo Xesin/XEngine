@@ -1,5 +1,5 @@
-/// <reference path="Scale/ScaleManager.ts" />
-/// <reference path="Time/TimeManager.ts" />
+/// <reference path="../Scale/ScaleManager.ts" />
+/// <reference path="../Time/TimeManager.ts" />
 /// <reference path="Render/Renderer.ts" />
 
 interface Array<T> {
