@@ -1,4 +1,4 @@
-namespace XEngine {
+namespace XEngine2 {
 	export class Tween {
 		public onComplete: Signal;
 		public onCompleteLoop: Signal;
@@ -35,8 +35,8 @@ namespace XEngine {
 			this.progress = 0;
 			this.time = 0;
 			this.yoyo = false;
-			this.onComplete = new XEngine.Signal();
-			this.onCompleteLoop = new XEngine.Signal();
+			this.onComplete = new Signal();
+			this.onCompleteLoop = new Signal();
 		}
 
 		public play() {
@@ -99,7 +99,7 @@ namespace XEngine {
 				}
 				return;
 			}
-			this.progress = XEngine.Mathf.clamp(this.time / this.duration, 0, 1);
+			this.progress = Mathf.clamp(this.time / this.duration, 0, 1);
 			// tslint:disable-next-line:forin
 			for (let property in this.properties) {
 				let t = this.progress;
@@ -108,10 +108,10 @@ namespace XEngine {
 						t *= 2;
 					} else {
 						let t2 = (t - 0.5) * 2;
-						t = XEngine.Mathf.lerp(1, 0, t2);
+						t = Mathf.lerp(1, 0, t2);
 					}
 				}
-				this.target[property] = XEngine.Mathf.lerp(this.fromProperties[property], this.properties[property], this.easing(t));
+				this.target[property] = Mathf.lerp(this.fromProperties[property], this.properties[property], this.easing(t));
 			}
 			this.time += deltaTime;
 		}

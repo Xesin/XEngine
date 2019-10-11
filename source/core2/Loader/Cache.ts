@@ -2,18 +2,19 @@ namespace XEngine2 {
 
 	export class Cache {
 
-		public images: Array<Texture2D>;
-		public audios: Array<any>;
-		public json: Array<any>;
+		public images: IDict<Texture2D>;
+		public audios: IDict<any>;
+		public json: IDict<any>;
+		public bitmapData: IDict<BitmapData>;
 		public geometries: IDict<StaticMesh>;
 		public materials: IDict<Material>;
 		private game: Game;
 
 		constructor (game: Game) {
 			this.game = game;
-			this.images = new Array();
-			this.audios = new Array();
-			this.json = new Array();
+			this.images = new IDict();
+			this.audios = new IDict();
+			this.json = new IDict();
 			this.geometries = new IDict<StaticMesh>();
 			this.materials = new IDict<Material>();
 		}
@@ -38,6 +39,10 @@ namespace XEngine2 {
 			return this.json[jsonName];
 		}
 
+		public getBitmap(bitmapName: string) {
+			return this.bitmapData[bitmapName];
+		}
+
 		public getGeometry(geoName: string) {
 			if (this.geometries[geoName] === undefined) {
 				console.error("No hay geometria para el nombre: " + geoName);
@@ -56,9 +61,9 @@ namespace XEngine2 {
 			delete this.json;
 			delete this.geometries;
 			delete this.materials;
-			this.images = new Array();
-			this.audios = new Array();
-			this.json = new Array();
+			this.images = new IDict();
+			this.audios = new IDict();
+			this.json = new IDict();
 			this.geometries = new IDict<StaticMesh>();
 			this.materials = new IDict<Material>();
 		}

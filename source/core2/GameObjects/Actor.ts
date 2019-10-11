@@ -1,6 +1,8 @@
+/// <reference path="../EObject.ts" />
+
 namespace XEngine2
 {
-    export class Actor
+    export class Actor extends EObject
     {
         public rootComponent: SceneComponent;
         public hidden: boolean;
@@ -10,6 +12,7 @@ namespace XEngine2
 
         constructor(game: Game, name: string = "")
         {
+            super();
             this.rootComponent = new SceneComponent(game, name);
             this.hidden = false;
             this.game = game;

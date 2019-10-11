@@ -29,12 +29,12 @@ namespace XEngine2 {
             let result = new Array<SceneComponent>();
 			for (let i = 0; i < actors.length; i++) {
 				const actor = actors[i];
-				if (!actor.hidden)
+				if (!actor.hidden && !actor.pendingDestroy)
 				{
                     let components = actor.GetComponents<SceneComponent>(SceneComponent);
                     for (let j = 0; j < components.length; j++) {
                         const sceneComponent = components[j];
-						if(!sceneComponent.hidden && this.frustrum.intersectsBox(sceneComponent.getBounds())){
+						if(!sceneComponent.hidden && !sceneComponent.pendingDestroy && this.frustrum.intersectsBox(sceneComponent.getBounds())){
                             result.push(sceneComponent);
                         }
                     }

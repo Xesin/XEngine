@@ -1,5 +1,7 @@
+/// <reference path="../EObject.ts" />
+
 namespace XEngine2 {
-    export class Component {
+    export class Component extends EObject {
         public parent: Component;
         public bCanUpdate: boolean;
         public game: Game;
@@ -7,6 +9,7 @@ namespace XEngine2 {
 
         constructor(game: Game, name: string = "")
         {
+            super();
             this.bCanUpdate = false;
             this.game = game;
             this.name = name;

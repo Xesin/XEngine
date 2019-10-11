@@ -55,6 +55,24 @@ namespace XEngine2
 					this.gl.deleteBuffer(this.positionBuffer[i].buffer);
 				}
 			}
+
+			if (this.uvBuffer.length > 0) {
+				for(let i = 0; i < this.uvBuffer.length ; i++){
+					this.gl.deleteBuffer(this.uvBuffer[i].buffer);
+				}
+			}
+
+			if (this.normalBuffer.length > 0) {
+				for(let i = 0; i < this.normalBuffer.length ; i++){
+					this.gl.deleteBuffer(this.normalBuffer[i].buffer);
+				}
+			}
+
+			if (this.colorBuffer.length > 0) {
+				for(let i = 0; i < this.colorBuffer.length ; i++){
+					this.gl.deleteBuffer(this.colorBuffer[i].buffer);
+				}
+			}
 		}
 
 		public updateResources(renderer: Renderer, overrideMaterial: Material = null) {

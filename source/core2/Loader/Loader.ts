@@ -69,12 +69,12 @@ namespace XEngine2 {
 		 * @param  {string} jsonUrl
 		 */
 		public jsonSpriteSheet(imageName: string, imageUrl: string, jsonUrl: string) {
-			this.pendingLoads.push(new XEngine.JsonImageLoader(imageName, imageUrl, jsonUrl, this));
+			this.pendingLoads.push(new JsonImageLoader(imageName, imageUrl, jsonUrl, this));
 		}
 
 
 		public bitmapFont(fontName, imageUrl, xmlUrl) {
-			this.pendingLoads.push(new XEngine.BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
+			this.pendingLoads.push(new BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
 		}
 
 

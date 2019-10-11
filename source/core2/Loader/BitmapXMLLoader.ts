@@ -1,4 +1,4 @@
-namespace XEngine {
+namespace XEngine2 {
 	export class BitmapXMLLoader implements BasicLoader {
 		public imageName: string;
 		public imageUrl: string;

@@ -1,4 +1,4 @@
-namespace XEngine {
+namespace XEngine2 {
 	export class TweenManager {
 		private game: Game;
 		private tweens: Array<Tween>;
@@ -9,7 +9,7 @@ namespace XEngine {
 		}
 
 		public add(target: any): Tween {
-			let tween = new XEngine.Tween(target);
+			let tween = new Tween(target);
 			this.tweens.push(tween);
 			return tween;
 		}

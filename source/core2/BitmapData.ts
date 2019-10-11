@@ -1,12 +1,4 @@
-namespace XEngine {
-
-	export class IHash<T> {
-		[id: number]: T;
-	}
-
-	export class IDict<T> {
-		[id: string]: T;
-	}
+namespace XEngine2 {
 
 	export class BitmapChar {
 		public x: number;

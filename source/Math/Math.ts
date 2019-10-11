@@ -18,7 +18,7 @@ namespace XEngine2 {
 		}
 
 		public static lerp(a: number, b: number, t: number) {
-			t = XEngine.Mathf.clamp(t, 0, 1);
+			t = XEngine2.Mathf.clamp(t, 0, 1);
 			return (1 - t) * a + t * b;
 		}
 

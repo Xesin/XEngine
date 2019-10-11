@@ -2,6 +2,11 @@
 /// <reference path="Time/TimeManager.ts" />
 /// <reference path="Render/Renderer.ts" />
 
+interface Array<T> {
+	removePending();
+	equals(other: Array<T>): boolean
+}
+
 // attach the .equals method to Array's prototype to call it on any array
 Array.prototype.equals = function (array): boolean {
 	// if the other array is a falsy value, return
@@ -27,6 +32,17 @@ Array.prototype.equals = function (array): boolean {
 		}
 	}
 	return true;
+};
+
+
+Array.prototype.removePending = function () {
+	return this.filter(go => {
+		if (go instanceof XEngine2.EObject) {
+			if((go as XEngine2.EObject).pendingDestroy)
+				return false;
+		}
+		return true;
+	});
 };
 
 // Hide method from for-in loops

@@ -44,6 +44,7 @@ namespace XEngine2
                 if(actor.canUpdate)
                     actor.update(deltaTime);
             });
+            this.actors.removePending();
         }
 
         public Render(renderer: Renderer, camera = this.mainCamera)
