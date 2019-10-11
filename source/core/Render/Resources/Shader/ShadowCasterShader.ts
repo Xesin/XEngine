@@ -47,7 +47,17 @@ namespace XEngine2.ShaderMaterialLib{
 
 			"out highp float fragColor;",
 
-            "void main(void) {",
+			"uniform sampler2D albedoTex;",
+			"uniform sampler2D opacityTex;",
+			"uniform vec4 color;",
+			"uniform float alphaClip;",
+
+			"void main(void) {",
+				"float albedoAlpha = texture(albedoTex, uv).x * color.a * vColor.a;",
+				"float opacity = texture(opacityTex, uv).x;",
+				"float alpha = min(albedoAlpha, opacity);",
+
+				"if(alpha < alphaClip) discard;",
 				"fragColor = gl_FragCoord.z;",
             "}",
         ]);

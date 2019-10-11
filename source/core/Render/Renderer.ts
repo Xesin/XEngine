@@ -197,6 +197,17 @@ namespace XEngine2 {
 								const group = groups[k];
 								let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null);
 								if (group.Mesh.castShadows) {
+									if(group.Mesh.materials[group.materialIndex] instanceof PhongMaterial)
+									{
+										let mat = group.Mesh.materials[group.materialIndex] as PhongMaterial;
+										ShadowCasterMaterial.SharedInstance.albedo.value = mat.albedo.value;
+										ShadowCasterMaterial.SharedInstance.opacityTex.value = mat.opacityTex.value;
+										
+									}
+									else
+									{
+										ShadowCasterMaterial.SharedInstance.initialize(this.gl);
+									}
 									this.renderMeshImmediate(renderObject, light.viewMatrix, light.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
 								}
 							}

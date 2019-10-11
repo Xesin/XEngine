@@ -288,6 +288,15 @@ namespace XEngine2 {
             }
         }
 
+        public getShaderUniform(name: string): Uniform
+        {
+            if(this.shader.uniforms[name])
+            {
+                return this.shader.uniforms[name];
+            }
+            return null;
+        }
+
         public setShaderSampler(name: number, value: any)
         {
             if(this.shader.samplers[name])
