@@ -122,27 +122,8 @@ namespace XEngine2 {
 
 			this.PopulateRenderQueues(scene, sceneLights);
 
-			let testLight = sceneLights[0] as DirectionalLight;
-			
+			this.renderShadowmaps(sceneLights, scene);
 
-			if(testLight && testLight.castShadow)
-			{
-				if(!testLight._shadowMap)
-				{
-					testLight._shadowMap = new RenderTarget(this.shadowSize, this.shadowSize, WRAP_MODE.CLAMP, false);
-					testLight._shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
-				}
-				testLight._shadowMap.bind(this.gl);
-				this.gl.clearColor(1,1,1,0.0);
-				this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
-				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-				for (let i = 0; i < this.shadowCasterRenderQueue.length; i++) {
-					const casterObject = this.shadowCasterRenderQueue[i];
-					this.renderMeshImmediate(casterObject, testLight.viewMatrix, testLight.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
-				}
-				testLight._shadowMap.unBind(this.gl);
-			}
-			
 			if(camera.renderTarget)
 			{
 				camera.renderTarget.bind(this.gl);
@@ -193,6 +174,39 @@ namespace XEngine2 {
 			}
 		}
 
+		private renderShadowmaps(sceneLights: Light[], scene: Scene) {
+			for (let l = 0; l < sceneLights.length; l++) {
+				const light = sceneLights[l];
+				if (!light.hidden && light.castShadow) {
+					let shadowCasterComponents = new Array<SceneComponent>();
+					shadowCasterComponents = light.cull(scene);
+					this.shadowCasterRenderQueue = new Array<RenderObject>();
+					if (!light._shadowMap) {
+						light._shadowMap = new RenderTarget(this.shadowSize, this.shadowSize, WRAP_MODE.CLAMP, false);
+						light._shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
+					}
+					light._shadowMap.bind(this.gl);
+					this.gl.clearColor(1, 1, 1, 0.0);
+					this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
+					this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+					for (let j = 0; j < shadowCasterComponents.length; j++) {
+						const sceneComponent = shadowCasterComponents[j];
+						let groups = sceneComponent.getAllRenderableGroups();
+						if (groups != null) {
+							for (let k = 0; k < groups.length; k++) {
+								const group = groups[k];
+								let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null);
+								if (group.Mesh.castShadows) {
+									this.renderMeshImmediate(renderObject, light.viewMatrix, light.projectionMatrix, ShadowCasterMaterial.SharedInstance, true);
+								}
+							}
+						}
+					}
+					light._shadowMap.unBind(this.gl);
+				}
+			}
+		}
+
 		public blit(src: RenderTarget, dst: RenderTarget, material: PostProcessMaterial = PostProcessMaterial.SharedInstance)
 		{
 			src.unBind(this.gl);
@@ -220,14 +234,7 @@ namespace XEngine2 {
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)
 		{
 			let components = this.currentCamera.cull(scene);
-			let shadowCasterComponents = new Array<SceneComponent>();
-			for (let x = 0; x < sceneLights.length; x++) {
-				const light = sceneLights[x];
-				if(light instanceof DirectionalLight)
-				{
-					shadowCasterComponents = light.cull(scene);
-				}
-			}
+			
 			for (let j = 0; j < components.length; j++) {
 				const sceneComponent = components[j];
 
@@ -249,23 +256,6 @@ namespace XEngine2 {
 								if(this.transparentRenderQueue.indexOf(renderObject) === -1)
 									this.transparentRenderQueue.push(renderObject);
 								break;
-						}
-					}
-				}
-			}
-
-			for (let j = 0; j < shadowCasterComponents.length; j++) {
-				const sceneComponent = shadowCasterComponents[j];
-				let groups = sceneComponent.getAllRenderableGroups();
-				if(groups != null)
-				{
-					for (let k = 0; k < groups.length; k++) 
-					{
-						const group = groups[k];
-						let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null);
-						if(group.Mesh.castShadows)
-						{
-							this.shadowCasterRenderQueue.push(renderObject);
 						}
 					}
 				}

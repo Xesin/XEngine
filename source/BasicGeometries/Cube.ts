@@ -2,7 +2,7 @@
 
 namespace XEngine2.BasicGeometries
 {
-    export class BoxMesh extends StaticMesh
+    export class CubeMesh extends StaticMesh
     {
         constructor(material: Material, sizeW = 1, sizeH = 1, sizeZ = 1) {
 			sizeH /= 2;
