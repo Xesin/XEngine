@@ -1,4 +1,4 @@
-/// <reference path="../core2/GameObjects/StaticMeshActor.ts" />
+/// <reference path="../core/GameObjects/StaticMeshActor.ts" />
 
 namespace XEngine2
 {

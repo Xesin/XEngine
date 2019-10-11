@@ -1,9 +1,9 @@
-/// <reference path="../Shader/ShaderBlocks.ts"/>
+/// <reference path="./ShaderBlocks.ts"/>
 
 namespace XEngine2.ShaderMaterialLib{
 
 
-    export class NegativePostProcessShader {
+    export class DesaturatePostProcessShader {
 		public static readonly vertexShader = 
 		ShaderBlocks.glVersion300
 		.concat(
@@ -36,7 +36,8 @@ namespace XEngine2.ShaderMaterialLib{
 			"void main(void) {",
 				"float baseSample = Linear01Depth(depthTex, uv);",
 				"vec4 color = texture(mainTex, uv);",
-				"fragColor = vec4(1.0 - color.xyz, color.a);",
+				"float intensity = color.r * 0.3 + color.g * 0.59 + color.b * 0.11;",
+				"fragColor = vec4(intensity, intensity, intensity, color.a);",
             "}",
         ]);
     }

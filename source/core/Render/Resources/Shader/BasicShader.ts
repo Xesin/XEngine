@@ -1,4 +1,4 @@
-/// <reference path="../Shader/ShaderBlocks.ts"/>
+/// <reference path="./ShaderBlocks.ts"/>
 namespace XEngine2.ShaderMaterialLib{
 
 

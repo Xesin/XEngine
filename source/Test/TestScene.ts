@@ -1,4 +1,4 @@
-/// <reference path="../core2/Scenes/Scene.ts" />
+/// <reference path="../core/Scenes/Scene.ts" />
 let actor : XEngine2.TestActor = null;
 declare var dat: any;
 namespace XEngine2 {

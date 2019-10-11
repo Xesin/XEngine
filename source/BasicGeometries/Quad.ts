@@ -1,4 +1,4 @@
-/// <reference path="../core2/Render/Resources/Mesh/StaticMesh.ts" />
+/// <reference path="../core/Render/Resources/Mesh/StaticMesh.ts" />
 
 namespace XEngine2.BasicGeometries
 {
