@@ -10,6 +10,7 @@ namespace XEngine2 {
 
         public _shadowMap: RenderTarget;
         private _projectionMatrix: Mat4x4;
+        private frustum: Frustum;
 
         constructor(game: Game)
         {
@@ -19,6 +20,7 @@ namespace XEngine2 {
             this._projectionMatrix = new Mat4x4();
             this.castShadow = true;
             this.shadowBias = 0.005;
+            this.frustum = new Frustum();
         }
 
         public getAllRenderableGroups(): Array<MeshGroup>
@@ -51,6 +53,27 @@ namespace XEngine2 {
             matrix.rotateAndTranslate(Quaternion.fromEulerVector(this.transform.rotation), this.transform.position);
 
             return matrix.getColumn(2);
+        }
+
+        public cull(scene: Scene) : Array<SceneComponent>
+        {
+            this.frustum.setFromMatrix(this.projectionMatrix.multiply(this.viewMatrix));
+            let actors = scene.actors;
+            let result = new Array<SceneComponent>();
+			for (let i = 0; i < actors.length; i++) {
+				const actor = actors[i];
+				if (!actor.hidden)
+				{
+                    let components = actor.GetComponents<SceneComponent>(SceneComponent);
+                    for (let j = 0; j < components.length; j++) {
+                        const sceneComponent = components[j];
+						if(!sceneComponent.hidden && this.frustum.intersectsBox(sceneComponent.getBounds())){
+                            result.push(sceneComponent);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         

@@ -98,7 +98,7 @@ namespace XEngine2 {
 			Texture2D.blackTexture = Texture2D.createTexture('defaultBlackTexture', 1, 1, blackData, WRAP_MODE.REPEAT, true, gl);
 			Texture2D.whiteTexture = Texture2D.createTexture('defaultWhiteTexture', 1, 1, whiteData, WRAP_MODE.REPEAT, true, gl);
 			Texture2D.normalTexture = Texture2D.createTexture('defaultNormalTexture', 1, 1, normalData, WRAP_MODE.REPEAT, true, gl, true);
-			Texture2D.depthTexture = Texture2D.createTexture('defaultDepthTexture', 1, 1, depthData, WRAP_MODE.CLAMP, true, gl, false, gl.DEPTH_COMPONENT32F, gl.DEPTH_COMPONENT32F, gl.FLOAT);
+			Texture2D.depthTexture = Texture2D.createTexture('defaultDepthTexture', 1, 1, depthData, WRAP_MODE.CLAMP, false, gl, false, gl.DEPTH_COMPONENT32F, gl.DEPTH_COMPONENT, gl.FLOAT);
 			gl.bindTexture(gl.TEXTURE_2D, Texture2D.depthTexture._texture);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
 			gl.bindTexture(gl.TEXTURE_2D, null);

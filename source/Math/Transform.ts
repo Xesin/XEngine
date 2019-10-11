@@ -20,24 +20,28 @@ namespace XEngine2 {
 		}
 
 		public get Matrix() : Mat4x4 {
+			let parentMatrix: Mat4x4;
+
 			if(this.Dirty){
 				let matrix = new Mat4x4();
-				let parentMatrix: Mat4x4;
 				matrix.rotateTranslateAndScale(Quaternion.fromEulerVector(this.rotation), this.position, this.scale);
-				if(this.parent != null)
-				{
-					if(this.parent.Dirty)
-					{
-						parentMatrix = this.parent.Matrix;
-					}
-					else
-						parentMatrix = this.parent.Matrix;
-						matrix = parentMatrix.clone().multiply(matrix);;
-				}
-
 				this.cachedMatrix = matrix;
+				this.Dirty = false;
 			}
-			return this.cachedMatrix;
+			
+			if(this.parent)
+			{
+				parentMatrix = this.parent.Matrix;
+			}
+
+			if(parentMatrix)
+			{
+				return parentMatrix.clone().multiply(this.cachedMatrix);
+			}
+			else
+			{
+				return this.cachedMatrix;
+			}
 		}
 
 		
@@ -47,8 +51,7 @@ namespace XEngine2 {
 			|| this.rotation.Dirty 
 			|| this.scale.Dirty 
 			|| this.cachedMatrix === undefined 
-			|| this.cachedMatrix === null
-			|| (this.parent != null && this.parent.Dirty);
+			|| this.cachedMatrix === null;
 		}
 
 		public forward(): Vector3 {

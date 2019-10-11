@@ -14,12 +14,8 @@ namespace XEngine2
             this.canUpdate = true;
 
             
-			this.mesh = new StaticMeshComponent(game, "meshComp");
-			this.rootComponent = this.mesh;
-			this.mesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 5, 25,25);
 			this.camera = new CameraComponent(game);
-			this.camera.transform.position.z = 10;
-			this.camera.setupAttachtment(this.rootComponent);
+			this.rootComponent = this.camera;
 
 			this.game.input.bindAxis("MoveForward", this, this.moveForward);
 			this.game.input.bindAxis("MoveRight", this, this.moveRight);

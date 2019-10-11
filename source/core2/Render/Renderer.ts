@@ -220,6 +220,14 @@ namespace XEngine2 {
 		private PopulateRenderQueues(scene: Scene, sceneLights : Array<Light>)
 		{
 			let components = this.currentCamera.cull(scene);
+			let shadowCasterComponents = new Array<SceneComponent>();
+			for (let x = 0; x < sceneLights.length; x++) {
+				const light = sceneLights[x];
+				if(light instanceof DirectionalLight)
+				{
+					shadowCasterComponents = light.cull(scene);
+				}
+			}
 			for (let j = 0; j < components.length; j++) {
 				const sceneComponent = components[j];
 
@@ -231,10 +239,6 @@ namespace XEngine2 {
 						const group = groups[k];
 						let affectedLights = this.findAffectedLights(group, sceneLights);
 						let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights);
-						if(group.Mesh.castShadows)
-						{
-							this.shadowCasterRenderQueue.push(renderObject);
-						}
 						switch(group.Mesh.materials[group.materialIndex].renderQueue)
 						{
 							case RenderQueue.OPAQUE:
@@ -245,6 +249,23 @@ namespace XEngine2 {
 								if(this.transparentRenderQueue.indexOf(renderObject) === -1)
 									this.transparentRenderQueue.push(renderObject);
 								break;
+						}
+					}
+				}
+			}
+
+			for (let j = 0; j < shadowCasterComponents.length; j++) {
+				const sceneComponent = shadowCasterComponents[j];
+				let groups = sceneComponent.getAllRenderableGroups();
+				if(groups != null)
+				{
+					for (let k = 0; k < groups.length; k++) 
+					{
+						const group = groups[k];
+						let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null);
+						if(group.Mesh.castShadows)
+						{
+							this.shadowCasterRenderQueue.push(renderObject);
 						}
 					}
 				}
