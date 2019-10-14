@@ -50,7 +50,7 @@ namespace XEngine2 {
 					maxZ = z;
 			}
 
-            this.bounds = new Box(new Vector3(minX, minY, minZ), new Vector3(maxX, maxZ, maxY));
+            this.bounds = new Box(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
         }
         
         public getBounds(): Box

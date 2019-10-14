@@ -3,8 +3,8 @@ namespace XEngine2.ShaderMaterialLib{
     export class ShadowCasterShader {
 		public static readonly vertexShader =
 		ShaderBlocks.glVersion300
-		.concat(ShaderBlocks.VertexInputNoUVs)
-		.concat(ShaderBlocks.VertexOutputNoUVs)
+		.concat(ShaderBlocks.VertexInput)
+		.concat(ShaderBlocks.VertexOutput)
 		.concat(ShaderBlocks.MVPUniforms)
 		.concat(
 		[
@@ -17,13 +17,14 @@ namespace XEngine2.ShaderMaterialLib{
 		[
 				"vWorldPos = gl_Position.xyz;",
 				"vColor = aVertexColor;",
+				"uv = aUV;",
 			"}",
         ]);
 
 		public static readonly fragmentShader =
 		ShaderBlocks.glVersion300
 		.concat(["precision mediump float;"])
-		.concat(ShaderBlocks.FragmentInputNoUVs)
+		.concat(ShaderBlocks.FragmentInput)
 		.concat(ShaderBlocks.MVPUniforms)
 		.concat([
 			"vec4 encodeFloat (float depth) {",

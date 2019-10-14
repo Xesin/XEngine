@@ -14,7 +14,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -37,6 +37,7 @@ namespace XEngine2 {
             this.dirLight.transform.rotation.y = 45;
             this.dirLight.transform.rotation.x = 85;
 			this.dirLight.intensity = 0.7;
+			this.dirLight.castShadow = false;
 			this.dirLight.color.fromHexString("#f0dc81");
 
 			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
@@ -54,16 +55,16 @@ namespace XEngine2 {
 			actor.rootComponent.transform.position.z = 0;
 			for (const meshName in this.game.cache.geometries) 
             {
+
 				const mesh = this.game.cache.geometries[meshName];
 				let meshActor = this.Instantiate(XEngine2.StaticMeshActor, meshName) as StaticMeshActor;
-				meshActor = meshActor;
 				meshActor.rootComponent.transform.scale.setTo(0.10);
 				meshActor.staticMesh.Mesh = mesh;
 			}
 
-			let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
-			quad.Transform.position.y = 0;
-			quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
+			// let quad = this.Instantiate(XEngine2.StaticMeshActor, "QuadTest") as StaticMeshActor;
+			// quad.Transform.position.y = 0;
+			// quad.staticMesh.Mesh = new XEngine2.BasicGeometries.SphereMesh(BlinnPhongMaterial.SharedInstance, 10, 25,25);
 			
 			// this.columnsMat = (this.actors[6] as StaticMeshActor).staticMesh.Mesh.materials[0] as BlinnPhongMaterial;
 

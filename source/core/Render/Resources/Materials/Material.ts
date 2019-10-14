@@ -218,7 +218,8 @@ namespace XEngine2 {
                     case CullMode.NONE:
                         gl.disable(gl.CULL_FACE);
                         break;
-                }                
+                }
+                
             }    
         }
 

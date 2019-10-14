@@ -93,7 +93,7 @@ namespace XEngine2 {
 			normalData[3] = 255;
 
 			let depthData = new Float32Array(1);
-			depthData[0] = 0;
+			depthData[0] = 255;
 
 			Texture2D.blackTexture = Texture2D.createTexture('defaultBlackTexture', 1, 1, blackData, WRAP_MODE.REPEAT, true, gl);
 			Texture2D.whiteTexture = Texture2D.createTexture('defaultWhiteTexture', 1, 1, whiteData, WRAP_MODE.REPEAT, true, gl);
