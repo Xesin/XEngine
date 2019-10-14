@@ -50,7 +50,7 @@ namespace XEngine2 {
 				});
 			} else {
 				this.game.canvas.addEventListener("mousedown", function (event) {
-					if(!_this.pointerLocked)
+					if(!_this.pointerLocked && !_this.game.isMobile)
 					{
 						_this.game.canvas.requestPointerLock();
 					}
@@ -178,7 +178,7 @@ namespace XEngine2 {
 			this.pointer.y = inputPos.position.y;
 			this.onInputMove.dispatch(inputPos);
 
-			if(this.pointerLocked){
+			if(this.pointerLocked || this.game.isMobile){
 				for (const name in this.axisMappings) {
 					if (this.axisMappings.hasOwnProperty(name)) {
 						const element = this.axisMappings[name];

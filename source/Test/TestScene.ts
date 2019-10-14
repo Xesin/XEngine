@@ -6,6 +6,7 @@ namespace XEngine2 {
 
 		private lightColor: string;
 		public dirLight: DirectionalLight;
+		public dirLight2: DirectionalLight;
 
 		private columnsMat: BlinnPhongMaterial;
 
@@ -14,7 +15,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
@@ -37,8 +38,15 @@ namespace XEngine2 {
             this.dirLight.transform.rotation.y = 45;
             this.dirLight.transform.rotation.x = 85;
 			this.dirLight.intensity = 0.7;
-			this.dirLight.castShadow = false;
+			this.dirLight.castShadow = true;
 			this.dirLight.color.fromHexString("#f0dc81");
+
+			this.dirLight2 = new DirectionalLight(game);
+            this.dirLight2.transform.rotation.y = 0;
+            this.dirLight2.transform.rotation.x = 90;
+			this.dirLight2.intensity = 0.7;
+			this.dirLight2.castShadow = true;
+			this.dirLight2.color.fromHexString("#f0dc81");
 
 			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
             pointLightColor.fromHexString("#f2f7a5");

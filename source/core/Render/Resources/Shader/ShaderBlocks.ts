@@ -131,18 +131,15 @@ namespace XEngine2
         public static Lightning =
         [
             "#define LIGHTNING_ON",
-            "#define MAX_LIGHTS 5",
+            "#define MAX_LIGHTS 4",
             "struct Light{",
                 "highp vec4 position;",
                 "highp vec4 lightAttenuation;",
                 "highp vec4 spotLightDirection;",
-                "highp mat4 lightProjection;",
-                "highp mat4 lightViewMatrix;",
+                "highp mat4 worldToShadowMatrix;",
                 "highp vec3 color;",
                 "highp float intensity;",
                 "lowp float shadowBias;",
-                "lowp int type;",
-                "bool isActive;",
             "};",
 
             "uniform Light light[MAX_LIGHTS];",
@@ -242,18 +239,15 @@ namespace XEngine2
         public static VertexLightning =
         [
             "#define LIGHTNING_ON",
-            "#define MAX_LIGHTS 5",
+            "#define MAX_LIGHTS 4",
             "struct Light{",
                 "highp vec4 position;",
                 "highp vec4 lightAttenuation;",
                 "highp vec4 spotLightDirection;",
-                "highp mat4 lightProjection;",
-                "highp mat4 lightViewMatrix;",
+                "highp mat4 worldToShadowMatrix;",
                 "highp vec3 color;",
                 "highp float intensity;",
                 "lowp float shadowBias;",
-                "lowp int type;",
-                "bool isActive;",
             "};",
 
             "uniform Light light[MAX_LIGHTS];",

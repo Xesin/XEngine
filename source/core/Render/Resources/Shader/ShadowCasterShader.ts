@@ -15,10 +15,11 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.mvpAndPosCalc)
 		.concat(
 		[
-				"vWorldPos = gl_Position.xyz;",
-				"vColor = aVertexColor;",
-				"uv = aUV;",
-			"}",
+			"vWorldPos = gl_Position.xyz;",
+			// "gl_Position.z = max(gl_Position.z, gl_Position.w);",
+			"vColor = aVertexColor;",
+			"uv = aUV;",
+		"}",
         ]);
 
 		public static readonly fragmentShader =
@@ -54,7 +55,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"uniform float alphaClip;",
 
 			"void main(void) {",
-				"float albedoAlpha = texture(albedoTex, uv).x * color.a * vColor.a;",
+				"float albedoAlpha = texture(albedoTex, uv).a * color.a * vColor.a;",
 				"float opacity = texture(opacityTex, uv).x;",
 				"float alpha = min(albedoAlpha, opacity);",
 

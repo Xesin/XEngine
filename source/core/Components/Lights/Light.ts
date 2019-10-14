@@ -8,7 +8,6 @@ namespace XEngine2 {
         public shadowBias: number;
         public castShadow: boolean;
 
-        public _shadowMap: RenderTarget;
         private _projectionMatrix: Mat4x4;
         private frustum: Frustum;
 

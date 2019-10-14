@@ -36,6 +36,7 @@ namespace XEngine2 {
 		private shadowCasterRenderQueue: Array<RenderObject>;
 		private dstRenderTarget : RenderTarget;
 		private srcRenderTarget : RenderTarget;
+		private shadowMap : RenderTarget;
 		private quadMesh : StaticMeshComponent;
 
 		private errorMat: Material;
@@ -84,17 +85,22 @@ namespace XEngine2 {
 				this.errorMat.initialize(this.gl);
 				this.srcRenderTarget.unBind(this.gl);
 
-				
+				Texture2D.CreateDefaultTextures(this.gl);
+				Material.initStaticMaterials(this.gl);
+
+				if (!this.shadowMap) {
+					this.shadowMap = new RenderTarget(this.shadowSize, this.shadowSize, WRAP_MODE.CLAMP, false);
+					this.shadowMap.addAttachment(this.gl, this.gl.COLOR_ATTACHMENT0);
+					this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
+				}
+
+				PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+				PostProcessMaterial.SharedInstance.depthTex.value = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
+				this.quadMesh = new StaticMeshComponent(this.game);
+				this.quadMesh.Mesh = new BasicGeometries.QuadMesh(PostProcessMaterial.SharedInstance, 2, 2);
 			}
 
 			this.game.scale.onResized.add(this.OnResize, this);
-			Texture2D.CreateDefaultTextures(this.gl);
-			Material.initStaticMaterials(this.gl);
-
-			PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
-			PostProcessMaterial.SharedInstance.depthTex.value = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
-			this.quadMesh = new StaticMeshComponent(this.game);
-			this.quadMesh.Mesh = new BasicGeometries.QuadMesh(PostProcessMaterial.SharedInstance, 2, 2);
 		}
 
 		private OnResize(width: number, height: number)
@@ -175,20 +181,23 @@ namespace XEngine2 {
 		}
 
 		private renderShadowmaps(sceneLights: Light[], scene: Scene) {
+			this.shadowMap.bind(this.gl);
+			this.gl.clearColor(1, 1, 1, 0.0);
+			this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
+			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 			for (let l = 0; l < sceneLights.length; l++) {
 				const light = sceneLights[l];
 				if (!light.hidden && light.castShadow) {
 					let shadowCasterComponents = new Array<SceneComponent>();
 					shadowCasterComponents = light.cull(scene);
 					this.shadowCasterRenderQueue = new Array<RenderObject>();
-					if (!light._shadowMap) {
-						light._shadowMap = new RenderTarget(this.shadowSize, this.shadowSize, WRAP_MODE.CLAMP, false);
-						light._shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
-					}
-					light._shadowMap.bind(this.gl);
-					this.gl.clearColor(1, 1, 1, 0.0);
-					this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
-					this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+					let tileSize = this.shadowSize / 2;
+
+					let offsetX = l % 2;
+					let offsetY = Math.floor(l / 2);
+
+					this.gl.viewport(offsetX * tileSize + 4, offsetY * tileSize + 4, tileSize - 8, tileSize -8);
 					for (let j = 0; j < shadowCasterComponents.length; j++) {
 						const sceneComponent = shadowCasterComponents[j];
 						let groups = sceneComponent.getAllRenderableGroups();
@@ -200,8 +209,10 @@ namespace XEngine2 {
 									if(group.Mesh.materials[group.materialIndex] instanceof PhongMaterial)
 									{
 										let mat = group.Mesh.materials[group.materialIndex] as PhongMaterial;
-										ShadowCasterMaterial.SharedInstance.albedo.value = mat.albedo.value;
-										ShadowCasterMaterial.SharedInstance.opacityTex.value = mat.opacityTex.value;
+										if(ShadowCasterMaterial.SharedInstance.albedo)
+											ShadowCasterMaterial.SharedInstance.albedo.value = mat.albedo.value;
+										if(ShadowCasterMaterial.SharedInstance.opacityTex)
+											ShadowCasterMaterial.SharedInstance.opacityTex.value = mat.opacityTex.value;
 										
 									}
 									else
@@ -213,9 +224,9 @@ namespace XEngine2 {
 							}
 						}
 					}
-					light._shadowMap.unBind(this.gl);
 				}
 			}
+			this.shadowMap.unBind(this.gl);
 		}
 
 		public blit(src: RenderTarget, dst: RenderTarget, material: PostProcessMaterial = PostProcessMaterial.SharedInstance)
@@ -304,8 +315,13 @@ namespace XEngine2 {
 
 			if(!skipLights)
 			{
+				let texUnitConverter = new Mat4x4();
+				texUnitConverter.set(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 				for(let i = 0; i < 5; i++)
 				{
+					let offsetX = i % 2;
+					let offsetY = Math.floor(i / 2);
+
 					let light = renderObject.affectedLights[i];
 					let lightPositionUniform = material.getLightUniform(i, 'position');
 					if(lightPositionUniform)
@@ -314,11 +330,24 @@ namespace XEngine2 {
 						let lightIntensityUniform = material.getLightUniform(i, 'intensity');
 						let lightAttenuationUniform = material.getLightUniform(i, 'lightAttenuation');
 						let spotLightDirectionUniform = material.getLightUniform(i, 'spotLightDirection');
-						let lightViewMatrixUniform = material.getLightUniform(i, 'lightViewMatrix');
-						let lightProjectionUniform = material.getLightUniform(i, 'lightProjection');
+						let lightProjectionUniform = material.getLightUniform(i, 'worldToShadowMatrix');
 						let lightShadowBiasUniform = material.getLightUniform(i, 'shadowBias');
 						spotLightDirectionUniform.value = new Vector4(0,0,0,0);
 						lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
+						if(this.shadowMap)
+						{
+							if(material instanceof BlinnPhongMaterial)
+							{
+								(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
+							}
+						}
+						else
+						{
+							if(material instanceof BlinnPhongMaterial)
+							{
+								(material as BlinnPhongMaterial).shadowMap.value = Texture2D.depthTexture;
+							}
+						}
 						if(light){
 							if(light instanceof DirectionalLight)
 							{
@@ -327,22 +356,18 @@ namespace XEngine2 {
 								dirLight.y = -dirLight.y;
 								dirLight.z = -dirLight.z;
 								lightPositionUniform.value =  dirLight;
-								lightViewMatrixUniform.value = light.viewMatrix;
-								lightProjectionUniform.value = light.projectionMatrix;
 								if(light.castShadow){
+									var tileMatrix = new Mat4x4();
+									tileMatrix.set(
+										0.5, 0, 0, offsetX * 0.5,
+										0, 0.5, 0, offsetY * 0.5,
+										0, 0, 1, 0,
+										0, 0, 0, 1
+									)
+
 									lightShadowBiasUniform.value = light.shadowBias;
-									if(material instanceof BlinnPhongMaterial)
-									{
-										(material as BlinnPhongMaterial).shadowMap.value = light._shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
-									}
+									lightProjectionUniform.value = tileMatrix.multiply(texUnitConverter.clone().multiply(light.projectionMatrix.multiply(light.viewMatrix)));
 								}
-								else if(light._shadowMap)
-								{
-									if(material instanceof BlinnPhongMaterial)
-									{
-										(material as BlinnPhongMaterial).shadowMap.value = Texture2D.depthTexture;
-									}
-								}	
 							}
 							else if(light instanceof PointLight)
 							{

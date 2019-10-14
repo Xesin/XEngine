@@ -23,7 +23,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
-				"mat4 depthBiasMVP = texUnitConverter * light[0].lightProjection * light[0].lightViewMatrix * modelMatrix;",
+				"mat4 depthBiasMVP = light[0].worldToShadowMatrix * modelMatrix;",
 				"shadowPos =  depthBiasMVP * vec4(aVertexPosition.xyz, 1.0);",
 			"}"
         ]);
@@ -69,21 +69,21 @@ namespace XEngine2.ShaderMaterialLib{
 				"{",
 					"Light curLight = light[i];",
 					"vec4 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
-					"if(i == 0){",
-						"vec4 fragmentDepth = shadowPos;",
-						"float shadowAcneRemover = curLight.shadowBias*tan(acos(DiffuseLightColor.w));",
-						"shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
-						"float amountInLight = 1.0;",
-						  
-						"for (int x = 0; x < 4; x++) {",
-							"int index = int(16.0*random(vec4(vWorldPos.xyz, x)))%16;",
-							"float texelDepth = 1.0 - texture(shadowMap,",
-							"vec3(fragmentDepth.xy + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
-							"amountInLight -= 0.2 * texelDepth;",
-						"}",
 
-						"DiffuseLightColor = DiffuseLightColor * amountInLight;",
+					"vec4 fragmentDepth = shadowPos;",
+					"float shadowAcneRemover = curLight.shadowBias*tan(acos(DiffuseLightColor.w));",
+					"shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
+					"float amountInLight = 1.0;",
+						
+					"for (int x = 0; x < 4; x++) {",
+						"int index = int(16.0*random(vec4(vWorldPos.xyz, x)))%16;",
+						"float texelDepth = 1.0 - texture(shadowMap,",
+						"vec3(fragmentDepth.xy + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
+						"amountInLight -= 0.25 * texelDepth;",
 					"}",
+
+					"DiffuseLightColor = DiffuseLightColor * amountInLight;",
+
 					"lightsColor += DiffuseLightColor.xyz; ",
 				"}",
 
