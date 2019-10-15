@@ -23,8 +23,6 @@ namespace XEngine2.ShaderMaterialLib{
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
-				"mat4 depthBiasMVP = light[0].worldToShadowMatrix * modelMatrix;",
-				"shadowPos =  depthBiasMVP * vec4(aVertexPosition.xyz, 1.0);",
 			"}"
         ]);
 
@@ -69,8 +67,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"{",
 					"Light curLight = light[i];",
 					"vec4 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
-
-					"vec4 fragmentDepth = shadowPos;",
+					"vec4 fragmentDepth = light[i].worldToShadowMatrix * vec4(vWorldPos, 1.0);",
 					"float shadowAcneRemover = curLight.shadowBias*tan(acos(DiffuseLightColor.w));",
 					"shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
 					"float amountInLight = 1.0;",

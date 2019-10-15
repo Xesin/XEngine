@@ -124,7 +124,7 @@ namespace XEngine2 {
 			this.transparentRenderQueue = new Array();
 			this.shadowCasterRenderQueue = new Array();
 
-			let sceneLights = this.currentScene.FindComponents<Light>(Light);
+			let sceneLights = this.currentScene.FindComponents<Light>(Light).filter(l => !l.hidden);
 
 			this.PopulateRenderQueues(scene, sceneLights);
 
@@ -317,7 +317,7 @@ namespace XEngine2 {
 			{
 				let texUnitConverter = new Mat4x4();
 				texUnitConverter.set(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
-				for(let i = 0; i < 5; i++)
+				for(let i = 0; i < 4; i++)
 				{
 					let offsetX = i % 2;
 					let offsetY = Math.floor(i / 2);
@@ -349,6 +349,16 @@ namespace XEngine2 {
 							}
 						}
 						if(light){
+							var tileMatrix = new Mat4x4();
+							tileMatrix.set(
+								0.5, 0, 0, 0,
+								0, 0.5, 0, 0,
+								0, 0, 1, 0,
+								offsetX * 0.5, offsetY * 0.5, 0, 1
+							)
+
+							lightShadowBiasUniform.value = light.shadowBias;
+							lightProjectionUniform.value = tileMatrix.multiply(texUnitConverter.clone().multiply(light.projectionMatrix.multiply(light.viewMatrix)));
 							if(light instanceof DirectionalLight)
 							{
 								let dirLight = light.dirLight;
@@ -356,18 +366,6 @@ namespace XEngine2 {
 								dirLight.y = -dirLight.y;
 								dirLight.z = -dirLight.z;
 								lightPositionUniform.value =  dirLight;
-								if(light.castShadow){
-									var tileMatrix = new Mat4x4();
-									tileMatrix.set(
-										0.5, 0, 0, offsetX * 0.5,
-										0, 0.5, 0, offsetY * 0.5,
-										0, 0, 1, 0,
-										0, 0, 0, 1
-									)
-
-									lightShadowBiasUniform.value = light.shadowBias;
-									lightProjectionUniform.value = tileMatrix.multiply(texUnitConverter.clone().multiply(light.projectionMatrix.multiply(light.viewMatrix)));
-								}
 							}
 							else if(light instanceof PointLight)
 							{

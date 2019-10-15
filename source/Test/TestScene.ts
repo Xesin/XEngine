@@ -15,7 +15,7 @@ namespace XEngine2 {
 		public preload()
 		{
 			this.game.loader.image('test', 'img/angry_unicorn.png');
-			// this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+			this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
 		}
 
 		public start()
