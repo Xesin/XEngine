@@ -224,7 +224,7 @@ namespace XEngine2
                 "return finalColor;",
             "}",
 
-            "vec4 BlinnPhongLightning(int i, vec3 surfaceNormal, vec3 vWorldPos, vec3 viewDir, float smoothness, vec4 specularColor, vec3 albedo){",
+            "vec3 BlinnPhongLightning(int i, vec3 surfaceNormal, vec3 vWorldPos, vec3 viewDir, float smoothness, vec4 specularColor, vec3 albedo){",
                 "Light curLight = light[i];",
                 "vec3 lightVector = curLight.position.xyz - vWorldPos * curLight.position.w;",
                 "vec3 lightDir = normalize(lightVector);",
@@ -237,7 +237,7 @@ namespace XEngine2
                 "vec3 finalSpecular = specular * specularColor.xyz * lightColor;",
                 
                 "vec3 finalColor = (albedo * diffuse * lightColor * atten) + (finalSpecular * atten);",
-                "return vec4(finalColor.xyz, clamp(dot(surfaceNormal, lightDir), 0.0, 1.0));",
+                "return finalColor;",
             "}",
 
             "float ShadowAttenuation(Light light, vec4 worldPos)",

@@ -59,11 +59,11 @@ namespace XEngine2.ShaderMaterialLib{
 				"for(int i = 0; i < MAX_LIGHTS; i++)",
 				"{",
 					"Light curLight = light[i];",
-					"vec4 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
+					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
 
 					"DiffuseLightColor = DiffuseLightColor * ShadowAttenuation(curLight, vWorldPos);",
 
-					"lightsColor += DiffuseLightColor.xyz; ",
+					"lightsColor += DiffuseLightColor; ",
 				"}",
 
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
