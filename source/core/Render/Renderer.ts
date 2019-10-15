@@ -334,18 +334,20 @@ namespace XEngine2 {
 						let lightShadowBiasUniform = material.getLightUniform(i, 'shadowBias');
 						spotLightDirectionUniform.value = new Vector4(0,0,0,0);
 						lightAttenuationUniform.value = new Vector4(0,0,0,1.0);
-						if(this.shadowMap)
+						if(this.shadowMap && meshGroup.Mesh.recieveShadows)
 						{
-							if(material instanceof BlinnPhongMaterial)
+							if(material instanceof PhongMaterial)
 							{
-								(material as BlinnPhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
+								if((material as PhongMaterial).shadowMap)
+									(material as PhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
 							}
 						}
 						else
 						{
-							if(material instanceof BlinnPhongMaterial)
+							if(material instanceof PhongMaterial)
 							{
-								(material as BlinnPhongMaterial).shadowMap.value = Texture2D.depthTexture;
+								if((material as PhongMaterial).shadowMap)
+									(material as PhongMaterial).shadowMap.value = Texture2D.depthTexture;
 							}
 						}
 						if(light){

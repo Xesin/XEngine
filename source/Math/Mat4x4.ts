@@ -286,7 +286,7 @@ namespace XEngine2 {
 			return this;
 		}
 
-		public ortho(left, right, bottom, top, near, far) {
+		public ortho(left, right, bottom, top, near, far) : Mat4x4 {
 			let out = this.elements
 			var lr = 1 / (left - right);
 			var bt = 1 / (bottom - top);
@@ -307,7 +307,7 @@ namespace XEngine2 {
 			out[13] = (top + bottom) * bt;
 			out[14] = (far + near) * nf;
 			out[15] = 1;
-			return out;
+			return this;
 		}
 
 		public lookAt (eye: Vector3, target: Vector3, up: Vector3) {

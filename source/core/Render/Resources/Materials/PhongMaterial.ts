@@ -18,6 +18,8 @@ namespace XEngine2
         public colorName = "color";
         public ambientName = "ambient";
         public alphaClipName = "alphaClip"
+        public shadowMapName = "shadowMap";
+
 
         public defaults = 
         {
@@ -25,6 +27,7 @@ namespace XEngine2
             "ambient" : new Vector4(1,1,1,0.025),
             "opacityTex" : "white",
             "normal" : "normal",
+            "shadowMap" : "depth",
             "albedo": "white",
             "alphaClip" : 0.6
         }
@@ -62,6 +65,11 @@ namespace XEngine2
         public get alphaClip(): Uniform
         {
             return this.shader.uniforms[this.alphaClipName];
+        }
+
+        public get shadowMap(): Uniform
+        {
+            return this.shader.uniforms[this.shadowMapName];
         }
     }
 }

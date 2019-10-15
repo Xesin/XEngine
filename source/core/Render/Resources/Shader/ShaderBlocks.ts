@@ -145,7 +145,6 @@ namespace XEngine2
             "uniform Light light[MAX_LIGHTS];",
 
             "uniform highp sampler2DShadow shadowMap;",
-            "in vec4 shadowPos;",
 
             "vec4 encodeFloat (float depth) {",
 				"const vec4 bitShift = vec4(",
@@ -173,7 +172,14 @@ namespace XEngine2
 				  "1.0",
 				");",
 				"return dot(color, bitShift);",
-			  "}",
+              "}",
+              
+            "vec2 poissonDisk[4] = vec2[](",
+				"vec2( -0.94201624, -0.39906216 ),",
+				"vec2( 0.94558609, -0.76890725 ),",
+				"vec2( -0.094184101, -0.92938870 ),",
+				"vec2( 0.34495938, 0.29387760 )",
+			");",
 
             "float getLightAttenuation(Light light, vec3 lightVector, vec3 lightDirection){",
                 "vec3 spotDirection = light.spotLightDirection.xyz;",
@@ -234,6 +240,20 @@ namespace XEngine2
                 "return vec4(finalColor.xyz, clamp(dot(surfaceNormal, lightDir), 0.0, 1.0));",
             "}",
 
+            "float ShadowAttenuation(Light light, vec4 worldPos)",
+            "{",
+                "vec4 fragmentDepth = light.worldToShadowMatrix * vec4(worldPos, 1.0);",
+                "float shadowAcneRemover = light.shadowBias;",
+                "shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
+                "float amountInLight = 1.0;",
+                    
+                "for (int x = 0; x < 4; x++) {",
+                    "float texelDepth = 1.0 - texture(shadowMap,",
+                    "vec3(fragmentDepth.xy + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
+                    "amountInLight -= 0.25 * texelDepth;",
+                "}",
+                "return amountInLight",
+            "}"
         ];
 
         public static VertexLightning =
@@ -251,8 +271,6 @@ namespace XEngine2
             "};",
 
             "uniform Light light[MAX_LIGHTS];",
-
-            "out vec4 shadowPos;",
               
             "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",
         ]

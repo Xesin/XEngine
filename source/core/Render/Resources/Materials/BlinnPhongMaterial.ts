@@ -14,7 +14,6 @@ namespace XEngine2
 
         public smoothnessName = "smoothness";
         public specularColorName = "specularColor";
-        public shadowMapName = "shadowMap";
 
         public defaults = 
         {
@@ -44,11 +43,6 @@ namespace XEngine2
         public get specularColor(): Uniform
         {
             return this.shader.uniforms[this.specularColorName];
-        }
-
-        public get shadowMap(): Uniform
-        {
-            return this.shader.uniforms[this.shadowMapName];
         }
 
     }
