@@ -169,7 +169,7 @@ namespace XEngine2 {
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
 				PostProcessMaterial.SharedInstance.bind(this.gl);
-				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.shadowMap.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
 				PostProcessMaterial.SharedInstance.setShaderParameter("mainTex", this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
 				PostProcessMaterial.SharedInstance.setShaderSampler(1, this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
 				PostProcessMaterial.SharedInstance.setShaderParameter("depthTex", this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);

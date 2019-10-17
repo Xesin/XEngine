@@ -18,7 +18,7 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.mvpAndPosCalc)
 		.concat(
 		[
-				"vWorldPos = (modelMatrix * aVertexPosition).xyz;",
+				"vWorldPos = modelMatrix * aVertexPosition;",
 	   			"uv = aUV;",
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
@@ -29,10 +29,10 @@ namespace XEngine2.ShaderMaterialLib{
 		public static readonly fragmentShader =
 		ShaderBlocks.glVersion300
 		.concat(["precision mediump float;"])
-		.concat(ShaderBlocks.Lightning)
 		.concat(ShaderBlocks.perturbNormals)
 		.concat(ShaderBlocks.BlinnPhongFragmentInputs)
 		.concat(ShaderBlocks.MVPUniforms)
+		.concat(ShaderBlocks.Lightning)
 		.concat([
 			"layout(location = 0) out vec4 fragColor;",
 			"layout(location = 1) out vec4 fragNormals;",
@@ -54,22 +54,21 @@ namespace XEngine2.ShaderMaterialLib{
 				"vec3 finalColor = albedo.xyz;",
 
 				"vec3 lightsColor = vec3(0.0);",
-				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
+				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos.xyz, vNormal, uv);",
 				"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
 				"for(int i = 0; i < MAX_LIGHTS; i++)",
 				"{",
 					"Light curLight = light[i];",
-					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos, viewDir, smoothness, specularColor, albedo.xyz);",
+					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos.xyz, viewDir, smoothness, specularColor, albedo.xyz);",
 
-					"DiffuseLightColor = DiffuseLightColor * ShadowAttenuation(curLight, vWorldPos);",
+					"DiffuseLightColor =DiffuseLightColor *ShadowAttenuation(curLight, vWorldPos);",
 
 					"lightsColor += DiffuseLightColor; ",
 				"}",
 
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
 
-				"finalColor = lightsColor",
-				"+ albedo.xyz * ambientColor;",
+				"finalColor = lightsColor + ambientColor * albedo.xyz;",
 
 				"fragColor.xyz =finalColor;",
 				"fragColor.a = alpha;",

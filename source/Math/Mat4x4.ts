@@ -2,14 +2,14 @@ namespace XEngine2 {
 
 	export class Mat4x4 {
 
-		public elements: Float32Array;
+		public elements: Float64Array;
 		private v0 = new Vector3();
 		private vX = new Vector3();
 		private vY = new Vector3();
 		private vZ = new Vector3();
 
 		constructor() {
-			this.elements = new Float32Array(4 * 4);
+			this.elements = new Float64Array(4 * 4);
 			this.identity();
 		}
 
@@ -260,7 +260,7 @@ namespace XEngine2 {
 
 		public perspective(fov: number, aspect: number, near: number, far: number) {
 			let out = this.elements
-			let f = 1.0 / Math.tan(fov / 2), nf: number;
+			let f = 1.0 / Math.tan(fov / 2), nf;
 			out[0] = f / aspect;
 			out[1] = 0;
 			out[2] = 0;
@@ -276,12 +276,12 @@ namespace XEngine2 {
 			out[13] = 0;
 			out[15] = 0;
 			if (far != null && far !== Infinity) {
-			  nf = 1 / (near - far);
-			  out[10] = (far + near) * nf;
-			  out[14] = (2 * far * near) * nf;
+				nf = 1 / (near - far);
+				out[10] = (far + near) * nf;
+				out[14] = (2 * far * near) * nf;
 			} else {
-			  out[10] = -1;
-			  out[14] = -2 * near;
+				out[10] = -1;
+				out[14] = -2 * near;
 			}
 			return this;
 		}

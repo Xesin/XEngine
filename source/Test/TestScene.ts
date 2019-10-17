@@ -5,8 +5,7 @@ namespace XEngine2 {
 	export class TestScene extends Scene {
 
 		private lightColor: string;
-		public dirLight: DirectionalLight;
-		public dirLight2: DirectionalLight;
+		private dirLight: DirectionalLight;
 
 		private columnsMat: BlinnPhongMaterial;
 
@@ -34,28 +33,21 @@ namespace XEngine2 {
 				this.activatedPost = !this.activatedPost;
 			});
 
-			this.dirLight = new DirectionalLight(game);
-            this.dirLight.transform.rotation.y = 45;
-            this.dirLight.transform.rotation.x = 85;
-			this.dirLight.intensity = 0.7;
-			this.dirLight.castShadow = true;
-			this.dirLight.color.fromHexString("#f0dc81");
-
-			this.dirLight2 = new DirectionalLight(game);
-            this.dirLight2.transform.rotation.y = 0;
-            this.dirLight2.transform.rotation.x = 90;
-			this.dirLight2.intensity = 0.7;
-			this.dirLight2.castShadow = true;
-			this.dirLight2.color.fromHexString("#f0dc81");
+			this.dirLight = new DirectionalLight(this.game);
+			this.dirLight.transform.rotation.x = 85;
+			this.dirLight.transform.rotation.y = 45;
 
 			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
             pointLightColor.fromHexString("#f2f7a5");
 			
-			let pointLight = new PointLight(game);
+			let pointLight = new SpotLight(game);
 
 			this["pointLight"] = pointLight;
 			pointLight.transform.position.y = 20;
 			pointLight.color = pointLightColor;
+			pointLight.intensity = 5000;
+			pointLight.radius = 5000;
+			pointLight.castShadow = true;
 			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
@@ -80,64 +72,7 @@ namespace XEngine2 {
 			// this.columnsMat.alphaClip.value = 0;
 			// this.columnsMat.blendMode = BlendMode.Multiply;
 
-			let gui = new dat.GUI();
-			let _that = this;
 
-			let controller = gui.add(this.dirLight, 'intensity', 0, 10);
-			controller.name('intensity');
-			controller.listen();
-			controller.onChange(function(value){
-				_that.onFloatValueChange(this.object, value);
-			});
-
-			
-			this.lightColor = '#' + this.dirLight.color.getHexString();
-			
-			controller = gui.addColor( this, 'lightColor', this.lightColor).name('color1');
-			controller.onChange(function(value)
-			{
-				_that.onValueChange(this.object, value);
-			});
-
-			// controller = gui.add(this.columnsMat.color.value, 'w', 0, 1);
-			// controller.name('alpha');
-			// controller.listen();
-			// controller.onChange(function(value){
-			// 	_that.onAlphaChange(this.object, value);
-			// });
-
-			controller = gui.add(this.dirLight, 'shadowBias', 0, 1);
-			controller.name('bias');
-			controller.listen();
-
-			controller = gui.add(pointLight, 'intensity', 0, 2000);
-			controller.name('pointLight intensity');
-			controller.listen();
-			controller.onChange(function(value){
-				this.object.value = value;
-			});
-
-			controller = gui.add(pointLight, 'radius', 0, 200);
-			controller.name('radius');
-			controller.listen();
-			controller.onChange(function(value){
-				this.object.value = value;
-			});
-
-		}
-
-		private onFloatValueChange(object: any, value: any) {
-			if(value == 0.0) value = 0.0000001;
-			object.value = value;
-		}
-
-		private onValueChange(object: any, value: any) {
-			this.dirLight.color.fromHexString(value);
-		}
-
-		private onAlphaChange(object: any, value: any)
-		{
-			(this.columnsMat.color.value as Vector4).w = value;
 		}
 
 		public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget)

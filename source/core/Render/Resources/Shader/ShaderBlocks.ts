@@ -24,7 +24,7 @@ namespace XEngine2
         public static VertexOutputNoUVs =
         [
 			"out highp vec3 vNormal;",
-			"out highp vec4 vColor;",
+            "out highp vec4 vColor;",
 			"out highp mat4 mvMatrix;",
 			"out highp mat4 mvpMatrix;"
         ];
@@ -63,7 +63,7 @@ namespace XEngine2
         ShaderBlocks.VertexOutput
         .concat(
         [
-            "out highp vec3 vWorldPos;",
+            "out highp vec4 vWorldPos;",
         ]
         );
 
@@ -79,7 +79,7 @@ namespace XEngine2
         ShaderBlocks.FragmentInput
         .concat(
         [
-            "in highp vec3 vWorldPos;",
+            "in highp vec4 vWorldPos;",
             "uniform highp vec4 color;",
             "uniform highp vec4 ambient;",
             "uniform highp float alphaClip;",
@@ -242,17 +242,17 @@ namespace XEngine2
 
             "float ShadowAttenuation(Light light, vec4 worldPos)",
             "{",
-                "vec4 fragmentDepth = light.worldToShadowMatrix * vec4(worldPos, 1.0);",
+                "vec4 fragmentDepth = light.worldToShadowMatrix * worldPos;",
                 "float shadowAcneRemover = light.shadowBias;",
                 "shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
                 "float amountInLight = 1.0;",
                     
                 "for (int x = 0; x < 4; x++) {",
                     "float texelDepth = 1.0 - texture(shadowMap,",
-                    "vec3(fragmentDepth.xy + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
+                    "vec3(fragmentDepth.xy / fragmentDepth.w + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
                     "amountInLight -= 0.25 * texelDepth;",
                 "}",
-                "return amountInLight",
+                "return amountInLight;",
             "}"
         ];
 

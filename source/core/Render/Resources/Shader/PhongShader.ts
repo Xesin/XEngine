@@ -17,7 +17,7 @@ namespace XEngine2.ShaderMaterialLib{
 		.concat(ShaderBlocks.mvpAndPosCalc)
 		.concat(
 		[
-				"vWorldPos = (modelMatrix * aVertexPosition).xyz;",
+				"vWorldPos = modelMatrix * aVertexPosition;",
 	   			"uv = aUV;",
 				"vColor = aVertexColor;",
 			"}"
@@ -39,11 +39,11 @@ namespace XEngine2.ShaderMaterialLib{
 				"float alpha = min(albedo.a, opacity.x);",
 				"if(alpha < alphaClip) discard;",
 				"vec3 lightsColor = vec3(0.0);",
-				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos, vNormal, uv);",
+				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos.xyz, vNormal, uv);",
 				"for(int i = 0; i < MAX_LIGHTS; i++)",
 				"{",
 					"Light curLight = light[i];",
-					"vec3 DiffuseLightColor = PhongLightning(i, surfaceNormal, vWorldPos, albedo.xyz);",
+					"vec3 DiffuseLightColor = PhongLightning(i, surfaceNormal, vWorldPos.xyz, albedo.xyz);",
 					"DiffuseLightColor = DiffuseLightColor * ShadowAttenuation(curLight, vWorldPos);",
 					"lightsColor += DiffuseLightColor;",
 				"}",

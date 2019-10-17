@@ -50,7 +50,7 @@ namespace XEngine2 {
         
         public get projectionMatrix() : Mat4x4 {
             let game = Game.GetInstance();
-            const fieldOfView = this.fov * Math.PI / 180;   // in radians
+            const fieldOfView = this.fov * Mathf.TO_RADIANS;   // in radians
             const aspect = game.width / game.height;
             const zNear = this.near;
             const zFar = this.far;

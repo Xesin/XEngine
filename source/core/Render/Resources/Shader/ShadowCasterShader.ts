@@ -47,7 +47,7 @@ namespace XEngine2.ShaderMaterialLib{
 			"}",
 			"in highp vec3 vWorldPos;",
 
-			"out highp float fragColor;",
+			"out highp vec4 fragColor;",
 
 			"uniform sampler2D albedoTex;",
 			"uniform sampler2D opacityTex;",
@@ -60,7 +60,7 @@ namespace XEngine2.ShaderMaterialLib{
 				"float alpha = min(albedoAlpha, opacity);",
 
 				"if(alpha < alphaClip) discard;",
-				"fragColor = gl_FragCoord.z;",
+				"fragColor = vec4(vec3(gl_FragCoord.z * alpha), 1.0);",
             "}",
         ]);
     }
