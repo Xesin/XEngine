@@ -8,16 +8,18 @@ namespace XEngine2 {
 		public buffer: WebGLBuffer;
 		private gl: WebGL2RenderingContext;
 		public attributes: Array<any>;
+		public mode: number;
 
 		public static SetDiry() {
 			VertexBuffer.CurrentVertexBuffer = null;
 		}
 
-		constructor(gl: WebGL2RenderingContext, buffer: WebGLBuffer) {
+		constructor(gl: WebGL2RenderingContext, buffer: WebGLBuffer, mode: number = gl.STATIC_DRAW) {
 			this.gl = gl;
 			this.bufferType = gl.ARRAY_BUFFER;
 			this.buffer = buffer;
 			this.attributes = new Array<any>();
+			this.mode = mode;
 		}
 
 		public addAttribute(vertexAttribute: VertexAttribute, stride: number, offset: number) {
@@ -30,15 +32,15 @@ namespace XEngine2 {
 				vertexAttribute.normalized,
 				stride,
 				offset,
-				);
+			);
 			gl.enableVertexAttribArray(vertexAttribute.index);
 		}
 
-		public updateResource(bufferData: Float32Array | Uint32Array, offset: number) {
+		public updateResource(bufferData: Float32Array | Uint32Array) {
 			let gl = this.gl;
 
 			gl.bindBuffer(this.bufferType, this.buffer);
-			gl.bufferData(this.bufferType, bufferData, gl.STATIC_DRAW);
+			gl.bufferData(this.bufferType, bufferData, this.mode);
 			gl.bindBuffer(this.bufferType, null);
 		}
 
