@@ -103,7 +103,7 @@ namespace XEngine2
 							floatBuffer[index++] = 1;
 						}
 						this.positionBuffer[i].bind();
-						this.positionBuffer[i].updateResource(floatBuffer, 0);
+						this.positionBuffer[i].updateResource(floatBuffer);
 					}
 				}
 
@@ -135,7 +135,7 @@ namespace XEngine2
 						}
 
 						this.colorBuffer[i].bind();
-						this.colorBuffer[i].updateResource(floatBuffer, 0);
+						this.colorBuffer[i].updateResource(floatBuffer);
 					}
 				}
 				
@@ -164,7 +164,7 @@ namespace XEngine2
 							}
 						}
 						this.normalBuffer[i].bind();
-						this.normalBuffer[i].updateResource(floatBuffer, 0);
+						this.normalBuffer[i].updateResource(floatBuffer);
 					}
 				}
 
@@ -191,7 +191,7 @@ namespace XEngine2
 							}
 						}
 						this.uvBuffer[i].bind();
-						this.uvBuffer[i].updateResource(floatBuffer, 0);
+						this.uvBuffer[i].updateResource(floatBuffer);
 					}
 				}
 
@@ -205,7 +205,7 @@ namespace XEngine2
 					for (let j = 0; j < indices.length; j++) {
 						uintIndexBuffer[j] = indices[j];
 					}
-					this.indexBuffer[i].updateResource(uintIndexBuffer, 0);
+					this.indexBuffer[i].updateResource(uintIndexBuffer);
 				}
 			}
 
