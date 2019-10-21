@@ -1,15 +1,17 @@
 /// <reference path="Light.ts" />
 
 namespace XEngine2 {
-    export class SpotLight extends PointLight {
+    export class SpotLight extends Light {
 
-        public spotAngle: number
+        public spotAngle: number;
+        public distance: number;
 
         constructor(game: Game)
         {
             super(game);
             this.spotAngle = 45;
             this.castShadow = false;
+            this.distance = 100;
         }
 
         public get viewMatrix() : Mat4x4 {

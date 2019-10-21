@@ -83,6 +83,8 @@ namespace XEngine2 {
 		}
 
 		public update(deltaTime: number) {
+			this.time += deltaTime;
+			this.progress = Mathf.clamp(this.time / this.duration, 0, 1);
 			if (this.target === undefined || this.target == null) {
 				this.destroy();
 				return;
@@ -99,7 +101,6 @@ namespace XEngine2 {
 				}
 				return;
 			}
-			this.progress = Mathf.clamp(this.time / this.duration, 0, 1);
 			// tslint:disable-next-line:forin
 			for (let property in this.properties) {
 				let t = this.progress;
@@ -113,7 +114,6 @@ namespace XEngine2 {
 				}
 				this.target[property] = Mathf.lerp(this.fromProperties[property], this.properties[property], this.easing(t));
 			}
-			this.time += deltaTime;
 		}
 
 		public destroy() {

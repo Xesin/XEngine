@@ -79,6 +79,7 @@ namespace XEngine2 {
 		public cache: Cache;
 		public loader: Loader;
 		public input: InputManager;
+		public tween: TweenManager;
 
 		public renderer: Renderer;
 
@@ -127,6 +128,7 @@ namespace XEngine2 {
 			this.cache = new Cache(this);
 			this.loader = new Loader(this);
 			this.input = new InputManager(this);
+			this.tween = new TweenManager(this);
 
 			this.pause = false;
 			this.isMobile = false;
@@ -150,6 +152,7 @@ namespace XEngine2 {
 			if (this.time.update()) {
 				if (this.pause) { return; }
 				this.input.update();
+				this.tween.update(this.time.deltaTimeMillis);
 				this.sceneManager.update(this.time.deltaTime);
 				this.sceneManager.render(this.renderer);
 			}

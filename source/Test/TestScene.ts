@@ -33,22 +33,29 @@ namespace XEngine2 {
 				this.activatedPost = !this.activatedPost;
 			});
 
+			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
+            pointLightColor.fromHexString("#f2f7a5");
+
 			this.dirLight = new DirectionalLight(this.game);
 			this.dirLight.transform.rotation.x = 85;
 			this.dirLight.transform.rotation.y = 45;
+			this.dirLight.color = pointLightColor;
 
-			// let pointLightColor = new Color(0.9,0.4,0.8,1.0);
-            // pointLightColor.fromHexString("#f2f7a5");
 			
-			// let pointLight = new SpotLight(game);
+			
+			let pointLight = new SpotLight(game);
 
-			// this["pointLight"] = pointLight;
-			// pointLight.transform.position.y = 20;
-			// pointLight.color = pointLightColor;
-			// pointLight.intensity = 5000;
-			// pointLight.radius = 5000;
-			// pointLight.castShadow = true;
-			
+			this["pointLight"] = pointLight;
+			pointLight.transform.position.y = 20;
+			pointLight.color = pointLightColor;
+			pointLight.spotAngle = 85;
+			pointLight.intensity = 600;
+			pointLight.distance = 5000;
+			pointLight.castShadow = true;
+
+			this.game.tween.add(pointLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
+			this.game.tween.add(pointLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
+
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;
 			actor.rootComponent.transform.position.y = 0;

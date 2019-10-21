@@ -1,4 +1,4 @@
-namespace XEngine {
+namespace XEngine2 {
 	export module Easing {
 		export class Linear {
 			public static None(t) {
@@ -150,8 +150,8 @@ namespace XEngine {
 			}
 
 			public static InOut(t): number {
-				if (t < 0.5) { return XEngine.Easing.Bounce.In(t * 2) * 0.5; }
-				return XEngine.Easing.Bounce.Out(t * 2 - 1) * 0.5 + 0.5;
+				if (t < 0.5) { return Easing.Bounce.In(t * 2) * 0.5; }
+				return Easing.Bounce.Out(t * 2 - 1) * 0.5 + 0.5;
 			}
 		}
 	}

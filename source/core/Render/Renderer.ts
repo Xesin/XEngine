@@ -33,7 +33,6 @@ namespace XEngine2 {
 
 		private opaqueRenderQueue: Array<RenderObject>;
 		private transparentRenderQueue: Array<RenderObject>;
-		private shadowCasterRenderQueue: Array<RenderObject>;
 		private dstRenderTarget : RenderTarget;
 		private srcRenderTarget : RenderTarget;
 		private shadowMap : RenderTarget;
@@ -50,7 +49,6 @@ namespace XEngine2 {
 			
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
-			this.shadowCasterRenderQueue = new Array();
 			this.shadowSize = 1024;
 			this.init();
 		}
@@ -122,7 +120,6 @@ namespace XEngine2 {
 			this.currentScene = scene;
 			this.opaqueRenderQueue = new Array();
 			this.transparentRenderQueue = new Array();
-			this.shadowCasterRenderQueue = new Array();
 
 			let sceneLights = this.currentScene.FindComponents<Light>(Light).filter(l => !l.hidden);
 
@@ -185,19 +182,41 @@ namespace XEngine2 {
 			this.gl.clearColor(1, 1, 1, 0.0);
 			this.gl.viewport(0, 0, this.shadowSize, this.shadowSize);
 			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-			for (let l = 0; l < sceneLights.length; l++) {
-				const light = sceneLights[l];
+			let shadowLights = sceneLights.filter(l => !l.hidden && l.castShadow && !(l instanceof PointLight));
+			let tileSplit: number;
+			if(shadowLights.length <= 1)
+				tileSplit = 1;
+			else if(shadowLights.length <= 4)
+				tileSplit = 2;
+			else if(shadowLights.length <= 9)
+				tileSplit = 3;
+			else
+				tileSplit = 4;
+
+			for (let l = 0; l < shadowLights.length; l++) {
+				const light = shadowLights[l];
 				if (!light.hidden && light.castShadow) {
 					let shadowCasterComponents = new Array<SceneComponent>();
 					shadowCasterComponents = light.cull(scene);
-					this.shadowCasterRenderQueue = new Array<RenderObject>();
 
-					let tileSize = this.shadowSize / 2;
+					light.tileMatrix.identity();
+					if(tileSplit > 1){
+						let tileSize = this.shadowSize / tileSplit;
+						let tileScale = 1.0 / tileSplit;
 
-					let offsetX = l % 2;
-					let offsetY = Math.floor(l / 2);
+						let offsetX = l % tileSplit;
+						let offsetY = Math.floor(l / tileSplit);
 
-					this.gl.viewport(offsetX * tileSize + 4, offsetY * tileSize + 4, tileSize - 8, tileSize -8);
+						light.tileMatrix.set(
+							tileScale, 0, 0, 0,
+							0, tileScale, 0, 0,
+							0, 0, 1, 0,
+							offsetX * tileScale, offsetY * tileScale, 0, 1
+						)
+						this.gl.viewport(offsetX * tileSize + 4, offsetY * tileSize + 4, tileSize - 8, tileSize -8);
+					}
+
+					
 					for (let j = 0; j < shadowCasterComponents.length; j++) {
 						const sceneComponent = shadowCasterComponents[j];
 						let groups = sceneComponent.getAllRenderableGroups();
@@ -319,9 +338,6 @@ namespace XEngine2 {
 				texUnitConverter.set(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 				for(let i = 0; i < 4; i++)
 				{
-					let offsetX = i % 2;
-					let offsetY = Math.floor(i / 2);
-
 					let light = renderObject.affectedLights[i];
 					let lightPositionUniform = material.getLightUniform(i, 'position');
 					if(lightPositionUniform)
@@ -351,16 +367,8 @@ namespace XEngine2 {
 							}
 						}
 						if(light){
-							var tileMatrix = new Mat4x4();
-							tileMatrix.set(
-								0.5, 0, 0, 0,
-								0, 0.5, 0, 0,
-								0, 0, 1, 0,
-								offsetX * 0.5, offsetY * 0.5, 0, 1
-							)
-
 							lightShadowBiasUniform.value = light.shadowBias;
-							lightProjectionUniform.value = tileMatrix.multiply(texUnitConverter.clone().multiply(light.projectionMatrix.multiply(light.viewMatrix)));
+							lightProjectionUniform.value = light.tileMatrix.clone().multiply(texUnitConverter.clone().multiply(light.projectionMatrix.multiply(light.viewMatrix)));
 							if(light instanceof DirectionalLight)
 							{
 								let dirLight = light.dirLight;
@@ -369,12 +377,15 @@ namespace XEngine2 {
 								dirLight.z = -dirLight.z;
 								lightPositionUniform.value =  dirLight;
 							}
-							else if(light instanceof PointLight)
+							else 
 							{
-								lightPositionUniform.value = light.transform.Matrix.getColumn(3);;
-								lightAttenuationUniform.value.x = 1 / Math.max(light.radius * light.radius, 0.00001);
-								if(light instanceof SpotLight)
+								lightPositionUniform.value = light.transform.Matrix.getColumn(3);
+								if(light instanceof PointLight){
+									lightAttenuationUniform.value.x = 1 / Math.max(light.radius * light.radius, 0.00001);
+								}
+								else if(light instanceof SpotLight)
 								{
+									lightAttenuationUniform.value.x = 1 / Math.max(light.distance * light.distance, 0.00001);
 									let v = light.transform.Matrix.getColumn(2);
 									v.x = -v.x;
 									v.y = -v.y;
@@ -399,6 +410,7 @@ namespace XEngine2 {
 						{
 							lightColorUniform.value = new Vector3(0,0,0);
 						}
+						
 					}
 				}
 			}

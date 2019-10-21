@@ -21,7 +21,7 @@ namespace XEngine2 {
             this.castShadow = true;
             this.shadowBias = 0.005;
             this.frustum = new Frustum();
-            this.tileMatrix = new Mat4x4();
+            this.tileMatrix = new Mat4x4().set(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         }
 
         public getAllRenderableGroups(): Array<MeshGroup>
