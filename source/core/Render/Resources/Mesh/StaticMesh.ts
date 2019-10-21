@@ -13,6 +13,7 @@ namespace XEngine2
 		public recieveShadows = true;
 
 		public uvData: Array<number>;
+		public uv2Data: Array<number>;
 		public vertexData: Array<number>;
 		public colorData: Array<number>;
 		public indexData: Array<number>;
@@ -22,20 +23,23 @@ namespace XEngine2
 		public indexBuffer: IndexBuffer[];
 		public positionBuffer: VertexBuffer[];
 		public uvBuffer: VertexBuffer[];
+		public uv2Buffer: VertexBuffer[];
 		public normalBuffer: VertexBuffer[];
 		public colorBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
-		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "") {
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "", uv2Data: Array<number>) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
+			this.uv2Data = uv2Data;
 			this.normalData = normalData;
 			this.colorData = colorData;
 			this.indexed = indexData != null ? true : false;
 			this.groups = new Array();
 			this.positionBuffer = new Array();
 			this.uvBuffer = new Array();
+			this.uv2Buffer = new Array();
 			this.normalBuffer = new Array();
 			this.colorBuffer = new Array();
 			this.indexBuffer = new Array();
@@ -195,6 +199,33 @@ namespace XEngine2
 					}
 				}
 
+				if(material.HasSecondUVs)
+				{
+					if(!this.uv2Buffer[i]){
+						let uvs = this.uv2Data;
+						let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vUv2.itemSize));
+						this.uv2Buffer[i] = VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
+						this.uv2Buffer[i].addAttribute(material.vUv2, material.vUv2.itemSize, 0);
+						let floatBuffer = dataBuffer.floatView;
+
+						let index = dataBuffer.allocate(this.groups[i].vertexCount);
+						for (let j = startVertexData * 2; j < endVertexData * 2; j++) {
+							if(uvs && uvs.length >= 2)
+							{
+								floatBuffer[index++] = uvs[j++];
+								floatBuffer[index++] = uvs[j];
+							}
+							else
+							{
+								floatBuffer[index++] = 0;
+								floatBuffer[index++] = 0;
+							}
+						}
+						this.uv2Buffer[i].bind();
+						this.uv2Buffer[i].updateResource(floatBuffer);
+					}
+				}
+
 				if (this.indexData && !this.indexBuffer[i]) {
 					let indexDataBuffer = new DataBuffer16(2 * this.indexData.length);
 					this.indexBuffer[i] = IndexBuffer.Create(
@@ -231,6 +262,20 @@ namespace XEngine2
 			if(this.colorBuffer[materialIndex] && material.HasColor){
 				this.colorBuffer[materialIndex].bind();
 				const vertexAttr = material.vColor;
+				gl.vertexAttribPointer(
+					vertexAttr.index,
+					vertexAttr.numItems,
+					vertexAttr.type,
+					vertexAttr.normalized,
+					vertexAttr.itemSize,
+					0,
+					);
+				gl.enableVertexAttribArray(vertexAttr.index);
+			}
+			if(this.uvBuffer[materialIndex] && material.HasUVs)
+			{
+				this.uvBuffer[materialIndex].bind();
+				const vertexAttr = material.vUv;
 				gl.vertexAttribPointer(
 					vertexAttr.index,
 					vertexAttr.numItems,

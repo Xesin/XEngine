@@ -9,6 +9,7 @@ namespace XEngine2 {
         public colorsAttrName = "aVertexColor";
         public normalAttrName = "aVertexNormal";
         public uvAttrName = "aUV";
+        public secondUVsAttrName = "aUV2";
         public modelMatrix: Mat4x4;
         public viewMatrix: Mat4x4;
         public pMatrix: Mat4x4;
@@ -114,6 +115,10 @@ namespace XEngine2 {
             return this.shader.vertexAttrs[this.uvAttrName];
         }
 
+        public get vUv2() : VertexAttribute {
+            return this.shader.vertexAttrs[this.secondUVsAttrName];
+        }
+
         public get AttrStride() : number
         {
             return this.shader.attrStride;
@@ -132,6 +137,11 @@ namespace XEngine2 {
         public get HasUVs(): boolean
         {
             return this.uvAttrName in this.shader.vertexAttrs;
+        }
+
+        public get HasSecondUVs(): boolean
+        {
+            return this.secondUVsAttrName in this.shader.vertexAttrs;
         }
 
         public get HasColor(): boolean
