@@ -37,7 +37,7 @@ namespace XEngine2 {
 
         public initialize(gl: WebGL2RenderingContext)
         {
-           this.shader.initializeShader(gl);
+           this.shader.updateShader(gl);
            for (const key in this.defaults) {
                if (this.defaults.hasOwnProperty(key)) {
                    const defValue = this.defaults[key];
@@ -71,8 +71,9 @@ namespace XEngine2 {
 
         public updateUniforms(gl: WebGL2RenderingContext)
         {
-            for (let key in this.shader.uniforms) {
-                const uniform = this.shader.uniforms[key];
+            this.bind(gl);
+            for (let key in this.shader.currentVariant.uniforms) {
+                const uniform = this.shader.currentVariant.uniforms[key];
                 if(this.hasOwnProperty(key))
                 {
                     uniform.value = this[key];
@@ -80,8 +81,8 @@ namespace XEngine2 {
                 if(uniform.value != null)
                     this.setUniformData(uniform, gl);
             }
-            for (let i = 0; i < this.shader.samplers.length; i++) {
-                const sampler = this.shader.samplers[i];
+            for (let i = 0; i < this.shader.currentVariant.samplers.length; i++) {
+                const sampler = this.shader.currentVariant.samplers[i];
                 if(sampler != undefined && sampler.value != undefined){
                     gl.activeTexture(this.sampleIndexToGL_Sample(sampler.samplerNumber, gl));
                     gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
@@ -100,23 +101,23 @@ namespace XEngine2 {
         }
         
         public get vPosition() : VertexAttribute {
-            return this.shader.vertexAttrs[this.vertexPositionName];
+            return this.shader.currentVariant.vertexAttrs[this.vertexPositionName];
         }
 
         public get vColor() : VertexAttribute {
-            return this.shader.vertexAttrs[this.colorsAttrName];
+            return this.shader.currentVariant.vertexAttrs[this.colorsAttrName];
         }
 
         public get vNormal() : VertexAttribute {
-            return this.shader.vertexAttrs[this.normalAttrName];
+            return this.shader.currentVariant.vertexAttrs[this.normalAttrName];
         }
 
         public get vUv() : VertexAttribute {
-            return this.shader.vertexAttrs[this.uvAttrName];
+            return this.shader.currentVariant.vertexAttrs[this.uvAttrName];
         }
 
         public get vUv2() : VertexAttribute {
-            return this.shader.vertexAttrs[this.secondUVsAttrName];
+            return this.shader.currentVariant.vertexAttrs[this.secondUVsAttrName];
         }
 
         public get AttrStride() : number
@@ -126,105 +127,113 @@ namespace XEngine2 {
 
         public get VertexAttributes() : IDict<VertexAttribute>
         {
-            return this.shader.vertexAttrs;
+            return this.shader.currentVariant.vertexAttrs;
         }
 
         public get HasPosition(): boolean
         {
-            return this.vertexPositionName in this.shader.vertexAttrs;
+            return this.vertexPositionName in this.shader.currentVariant.vertexAttrs;
         }
 
         public get HasUVs(): boolean
         {
-            return this.uvAttrName in this.shader.vertexAttrs;
+            return this.uvAttrName in this.shader.currentVariant.vertexAttrs;
         }
 
         public get HasSecondUVs(): boolean
         {
-            return this.secondUVsAttrName in this.shader.vertexAttrs;
+            return this.secondUVsAttrName in this.shader.currentVariant.vertexAttrs;
         }
 
         public get HasColor(): boolean
         {
-            return this.colorsAttrName in this.shader.vertexAttrs;
+            return this.colorsAttrName in this.shader.currentVariant.vertexAttrs;
         }
 
         public get HasNormals(): boolean
         {
-            return this.normalAttrName in this.shader.vertexAttrs;
+            return this.normalAttrName in this.shader.currentVariant.vertexAttrs;
         }
 
         public get ShaderProgram(): WebGLProgram
         {
-            return this.shader._shaderProgram;
+            return this.shader.currentVariant.program;
         }
 
-        public bind(gl: WebGL2RenderingContext)
+        public updateVariants(gl: WebGL2RenderingContext)
+        {
+            this.shader.updateShader(gl);
+        }
+
+        public bind(gl: WebGL2RenderingContext): boolean
         {
             if(Material.currentMaterial !== this)
             {
-                gl.useProgram(this.ShaderProgram);
-                Material.currentMaterial = this;               
+                if(this.ShaderProgram){
+                    gl.useProgram(this.ShaderProgram);
+                    Material.currentMaterial = this;               
 
-                gl.depthMask(this.writeDepthEnabled);
-                if(this.depthTestEnabled)
-                {
-                    gl.enable(gl.DEPTH_TEST);
-                    gl.depthFunc(gl.LEQUAL);
-                }
-                else
-                {
-                    gl.disable(gl.DEPTH_TEST);
-                }
+                    gl.depthMask(this.writeDepthEnabled);
+                    if(this.depthTestEnabled)
+                    {
+                        gl.enable(gl.DEPTH_TEST);
+                        gl.depthFunc(gl.LEQUAL);
+                    }
+                    else
+                    {
+                        gl.disable(gl.DEPTH_TEST);
+                    }
 
-                if(this.renderQueue == RenderQueue.TRANSPARENT)
-                {
-                    gl.enable(gl.BLEND);
-                    gl.blendEquation(gl.FUNC_ADD);
-                    switch (this.blendMode) {
-    					case BlendMode.Multiply:
-                            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                            break;
-                        case BlendMode.Add:
-                            gl.blendFunc(gl.ONE, gl.ONE);
-                            break;
-                        case BlendMode.Substract:
-                            gl.blendFunc(gl.ONE, gl.ONE);
-                            gl.blendEquation(gl.FUNC_SUBTRACT);
-                            break;
-                        case BlendMode.None:
-                            gl.disable(gl.BLEND);
-    				}
-                }
-                else
-                {
-                    gl.disable(gl.BLEND);
-                }
+                    if(this.renderQueue == RenderQueue.TRANSPARENT)
+                    {
+                        gl.enable(gl.BLEND);
+                        gl.blendEquation(gl.FUNC_ADD);
+                        switch (this.blendMode) {
+                            case BlendMode.Multiply:
+                                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                                break;
+                            case BlendMode.Add:
+                                gl.blendFunc(gl.ONE, gl.ONE);
+                                break;
+                            case BlendMode.Substract:
+                                gl.blendFunc(gl.ONE, gl.ONE);
+                                gl.blendEquation(gl.FUNC_SUBTRACT);
+                                break;
+                            case BlendMode.None:
+                                gl.disable(gl.BLEND);
+                        }
+                    }
+                    else
+                    {
+                        gl.disable(gl.BLEND);
+                    }
 
-                switch (this.cullMode) {
-                    case CullMode.BACK:
-                        gl.enable(gl.CULL_FACE);
-                        gl.cullFace(gl.BACK);
-                        break;
-                    case CullMode.FRONT:
-                        gl.enable(gl.CULL_FACE);
-                        gl.cullFace(gl.FRONT);
-                        break;
-                    case CullMode.BOTH:
-                        gl.enable(gl.CULL_FACE);
-                        gl.cullFace(gl.FRONT_AND_BACK);
-                        break;
-                    case CullMode.NONE:
-                        gl.disable(gl.CULL_FACE);
-                        break;
+                    switch (this.cullMode) {
+                        case CullMode.BACK:
+                            gl.enable(gl.CULL_FACE);
+                            gl.cullFace(gl.BACK);
+                            break;
+                        case CullMode.FRONT:
+                            gl.enable(gl.CULL_FACE);
+                            gl.cullFace(gl.FRONT);
+                            break;
+                        case CullMode.BOTH:
+                            gl.enable(gl.CULL_FACE);
+                            gl.cullFace(gl.FRONT_AND_BACK);
+                            break;
+                        case CullMode.NONE:
+                            gl.disable(gl.CULL_FACE);
+                            break;
+                    }
                 }
-                
+                return false;
             }    
+            return true;
         }
 
         public getLightUniform(index: number, name: string)
         {
-            return this.shader.uniforms[this.lightsUniformName+'[' + index + '].'+name];            
+            return this.shader.currentVariant.uniforms[this.lightsUniformName+'[' + index + '].'+name];            
         }
 
 
@@ -282,32 +291,48 @@ namespace XEngine2 {
 
         public hasUniform(name: string): boolean
         {
-            return this.shader.uniforms[name] != null || this.shader.uniforms[name] != undefined;
+            return this.shader.currentVariant.uniforms[name] != null || this.shader.currentVariant.uniforms[name] != undefined;
         }
 
         public setUniform(name: string, value: any)
         {
             if(this.hasUniform(name))
             {
-                this.shader.uniforms[name].value = value;
+                this.shader.currentVariant.uniforms[name].value = value;
             }
         }
 
         public getUniform(name: string): Uniform
         {
-            return this.shader.uniforms[name];
+            return this.shader.currentVariant.uniforms[name];
         }
 
         public hasSampler(samplerPos: number): boolean
         {
-            return this.shader.samplers[samplerPos ] != null || this.shader.samplers[name] != undefined;
+            return this.shader.currentVariant.samplers[samplerPos ] != null || this.shader.currentVariant.samplers[name] != undefined;
         }
 
         public setShaderSampler(samplerPos: number, value: any)
         {
             if(this.hasSampler(samplerPos))
             {
-                this.shader.samplers[samplerPos].value = value;
+                this.shader.currentVariant.samplers[samplerPos].value = value;
+            }
+        }
+
+        public enableKeyword(newKeyword: string)
+        {
+            if(this.shader.enabledWords.indexOf(newKeyword) == -1)
+            {
+                this.shader.enabledWords.push(newKeyword)
+            }
+        }
+
+        public disableKeyword(keyword: string)
+        {
+            if(this.shader.enabledWords.indexOf(keyword) != -1)
+            {
+                this.shader.enabledWords.splice(this.shader.enabledWords.indexOf(keyword), 1);
             }
         }
     }

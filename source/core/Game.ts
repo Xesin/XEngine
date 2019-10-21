@@ -4,7 +4,13 @@
 
 interface Array<T> {
 	removePending();
-	equals(other: Array<T>): boolean
+	equals(other: Array<T>): boolean,
+	
+}
+
+interface String
+{
+	hashCode(): number
 }
 
 // attach the .equals method to Array's prototype to call it on any array
@@ -44,6 +50,17 @@ Array.prototype.removePending = function () {
 		return true;
 	});
 };
+
+String.prototype.hashCode = function() {
+	var hash = 0, i, chr;
+	if (this.length === 0) return hash;
+	for (i = 0; i < this.length; i++) {
+	  chr   = this.charCodeAt(i);
+	  hash  = ((hash << 5) - hash) + chr;
+	  hash |= 0; // Convert to 32bit integer
+	}
+	return hash;
+  };
 
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});

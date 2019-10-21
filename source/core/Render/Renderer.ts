@@ -315,22 +315,21 @@ namespace XEngine2 {
 			let gl = this.gl;
 			material = material || meshGroup.Mesh.materials[meshGroup.materialIndex];
 
-			if(!material.ShaderProgram)
+			if(material.shader.compileStatus != ShaderCompileStatus.Ok)
 			{
 				material = this.errorMat;
 			}
-
+			material.updateVariants(gl);
 			meshGroup.Mesh.updateResources(this, material);
-			material.bind(gl);
 			meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
+			material.bind(gl);
+			material.modelMatrix = modelMatrix;
 
-				material.modelMatrix = modelMatrix;
+			material.viewMatrix = viewMatrix;
 
-				material.viewMatrix = viewMatrix;
+			material.pMatrix = projectionMatrix;
 
-				material.pMatrix = projectionMatrix;
-
-				material.normalMatrix = modelMatrix.clone().invert().transpose();
+			material.normalMatrix = modelMatrix.clone().invert().transpose();
 
 			if(!skipLights)
 			{

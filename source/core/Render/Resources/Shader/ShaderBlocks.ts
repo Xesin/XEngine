@@ -4,7 +4,8 @@ namespace XEngine2
     {
         public static glVersion300 = 
         [
-            "#version 300 es"
+            "#version 300 es",
+            "#VARIANT_DEFINES"
         ]
 
         public static VertexInputNoUVs = 
@@ -133,7 +134,6 @@ namespace XEngine2
 
         public static Lightning =
         [
-            "#define LIGHTNING_ON",
             "#define MAX_LIGHTS 4",
             "struct Light{",
                 "highp vec4 position;",
@@ -266,7 +266,6 @@ namespace XEngine2
 
         public static VertexLightning =
         [
-            "#define LIGHTNING_ON",
             "#define MAX_LIGHTS 4",
             "struct Light{",
                 "highp vec4 position;",

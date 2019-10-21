@@ -52,28 +52,29 @@ namespace XEngine2.ShaderMaterialLib{
 
 				"if(alpha < alphaClip) discard;",
 				"vec3 finalColor = albedo.xyz;",
-
-				"vec3 lightsColor = vec3(0.0);",
 				"vec3 surfaceNormal = perturbNormalPerPixel(vWorldPos.xyz, vNormal, uv);",
-				"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
-				"for(int i = 0; i < MAX_LIGHTS; i++)",
-				"{",
-					"Light curLight = light[i];",
-					"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos.xyz, viewDir, smoothness, specularColor, albedo.xyz);",
+				"#ifdef LIGHTNING_ON",
+					"vec3 lightsColor = vec3(0.0);",
+					"vec3 viewDir = normalize(viewPos - vWorldPos.xyz);",
+					"for(int i = 0; i < MAX_LIGHTS; i++)",
+					"{",
+						"Light curLight = light[i];",
+						"vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos.xyz, viewDir, smoothness, specularColor, albedo.xyz);",
 
-					"DiffuseLightColor =DiffuseLightColor *ShadowAttenuation(curLight, vWorldPos);",
+						"DiffuseLightColor =DiffuseLightColor *ShadowAttenuation(curLight, vWorldPos);",
 
-					"lightsColor += DiffuseLightColor; ",
-				"}",
-				"vec3 bakedLight = getLightmapColor(uv2);",
-				"vec3 ambientColor = ambient.xyz * ambient.w;",
+						"lightsColor += DiffuseLightColor; ",
+					"}",
+					"vec3 bakedLight = getLightmapColor(uv2);",
+					"vec3 ambientColor = ambient.xyz * ambient.w;",
 
-				"finalColor = (bakedLight * albedo.xyz) + (ambientColor * albedo.xyz) + lightsColor;",
-
+					"finalColor = (bakedLight * albedo.xyz) + (ambientColor * albedo.xyz) + lightsColor;",
+					"#endif",
 				"fragColor.xyz =finalColor;",
 				"fragColor.a = alpha;",
 				"fragColor.rgb *= fragColor.a;",
 				"fragNormals = vec4(surfaceNormal, 1.0);",
+				
             "}",
         ]);
     }

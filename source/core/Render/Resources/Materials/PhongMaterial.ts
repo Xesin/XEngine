@@ -38,6 +38,7 @@ namespace XEngine2
         constructor(shader = new Shader(ShaderMaterialLib.PhongShader.vertexShader, ShaderMaterialLib.PhongShader.fragmentShader))
         {
             super(shader);
+            this.enableKeyword("LIGHTNING_ON");
         }
     }
 }
