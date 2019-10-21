@@ -28,7 +28,7 @@ namespace XEngine2
 		public colorBuffer: VertexBuffer[];
 
 		// tslint:disable-next-line:max-line-length
-		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "", uv2Data: Array<number>) {
+		constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name: string = "", uv2Data: Array<number> = new Array()) {
 			this.vertexData = vertexData;
 			this.indexData = indexData;
 			this.uvData = uvData;
@@ -286,10 +286,10 @@ namespace XEngine2
 					);
 				gl.enableVertexAttribArray(vertexAttr.index);
 			}
-			if(this.uvBuffer[materialIndex] && material.HasUVs)
+			if(this.uv2Buffer[materialIndex] && material.HasSecondUVs)
 			{
-				this.uvBuffer[materialIndex].bind();
-				const vertexAttr = material.vUv;
+				this.uv2Buffer[materialIndex].bind();
+				const vertexAttr = material.vUv2;
 				gl.vertexAttribPointer(
 					vertexAttr.index,
 					vertexAttr.numItems,

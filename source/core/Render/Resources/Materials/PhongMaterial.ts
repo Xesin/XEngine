@@ -20,6 +20,8 @@ namespace XEngine2
         public alphaClip: number;
         public shadowMap: Texture2D;
 
+        public lightMap: Texture2D;
+
 
         public defaults = 
         {
@@ -29,7 +31,8 @@ namespace XEngine2
             "normal" : "normal",
             "shadowMap" : "depth",
             "albedo": "white",
-            "alphaClip" : 0.6
+            "alphaClip" : 0.6,
+            "lightMap": "black",
         }
 
         constructor(shader = new Shader(ShaderMaterialLib.PhongShader.vertexShader, ShaderMaterialLib.PhongShader.fragmentShader))

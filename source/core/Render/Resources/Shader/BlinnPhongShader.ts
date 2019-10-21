@@ -20,6 +20,7 @@ namespace XEngine2.ShaderMaterialLib{
 		[
 				"vWorldPos = modelMatrix * aVertexPosition;",
 	   			"uv = aUV;",
+	   			"uv2 = aUV2;",
 				"vColor = aVertexColor;",
 				"mat4 viewInverted = inverse(viewMatrix);",
 				"viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
@@ -64,10 +65,10 @@ namespace XEngine2.ShaderMaterialLib{
 
 					"lightsColor += DiffuseLightColor; ",
 				"}",
-
+				"vec3 bakedLight = getLightmapColor(uv2);",
 				"vec3 ambientColor = ambient.xyz * ambient.w;",
 
-				"finalColor = lightsColor + ambientColor * albedo.xyz;",
+				"finalColor = (bakedLight * albedo.xyz) + (ambientColor * albedo.xyz) + lightsColor;",
 
 				"fragColor.xyz =finalColor;",
 				"fragColor.a = alpha;",

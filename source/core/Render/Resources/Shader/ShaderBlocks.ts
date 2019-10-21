@@ -18,7 +18,8 @@ namespace XEngine2
         ShaderBlocks.VertexInputNoUVs
         .concat(
         [
-			"in highp vec2 aUV;"
+			"in highp vec2 aUV;",
+			"in highp vec2 aUV2;"
         ]);
 
         public static VertexOutputNoUVs =
@@ -34,6 +35,7 @@ namespace XEngine2
         .concat(
         [
             "out highp vec2 uv;",
+            "out highp vec2 uv2;"
         ]);
 
         public static FragmentInputNoUVs =
@@ -48,7 +50,8 @@ namespace XEngine2
         ShaderBlocks.FragmentInputNoUVs
         .concat(
         [
-            "in highp vec2 uv;"
+            "in highp vec2 uv;",
+            "in highp vec2 uv2;"
         ]);
 
         public static MVPUniforms = 
@@ -145,6 +148,7 @@ namespace XEngine2
             "uniform Light light[MAX_LIGHTS];",
 
             "uniform highp sampler2DShadow shadowMap;",
+            "uniform sampler2D lightMap;",
 
             "vec4 encodeFloat (float depth) {",
 				"const vec4 bitShift = vec4(",
@@ -179,7 +183,11 @@ namespace XEngine2
 				"vec2( 0.94558609, -0.76890725 ),",
 				"vec2( -0.094184101, -0.92938870 ),",
 				"vec2( 0.34495938, 0.29387760 )",
-			");",
+            ");",
+            
+            "vec3 getLightmapColor(vec2 uv){",
+                "return texture(lightMap, uv).xyz;",
+            "}",
 
             "float getLightAttenuation(Light light, vec3 lightVector, vec3 lightDirection){",
                 "vec3 spotDirection = light.spotLightDirection.xyz;",
