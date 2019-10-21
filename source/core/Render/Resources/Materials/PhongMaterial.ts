@@ -12,20 +12,20 @@ namespace XEngine2
     {
         public static SharedInstance = new PhongMaterial();
 
-        public albedoSamplerName = "albedoTex";
-        public normalSamplerName = "normalTex";
-        public opacitySamplerName = "opacityTex";
-        public colorName = "color";
-        public ambientName = "ambient";
-        public alphaClipName = "alphaClip"
-        public shadowMapName = "shadowMap";
+        public albedo: Texture2D;
+        public normal: Texture2D;
+        public opacity: Texture2D;
+        public color: Color;
+        public ambient: Color;
+        public alphaClip: number;
+        public shadowMap: Texture2D;
 
 
         public defaults = 
         {
             "color": new Vector4(1,1,1,1),
             "ambient" : new Vector4(1,1,1,0.025),
-            "opacityTex" : "white",
+            "opacity" : "white",
             "normal" : "normal",
             "shadowMap" : "depth",
             "albedo": "white",
@@ -35,41 +35,6 @@ namespace XEngine2
         constructor(shader = new Shader(ShaderMaterialLib.PhongShader.vertexShader, ShaderMaterialLib.PhongShader.fragmentShader))
         {
             super(shader);
-        }
-
-        public get color(): Uniform
-        {
-            return this.shader.uniforms[this.colorName];
-        }
-
-        public get ambient(): Uniform
-        {
-            return this.shader.uniforms[this.ambientName];
-        }
-        
-        public get albedo(): Uniform
-        {
-            return this.shader.uniforms[this.albedoSamplerName];
-        }
-        
-        public get normal(): Uniform
-        {
-            return this.shader.uniforms[this.normalSamplerName];
-        }
-
-        public get opacityTex(): Uniform
-        {
-            return this.shader.uniforms[this.opacitySamplerName];
-        }
-
-        public get alphaClip(): Uniform
-        {
-            return this.shader.uniforms[this.alphaClipName];
-        }
-
-        public get shadowMap(): Uniform
-        {
-            return this.shader.uniforms[this.shadowMapName];
         }
     }
 }

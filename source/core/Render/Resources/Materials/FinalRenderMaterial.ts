@@ -12,8 +12,8 @@ namespace XEngine2
     {
         public static SharedInstance = new PostProcessMaterial();
 
-        public mainTexSamplerName = "mainTex";
-        public depthTexSamplerName = "depthTex";
+        public mainTex: Texture2D;
+        public depthTex: Texture2D;
 
         public defaults = 
         {
@@ -26,16 +26,6 @@ namespace XEngine2
             super(shader);
             this.depthTestEnabled = false;
             this.cullMode = CullMode.NONE;
-        }
-
-        public get mainTex(): Uniform
-        {
-            return this.shader.uniforms[this.mainTexSamplerName];
-        }
-
-        public get depthTex(): Uniform
-        {
-            return this.shader.uniforms[this.depthTexSamplerName];
         }
     }
 }

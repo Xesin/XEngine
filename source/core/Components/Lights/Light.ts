@@ -9,6 +9,7 @@ namespace XEngine2 {
         public castShadow: boolean;
 
         private _projectionMatrix: Mat4x4;
+        public tileMatrix: Mat4x4;
         private frustum: Frustum;
 
         constructor(game: Game)
@@ -20,6 +21,7 @@ namespace XEngine2 {
             this.castShadow = true;
             this.shadowBias = 0.005;
             this.frustum = new Frustum();
+            this.tileMatrix = new Mat4x4();
         }
 
         public getAllRenderableGroups(): Array<MeshGroup>

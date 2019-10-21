@@ -37,17 +37,17 @@ namespace XEngine2 {
 			this.dirLight.transform.rotation.x = 85;
 			this.dirLight.transform.rotation.y = 45;
 
-			let pointLightColor = new Color(0.9,0.4,0.8,1.0);
-            pointLightColor.fromHexString("#f2f7a5");
+			// let pointLightColor = new Color(0.9,0.4,0.8,1.0);
+            // pointLightColor.fromHexString("#f2f7a5");
 			
-			let pointLight = new SpotLight(game);
+			// let pointLight = new SpotLight(game);
 
-			this["pointLight"] = pointLight;
-			pointLight.transform.position.y = 20;
-			pointLight.color = pointLightColor;
-			pointLight.intensity = 5000;
-			pointLight.radius = 5000;
-			pointLight.castShadow = true;
+			// this["pointLight"] = pointLight;
+			// pointLight.transform.position.y = 20;
+			// pointLight.color = pointLightColor;
+			// pointLight.intensity = 5000;
+			// pointLight.radius = 5000;
+			// pointLight.castShadow = true;
 			
 			actor = this.Instantiate(XEngine2.TestActor) as TestActor;
 			actor.rootComponent.transform.position.x = 0;

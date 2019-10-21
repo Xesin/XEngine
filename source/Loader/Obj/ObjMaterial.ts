@@ -3,8 +3,8 @@ namespace XEngine2 {
 		public name: string;
 		public ambient: Array<number>;
 		public diffuse: Array<number>;
-		public albedoTexture: string;
-		public normalTexture: string;
+		public albedoture: string;
+		public normalture: string;
 		public opacityMask: string;
 		public ambientTexture: string;
 		public specularTexture: string;
@@ -18,19 +18,19 @@ namespace XEngine2 {
 		public createMaterial(game: Game, gl: WebGL2RenderingContext): Material {
 			let mat = game.createMaterialFromBase(BlinnPhongMaterial) as BlinnPhongMaterial;
 			
-			if(this.albedoTexture)
+			if(this.albedoture)
 			{
 				if(mat.albedo)
-					mat.albedo.value = game.cache.image(this.albedoTexture);
+					mat.albedo = game.cache.image(this.albedoture);
 			}
 
-			if (this.normalTexture) {
+			if (this.normalture) {
 				if(mat.normal)
-					mat.normal.value = game.cache.image(this.normalTexture);
+					mat.normal = game.cache.image(this.normalture);
 			}
 			if (this.opacityMask) {
-				if(mat.opacityTex)
-					mat.opacityTex.value = game.cache.image(this.opacityMask);
+				if(mat.opacity)
+					mat.opacity = game.cache.image(this.opacityMask);
 			}
 			// if (this.ambientTexture) {
 			// 	mat.setAmbient(cache.image(this.ambientTexture), gl);

@@ -12,14 +12,14 @@ namespace XEngine2
     {
         public static SharedInstance = new BlinnPhongMaterial();
 
-        public smoothnessName = "smoothness";
-        public specularColorName = "specularColor";
+        public smoothness: number;
+        public specularColor: Color;
 
         public defaults = 
         {
             "color": new Vector4(1,1,1,1),
             "ambient" : new Vector4(1,1,1,0.15),
-            "opacityTex" : "white",
+            "opacity" : "white",
             "normal" : "normal",
             "shadowMap" : "depth",
             "albedo": "white",
@@ -33,17 +33,5 @@ namespace XEngine2
         {
             super(shader);
         }
-
-
-        public get smoothness(): Uniform
-        {
-            return this.shader.uniforms[this.smoothnessName];
-        }
-
-        public get specularColor(): Uniform
-        {
-            return this.shader.uniforms[this.specularColorName];
-        }
-
     }
 }

@@ -49,14 +49,14 @@ namespace XEngine2.ShaderMaterialLib{
 
 			"out highp vec4 fragColor;",
 
-			"uniform sampler2D albedoTex;",
-			"uniform sampler2D opacityTex;",
+			"uniform sampler2D albedo;",
+			"uniform sampler2D opacity;",
 			"uniform vec4 color;",
 			"uniform float alphaClip;",
 
 			"void main(void) {",
-				"float albedoAlpha = texture(albedoTex, uv).a * color.a * vColor.a;",
-				"float opacity = texture(opacityTex, uv).x;",
+				"float albedoAlpha = texture(albedo, uv).a * color.a * vColor.a;",
+				"float opacity = texture(opacity, uv).x;",
 				"float alpha = min(albedoAlpha, opacity);",
 
 				"if(alpha < alphaClip) discard;",

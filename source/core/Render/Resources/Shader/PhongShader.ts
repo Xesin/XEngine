@@ -34,8 +34,8 @@ namespace XEngine2.ShaderMaterialLib{
 			"out vec4 fragColor;",
 
             "void main(void) {",
-				"vec4 albedo = texture(albedoTex, uv) * color;",
-				"vec4 opacity = texture(opacityTex, uv);",
+				"vec4 albedo = texture(albedo, uv) * color;",
+				"vec4 opacity = texture(opacity, uv);",
 				"float alpha = min(albedo.a, opacity.x);",
 				"if(alpha < alphaClip) discard;",
 				"vec3 lightsColor = vec3(0.0);",

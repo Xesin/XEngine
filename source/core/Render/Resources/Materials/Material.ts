@@ -9,10 +9,10 @@ namespace XEngine2 {
         public colorsAttrName = "aVertexColor";
         public normalAttrName = "aVertexNormal";
         public uvAttrName = "aUV";
-        public modelMatrixName = "modelMatrix";
-        public viewMatrixName = "viewMatrix";
-        public projMatrixName = "pMatrix";
-        public normalMatrixName = "normalMatrix";
+        public modelMatrix: Mat4x4;
+        public viewMatrix: Mat4x4;
+        public pMatrix: Mat4x4;
+        public normalMatrix: Mat4x4;
         public lightsUniformName = "light";
 
         public renderQueue = RenderQueue.OPAQUE;
@@ -28,6 +28,10 @@ namespace XEngine2 {
         constructor(shader: Shader)
         {
             this.shader = shader;
+            this.modelMatrix = new Mat4x4().identity();
+            this.viewMatrix = new Mat4x4().identity();
+            this.pMatrix = new Mat4x4().identity();
+            this.normalMatrix = new Mat4x4().identity();
         }
 
         public initialize(gl: WebGL2RenderingContext)
@@ -36,29 +40,29 @@ namespace XEngine2 {
            for (const key in this.defaults) {
                if (this.defaults.hasOwnProperty(key)) {
                    const defValue = this.defaults[key];
-                   if(this[key])
+                   if(this.hasUniform(key))
                    {
-                        if(this[key].type == ShaderType.SAMPLER_2D || this[key].type == ShaderType.SAMPLER_2D_SHADOW )
+                        if(this.getUniform(key).type == ShaderType.SAMPLER_2D || this.getUniform(key).type == ShaderType.SAMPLER_2D_SHADOW )
                         {
                             
                             switch(defValue )
                             {
                                 case "white":
-                                    this[key].value = Texture2D.whiteTexture;
+                                    this[key] = Texture2D.whiteTexture;
                                     break;
                                 case "black":
-                                    this[key].value = Texture2D.blackTexture;
+                                    this[key] = Texture2D.blackTexture;
                                     break;
                                 case "normal":
-                                    this[key].value = Texture2D.normalTexture;
+                                    this[key] = Texture2D.normalture;
                                     break;
                                 case "depth":
-                                    this[key].value = Texture2D.depthTexture; 
+                                    this[key] = Texture2D.depthTexture; 
                                     break;
                             }
                         }
                         else
-                        this[key].value = defValue;
+                        this[key] = defValue;
                    }
                }
            }
@@ -68,8 +72,12 @@ namespace XEngine2 {
         {
             for (let key in this.shader.uniforms) {
                 const uniform = this.shader.uniforms[key];
+                if(this.hasOwnProperty(key))
+                {
+                    uniform.value = this[key];
+                }
                 if(uniform.value != null)
-                    this.setUniform(uniform, gl);
+                    this.setUniformData(uniform, gl);
             }
             for (let i = 0; i < this.shader.samplers.length; i++) {
                 const sampler = this.shader.samplers[i];
@@ -80,7 +88,7 @@ namespace XEngine2 {
                 else
                 {
                     gl.activeTexture(this.sampleIndexToGL_Sample(i, gl));
-                    gl.bindTexture(gl.TEXTURE_2D, Texture2D.normalTexture._texture);
+                    gl.bindTexture(gl.TEXTURE_2D, Texture2D.normalture._texture);
                 }
             }
         }
@@ -104,25 +112,6 @@ namespace XEngine2 {
 
         public get vUv() : VertexAttribute {
             return this.shader.vertexAttrs[this.uvAttrName];
-        }
-
-        public get modelMatrix() : Uniform
-        {
-            return this.shader.uniforms[this.modelMatrixName];
-        }
-        
-        public get viewMatrix() : Uniform
-        {
-            return this.shader.uniforms[this.viewMatrixName];
-        }
-
-        public get projectionMatrix() : Uniform
-        {
-            return this.shader.uniforms[this.projMatrixName];
-        }
-        
-        public get normalMatrix() : Uniform {
-            return this.shader.uniforms[this.normalMatrixName];
         }
 
         public get AttrStride() : number
@@ -229,7 +218,7 @@ namespace XEngine2 {
         }
 
 
-        private setUniform(uniform: Uniform, gl:WebGL2RenderingContext) {
+        private setUniformData(uniform: Uniform, gl:WebGL2RenderingContext) {
             if(!uniform.Dirty) return;
 			let valueType = uniform.type;
 			switch (valueType) {
@@ -281,28 +270,34 @@ namespace XEngine2 {
             DesaturatePostMaterial.SharedInstance.initialize(gl);
         }
 
-        public setShaderParameter(name: string, value: any)
+        public hasUniform(name: string): boolean
         {
-            if(this.shader.uniforms[name])
+            return this.shader.uniforms[name] != null || this.shader.uniforms[name] != undefined;
+        }
+
+        public setUniform(name: string, value: any)
+        {
+            if(this.hasUniform(name))
             {
                 this.shader.uniforms[name].value = value;
             }
         }
 
-        public getShaderUniform(name: string): Uniform
+        public getUniform(name: string): Uniform
         {
-            if(this.shader.uniforms[name])
-            {
-                return this.shader.uniforms[name];
-            }
-            return null;
+            return this.shader.uniforms[name];
         }
 
-        public setShaderSampler(name: number, value: any)
+        public hasSampler(samplerPos: number): boolean
         {
-            if(this.shader.samplers[name])
+            return this.shader.samplers[samplerPos ] != null || this.shader.samplers[name] != undefined;
+        }
+
+        public setShaderSampler(samplerPos: number, value: any)
+        {
+            if(this.hasSampler(samplerPos))
             {
-                this.shader.samplers[name].value = value;
+                this.shader.samplers[samplerPos].value = value;
             }
         }
     }

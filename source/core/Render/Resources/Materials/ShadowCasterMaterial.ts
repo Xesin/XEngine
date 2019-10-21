@@ -12,15 +12,15 @@ namespace XEngine2
     {
         public static SharedInstance = new ShadowCasterMaterial();
 
-        public albedoSamplerName = "albedoTex";
-        public opacitySamplerName = "opacityTex";
-        public colorName = "color";
-        public alphaClipName = "alphaClip";
+        public albedo: Texture2D;
+        public opacity: Texture2D;
+        public color: Color;
+        public alphaClip: number;
 
         public defaults = 
         {
             "color": new Vector4(1,1,1,1),
-            "opacityTex" : "white",
+            "opacity" : "white",
             "albedo": "white",
             "alphaClip" : 0.6
         }
@@ -29,27 +29,6 @@ namespace XEngine2
         {
             super(shader);
             this.cullMode = CullMode.FRONT;
-        }
-
-        public get color(): Uniform
-        {
-            return this.shader.uniforms[this.colorName];
-        }
-        
-        public get albedo(): Uniform
-        {
-            return this.shader.uniforms[this.albedoSamplerName];
-        }
-        
-
-        public get opacityTex(): Uniform
-        {
-            return this.shader.uniforms[this.opacitySamplerName];
-        }
-
-        public get alphaClip(): Uniform
-        {
-            return this.shader.uniforms[this.alphaClipName];
         }
     }
 }

@@ -83,8 +83,8 @@ namespace XEngine2
             "uniform highp vec4 color;",
             "uniform highp vec4 ambient;",
             "uniform highp float alphaClip;",
-            "uniform sampler2D albedoTex;",
-            "uniform sampler2D opacityTex;"
+            "uniform sampler2D albedo;",
+            "uniform sampler2D opacity;"
         ]);
 
         public static BlinnPhongFragmentInputs =
@@ -104,10 +104,10 @@ namespace XEngine2
 
         public static perturbNormals =
         [
-            "uniform sampler2D normalTex;",
+            "uniform sampler2D normal;",
 
             "vec3 decodeNormals(sampler2D normalSampler, vec2 uv){",
-                "vec3 texCol = texture(normalTex, uv).xyz;",
+                "vec3 texCol = texture(normal, uv).xyz;",
                 "return texCol * 2.0 - 1.0;",
             "}",
 
@@ -121,7 +121,7 @@ namespace XEngine2
                 "vec3 N = normalize( surf_norm );",
                 "vec3 crs = cross(S, T);",
                 "if(dot(crs, N) < 0.0) T *= -1.0;",
-                "vec3 mapN = decodeNormals( normalTex, uv );",
+                "vec3 mapN = decodeNormals( normal, uv );",
                 "mapN.xy = 0.5 * mapN.xy;",
                 "mat3 tsn = mat3( S, T, N );",
                 "return normalize( tsn * mapN );",

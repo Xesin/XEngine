@@ -107,12 +107,12 @@ namespace XEngine2 {
 							case "map_kd":
 								this.loader.image(info[ key ], "img/" + info[ key ]);
 								this.loader._startPreload();
-								state.currentMaterial.albedoTexture = info[ key ];
+								state.currentMaterial.albedoture = info[ key ];
 								break;
 							case "map_bump":
 								this.loader.image(info[ key ], "img/" + info[ key ], true);
 								this.loader._startPreload();
-								state.currentMaterial.normalTexture = info[ key ];
+								state.currentMaterial.normalture = info[ key ];
 								break;
 							case "map_d":
 								this.loader.image(info[ key ], "img/" + info[ key ]);

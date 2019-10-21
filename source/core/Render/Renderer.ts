@@ -94,8 +94,8 @@ namespace XEngine2 {
 					this.shadowMap.addAttachment(this.gl, this.gl.DEPTH_ATTACHMENT, this.gl.DEPTH_COMPONENT32F, this.gl.DEPTH_COMPONENT, this.gl.FLOAT, true);
 				}
 
-				PostProcessMaterial.SharedInstance.mainTex.value = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
-				PostProcessMaterial.SharedInstance.depthTex.value = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
+				PostProcessMaterial.SharedInstance.mainTex = this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0];
+				PostProcessMaterial.SharedInstance.depthTex = this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT];
 				this.quadMesh = new StaticMeshComponent(this.game);
 				this.quadMesh.Mesh = new BasicGeometries.QuadMesh(PostProcessMaterial.SharedInstance, 2, 2);
 			}
@@ -170,9 +170,9 @@ namespace XEngine2 {
 
 				PostProcessMaterial.SharedInstance.bind(this.gl);
 				PostProcessMaterial.SharedInstance.setShaderSampler(0, this.shadowMap.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
-				PostProcessMaterial.SharedInstance.setShaderParameter("mainTex", this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+				PostProcessMaterial.SharedInstance.setUniform("mainTex", this.srcRenderTarget.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
 				PostProcessMaterial.SharedInstance.setShaderSampler(1, this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
-				PostProcessMaterial.SharedInstance.setShaderParameter("depthTex", this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+				PostProcessMaterial.SharedInstance.setUniform("depthTex", this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
 				PostProcessMaterial.SharedInstance.updateUniforms(this.gl);
 										
 				let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
@@ -210,9 +210,9 @@ namespace XEngine2 {
 									{
 										let mat = group.Mesh.materials[group.materialIndex] as PhongMaterial;
 										if(ShadowCasterMaterial.SharedInstance.albedo)
-											ShadowCasterMaterial.SharedInstance.albedo.value = mat.albedo.value;
-										if(ShadowCasterMaterial.SharedInstance.opacityTex)
-											ShadowCasterMaterial.SharedInstance.opacityTex.value = mat.opacityTex.value;
+											ShadowCasterMaterial.SharedInstance.albedo = mat.albedo;
+										if(ShadowCasterMaterial.SharedInstance.opacity)
+											ShadowCasterMaterial.SharedInstance.opacity = mat.opacity;
 										
 									}
 									else
@@ -236,9 +236,9 @@ namespace XEngine2 {
 
 			material.bind(this.gl);
 			material.setShaderSampler(0, src.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
-			material.setShaderParameter("mainTex", src.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
+			material.setUniform("mainTex", src.attachedTextures[this.gl.COLOR_ATTACHMENT0]);
 			material.setShaderSampler(1, src.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
-			material.setShaderParameter("depthTex", src.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
+			material.setUniform("depthTex", src.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
 			material.updateUniforms(this.gl);
 
 			this.gl.viewport(0, 0, src.width, src.height);
@@ -304,14 +304,14 @@ namespace XEngine2 {
 			meshGroup.Mesh.updateResources(this, material);
 			material.bind(gl);
 			meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
-			if(material.modelMatrix)
-				material.modelMatrix.value = modelMatrix;
-			if(material.viewMatrix)
-				material.viewMatrix.value = viewMatrix;
-			if(material.projectionMatrix)
-				material.projectionMatrix.value = projectionMatrix;
-			if(material.normalMatrix)
-				material.normalMatrix.value = modelMatrix.clone().invert().transpose();
+
+				material.modelMatrix = modelMatrix;
+
+				material.viewMatrix = viewMatrix;
+
+				material.pMatrix = projectionMatrix;
+
+				material.normalMatrix = modelMatrix.clone().invert().transpose();
 
 			if(!skipLights)
 			{
@@ -339,7 +339,7 @@ namespace XEngine2 {
 							if(material instanceof PhongMaterial)
 							{
 								if((material as PhongMaterial).shadowMap)
-									(material as PhongMaterial).shadowMap.value = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
+									(material as PhongMaterial).shadowMap = this.shadowMap.attachedTextures[gl.DEPTH_ATTACHMENT];
 							}
 						}
 						else
@@ -347,7 +347,7 @@ namespace XEngine2 {
 							if(material instanceof PhongMaterial)
 							{
 								if((material as PhongMaterial).shadowMap)
-									(material as PhongMaterial).shadowMap.value = Texture2D.depthTexture;
+									(material as PhongMaterial).shadowMap = Texture2D.depthTexture;
 							}
 						}
 						if(light){
