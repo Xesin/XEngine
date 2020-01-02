@@ -1,5 +1,0 @@
-export {Game} from "./Game"
-export {ScaleType} from "../Scale/EScaleType"
-export {Scene} from "../core/Scenes/Scene"
-export {SceneManager} from "../core/Scenes/SceneManager"
-export {initGame} from "../Test/TestScene"

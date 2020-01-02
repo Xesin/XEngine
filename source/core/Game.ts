@@ -11,9 +11,6 @@ import {Renderer} from "./Render/Renderer"
 import {Material, BasicMaterial} from "./Render/Resources/Materials/_module/Materials"
 import {Shader} from "./Render/Resources/Shader/Shader"
 
-export {IHash} from "./IHash"
-export {IDict} from "./IDict"
-
 declare global{
 
 	interface Array<T> {
@@ -199,3 +196,18 @@ export class Game {
 	}
 }
 
+
+export {IHash} from "./IHash"
+export {IDict} from "./IDict"
+export { Cache } from "../Loader/_module/Loader"
+export { TimeManager } from "../Time/TimeManager";
+export * from "../Scale/ScaleManager"
+export {SceneManager} from "./Scenes/SceneManager"
+export {Scene} from "./Scenes/Scene"
+export {Loader} from "../Loader/Loader"
+export {InputManager} from "../Input/InputManager"
+export * from "../tween/TweenManager"
+export {Renderer} from "./Render/Renderer"
+export {EObject} from "./EObject"
+export {Actor} from "./GameObjects/Actor"
+export {StaticMeshActor} from "./GameObjects/StaticMeshActor"

@@ -19,6 +19,19 @@ import {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial"
 import * as ShaderMaterialLib from "./Resources/Shader/ShaderMaterialLib"
 import * as BasicGeometries from "../../BasicGeometries/Geometries"
 
+
+export * from "./Resources/Enums/_module/Enums"
+export {ShaderCompileStatus} from "./ShaderCompilerStatus"
+export {RenderTarget} from "./Resources/Texture/RenderTarget"
+export {Texture2D, WRAP_MODE} from "./Resources/Texture/Texture2D"
+export {MeshGroup} from "./Resources/Mesh/MeshGroup"
+export {Material, PhongMaterial, ShadowCasterMaterial} from "./Resources/Materials/_module/Materials"
+export {Shader} from "./Resources/Shader/Shader";
+export {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial"
+export * from "./Resources/Shader/ShaderMaterialLib"
+export * from "../../BasicGeometries/Geometries"
+
+
 class RenderObject
 {
 	public group: MeshGroup;

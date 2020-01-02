@@ -3,6 +3,7 @@ import {ScaleType} from "./EScaleType";
 import {Signal} from "../Signals/Signal";
 import {Game} from "../core/Game"
 
+export {ScaleType} from "./EScaleType"
 
 export class ScaleManager {
 	

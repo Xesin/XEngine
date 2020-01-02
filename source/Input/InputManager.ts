@@ -5,6 +5,13 @@ import {ActionMapping} from "./ActionMapping"
 import {AxisMapping} from "./AxisMapping"
 import {KEY_CODE} from "./KeyCodes"
 import {KEY_ACTION} from "./KeyAction"
+
+
+export {ActionMapping} from "./ActionMapping"
+export {AxisMapping} from "./AxisMapping"
+export {KEY_CODE} from "./KeyCodes"
+export {KEY_ACTION} from "./KeyAction"
+
 export class InputManager {
 	public onKeyDown: Signal;
 	public onKeyUp: Signal;

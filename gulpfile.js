@@ -17,7 +17,7 @@ gulp.task("build-app", function() {
 gulp.task("webpack", function() {
     return gulp.src("source")
         .pipe(webpack({
-            entry: "./source/core/XEngine.ts",
+            entry: "./source/XEngine.ts",
             optimization: {
                 minimize: false
             },

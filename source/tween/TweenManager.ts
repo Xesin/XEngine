@@ -1,5 +1,8 @@
 import {Tween} from "./Tween";
  
+export {Tween} from "./Tween"
+export {Easing} from "./Easing"
+
 export class TweenManager {
 
 	private tweens: Array<Tween>;
