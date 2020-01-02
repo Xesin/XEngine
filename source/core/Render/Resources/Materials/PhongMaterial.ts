@@ -2,7 +2,7 @@ import {Shader} from "../Shader/Shader";
 import {BasicMaterial} from "./BasicMaterial"
 import {Texture2D} from "../Texture/Texture2D"
 import {Vector4,Color} from "../../../../Math/Mathf";
-import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
 
 export class PhongMaterial extends BasicMaterial
 {

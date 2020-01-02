@@ -1,6 +1,6 @@
 import {Shader} from "../Shader/Shader";
 import {Material} from "./Material"
-import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
 
 export class BasicMaterial extends Material
 {

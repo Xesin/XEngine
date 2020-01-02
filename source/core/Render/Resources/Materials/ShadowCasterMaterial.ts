@@ -1,6 +1,6 @@
 import {Shader} from "../Shader/Shader";
 import {BasicMaterial} from "./BasicMaterial"
-import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
 import {Texture2D} from "../Texture/Texture2D"
 import {Color, Vector4} from "../../../../Math/Mathf"
 import {CullMode} from "../Enums/_module/Enums"

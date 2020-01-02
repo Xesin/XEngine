@@ -19,7 +19,7 @@ gulp.task("webpack", function() {
         .pipe(webpack({
             entry: "./source/XEngine.ts",
             optimization: {
-                minimize: false
+                minimize: true
             },
             output:
             {

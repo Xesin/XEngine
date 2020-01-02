@@ -1,7 +1,7 @@
 import {Shader} from "../Shader/Shader";
 import {PhongMaterial} from "./PhongMaterial"
 import {Vector4,Color} from "../../../../Math/Mathf";
-import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
 
 export class BlinnPhongMaterial extends PhongMaterial
 {

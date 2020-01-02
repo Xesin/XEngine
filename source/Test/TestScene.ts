@@ -1,8 +1,10 @@
 
 
-declare var dat: any;
-
 import {Scene, DirectionalLight, Color, SpotLight, Game, KEY_CODE, KEY_ACTION, StaticMeshActor, Renderer, RenderTarget, Easing, ScaleType} from "../XEngine"
+import { TestActor } from "./TestActor";
+
+declare var dat: any;
+let actor : TestActor = null;
 
 export class TestScene extends Scene {
 
@@ -14,7 +16,6 @@ export class TestScene extends Scene {
 
     public preload()
     {
-        this.game.loader.image('test', 'img/angry_unicorn.png');
         this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
     }
 
@@ -56,6 +57,12 @@ export class TestScene extends Scene {
 
         this.game.tween.add(pointLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
         this.game.tween.add(pointLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
+
+        actor = this.Instantiate(TestActor) as TestActor;	        // pointLight.distance = 5000;
+        actor.rootComponent.transform.position.x = 0;	        // pointLight.castShadow = true;
+        actor.rootComponent.transform.position.y = 0;	
+        actor.rootComponent.transform.position.z = 0;
+            
         for (const meshName in this.game.cache.geometries) 
         {
 

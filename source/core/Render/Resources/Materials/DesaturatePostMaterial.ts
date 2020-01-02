@@ -1,6 +1,6 @@
 import {Shader} from "../Shader/Shader";
 import {PostProcessMaterial} from "./PostProcessMaterial"
-import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
 
 export class DesaturatePostMaterial extends PostProcessMaterial
 {

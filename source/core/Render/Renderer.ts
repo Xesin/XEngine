@@ -16,7 +16,7 @@ import {StaticMeshComponent} from "../Components/Mesh/StaticMeshComponent"
 import {SceneComponent} from "../Components/SceneComponent"
 import {Shader} from "./Resources/Shader/Shader";
 import {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial"
-import * as ShaderMaterialLib from "./Resources/Shader/ShaderMaterialLib"
+import * as ShaderMaterialLib from "./Resources/Shader/ShaderCode/ShaderMaterialLib"
 import * as BasicGeometries from "../../BasicGeometries/Geometries"
 
 
@@ -28,7 +28,7 @@ export {MeshGroup} from "./Resources/Mesh/MeshGroup"
 export {Material, PhongMaterial, ShadowCasterMaterial} from "./Resources/Materials/_module/Materials"
 export {Shader} from "./Resources/Shader/Shader";
 export {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial"
-export * from "./Resources/Shader/ShaderMaterialLib"
+export * from "./Resources/Shader/ShaderCode/ShaderMaterialLib"
 export * from "../../BasicGeometries/Geometries"
 
 
@@ -37,12 +37,14 @@ class RenderObject
 	public group: MeshGroup;
 	public modelMatrix: Mat4x4;
 	public affectedLights: Array<Light>;
+	public instances: number;
 
 	constructor(group: MeshGroup, modelMatrix: Mat4x4, affectedLights: Array<Light>)
 	{
 		this.group = group;
 		this.modelMatrix = modelMatrix;
 		this.affectedLights = affectedLights;
+		this.instances = 1;
 	}
 }
 
@@ -453,7 +455,7 @@ export class Renderer {
 		}
 		else
 		{
-			gl.drawArrays(gl.TRIANGLES, 0, meshGroup.vertexCount);
+			gl.drawArraysInstanced(gl.TRIANGLES, 0, meshGroup.vertexCount, renderObject.instances);
 		}
 	}
 }
