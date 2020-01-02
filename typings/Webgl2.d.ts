@@ -2,7 +2,6 @@
 // Copyright (c) 2017 Max Shaydo aka MaxGraey (https://github.com/MaxGraey)
 //
 
-declare type GLint64     = number;
 declare type GLuint64EXT = GLint64;
 
 interface WebGLQuery extends WebGLObject {
