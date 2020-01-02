@@ -1,17 +1,19 @@
+import {VertexAttribute} from "./VertexAttribute"
+import {Uniform} from "./Uniform"
+import {IDict} from "../../../Game"
 
-namespace XEngine2 {
 
-	export class ShaderVariant {
-        public program: WebGLProgram;
-        public uniforms: IDict<Uniform>;
-        public vertexAttrs: IDict<VertexAttribute>;
-        public samplers: Uniform[];
+export class ShaderVariant {
+    public program: WebGLProgram;
+    public uniforms: IDict<Uniform>;
+    public vertexAttrs: IDict<VertexAttribute>;
+    public samplers: Uniform[];
 
-        constructor()
-        {
-            this.uniforms = new IDict<Uniform>();
-            this.vertexAttrs = new IDict<VertexAttribute>();
-            this.samplers = new Array<Uniform>();
-        }
+    constructor()
+    {
+        this.uniforms = new IDict<Uniform>();
+        this.vertexAttrs = new IDict<VertexAttribute>();
+        this.samplers = new Array<Uniform>();
     }
 }
+

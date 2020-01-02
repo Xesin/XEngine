@@ -1,11 +1,11 @@
-/// <reference path="Light.ts" />
 
-namespace XEngine2 {
-    export class DirectionalLight extends Light {
+import {Game} from "../../Game"
+import {Light} from "./Light"
 
-        constructor(game: Game)
-        {
-            super(game);
-        }
+export class DirectionalLight extends Light {
+
+    constructor(game: Game)
+    {
+        super(game);
     }
 }

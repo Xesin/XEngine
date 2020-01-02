@@ -1,21 +1,13 @@
-/// <reference path="Material.ts"/>
-/// <reference path="../Shader/Shader.ts"/>
-/// <reference path="./BasicMaterial.ts"/>
-/// <reference path="../../../../Math/Vector4.ts"/>
-/// <reference path="../Shader/DesaturatePostProcessShader.ts"/>
-/// <reference path="./FinalRenderMaterial.ts"/>
-/// <reference path="../Shader/Uniform.ts"/>
+import {Shader} from "../Shader/Shader";
+import {PostProcessMaterial} from "./PostProcessMaterial"
+import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
 
-
-namespace XEngine2
+export class DesaturatePostMaterial extends PostProcessMaterial
 {
-    export class DesaturatePostMaterial extends PostProcessMaterial
-    {
-        public static SharedInstance = new DesaturatePostMaterial();
+    public static SharedInstance;
 
-        constructor(shader = new Shader(ShaderMaterialLib.DesaturatePostProcessShader.vertexShader, ShaderMaterialLib.DesaturatePostProcessShader.fragmentShader))
-        {
-            super(shader);
-        }
+    constructor(shader = new Shader(ShaderMaterialLib.DesaturatePostProcessShader.vertexShader, ShaderMaterialLib.DesaturatePostProcessShader.fragmentShader))
+    {
+        super(shader);
     }
 }

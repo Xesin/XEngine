@@ -1,17 +1,16 @@
-/// <reference path="Actor.ts" />
+import {StaticMeshComponent} from "../Components/Mesh/StaticMeshComponent"
+import {Game} from "../Game"
+import {Actor} from "./Actor"
 
-namespace XEngine2
+export class StaticMeshActor extends Actor
 {
-    export class StaticMeshActor extends Actor
+    public staticMesh: StaticMeshComponent;
+
+    constructor(game: Game, name: string = "StaticMeshActor")
     {
-       public staticMesh: StaticMeshComponent;
+        super(game, name);
 
-       constructor(game: Game, name: string = "StaticMeshActor")
-        {
-            super(game, name);
-
-            this.staticMesh = new StaticMeshComponent(game);
-            this.rootComponent = this.staticMesh;
-        }
+        this.staticMesh = new StaticMeshComponent(game);
+        this.rootComponent = this.staticMesh;
     }
 }

@@ -1,29 +1,28 @@
-namespace XEngine2 {
+import {Signal} from "./Signal"
 
-	export class SignalBinding {
+export class SignalBinding {
 
-		public isOnce = false;
-		public listener: Function;
-		public listenerContext: Object;
+	public isOnce = false;
+	public listener: Function;
+	public listenerContext: Object;
 
-		private signal: Signal;
+	private signal: Signal;
 
-		constructor (signal: Signal, listener: Function, listenerContext: Object, isOnce: boolean) {
-			this.signal = signal;
-			this.listener = listener;
-			this.listenerContext = listenerContext;
-			this.isOnce = isOnce;
+	constructor (signal: Signal, listener: Function, listenerContext: Object, isOnce: boolean) {
+		this.signal = signal;
+		this.listener = listener;
+		this.listenerContext = listenerContext;
+		this.isOnce = isOnce;
+	}
+
+	public dispatch() {
+		this.listener.apply(this.listenerContext, arguments);
+		if (this.isOnce) {
+			this.detach();
 		}
+	}
 
-		public dispatch() {
-			this.listener.apply(this.listenerContext, arguments);
-			if (this.isOnce) {
-				this.detach();
-			}
-		}
-
-		public detach() {
-			this.signal.remove(this.listenerContext);
-		}
+	public detach() {
+		this.signal.remove(this.listenerContext);
 	}
 }

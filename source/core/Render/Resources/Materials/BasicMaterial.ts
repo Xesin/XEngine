@@ -1,16 +1,13 @@
-/// <reference path="Material.ts"/>
-/// <reference path="../Shader/Shader.ts"/>
-/// <reference path="../Shader/BasicShader.ts"/>
+import {Shader} from "../Shader/Shader";
+import {Material} from "./Material"
+import * as ShaderMaterialLib from "../Shader/ShaderMaterialLib"
 
-namespace XEngine2
+export class BasicMaterial extends Material
 {
-    export class BasicMaterial extends Material
-    {
-        public static SharedInstance = new BasicMaterial();
+    public static SharedInstance;
 
-        constructor(shader = new Shader(ShaderMaterialLib.BasicShader.vertexShader, ShaderMaterialLib.BasicShader.fragmentShader))
-        {
-            super(shader);
-        }
+    constructor(shader = new Shader(ShaderMaterialLib.BasicShader.vertexShader, ShaderMaterialLib.BasicShader.fragmentShader))
+    {
+        super(shader);
     }
 }

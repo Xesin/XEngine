@@ -1,42 +1,44 @@
-/// <reference path="Component.ts" />
+import {Game} from "../Game"
+import {Component} from "./Component"
+import {Transform, Box} from "../../Math/Mathf"
+import {MeshGroup} from "../Render/Resources/Mesh/MeshGroup"
+import {Renderer} from "../Render/Renderer"
 
-namespace XEngine2 {
-    export class SceneComponent extends Component {
-        public transform: Transform;
-        public hidden: boolean;
-        public bounds: Box;
+export class SceneComponent extends Component {
+    public transform: Transform;
+    public hidden: boolean;
+    public bounds: Box;
 
-        constructor(game: Game, name: string = "")
+    constructor(game: Game, name: string = "")
+    {
+        super(game, name);
+        this.transform = new Transform();
+        this.hidden = false;
+    }
+
+    public setupAttachtment(component: SceneComponent)
+    {
+        super.setupAttachtment(component);
+        this.transform.parent = component.transform;
+    }
+
+    public render(renderer: Renderer)
+    {
+        
+    }
+
+    public getAllRenderableGroups(): Array<MeshGroup>
+    {
+        return null;
+    }
+
+    public getBounds(): Box
+    {
+        if(!this.bounds)
         {
-            super(game, name);
-            this.transform = new Transform();
-            this.hidden = false;
+            this.bounds = new Box();
         }
 
-        public setupAttachtment(component: SceneComponent)
-        {
-            super.setupAttachtment(component);
-            this.transform.parent = component.transform;
-        }
-
-        public render(renderer: Renderer)
-        {
-            
-        }
-
-        public getAllRenderableGroups(): Array<MeshGroup>
-        {
-            return null;
-        }
-
-        public getBounds(): Box
-        {
-            if(!this.bounds)
-            {
-                this.bounds = new Box();
-            }
-
-            return this.bounds;
-        }
+        return this.bounds;
     }
 }

@@ -1,8 +1,5 @@
-namespace XEngine2 {
-
-	export enum ScaleType {
-		FIT,
-		PRESERVE_ASPECT,
-		NO_SCALE,
-  }
+export enum ScaleType {
+	FIT,
+	PRESERVE_ASPECT,
+	NO_SCALE,
 }

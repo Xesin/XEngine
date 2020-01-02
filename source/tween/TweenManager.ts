@@ -1,42 +1,42 @@
-namespace XEngine2 {
-	export class TweenManager {
-		private game: Game;
-		private tweens: Array<Tween>;
+import {Tween} from "./Tween";
+ 
+export class TweenManager {
 
-		constructor(game: Game) {
-			this.game = game;
-			this.tweens = new Array();
-		}
+	private tweens: Array<Tween>;
 
-		public add(target: any): Tween {
-			let tween = new Tween(target);
-			this.tweens.push(tween);
-			return tween;
-		}
+	constructor() {
+		this.tweens = new Array();
+	}
 
-		public update(deltaMillis: number) {
+	public add(target: any): Tween {
+		let tween = new Tween(target);
+		this.tweens.push(tween);
+		return tween;
+	}
 
-			for (let i = 0; i < this.tweens.length; i++) {
-				let tween = this.tweens[i];
-				if (tween.isPendingDestroy) {
-					delete this.tweens[i];
-					this.tweens.splice(i, 1);
-					i--;
-				} else if (tween.isRunning) {
-					tween.update(deltaMillis);
-				} else if (tween.autoStart && !tween.started) {
-					tween.play();
-				}
-			}
-		}
+	public update(deltaMillis: number) {
 
-		public destroy() {
-			for (let i = this.tweens.length - 1; i >= 0; i--) {
-				this.tweens[i].destroy();
+		for (let i = 0; i < this.tweens.length; i++) {
+			let tween = this.tweens[i];
+			if (tween.isPendingDestroy) {
 				delete this.tweens[i];
+				this.tweens.splice(i, 1);
+				i--;
+			} else if (tween.isRunning) {
+				tween.update(deltaMillis);
+			} else if (tween.autoStart && !tween.started) {
+				tween.play();
 			}
-			delete this.tweens;
-			this.tweens = new Array();
 		}
 	}
+
+	public destroy() {
+		for (let i = this.tweens.length - 1; i >= 0; i--) {
+			this.tweens[i].destroy();
+			delete this.tweens[i];
+		}
+		delete this.tweens;
+		this.tweens = new Array();
+	}
 }
+

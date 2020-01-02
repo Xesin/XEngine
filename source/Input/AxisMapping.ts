@@ -1,31 +1,31 @@
-namespace XEngine2 {
-    export class AxisMapping {
+import {Signal} from "../Signals/Signal"
 
-        public name:string;
-        public modifier: number;
-        private onExecute: Signal;
+export class AxisMapping {
 
-        constructor(name: string, modifier: number)
-        {
-            this.name = name;
-            this.onExecute = new Signal();
-            this.modifier = modifier;
-        }
+    public name:string;
+    public modifier: number;
+    private onExecute: Signal;
 
-        public execute(value: number)
-        {
-            if(Math.abs(value) != 0)
-                this.onExecute.dispatch(value * this.modifier);
-        }
+    constructor(name: string, modifier: number)
+    {
+        this.name = name;
+        this.onExecute = new Signal();
+        this.modifier = modifier;
+    }
 
-        public bindAxis(context: Object, callback: Function)
-        {
-            this.onExecute.add(callback, context);
-        }
+    public execute(value: number)
+    {
+        if(Math.abs(value) != 0)
+            this.onExecute.dispatch(value * this.modifier);
+    }
 
-        public unBindAxis(context: Object)
-        {
-            this.onExecute.remove(context);
-        }
+    public bindAxis(context: Object, callback: Function)
+    {
+        this.onExecute.add(callback, context);
+    }
+
+    public unBindAxis(context: Object)
+    {
+        this.onExecute.remove(context);
     }
 }

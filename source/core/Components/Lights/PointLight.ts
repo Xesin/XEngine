@@ -1,15 +1,15 @@
-/// <reference path="Light.ts" />
+import {Game} from "../../Game"
+import {Light} from "./Light"
 
-namespace XEngine2 {
-    export class PointLight extends Light {
 
-        public radius : number;
+export class PointLight extends Light {
 
-        constructor(game: Game)
-        {
-            super(game);
-            this.radius = 100;
-            this.castShadow = false;
-        }
+    public radius : number;
+
+    constructor(game: Game)
+    {
+        super(game);
+        this.radius = 100;
+        this.castShadow = false;
     }
 }
