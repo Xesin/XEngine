@@ -16,11 +16,11 @@ import { TextComponent } from "../core/Components/UI/TextComponent";
             this.camera = new CameraComponent(game);
             this.rootComponent = this.camera;
             this.canvas = new CanvasComponent(game);
-            this.canvas.setupAttachtment(this.rootComponent);
+            // this.canvas.setupAttachtment(this.rootComponent);
 
             let textElement = new TextComponent(game, "TestFont", "TextLabel");
 
-            textElement.text = "Hola mundo";
+            textElement.text = "H";
             this.canvas.addElement(textElement);
 
             this.game.input.bindAxis("MoveForward", this, this.moveForward);

@@ -14,7 +14,7 @@ export class TextComponent extends UIComponent {
     public textColor: Color;
 
     protected _text: string;
-    protected _textMaterial: Material;
+    protected _textMaterial: FontMaterial;
     protected _mesh: StaticMesh;
     protected atlasWidth: number;
     protected atlasHeight: number;
@@ -36,7 +36,7 @@ export class TextComponent extends UIComponent {
         this.bitmapData = this.game.cache.getBitmap(font);
 
         let fontImage = this.game.cache.image(font);
-
+        this._textMaterial.fontMap = fontImage;
         if (fontImage) {
             this.atlasWidth = fontImage.width || 512;
             this.atlasHeight = fontImage.height || 512;
@@ -82,8 +82,8 @@ export class TextComponent extends UIComponent {
                                 startX,  startY + charData.height, 0,
                             ];
 
-                            this._mesh.vertexData.concat(vertices);
-                            this._mesh.uvData.concat(uvs);
+                            this._mesh.vertexData = this._mesh.vertexData.concat(vertices);
+                            this._mesh.uvData = this._mesh.uvData.concat(uvs);
                             startX += charData.xadvance;
                         } else if (charCode === 32) {
                             startX += charData.xadvance;

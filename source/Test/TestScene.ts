@@ -18,6 +18,7 @@ export class TestScene extends Scene {
 
     public preload() {
         // this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
+        this.game.loader.bitmapFont("TestFont", "img/font.png", "img/font.fnt");
     }
 
     public start() {

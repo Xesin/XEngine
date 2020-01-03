@@ -20,6 +20,7 @@ import * as ShaderMaterialLib from "./Resources/Shader/ShaderCode/ShaderMaterial
 import * as BasicGeometries from "../../BasicGeometries/Geometries";
 import { Component } from "../Components/Component";
 import { UIComponent } from "../Components/UI/UIComponent";
+import { CanvasComponent } from "../Components/UI/CanvasComponent";
 
 
 export * from "./Resources/Enums/_module/Enums";
@@ -165,6 +166,7 @@ export class Renderer {
         this.currentScene = scene;
         this.opaqueRenderQueue = new Array();
         this.transparentRenderQueue = new Array();
+        this.userInterfaceRenderQueue = new Array();
 
         let sceneLights = this.currentScene.FindComponents<Light>(Light).filter(l => !l.hidden);
 
@@ -194,8 +196,9 @@ export class Renderer {
         }
 
         for (let i = 0; i < this.userInterfaceRenderQueue.length; i++) {
+            this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0]);
             const uiObject = this.userInterfaceRenderQueue[i];
-            const uiCanvas = (this.userInterfaceRenderQueue[i].componentOwner as UIComponent).parent;
+            const uiCanvas = (this.userInterfaceRenderQueue[i].componentOwner as CanvasComponent);
             this.renderMeshImmediate(uiObject, new Mat4x4().identity(), uiCanvas.getProjectionMatrix());
         }
 

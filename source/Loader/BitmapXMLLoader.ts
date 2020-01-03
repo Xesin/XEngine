@@ -35,9 +35,10 @@ export class BitmapXMLLoader implements BasicLoader {
         request.open("GET", _this.xmlUrl, true);
         let handler = function () {
             if (request.status === 200) {
-                let returnedXML = request.responseXML;
-
-                _this.loader.game.cache.bitmapData[_this.imageName] = new BitmapData(returnedXML);
+                let returnedXML = request.response;
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(returnedXML, "text/xml");
+                _this.loader.game.cache.bitmapData[_this.imageName] = new BitmapData(xmlDoc);
             }
             _this.completed = true;
             _this.loader._notifyCompleted();

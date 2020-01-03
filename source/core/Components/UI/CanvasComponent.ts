@@ -28,7 +28,7 @@ export class CanvasComponent extends SceneComponent {
         let groups = new Array<MeshGroup>();
         for (let i = 0; i < this.elements.length; i++) {
             if (!this.elements[i].hidden) {
-                groups.concat(this.elements[i].getAllRenderableGroups());
+                groups = groups.concat(this.elements[i].getAllRenderableGroups());
             }
         }
 
@@ -36,6 +36,6 @@ export class CanvasComponent extends SceneComponent {
     }
 
     public getProjectionMatrix(): Mat4x4 {
-        return new Mat4x4().ortho(0, 1920, 1080, 0, 0, 1);
+        return new Mat4x4().ortho(0, 1920, 0, 1280, 0, 100);
     }
 }

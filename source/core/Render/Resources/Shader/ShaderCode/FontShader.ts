@@ -40,7 +40,8 @@ export class FontShader {
 
             "fragColor = vec4(vColor.xyz, alpha);",
 
-            "if(fragColor.a < 0.0001) discard;",
+            // "if(fragColor.a < 0.0001) discard;",
+            "fragColor = vec4(vUV.x, vUV.y, 0.0, 1.0);",
         "}",
     ]);
 }
