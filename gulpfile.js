@@ -33,7 +33,7 @@ gulp.task("webpack-watch", function() {
         .pipe(webpack({
             entry: "./source/XEngine.ts",
             optimization: {
-                minimize: true
+                minimize: false
             },
             output:
             {

@@ -6,3 +6,4 @@ export {NegativePostMaterial} from "../NegativePostMaterial";
 export {PhongMaterial} from "../PhongMaterial";
 export {ShadowCasterMaterial} from "../ShadowCasterMaterial";
 export {BlinnPhongMaterial} from "../BlinnPhongMaterial";
+export {FontMaterial} from "../FontMaterial";

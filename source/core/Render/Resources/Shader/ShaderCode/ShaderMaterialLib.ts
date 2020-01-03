@@ -6,3 +6,4 @@ export {NegativePostProcessShader} from "./NegativePostProcess";
 export {PhongShader} from "./PhongShader";
 export {ShadowCasterShader} from "./ShadowCasterShader";
 export {ErrorShader} from "./ErrorShader";
+export {FontShader} from "./FontShader";

@@ -18,6 +18,8 @@ import {Shader} from "./Resources/Shader/Shader";
 import {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial";
 import * as ShaderMaterialLib from "./Resources/Shader/ShaderCode/ShaderMaterialLib";
 import * as BasicGeometries from "../../BasicGeometries/Geometries";
+import { Component } from "../Components/Component";
+import { UIComponent } from "../Components/UI/UIComponent";
 
 
 export * from "./Resources/Enums/_module/Enums";
@@ -37,12 +39,14 @@ class RenderObject {
     public modelMatrix: Mat4x4;
     public affectedLights: Array<Light>;
     public instances: number;
+    public componentOwner: Component;
 
-    constructor(group: MeshGroup, modelMatrix: Mat4x4, affectedLights: Array<Light>) {
+    constructor(group: MeshGroup, modelMatrix: Mat4x4, affectedLights: Array<Light>, componentOwner: Component) {
         this.group = group;
         this.modelMatrix = modelMatrix;
         this.affectedLights = affectedLights;
         this.instances = 1;
+        this.componentOwner = componentOwner;
     }
 }
 
@@ -65,6 +69,7 @@ export class Renderer {
 
     private opaqueRenderQueue: Array<RenderObject>;
     private transparentRenderQueue: Array<RenderObject>;
+    private userInterfaceRenderQueue: Array<RenderObject>;
     private dstRenderTarget: RenderTarget;
     private srcRenderTarget: RenderTarget;
     private shadowMap: RenderTarget;
@@ -81,6 +86,7 @@ export class Renderer {
 
         this.opaqueRenderQueue = new Array();
         this.transparentRenderQueue = new Array();
+        this.userInterfaceRenderQueue = new Array();
         this.shadowSize = 1024;
         this.init();
     }
@@ -187,6 +193,12 @@ export class Renderer {
             this.renderMeshImmediate(transparentObject, this.currentCamera.viewMatrix, this.currentCamera.projectionMatrix);
         }
 
+        for (let i = 0; i < this.userInterfaceRenderQueue.length; i++) {
+            const uiObject = this.userInterfaceRenderQueue[i];
+            const uiCanvas = (this.userInterfaceRenderQueue[i].componentOwner as UIComponent).parent;
+            this.renderMeshImmediate(uiObject, new Mat4x4().identity(), uiCanvas.getProjectionMatrix());
+        }
+
         if (camera.renderTarget) {
             camera.renderTarget.unBind(this.gl);
         } else {
@@ -205,7 +217,7 @@ export class Renderer {
             PostProcessMaterial.SharedInstance.setUniform("depthTex", this.srcRenderTarget.attachedTextures[this.gl.DEPTH_ATTACHMENT]);
             PostProcessMaterial.SharedInstance.updateUniforms(this.gl);
 
-            let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array());
+            let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], new Mat4x4().identity(), new Array(), null);
             this.renderMeshImmediate(
                 quadRenderObject,
                 this.currentCamera.viewMatrix,
@@ -261,7 +273,7 @@ export class Renderer {
                     if (groups != null) {
                         for (let k = 0; k < groups.length; k++) {
                             const group = groups[k];
-                            let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null);
+                            let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, null, sceneComponent);
                             if (group.Mesh.castShadows) {
                                 if (group.Mesh.materials[group.materialIndex] instanceof PhongMaterial) {
                                     let mat = group.Mesh.materials[group.materialIndex] as PhongMaterial;
@@ -304,7 +316,7 @@ export class Renderer {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
         let identityMat = new Mat4x4().identity();
-        let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], identityMat, new Array());
+        let quadRenderObject = new RenderObject(this.quadMesh.Mesh.groups[0], identityMat, new Array(), null);
         this.renderMeshImmediate(quadRenderObject, identityMat, identityMat, material);
 
         this.srcRenderTarget = dst;
@@ -323,7 +335,7 @@ export class Renderer {
                 for (let k = 0; k < groups.length; k++) {
                     const group = groups[k];
                     let affectedLights = this.findAffectedLights(group, sceneLights);
-                    let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights);
+                    let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights, sceneComponent);
                     switch (group.Mesh.materials[group.materialIndex].renderQueue) {
                         case RenderQueue.OPAQUE:
                             if (this.opaqueRenderQueue.indexOf(renderObject) === -1) {
@@ -333,6 +345,11 @@ export class Renderer {
                         case RenderQueue.TRANSPARENT:
                             if (this.transparentRenderQueue.indexOf(renderObject) === -1) {
                                 this.transparentRenderQueue.push(renderObject);
+                            }
+                            break;
+                        case RenderQueue.INTERFACE:
+                            if (this.userInterfaceRenderQueue.indexOf(renderObject) === -1) {
+                                this.userInterfaceRenderQueue.push(renderObject);
                             }
                             break;
                     }

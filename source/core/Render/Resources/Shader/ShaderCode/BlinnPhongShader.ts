@@ -62,14 +62,12 @@ export class BlinnPhongShader {
 
                     "lightsColor += DiffuseLightColor; ",
                 "}",
-                "vec3 bakedLight = getLightmapColor(uv2);",
                 "vec3 ambientColor = ambient.xyz * ambient.w;",
 
-                "finalColor = (bakedLight * albedo.xyz) + (ambientColor * albedo.xyz) + lightsColor;",
+                "finalColor = albedo.xyz + (ambientColor * albedo.xyz) + lightsColor;",
                 "#endif",
             "fragColor.xyz =finalColor;",
             "fragColor.a = alpha;",
-            "fragColor.rgb *= fragColor.a;",
             "fragNormals = vec4(surfaceNormal, 1.0);",
         "}",
     ]);

@@ -3,6 +3,7 @@
 import {Scene, DirectionalLight, Color, SpotLight, Game, KEY_CODE,
     KEY_ACTION, StaticMeshActor, Renderer, RenderTarget, Easing, ScaleType} from "../XEngine";
 import { TestActor } from "./TestActor";
+import { CanvasComponent } from "../core/Components/UI/CanvasComponent";
 
 declare var dat: any;
 let actor: TestActor = null;
@@ -16,7 +17,7 @@ export class TestScene extends Scene {
     private activatedPost: boolean;
 
     public preload() {
-        this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
+        // this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
     }
 
     public start() {
@@ -33,42 +34,43 @@ export class TestScene extends Scene {
             this.activatedPost = !this.activatedPost;
         });
 
-        let pointLightColor = new Color(0.9, 0.4, 0.8, 1.0);
-        pointLightColor.fromHexString("#f2f7a5");
+        // let pointLightColor = new Color(0.9, 0.4, 0.8, 1.0);
+        // pointLightColor.fromHexString("#f2f7a5");
 
-        this.dirLight = new DirectionalLight(this.game);
-        this.dirLight.transform.rotation.x = 85;
-        this.dirLight.transform.rotation.y = 45;
-        this.dirLight.color = pointLightColor;
+        // this.dirLight = new DirectionalLight(this.game);
+        // this.dirLight.transform.rotation.x = 85;
+        // this.dirLight.transform.rotation.y = 45;
+        // this.dirLight.color = pointLightColor;
 
 
 
-        let pointLight = new SpotLight(this.game);
+        // let pointLight = new SpotLight(this.game);
 
-        pointLight = pointLight;
-        pointLight.transform.position.y = 20;
-        pointLight.color = pointLightColor;
-        pointLight.spotAngle = 85;
-        pointLight.intensity = 600;
-        pointLight.distance = 5000;
-        pointLight.castShadow = true;
+        // pointLight = pointLight;
+        // pointLight.transform.position.y = 20;
+        // pointLight.color = pointLightColor;
+        // pointLight.spotAngle = 85;
+        // pointLight.intensity = 600;
+        // pointLight.distance = 5000;
+        // pointLight.castShadow = true;
 
-        this.game.tween.add(pointLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
-        this.game.tween.add(pointLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
+        // this.game.tween.add(pointLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
+        // this.game.tween.add(pointLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
 
         actor = this.Instantiate(TestActor) as TestActor;	        // pointLight.distance = 5000;
         actor.rootComponent.transform.position.x = 0;	        // pointLight.castShadow = true;
         actor.rootComponent.transform.position.y = 0;
         actor.rootComponent.transform.position.z = 0;
 
-        for (const meshName in this.game.cache.geometries) {
-            if (meshName) {
-                const mesh = this.game.cache.geometries[meshName];
-                let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
-                meshActor.rootComponent.transform.scale.setTo(0.10);
-                meshActor.staticMesh.Mesh = mesh;
-            }
-        }
+        // for (const meshName in this.game.cache.geometries) {
+        //     if (meshName) {
+        //         const mesh = this.game.cache.geometries[meshName];
+        //         let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
+        //         meshActor.rootComponent.transform.scale.setTo(0.10);
+        //         meshActor.staticMesh.Mesh = mesh;
+        //     }
+        // }
+
     }
 
     // tslint:disable-next-line: no-empty

@@ -1,8 +1,11 @@
 import { Actor, StaticMeshComponent, CameraComponent, Game } from "../XEngine";
+import { CanvasComponent } from "../core/Components/UI/CanvasComponent";
+import { TextComponent } from "../core/Components/UI/TextComponent";
 
     export class TestActor extends Actor {
 
         public mesh: StaticMeshComponent;
+        public canvas: CanvasComponent;
         public camera: CameraComponent;
 
         constructor(game: Game) {
@@ -12,6 +15,13 @@ import { Actor, StaticMeshComponent, CameraComponent, Game } from "../XEngine";
 
             this.camera = new CameraComponent(game);
             this.rootComponent = this.camera;
+            this.canvas = new CanvasComponent(game);
+            this.canvas.setupAttachtment(this.rootComponent);
+
+            let textElement = new TextComponent(game, "TestFont", "TextLabel");
+
+            textElement.text = "Hola mundo";
+            this.canvas.addElement(textElement);
 
             this.game.input.bindAxis("MoveForward", this, this.moveForward);
             this.game.input.bindAxis("MoveRight", this, this.moveRight);

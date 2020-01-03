@@ -146,7 +146,6 @@ export class ShaderBlocks {
         "uniform Light light[MAX_LIGHTS];",
 
         "uniform highp sampler2DShadow shadowMap;",
-        "uniform sampler2D lightMap;",
 
         "vec4 encodeFloat (float depth) {",
             "const vec4 bitShift = vec4(",
@@ -182,10 +181,6 @@ export class ShaderBlocks {
             "vec2( -0.094184101, -0.92938870 ),",
             "vec2( 0.34495938, 0.29387760 )",
         ");",
-
-        "vec3 getLightmapColor(vec2 uv){",
-            "return texture(lightMap, uv).xyz;",
-        "}",
 
         "float getLightAttenuation(Light light, vec3 lightVector, vec3 lightDirection){",
             "vec3 spotDirection = light.spotLightDirection.xyz;",

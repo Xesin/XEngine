@@ -16,7 +16,6 @@ export class BlinnPhongMaterial extends PhongMaterial {
         "ambient" : new Vector4(1, 1, 1, 0.15),
         "bias": 0.005,
         "color": new Vector4(1, 1, 1, 1),
-        "lightMap": "black",
         "normal" : "normal",
         "opacity" : "white",
         "shadowMap" : "depth",

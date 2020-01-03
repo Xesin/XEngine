@@ -8,7 +8,7 @@ import {Uniform} from "../Shader/Uniform";
 import {BasicMaterial,
     PhongMaterial,
     BlinnPhongMaterial,
-    PostProcessMaterial, ShadowCasterMaterial, NegativePostMaterial, DesaturatePostMaterial} from "./_module/Materials";
+    PostProcessMaterial, ShadowCasterMaterial, NegativePostMaterial, DesaturatePostMaterial, FontMaterial} from "./_module/Materials";
 
 export class Material {
 
@@ -278,10 +278,12 @@ export class Material {
         NegativePostMaterial.SharedInstance.initialize(gl);
         DesaturatePostMaterial.SharedInstance = new DesaturatePostMaterial();
         DesaturatePostMaterial.SharedInstance.initialize(gl);
+        FontMaterial.SharedInstance = new FontMaterial();
+        FontMaterial.SharedInstance.initialize(gl);
     }
 
     public hasUniform(name: string): boolean {
-        return this.shader.currentVariant.uniforms[name] !== null || this.shader.currentVariant.uniforms[name] !== undefined;
+        return this.shader.currentVariant.uniforms[name] !== undefined && this.shader.currentVariant.uniforms[name] !== null;
     }
 
     public setUniform(name: string, value: any) {
@@ -295,7 +297,7 @@ export class Material {
     }
 
     public hasSampler(samplerPos: number): boolean {
-        return this.shader.currentVariant.samplers[samplerPos ] !== null || this.shader.currentVariant.samplers[name] !== undefined;
+        return this.shader.currentVariant.samplers[name] !== undefined && this.shader.currentVariant.samplers[samplerPos ] !== null;
     }
 
     public setShaderSampler(samplerPos: number, value: any) {

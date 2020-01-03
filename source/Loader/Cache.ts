@@ -22,6 +22,7 @@ export class Cache {
         this.json = new IDict();
         this.geometries = new IDict<StaticMesh>();
         this.materials = new IDict<Material>();
+        this.bitmapData = new IDict<BitmapData>();
     }
 
     public image(imageName: string): Texture2D {
@@ -71,6 +72,7 @@ export class Cache {
         this.json = new IDict();
         this.geometries = new IDict<StaticMesh>();
         this.materials = new IDict<Material>();
+        this.bitmapData = new IDict<BitmapData>();
     }
 }
 

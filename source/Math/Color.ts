@@ -9,11 +9,11 @@ export class Color {
     public b: number;
     public a: number;
 
-    constructor (x = 1, y = x, z = x, w = x) {
-        this.r = x;
-        this.g = y;
-        this.b = z;
-        this.a = w;
+    constructor (r = 1, g = r, b = r, a = r) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
     public setTo(x: number, y = x, z = x, w = x): Color {

@@ -45,10 +45,9 @@ export class PhongShader {
                 "lightsColor += DiffuseLightColor;",
             "}",
             "vec3 ambientColor = ambient.xyz * ambient.w;",
-            "vec3 finalColor = lightsColor + albedo.xyz * ambientColor;",
-            "fragColor.xyz = lightsColor;",
+            "vec3 finalColor = albedo.xyz * lightsColor + albedo.xyz * ambientColor;",
             "fragColor.a = alpha;",
-            "fragColor.rgb *= fragColor.a;",
+            "fragColor.rgb *= finalColor;",
         "}",
     ]);
 }

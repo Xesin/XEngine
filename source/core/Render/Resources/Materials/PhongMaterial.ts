@@ -15,16 +15,12 @@ export class PhongMaterial extends BasicMaterial {
     public alphaClip: number;
     public shadowMap: Texture2D;
 
-    public lightMap: Texture2D;
-
-
     public defaults =
     {
         "albedo": "white",
         "alphaClip" : 0.6,
         "ambient" : new Vector4(1, 1, 1, 0.025),
         "color": new Vector4(1, 1, 1, 1),
-        "lightMap": "black",
         "normal" : "normal",
         "opacity" : "white",
         "shadowMap" : "depth",
