@@ -9,7 +9,6 @@ export class BitmapXMLLoader implements BasicLoader {
     public frameHeight: number;
     public isLoading: boolean;
     public xmlUrl: string;
-    private oneCompleted: boolean;
 
     private loader: Loader;
 
@@ -22,7 +21,6 @@ export class BitmapXMLLoader implements BasicLoader {
         this.loader = loader;
         this.frameWidth = 0;
         this.frameHeight = 0;
-        this.oneCompleted = false;
         this.loader.image(this.imageName, this.imageUrl);
     }
 
