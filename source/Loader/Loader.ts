@@ -19,6 +19,7 @@ export class Loader {
      * @memberof Loader
      */
     public onCompleteFile: Signal;
+    public onLoadingComplete: Signal;
     /**
      * @type {Game}
      * @memberof Loader
@@ -42,6 +43,7 @@ export class Loader {
         this.progress = 0;
         this.preloading = false;
         this.onCompleteFile = new Signal();
+        this.onLoadingComplete = new Signal();
     }
 
 
@@ -90,6 +92,11 @@ export class Loader {
 
     public _startPreload() {
         this.preloading = true;
+        this.startLoading();
+    }
+
+    public startLoading() {
+        
         if (this.pendingLoads.length === 0) {
             this._callStart();
         } else {
@@ -117,7 +124,11 @@ export class Loader {
             delete this.pendingLoads;
             this.onCompleteFile._destroy();
             this.pendingLoads = new Array();
-            this._callStart();
+            this.onLoadingComplete.dispatch();
+            this.onLoadingComplete._destroy();
+            if(this.preloading) {
+                this._callStart();
+            }
         }
     }
 

@@ -7,4 +7,4 @@ export * from "./Signals/Signal";
 export * from "./Signals/SignalBinding";
 export * from "./Input/InputManager";
 
-export { initGame } from "./Test/TestScene";
+export * from "./Test/TestScene";

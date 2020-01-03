@@ -58,15 +58,15 @@ export class BlinnPhongShader {
                     "Light curLight = light[i];",
                     "vec3 DiffuseLightColor = BlinnPhongLightning(i, surfaceNormal, vWorldPos.xyz, viewDir, smoothness, specularColor, albedo.xyz);",
 
-                    "DiffuseLightColor =DiffuseLightColor *ShadowAttenuation(curLight, vWorldPos);",
+                    "DiffuseLightColor = DiffuseLightColor * ShadowAttenuation(curLight, vWorldPos);",
 
                     "lightsColor += DiffuseLightColor; ",
                 "}",
                 "vec3 ambientColor = ambient.xyz * ambient.w;",
 
-                "finalColor = albedo.xyz + (ambientColor * albedo.xyz) + lightsColor;",
+                "finalColor = albedo.xyz * lightsColor  + (ambientColor * albedo.xyz);",
                 "#endif",
-            "fragColor.xyz =finalColor;",
+            "fragColor.xyz = finalColor;",
             "fragColor.a = alpha;",
             "fragNormals = vec4(surfaceNormal, 1.0);",
         "}",

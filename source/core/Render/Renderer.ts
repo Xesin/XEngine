@@ -464,7 +464,7 @@ export class Renderer {
         if (meshGroup.indices) {
             gl.drawElements(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0);
         } else {
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, meshGroup.vertexCount, renderObject.instances);
+            gl.drawArrays(gl.TRIANGLES, 0, meshGroup.vertexCount);
         }
     }
 }

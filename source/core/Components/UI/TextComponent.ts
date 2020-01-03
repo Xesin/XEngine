@@ -53,7 +53,7 @@ export class TextComponent extends UIComponent {
             let startX = 0;
             let startY = 0;
             let maxX = 0;
-
+            let renderedChars = 0;
             for (let i = 0; i < charArray.length; i++) {
                 let char = charArray[i];
                 if (char !== undefined) {
@@ -65,15 +65,15 @@ export class TextComponent extends UIComponent {
                                 let prevCharCode = charArray[i - 1].charCodeAt(0);
                                 if (this.bitmapData.kerning[prevCharCode] !== undefined
                                     && this.bitmapData.kerning[prevCharCode][charCode] !== undefined) {
-                                    startX += this.bitmapData.kerning[prevCharCode][charCode];
+                                    // startX += this.bitmapData.kerning[prevCharCode][charCode];
                                 }
                             }
 
                             let uvs = [
-                                charData.x / this.atlasWidth, charData.y / this.atlasHeight,
-                                charData.x / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
-                                (charData.x + charData.width) / this.atlasWidth, charData.y / this.atlasHeight,
-                                (charData.x + charData.width) / this.atlasWidth, (charData.y + charData.height) / this.atlasHeight,
+                                charData.x / this.atlasWidth, 1-((charData.y + charData.height) / this.atlasHeight),
+                                (charData.x + charData.width) / this.atlasWidth, 1-((charData.y + charData.height) / this.atlasHeight),
+                                (charData.x + charData.width) / this.atlasWidth, 1-(charData.y / this.atlasHeight),
+                                charData.x / this.atlasWidth, 1-(charData.y / this.atlasHeight),
                             ];
 
                             let vertices = [
@@ -82,7 +82,7 @@ export class TextComponent extends UIComponent {
                                 startX + charData.width,  startY + charData.height, 0,
                                 startX,  startY + charData.height, 0,
                             ];
-                            let firstIndex = i * 6;
+                            let firstIndex = renderedChars * 4;
                             let indices = [
                                 firstIndex,  firstIndex + 1, firstIndex + 2,          firstIndex, firstIndex + 2, firstIndex + 3,
                             ];
@@ -90,10 +90,9 @@ export class TextComponent extends UIComponent {
                             this._mesh.vertexData = this._mesh.vertexData.concat(vertices);
                             this._mesh.uvData = this._mesh.uvData.concat(uvs);
                             this._mesh.indexData = this._mesh.indexData.concat(indices);
-                            startX += charData.xadvance;
-                        } else if (charCode === 32) {
-                            startX += charData.xadvance;
+                            renderedChars++;
                         }
+                        startX += charData.xadvance - charData.xoffset + 5;
                         if (startX > maxX) {
                             maxX = startX;
                         }

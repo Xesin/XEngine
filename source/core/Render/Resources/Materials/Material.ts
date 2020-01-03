@@ -307,7 +307,7 @@ export class Material {
     }
 
     public enableKeyword(newKeyword: string) {
-        if (this.shader.enabledWords.indexOf(newKeyword) !== -1) {
+        if (this.shader.enabledWords.indexOf(newKeyword) === -1) {
             this.shader.enabledWords.push(newKeyword);
         }
     }

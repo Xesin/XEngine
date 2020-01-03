@@ -60,29 +60,38 @@ export class StaticMesh {
                 this.gl.deleteBuffer(this.indexBuffer[i].buffer);
             }
         }
+        this.indexBuffer = new Array();
+
         if (this.positionBuffer.length > 0) {
             for (let i = 0; i < this.positionBuffer.length ; i++) {
                 this.gl.deleteBuffer(this.positionBuffer[i].buffer);
             }
         }
+        this.positionBuffer = new Array();
 
         if (this.uvBuffer.length > 0) {
             for (let i = 0; i < this.uvBuffer.length ; i++) {
                 this.gl.deleteBuffer(this.uvBuffer[i].buffer);
             }
         }
+        this.uvBuffer = new Array();
 
         if (this.normalBuffer.length > 0) {
             for (let i = 0; i < this.normalBuffer.length ; i++) {
                 this.gl.deleteBuffer(this.normalBuffer[i].buffer);
             }
         }
+        this.normalBuffer = new Array();
 
         if (this.colorBuffer.length > 0) {
             for (let i = 0; i < this.colorBuffer.length ; i++) {
                 this.gl.deleteBuffer(this.colorBuffer[i].buffer);
             }
         }
+        this.colorBuffer = new Array();
+        this.initialized = false;
+        this.vertexCount = 0;
+        this.groups = new Array();
     }
 
     public updateResources(renderer: Renderer, overrideMaterial: Material = null) {

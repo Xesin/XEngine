@@ -34,7 +34,7 @@ export class BitmapData {
         let charCount = Number(charsNode.getAttribute("count"));
         let charsArray = charsNode.children;
         this.lineHeight = Number(commonNode.getAttribute("lineHeight"));
-        for (let i = 0; i < charCount; i++) {
+        for (let i = 0; i <= charCount; i++) {
             let id = Number(charsArray[i].getAttribute("id"));
             let x = Number(charsArray[i].getAttribute("x"));
             let y = Number(charsArray[i].getAttribute("y"));

@@ -25,5 +25,6 @@ export class BlinnPhongMaterial extends PhongMaterial {
 
     constructor(shader = new Shader(ShaderMaterialLib.BlinnPhongShader.vertexShader, ShaderMaterialLib.BlinnPhongShader.fragmentShader)) {
         super(shader);
+        this.enableKeyword("LIGHTNING_ON");
     }
 }

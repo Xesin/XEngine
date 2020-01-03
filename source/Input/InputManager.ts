@@ -194,7 +194,7 @@ export class InputManager {
                     const element = this.axisMappings[name];
                     for (const keyCode in element) {
                         if (keyCode) {
-                            const keyCodeNum = keyCode as any as number;
+                            const keyCodeNum = parseInt(keyCode, 10) as KEY_CODE;
                             const axisMapping = element[keyCodeNum];
                             let axisvalue = 0;
 
