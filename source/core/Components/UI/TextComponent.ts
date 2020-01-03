@@ -48,6 +48,7 @@ export class TextComponent extends UIComponent {
             this._mesh.destroy();
             this._mesh.vertexData = new Array();
             this._mesh.uvData = new Array();
+            this._mesh.indexData = new Array();
             let charArray = this.text.split("");
             let startX = 0;
             let startY = 0;
@@ -81,9 +82,14 @@ export class TextComponent extends UIComponent {
                                 startX + charData.width,  startY + charData.height, 0,
                                 startX,  startY + charData.height, 0,
                             ];
+                            let firstIndex = i * 6;
+                            let indices = [
+                                firstIndex,  firstIndex + 1, firstIndex + 2,          firstIndex, firstIndex + 2, firstIndex + 3,
+                            ];
 
                             this._mesh.vertexData = this._mesh.vertexData.concat(vertices);
                             this._mesh.uvData = this._mesh.uvData.concat(uvs);
+                            this._mesh.indexData = this._mesh.indexData.concat(indices);
                             startX += charData.xadvance;
                         } else if (charCode === 32) {
                             startX += charData.xadvance;
@@ -101,7 +107,7 @@ export class TextComponent extends UIComponent {
                 }
             }
 
-            this._mesh.addGroup(0, this._mesh.vertexData.length - 1, 0);
+            this._mesh.addGroup(0, this._mesh.indexData.length - 1, 0, this._mesh.indexData);
         }
     }
 
