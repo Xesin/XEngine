@@ -1,15 +1,12 @@
 
-export class EObject
-{
+export class EObject {
     public pendingDestroy: boolean;
 
-    constructor()
-    {
+    constructor() {
         this.pendingDestroy = false;
     }
-    
-    public destroy()
-    {
+
+    public destroy() {
         this.pendingDestroy = true;
     }
 }

@@ -1,7 +1,3 @@
 export class IDict<T> {
-    constructor()
-    {
-        
-    }
-	[id: string]: T;
+    [id: string]: T;
 }

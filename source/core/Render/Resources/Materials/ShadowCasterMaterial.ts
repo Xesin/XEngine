@@ -1,12 +1,11 @@
 import {Shader} from "../Shader/Shader";
-import {BasicMaterial} from "./BasicMaterial"
-import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib"
-import {Texture2D} from "../Texture/Texture2D"
-import {Color, Vector4} from "../../../../Math/Mathf"
-import {CullMode} from "../Enums/_module/Enums"
+import {BasicMaterial} from "./BasicMaterial";
+import * as ShaderMaterialLib from "../Shader/ShaderCode/ShaderMaterialLib";
+import {Texture2D} from "../Texture/Texture2D";
+import {Color, Vector4} from "../../../../Math/Mathf";
+import {CullMode} from "../Enums/_module/Enums";
 
-export class ShadowCasterMaterial extends BasicMaterial
-{
+export class ShadowCasterMaterial extends BasicMaterial {
     public static SharedInstance;
 
     public albedo: Texture2D;
@@ -14,16 +13,16 @@ export class ShadowCasterMaterial extends BasicMaterial
     public color: Color;
     public alphaClip: number;
 
-    public defaults = 
+    public defaults =
     {
-        "color": new Vector4(1,1,1,1),
-        "opacity" : "white",
         "albedo": "white",
-        "alphaClip" : 0.6
-    }
+        "alphaClip" : 0.6,
+        "color": new Vector4(1, 1, 1, 1),
+        "opacity" : "white",
+    };
 
-    constructor(shader = new Shader(ShaderMaterialLib.ShadowCasterShader.vertexShader, ShaderMaterialLib.ShadowCasterShader.fragmentShader))
-    {
+    constructor(
+        shader = new Shader(ShaderMaterialLib.ShadowCasterShader.vertexShader, ShaderMaterialLib.ShadowCasterShader.fragmentShader)) {
         super(shader);
         this.cullMode = CullMode.FRONT;
     }

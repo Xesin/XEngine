@@ -8,5 +8,5 @@
 		"source/**/*.js": true,
 	},
 	"python.pythonPath": "C:\\Python27\\python.exe",
-	"gulp.autoDetect": "on"
+	"gulp.autoDetect": "on",
 }

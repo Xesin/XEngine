@@ -1,18 +1,17 @@
-import {ShaderType} from "../Enums/ShaderType"
+import {ShaderType} from "../Enums/ShaderType";
 
-export class VertexAttribute{
+export class VertexAttribute {
     public index: number;
     public name: string;
     public offset: number;
     public normalized: boolean;
     public numItems: number;
     public itemSize: number;
-    
+
     public _gpuPos: WebGLUniformLocation;
     private _type: ShaderType;
 
-    constructor(index: number, name: string, type: ShaderType, _gpuPos: WebGLUniformLocation, offset: number, normalized = false)
-    {
+    constructor(index: number, name: string, type: ShaderType, _gpuPos: WebGLUniformLocation, offset: number, normalized = false) {
         this.index = index;
         this.name = name;
         this._type = type;
@@ -21,8 +20,7 @@ export class VertexAttribute{
         this.normalized = normalized;
         this.numItems = 0;
 
-        switch(type)
-            {
+        switch (type) {
                 case ShaderType.INT:
                 case ShaderType.FLOAT:
                 case ShaderType.SHORT:
@@ -44,10 +42,9 @@ export class VertexAttribute{
             }
     }
 
-    
-    public get type() : ShaderType {
-        switch(this._type)
-            {
+
+    public get type(): ShaderType {
+        switch (this._type) {
                 case ShaderType.INT:
                 case ShaderType.INT_VEC2:
                 case ShaderType.INT_VEC3:
@@ -61,5 +58,5 @@ export class VertexAttribute{
                     return ShaderType.FLOAT;
             }
     }
-    
+
 }

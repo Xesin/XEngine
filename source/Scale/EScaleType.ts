@@ -1,5 +1,5 @@
 export enum ScaleType {
-	FIT,
-	PRESERVE_ASPECT,
-	NO_SCALE,
+    FIT,
+    PRESERVE_ASPECT,
+    NO_SCALE,
 }

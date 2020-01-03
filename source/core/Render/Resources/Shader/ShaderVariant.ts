@@ -1,6 +1,6 @@
-import {VertexAttribute} from "./VertexAttribute"
-import {Uniform} from "./Uniform"
-import {IDict} from "../../../Game"
+import {VertexAttribute} from "./VertexAttribute";
+import {Uniform} from "./Uniform";
+import {IDict} from "../../../Game";
 
 
 export class ShaderVariant {
@@ -9,8 +9,7 @@ export class ShaderVariant {
     public vertexAttrs: IDict<VertexAttribute>;
     public samplers: Uniform[];
 
-    constructor()
-    {
+    constructor() {
         this.uniforms = new IDict<Uniform>();
         this.vertexAttrs = new IDict<VertexAttribute>();
         this.samplers = new Array<Uniform>();

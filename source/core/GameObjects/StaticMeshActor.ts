@@ -1,13 +1,11 @@
-import {StaticMeshComponent} from "../Components/Mesh/StaticMeshComponent"
-import {Game} from "../Game"
-import {Actor} from "./Actor"
+import {StaticMeshComponent} from "../Components/Mesh/StaticMeshComponent";
+import {Game} from "../Game";
+import {Actor} from "./Actor";
 
-export class StaticMeshActor extends Actor
-{
+export class StaticMeshActor extends Actor {
     public staticMesh: StaticMeshComponent;
 
-    constructor(game: Game, name: string = "StaticMeshActor")
-    {
+    constructor(game: Game, name = "StaticMeshActor") {
         super(game, name);
 
         this.staticMesh = new StaticMeshComponent(game);

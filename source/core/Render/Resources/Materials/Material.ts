@@ -1,15 +1,18 @@
 import {Shader} from "../Shader/Shader";
 import {Mat4x4, Vector3, Vector4} from "../../../../Math/Mathf";
-import {RenderQueue, CullMode, BlendMode, ShaderType} from "../Enums/_module/Enums"
-import {Texture2D} from "../Texture/Texture2D"
-import {VertexAttribute} from "../Shader/VertexAttribute"
-import {IDict} from "../../../Game"
-import {Uniform} from "../Shader/Uniform"
-import {BasicMaterial, PhongMaterial, BlinnPhongMaterial, PostProcessMaterial, ShadowCasterMaterial, NegativePostMaterial, DesaturatePostMaterial} from "./_module/Materials"
+import {RenderQueue, CullMode, BlendMode, ShaderType} from "../Enums/_module/Enums";
+import {Texture2D} from "../Texture/Texture2D";
+import {VertexAttribute} from "../Shader/VertexAttribute";
+import {IDict} from "../../../Game";
+import {Uniform} from "../Shader/Uniform";
+import {BasicMaterial,
+    PhongMaterial,
+    BlinnPhongMaterial,
+    PostProcessMaterial, ShadowCasterMaterial, NegativePostMaterial, DesaturatePostMaterial} from "./_module/Materials";
 
 export class Material {
 
-    public shader : Shader;
+    public shader: Shader;
 
     public vertexPositionName = "aVertexPosition";
     public colorsAttrName = "aVertexColor";
@@ -32,8 +35,7 @@ export class Material {
 
     public defaults: any;
 
-    constructor(shader: Shader)
-    {
+    constructor(shader: Shader) {
         this.shader = shader;
         this.modelMatrix = new Mat4x4().identity();
         this.viewMatrix = new Mat4x4().identity();
@@ -41,19 +43,16 @@ export class Material {
         this.normalMatrix = new Mat4x4().identity();
     }
 
-    public initialize(gl: WebGL2RenderingContext)
-    {
+    public initialize(gl: WebGL2RenderingContext) {
         this.shader.updateShader(gl);
         for (const key in this.defaults) {
             if (this.defaults.hasOwnProperty(key)) {
                 const defValue = this.defaults[key];
-                if(this.hasUniform(key))
-                {
-                    if(this.getUniform(key).type == ShaderType.SAMPLER_2D || this.getUniform(key).type == ShaderType.SAMPLER_2D_SHADOW )
-                    {
-                        
-                        switch(defValue )
-                        {
+                if (this.hasUniform(key)) {
+                    if (this.getUniform(key).type === ShaderType.SAMPLER_2D
+                    || this.getUniform(key).type === ShaderType.SAMPLER_2D_SHADOW ) {
+
+                        switch (defValue ) {
                             case "white":
                                 this[key] = Texture2D.whiteTexture;
                                 break;
@@ -64,134 +63,117 @@ export class Material {
                                 this[key] = Texture2D.normalture;
                                 break;
                             case "depth":
-                                this[key] = Texture2D.depthTexture; 
+                                this[key] = Texture2D.depthTexture;
                                 break;
                         }
-                    }
-                    else
+                    } else {
                     this[key] = defValue;
+                    }
                 }
             }
         }
     }
 
-    public updateUniforms(gl: WebGL2RenderingContext)
-    {
+    public updateUniforms(gl: WebGL2RenderingContext) {
         this.bind(gl);
         for (let key in this.shader.currentVariant.uniforms) {
-            const uniform = this.shader.currentVariant.uniforms[key];
-            if(this.hasOwnProperty(key))
-            {
-                uniform.value = this[key];
+            if (key) {
+                const uniform = this.shader.currentVariant.uniforms[key];
+                if (this.hasOwnProperty(key)) {
+                    uniform.value = this[key];
+                }
+                if (uniform.value !== null) {
+                    this.setUniformData(uniform, gl);
+                }
             }
-            if(uniform.value != null)
-                this.setUniformData(uniform, gl);
         }
         for (let i = 0; i < this.shader.currentVariant.samplers.length; i++) {
             const sampler = this.shader.currentVariant.samplers[i];
-            if(sampler != undefined && sampler.value != undefined){
+            if (sampler !== undefined && sampler.value !== undefined) {
                 gl.activeTexture(this.sampleIndexToGL_Sample(sampler.samplerNumber, gl));
                 gl.bindTexture(gl.TEXTURE_2D, (sampler.value as Texture2D)._texture);
-            }
-            else
-            {
+            } else {
                 gl.activeTexture(this.sampleIndexToGL_Sample(i, gl));
                 gl.bindTexture(gl.TEXTURE_2D, Texture2D.normalture._texture);
             }
         }
     }
 
-    private sampleIndexToGL_Sample(samplerIndex: number, gl: WebGL2RenderingContext)
-    {
+    private sampleIndexToGL_Sample(samplerIndex: number, gl: WebGL2RenderingContext) {
         return gl.TEXTURE0 + samplerIndex;
     }
-    
-    public get vPosition() : VertexAttribute {
+
+    public get vPosition(): VertexAttribute {
         return this.shader.currentVariant.vertexAttrs[this.vertexPositionName];
     }
 
-    public get vColor() : VertexAttribute {
+    public get vColor(): VertexAttribute {
         return this.shader.currentVariant.vertexAttrs[this.colorsAttrName];
     }
 
-    public get vNormal() : VertexAttribute {
+    public get vNormal(): VertexAttribute {
         return this.shader.currentVariant.vertexAttrs[this.normalAttrName];
     }
 
-    public get vUv() : VertexAttribute {
+    public get vUv(): VertexAttribute {
         return this.shader.currentVariant.vertexAttrs[this.uvAttrName];
     }
 
-    public get vUv2() : VertexAttribute {
+    public get vUv2(): VertexAttribute {
         return this.shader.currentVariant.vertexAttrs[this.secondUVsAttrName];
     }
 
-    public get AttrStride() : number
-    {
+    public get AttrStride(): number {
         return this.shader.attrStride;
     }
 
-    public get VertexAttributes() : IDict<VertexAttribute>
-    {
+    public get VertexAttributes(): IDict<VertexAttribute> {
         return this.shader.currentVariant.vertexAttrs;
     }
 
-    public get HasPosition(): boolean
-    {
+    public get HasPosition(): boolean {
         return this.vertexPositionName in this.shader.currentVariant.vertexAttrs;
     }
 
-    public get HasUVs(): boolean
-    {
+    public get HasUVs(): boolean {
         return this.uvAttrName in this.shader.currentVariant.vertexAttrs;
     }
 
-    public get HasSecondUVs(): boolean
-    {
+    public get HasSecondUVs(): boolean {
         return this.secondUVsAttrName in this.shader.currentVariant.vertexAttrs;
     }
 
-    public get HasColor(): boolean
-    {
+    public get HasColor(): boolean {
         return this.colorsAttrName in this.shader.currentVariant.vertexAttrs;
     }
 
-    public get HasNormals(): boolean
-    {
+    public get HasNormals(): boolean {
         return this.normalAttrName in this.shader.currentVariant.vertexAttrs;
     }
 
-    public get ShaderProgram(): WebGLProgram
-    {
+    public get ShaderProgram(): WebGLProgram {
         return this.shader.currentVariant.program;
     }
 
-    public updateVariants(gl: WebGL2RenderingContext)
-    {
+    public updateVariants(gl: WebGL2RenderingContext) {
         this.shader.updateShader(gl);
     }
 
-    public bind(gl: WebGL2RenderingContext): boolean
-    {
-        if(Material.currentMaterial !== this)
-        {
-            if(this.ShaderProgram){
+    public bind(gl: WebGL2RenderingContext): boolean {
+        if (Material.currentMaterial !== this) {
+            if (this.ShaderProgram) {
                 gl.useProgram(this.ShaderProgram);
-                Material.currentMaterial = this;               
+                Material.currentMaterial = this;
 
                 gl.depthMask(this.writeDepthEnabled);
-                if(this.depthTestEnabled)
-                {
+                if (this.depthTestEnabled) {
                     gl.enable(gl.DEPTH_TEST);
                     gl.depthFunc(gl.LEQUAL);
-                }
-                else
-                {
+                } else {
                     gl.disable(gl.DEPTH_TEST);
                 }
 
-                if(this.renderQueue == RenderQueue.TRANSPARENT)
-                {
+                if (this.renderQueue === RenderQueue.TRANSPARENT) {
                     gl.enable(gl.BLEND);
                     gl.blendEquation(gl.FUNC_ADD);
                     switch (this.blendMode) {
@@ -208,9 +190,7 @@ export class Material {
                         case BlendMode.None:
                             gl.disable(gl.BLEND);
                     }
-                }
-                else
-                {
+                } else {
                     gl.disable(gl.BLEND);
                 }
 
@@ -233,18 +213,17 @@ export class Material {
                 }
             }
             return false;
-        }    
+        }
         return true;
     }
 
-    public getLightUniform(index: number, name: string)
-    {
-        return this.shader.currentVariant.uniforms[this.lightsUniformName+'[' + index + '].'+name];            
+    public getLightUniform(index: number, name: string) {
+        return this.shader.currentVariant.uniforms[this.lightsUniformName + "[" + index + "]." + name];
     }
 
 
-    private setUniformData(uniform: Uniform, gl:WebGL2RenderingContext) {
-        if(!uniform.Dirty) return;
+    private setUniformData(uniform: Uniform, gl: WebGL2RenderingContext) {
+        if (!uniform.Dirty) { return; }
         let valueType = uniform.type;
         switch (valueType) {
             case ShaderType.INT:
@@ -283,9 +262,8 @@ export class Material {
         }
         uniform.Dirty = false;
     }
-    
-    public static initStaticMaterials(gl: WebGL2RenderingContext)
-    {
+
+    public static initStaticMaterials(gl: WebGL2RenderingContext) {
         BasicMaterial.SharedInstance = new BasicMaterial();
         BasicMaterial.SharedInstance.initialize(gl);
         PhongMaterial.SharedInstance = new PhongMaterial();
@@ -302,49 +280,38 @@ export class Material {
         DesaturatePostMaterial.SharedInstance.initialize(gl);
     }
 
-    public hasUniform(name: string): boolean
-    {
-        return this.shader.currentVariant.uniforms[name] != null || this.shader.currentVariant.uniforms[name] != undefined;
+    public hasUniform(name: string): boolean {
+        return this.shader.currentVariant.uniforms[name] !== null || this.shader.currentVariant.uniforms[name] !== undefined;
     }
 
-    public setUniform(name: string, value: any)
-    {
-        if(this.hasUniform(name))
-        {
+    public setUniform(name: string, value: any) {
+        if (this.hasUniform(name)) {
             this.shader.currentVariant.uniforms[name].value = value;
         }
     }
 
-    public getUniform(name: string): Uniform
-    {
+    public getUniform(name: string): Uniform {
         return this.shader.currentVariant.uniforms[name];
     }
 
-    public hasSampler(samplerPos: number): boolean
-    {
-        return this.shader.currentVariant.samplers[samplerPos ] != null || this.shader.currentVariant.samplers[name] != undefined;
+    public hasSampler(samplerPos: number): boolean {
+        return this.shader.currentVariant.samplers[samplerPos ] !== null || this.shader.currentVariant.samplers[name] !== undefined;
     }
 
-    public setShaderSampler(samplerPos: number, value: any)
-    {
-        if(this.hasSampler(samplerPos))
-        {
+    public setShaderSampler(samplerPos: number, value: any) {
+        if (this.hasSampler(samplerPos)) {
             this.shader.currentVariant.samplers[samplerPos].value = value;
         }
     }
 
-    public enableKeyword(newKeyword: string)
-    {
-        if(this.shader.enabledWords.indexOf(newKeyword) == -1)
-        {
-            this.shader.enabledWords.push(newKeyword)
+    public enableKeyword(newKeyword: string) {
+        if (this.shader.enabledWords.indexOf(newKeyword) !== -1) {
+            this.shader.enabledWords.push(newKeyword);
         }
     }
 
-    public disableKeyword(keyword: string)
-    {
-        if(this.shader.enabledWords.indexOf(keyword) != -1)
-        {
+    public disableKeyword(keyword: string) {
+        if (this.shader.enabledWords.indexOf(keyword) !== -1) {
             this.shader.enabledWords.splice(this.shader.enabledWords.indexOf(keyword), 1);
         }
     }

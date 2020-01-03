@@ -1,5 +1,5 @@
 
     export enum RenderQueue {
         OPAQUE,
-        TRANSPARENT
+        TRANSPARENT,
     }

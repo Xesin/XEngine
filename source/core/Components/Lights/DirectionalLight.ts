@@ -1,11 +1,10 @@
 
-import {Game} from "../../Game"
-import {Light} from "./Light"
+import {Game} from "../../Game";
+import {Light} from "./Light";
 
 export class DirectionalLight extends Light {
 
-    constructor(game: Game)
-    {
+    constructor(game: Game) {
         super(game);
     }
 }

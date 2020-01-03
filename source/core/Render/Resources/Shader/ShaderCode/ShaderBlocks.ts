@@ -1,25 +1,24 @@
 
-export class ShaderBlocks
-{
-    public static glVersion300 = 
+export class ShaderBlocks {
+    public static glVersion300 =
     [
         "#version 300 es",
-        "#VARIANT_DEFINES"
-    ]
+        "#VARIANT_DEFINES",
+    ];
 
-    public static VertexInputNoUVs = 
+    public static VertexInputNoUVs =
     [
         "in highp vec4 aVertexPosition;",
         "in highp vec4 aVertexColor;",
         "in highp vec3 aVertexNormal;",
     ];
 
-    public static VertexInput = 
+    public static VertexInput =
     ShaderBlocks.VertexInputNoUVs
     .concat(
     [
         "in highp vec2 aUV;",
-        "in highp vec2 aUV2;"
+        "in highp vec2 aUV2;",
     ]);
 
     public static VertexOutputNoUVs =
@@ -27,7 +26,7 @@ export class ShaderBlocks
         "out highp vec3 vNormal;",
         "out highp vec4 vColor;",
         "out highp mat4 mvMatrix;",
-        "out highp mat4 mvpMatrix;"
+        "out highp mat4 mvpMatrix;",
     ];
 
     public static VertexOutput =
@@ -35,7 +34,7 @@ export class ShaderBlocks
     .concat(
     [
         "out highp vec2 uv;",
-        "out highp vec2 uv2;"
+        "out highp vec2 uv2;",
     ]);
 
     public static FragmentInputNoUVs =
@@ -43,18 +42,18 @@ export class ShaderBlocks
         "in highp vec4 vColor;",
         "in highp mat4 mvpMatrix;",
         "in highp mat4 mvMatrix;",
-        "in highp vec3 vNormal;"
+        "in highp vec3 vNormal;",
     ];
 
-    public static FragmentInput = 
+    public static FragmentInput =
     ShaderBlocks.FragmentInputNoUVs
     .concat(
     [
         "in highp vec2 uv;",
-        "in highp vec2 uv2;"
+        "in highp vec2 uv2;",
     ]);
 
-    public static MVPUniforms = 
+    public static MVPUniforms =
     [
         "uniform highp mat4 modelMatrix;",
         "uniform highp mat4 viewMatrix;",
@@ -62,20 +61,20 @@ export class ShaderBlocks
         "uniform highp mat4 normalMatrix;",
     ];
 
-    public static PhongVertexOutputs = 
+    public static PhongVertexOutputs =
     ShaderBlocks.VertexOutput
     .concat(
     [
         "out highp vec4 vWorldPos;",
-    ]
+    ],
     );
 
-    public static BlinnPhongVertexOutputs = 
+    public static BlinnPhongVertexOutputs =
     ShaderBlocks.PhongVertexOutputs
     .concat(
     [
         "out highp vec3 viewPos;",
-    ]
+    ],
     );
 
     public static PhongFragmentInputs =
@@ -87,7 +86,7 @@ export class ShaderBlocks
         "uniform highp vec4 ambient;",
         "uniform highp float alphaClip;",
         "uniform sampler2D albedo;",
-        "uniform sampler2D opacity;"
+        "uniform sampler2D opacity;",
     ]);
 
     public static BlinnPhongFragmentInputs =
@@ -97,7 +96,7 @@ export class ShaderBlocks
         "in highp vec3 viewPos;",
     ]);
 
-    public static mvpAndPosCalc = 
+    public static mvpAndPosCalc =
     [
         "mvMatrix = viewMatrix * modelMatrix;",
         "mvpMatrix = pMatrix * mvMatrix;",
@@ -176,14 +175,14 @@ export class ShaderBlocks
             ");",
             "return dot(color, bitShift);",
             "}",
-            
+
         "vec2 poissonDisk[4] = vec2[](",
             "vec2( -0.94201624, -0.39906216 ),",
             "vec2( 0.94558609, -0.76890725 ),",
             "vec2( -0.094184101, -0.92938870 ),",
             "vec2( 0.34495938, 0.29387760 )",
         ");",
-        
+
         "vec3 getLightmapColor(vec2 uv){",
             "return texture(lightMap, uv).xyz;",
         "}",
@@ -226,7 +225,7 @@ export class ShaderBlocks
             "vec3 lightColor = curLight.color * curLight.intensity;",
             "float atten = getLightAttenuation(curLight, lightVector, lightDir);",
             "float diffuse = DiffuseAttenuation(lightDir, surfaceNormal);",
-            
+
             "vec3 finalColor = albedo * diffuse * lightColor * atten;",
             "return finalColor;",
         "}",
@@ -242,7 +241,7 @@ export class ShaderBlocks
             "float specular = SpecularAttenuation(lightDir, viewDir, surfaceNormal, smoothness, specularColor.w);",
 
             "vec3 finalSpecular = specular * specularColor.xyz * lightColor;",
-            
+
             "vec3 finalColor = (albedo * diffuse * lightColor * atten) + (finalSpecular * atten);",
             "return finalColor;",
         "}",
@@ -253,14 +252,14 @@ export class ShaderBlocks
             "float shadowAcneRemover = light.shadowBias;",
             "shadowAcneRemover = clamp(shadowAcneRemover, 0.0, 0.1);",
             "float amountInLight = 1.0;",
-                
+
             "for (int x = 0; x < 4; x++) {",
                 "float texelDepth = 1.0 - texture(shadowMap,",
                 "vec3(fragmentDepth.xy / fragmentDepth.w + poissonDisk[x]/2048.0, (fragmentDepth.z-shadowAcneRemover)/fragmentDepth.w) );",
                 "amountInLight -= 0.25 * texelDepth;",
             "}",
             "return amountInLight;",
-        "}"
+        "}",
     ];
 
     public static VertexLightning =
@@ -277,7 +276,7 @@ export class ShaderBlocks
         "};",
 
         "uniform Light light[MAX_LIGHTS];",
-            
+
         "const mat4 texUnitConverter = mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);",
-    ]
+    ];
 }

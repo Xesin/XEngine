@@ -1,9 +1,9 @@
-import {Plane, Vector3, Mat4x4, Box} from "./Mathf"
+import {Plane, Vector3, Mat4x4, Box} from "./Mathf";
 
 
 export class Frustum {
 
-    public planes : Array<Plane>;
+    public planes: Array<Plane>;
 
     private vector: Vector3;
 
@@ -13,14 +13,12 @@ export class Frustum {
         , p2: Plane = new Plane()
         , p3: Plane = new Plane()
         , p4: Plane = new Plane()
-        , p5: Plane = new Plane() )
-    {
+        , p5: Plane = new Plane() ) {
         this.planes = [p0, p1, p2, p3, p4, p5];
         this.vector = new Vector3();
-    }        
+    }
 
-    public setFromMatrix(matrix: Mat4x4)
-    {
+    public setFromMatrix(matrix: Mat4x4) {
         let planes = this.planes;
         let me = matrix.elements;
 
@@ -37,14 +35,13 @@ export class Frustum {
         planes[ 5 ].setComponents( me3 + me2, me7 + me6, me11 + me10, me15 + me14 ).normalize();
     }
 
-    public intersectsBox(box: Box): boolean
-    {
+    public intersectsBox(box: Box): boolean {
         let planes = this.planes;
 
         for (let i = 0; i < 6; i ++ ) {
 
             let plane = planes[ i ];
-            
+
             this.vector.x = plane.normal.x > 0 ? box.max.x : box.min.x;
             this.vector.y = plane.normal.y > 0 ? box.max.y : box.min.y;
             this.vector.z = plane.normal.z > 0 ? box.max.z : box.min.z;

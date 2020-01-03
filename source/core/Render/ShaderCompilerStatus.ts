@@ -1,8 +1,7 @@
 
 export enum ShaderCompileStatus {
-	Pending,
-	Ok,
-	Error
-	
+    Pending,
+    Ok,
+    Error,
 }
 

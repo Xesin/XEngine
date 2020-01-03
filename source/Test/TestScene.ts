@@ -1,10 +1,11 @@
 
 
-import {Scene, DirectionalLight, Color, SpotLight, Game, KEY_CODE, KEY_ACTION, StaticMeshActor, Renderer, RenderTarget, Easing, ScaleType} from "../XEngine"
+import {Scene, DirectionalLight, Color, SpotLight, Game, KEY_CODE,
+    KEY_ACTION, StaticMeshActor, Renderer, RenderTarget, Easing, ScaleType} from "../XEngine";
 import { TestActor } from "./TestActor";
 
 declare var dat: any;
-let actor : TestActor = null;
+let actor: TestActor = null;
 
 export class TestScene extends Scene {
 
@@ -14,13 +15,11 @@ export class TestScene extends Scene {
 
     private activatedPost: boolean;
 
-    public preload()
-    {
-        this.game.loader.obj('img/sponza.obj', 'img/sponza.mtl');
+    public preload() {
+        this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
     }
 
-    public start()
-    {
+    public start() {
         this.activatedPost = false;
         this.game.time.frameLimit = 60;
 
@@ -30,12 +29,11 @@ export class TestScene extends Scene {
         this.game.input.createAxis("LookLeft", [KEY_CODE.MOUSE_X], [1]);
         this.game.input.createAxis("LookUp", [KEY_CODE.MOUSE_Y], [-1]);
 
-        this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, function()
-        {
-        	this.activatedPost = !this.activatedPost;
+        this.game.input.bindAction("Fire", KEY_ACTION.PRESSED, this, function() {
+            this.activatedPost = !this.activatedPost;
         });
 
-        let pointLightColor = new Color(0.9,0.4,0.8,1.0);
+        let pointLightColor = new Color(0.9, 0.4, 0.8, 1.0);
         pointLightColor.fromHexString("#f2f7a5");
 
         this.dirLight = new DirectionalLight(this.game);
@@ -43,11 +41,11 @@ export class TestScene extends Scene {
         this.dirLight.transform.rotation.y = 45;
         this.dirLight.color = pointLightColor;
 
-        
-        
-        let pointLight = new SpotLight(game);
 
-        this["pointLight"] = pointLight;
+
+        let pointLight = new SpotLight(this.game);
+
+        pointLight = pointLight;
         pointLight.transform.position.y = 20;
         pointLight.color = pointLightColor;
         pointLight.spotAngle = 85;
@@ -60,33 +58,31 @@ export class TestScene extends Scene {
 
         actor = this.Instantiate(TestActor) as TestActor;	        // pointLight.distance = 5000;
         actor.rootComponent.transform.position.x = 0;	        // pointLight.castShadow = true;
-        actor.rootComponent.transform.position.y = 0;	
+        actor.rootComponent.transform.position.y = 0;
         actor.rootComponent.transform.position.z = 0;
-            
-        for (const meshName in this.game.cache.geometries) 
-        {
 
-        	const mesh = this.game.cache.geometries[meshName];
-        	let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
-        	meshActor.rootComponent.transform.scale.setTo(0.10);
-        	meshActor.staticMesh.Mesh = mesh;
+        for (const meshName in this.game.cache.geometries) {
+            if (meshName) {
+                const mesh = this.game.cache.geometries[meshName];
+                let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
+                meshActor.rootComponent.transform.scale.setTo(0.10);
+                meshActor.staticMesh.Mesh = mesh;
+            }
         }
     }
 
-    public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget)
-    {
-
+    // tslint:disable-next-line: no-empty
+    public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget) {
     }
 }
 
 
 let game = null;
 
-export function initGame(){
-	console.log('Arrancando El juego');
-	game = new Game(1920, 1080, 'contenedor', ScaleType.PRESERVE_ASPECT);							//iniciamos el juego
-	game.sceneManager.add(new TestScene('test', game));
-	game.sceneManager.start('test');
- 
-	game.setBackgroundColor(100,100,100, 255);
+export function initGame() {
+    console.log("Arrancando El juego");
+    game = new Game(1920, 1080, "contenedor", ScaleType.PRESERVE_ASPECT);							// iniciamos el juego
+    game.sceneManager.add(new TestScene("test", game));
+    game.sceneManager.start("test");
+    game.setBackgroundColor(100, 100, 100, 255);
  }
