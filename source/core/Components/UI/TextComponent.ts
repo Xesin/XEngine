@@ -65,15 +65,15 @@ export class TextComponent extends UIComponent {
                                 let prevCharCode = charArray[i - 1].charCodeAt(0);
                                 if (this.bitmapData.kerning[prevCharCode] !== undefined
                                     && this.bitmapData.kerning[prevCharCode][charCode] !== undefined) {
-                                    // startX += this.bitmapData.kerning[prevCharCode][charCode];
+                                    startX += this.bitmapData.kerning[prevCharCode][charCode];
                                 }
                             }
 
                             let uvs = [
-                                charData.x / this.atlasWidth, 1-((charData.y + charData.height) / this.atlasHeight),
-                                (charData.x + charData.width) / this.atlasWidth, 1-((charData.y + charData.height) / this.atlasHeight),
-                                (charData.x + charData.width) / this.atlasWidth, 1-(charData.y / this.atlasHeight),
-                                charData.x / this.atlasWidth, 1-(charData.y / this.atlasHeight),
+                                charData.x / this.atlasWidth, 1 - ((charData.y + charData.height) / this.atlasHeight),
+                                (charData.x + charData.width) / this.atlasWidth, 1 - ((charData.y + charData.height) / this.atlasHeight),
+                                (charData.x + charData.width) / this.atlasWidth, 1 - (charData.y / this.atlasHeight),
+                                charData.x / this.atlasWidth, 1 - (charData.y / this.atlasHeight),
                             ];
 
                             let vertices = [

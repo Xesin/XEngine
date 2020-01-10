@@ -6,10 +6,10 @@ export class Transform {
     public scale: Vector3;
     public rotation: Vector3;
 
-    private dirty: boolean;
-    private cachedMatrix: Mat4x4;
+    protected dirty: boolean;
+    protected cachedMatrix: Mat4x4;
 
-    private helperMatrix: Mat4x4;
+    protected helperMatrix: Mat4x4;
 
     constructor () {
         this.dirty = true;
