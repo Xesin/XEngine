@@ -102,27 +102,27 @@ export class ObjMtlLoader implements BasicLoader {
                     switch (key) {
                         case "map_ka":
                             this.loader.image(info[ key ], "img/" + info[ key ]);
-                            this.loader._startPreload();
+                            this.loader.startLoading();
                             state.currentMaterial.ambientTexture = info[ key ];
                             break;
                         case "map_kd":
                             this.loader.image(info[ key ], "img/" + info[ key ]);
-                            this.loader._startPreload();
+                            this.loader.startLoading();
                             state.currentMaterial.albedoture = info[ key ];
                             break;
                         case "map_bump":
                             this.loader.image(info[ key ], "img/" + info[ key ], true);
-                            this.loader._startPreload();
+                            this.loader.startLoading();
                             state.currentMaterial.normalture = info[ key ];
                             break;
                         case "map_d":
                             this.loader.image(info[ key ], "img/" + info[ key ]);
-                            this.loader._startPreload();
+                            this.loader.startLoading();
                             state.currentMaterial.opacityMask = info[ key ];
                             break;
                         case "map_ks":
                             this.loader.image(info[ key ], "img/" + info[ key ]);
-                            this.loader._startPreload();
+                            this.loader.startLoading();
                             state.currentMaterial.specularTexture = info[ key ];
                     }
                 }

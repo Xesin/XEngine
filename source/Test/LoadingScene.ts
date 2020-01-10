@@ -27,8 +27,12 @@ export class LoadingScene extends Scene {
     }
 
     public onLoadedCompleted() {
-        this.game.time.addTimer(500, false, true, true).onCompleted.addOnce(function() {
-            // this.game.sceneManager.start("test");
+        this.game.time.addTimer(200, false, true, true).onCompleted.addOnce(function() {
+            this.actor.setLabel("Press any key");
+            this.game.input.onKeyDown.addOnce(function() {
+                this.game.sceneManager.start("test");
+            }, this);
         }, this);
+
     }
 }
