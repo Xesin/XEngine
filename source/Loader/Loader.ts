@@ -96,8 +96,7 @@ export class Loader {
     }
 
     public startLoading() {
-        
-        if (this.pendingLoads.length === 0) {
+        if (this.pendingLoads.length === 0 && this.preloading) {
             this._callStart();
         } else {
             for (let i = 0; i < this.pendingLoads.length; i++) {
@@ -126,7 +125,7 @@ export class Loader {
             this.pendingLoads = new Array();
             this.onLoadingComplete.dispatch();
             this.onLoadingComplete._destroy();
-            if(this.preloading) {
+            if (this.preloading) {
                 this._callStart();
             }
         }

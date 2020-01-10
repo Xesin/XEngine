@@ -198,7 +198,7 @@ export class Renderer {
         for (let i = 0; i < this.userInterfaceRenderQueue.length; i++) {
             this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0]);
             const uiObject = this.userInterfaceRenderQueue[i];
-            const uiCanvas = (this.userInterfaceRenderQueue[i].componentOwner as CanvasComponent);
+            const uiCanvas = (this.userInterfaceRenderQueue[i].componentOwner as UIComponent).parent;
             this.renderMeshImmediate(uiObject, new Mat4x4().identity(), uiCanvas.getProjectionMatrix());
         }
 
@@ -333,29 +333,42 @@ export class Renderer {
         for (let j = 0; j < components.length; j++) {
             const sceneComponent = components[j];
 
-            let groups = sceneComponent.getAllRenderableGroups();
-            if (groups != null) {
-                for (let k = 0; k < groups.length; k++) {
-                    const group = groups[k];
-                    let affectedLights = this.findAffectedLights(group, sceneLights);
-                    let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights, sceneComponent);
-                    switch (group.Mesh.materials[group.materialIndex].renderQueue) {
-                        case RenderQueue.OPAQUE:
-                            if (this.opaqueRenderQueue.indexOf(renderObject) === -1) {
-                                this.opaqueRenderQueue.push(renderObject);
-                            }
-                            break;
-                        case RenderQueue.TRANSPARENT:
-                            if (this.transparentRenderQueue.indexOf(renderObject) === -1) {
-                                this.transparentRenderQueue.push(renderObject);
-                            }
-                            break;
-                        case RenderQueue.INTERFACE:
-                            if (this.userInterfaceRenderQueue.indexOf(renderObject) === -1) {
-                                this.userInterfaceRenderQueue.push(renderObject);
-                            }
-                            break;
-                    }
+            if (sceneComponent instanceof CanvasComponent) {
+                let canvas = (sceneComponent as CanvasComponent);
+                for (let i = 0; i < canvas.elements.length; i++) {
+                    let uiElement = canvas.elements[i];
+                    let groups = uiElement.getAllRenderableGroups();
+                    this.processGroups(groups, sceneLights, uiElement);
+                }
+            } else {
+                let groups = sceneComponent.getAllRenderableGroups();
+                this.processGroups(groups, sceneLights, sceneComponent);
+            }
+        }
+    }
+
+    private processGroups(groups: MeshGroup[], sceneLights: Array<Light>, sceneComponent: SceneComponent) {
+        if (groups != null) {
+            for (let k = 0; k < groups.length; k++) {
+                const group = groups[k];
+                let affectedLights = this.findAffectedLights(group, sceneLights);
+                let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights, sceneComponent);
+                switch (group.Mesh.materials[group.materialIndex].renderQueue) {
+                    case RenderQueue.OPAQUE:
+                        if (this.opaqueRenderQueue.indexOf(renderObject) === -1) {
+                            this.opaqueRenderQueue.push(renderObject);
+                        }
+                        break;
+                    case RenderQueue.TRANSPARENT:
+                        if (this.transparentRenderQueue.indexOf(renderObject) === -1) {
+                            this.transparentRenderQueue.push(renderObject);
+                        }
+                        break;
+                    case RenderQueue.INTERFACE:
+                        if (this.userInterfaceRenderQueue.indexOf(renderObject) === -1) {
+                            this.userInterfaceRenderQueue.push(renderObject);
+                        }
+                        break;
                 }
             }
         }

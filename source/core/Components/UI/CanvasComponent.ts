@@ -17,6 +17,7 @@ export class CanvasComponent extends SceneComponent {
     }
 
     public addElement(uiElement: UIComponent) {
+        uiElement.parent = this;
         this.elements.push(uiElement);
     }
 
@@ -36,6 +37,6 @@ export class CanvasComponent extends SceneComponent {
     }
 
     public getProjectionMatrix(): Mat4x4 {
-        return new Mat4x4().ortho(0, 1920, 0, 1280, 0, 100);
+        return new Mat4x4().ortho(0, this.game.width, 0, this.game.height, 0, 100);
     }
 }

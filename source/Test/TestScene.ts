@@ -11,14 +11,12 @@ let actor: TestActor = null;
 
 export class TestScene extends Scene {
 
-    private lightColor: string;
     private dirLight: DirectionalLight;
-	private spotLight: SpotLight;
+    private spotLight: SpotLight;
 
     private activatedPost: boolean;
 
-    public preload() {
-    }
+    public static game;
 
     public start() {
         this.activatedPost = false;
@@ -72,15 +70,13 @@ export class TestScene extends Scene {
 
     // tslint:disable-next-line: no-empty
     public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget) {
-	}
-	
-	public static game;
+    }
 }
 
 export function initGame() {
-	console.log("Arrancando El juego");
-	let game = new Game(1920, 1080, "contenedor", ScaleType.PRESERVE_ASPECT);
-    TestScene.game = game;							
+    console.log("Arrancando El juego");
+    let game = new Game(1920, 1080, "contenedor", ScaleType.PRESERVE_ASPECT);
+    TestScene.game = game;
     game.sceneManager.add(new LoadingScene("loading", game));
     game.sceneManager.add(new TestScene("test", game));
     game.sceneManager.start("loading");

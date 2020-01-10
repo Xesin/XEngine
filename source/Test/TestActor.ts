@@ -9,7 +9,6 @@ import { Actor, StaticMeshComponent, CameraComponent, Game } from "../XEngine";
             super(game);
             this.canUpdate = true;
 
-
             this.camera = new CameraComponent(game);
             this.rootComponent = this.camera;
 

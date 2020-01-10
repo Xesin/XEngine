@@ -1,11 +1,11 @@
 
 
 import {Scene} from "../XEngine";
-import { LoadingActor } from "./LoadingActor";
+import { CanvasContainer } from "./CanvasContainer";
 
 export class LoadingScene extends Scene {
 
-    private actor : LoadingActor;
+    private actor: CanvasContainer;
 
     public preload() {
         this.game.loader.bitmapFont("TestFont", "img/font.png", "img/font.fnt");
@@ -14,7 +14,7 @@ export class LoadingScene extends Scene {
     public start() {
         this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
 
-        this.actor = this.Instantiate(LoadingActor, "loadingActor") as LoadingActor;
+        this.actor = this.Instantiate(CanvasContainer, "loadingActor") as CanvasContainer;
 
         this.game.loader.onCompleteFile.add(this.onCompleteFile, this);
         this.game.loader.onLoadingComplete.addOnce(this.onLoadedCompleted, this);
@@ -27,9 +27,8 @@ export class LoadingScene extends Scene {
     }
 
     public onLoadedCompleted() {
-        this.game.time.addTimer(100, false, true, true).onCompleted.addOnce(function(){
-            this.game.sceneManager.start("test");
+        this.game.time.addTimer(500, false, true, true).onCompleted.addOnce(function() {
+            // this.game.sceneManager.start("test");
         }, this);
-        
     }
 }
