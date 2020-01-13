@@ -118,6 +118,10 @@ export class Shader {
                     result.itemSize = 16;
                     this.attributeStride += 16;
                     break;
+                case ShaderType.FLOAT_MAT4:
+                    result.itemSize = 64;
+                    this.attributeStride += 64;
+                    break;
             }
         }
     }

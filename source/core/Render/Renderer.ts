@@ -39,15 +39,20 @@ class RenderObject {
     public group: MeshGroup;
     public modelMatrix: Mat4x4;
     public affectedLights: Array<Light>;
-    public instances: number;
+    public modelMatrices: Array<Mat4x4>;
     public componentOwner: Component;
 
     constructor(group: MeshGroup, modelMatrix: Mat4x4, affectedLights: Array<Light>, componentOwner: Component) {
         this.group = group;
         this.modelMatrix = modelMatrix;
         this.affectedLights = affectedLights;
-        this.instances = 1;
+        this.modelMatrices = new Array(1);
+        this.modelMatrices.push(modelMatrix);
         this.componentOwner = componentOwner;
+    }
+
+    public AddInstance(modelMatrix: Mat4x4) {
+        this.modelMatrices.push(modelMatrix);
     }
 }
 
@@ -352,23 +357,24 @@ export class Renderer {
             for (let k = 0; k < groups.length; k++) {
                 const group = groups[k];
                 let affectedLights = this.findAffectedLights(group, sceneLights);
-                let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights, sceneComponent);
-                switch (group.Mesh.materials[group.materialIndex].renderQueue) {
-                    case RenderQueue.OPAQUE:
-                        if (this.opaqueRenderQueue.indexOf(renderObject) === -1) {
+                
+                let material = group.Mesh.materials[group.materialIndex];
+                let filteredQueue = this.opaqueRenderQueue.filter(ro => ro.group == group);
+                if (filteredQueue.length > 0 && filteredQueue[0].group.Mesh.materials[filteredQueue[0].group.materialIndex] === material) {
+                    filteredQueue[0].AddInstance(sceneComponent.transform.Matrix);
+                } else {
+                    let renderObject = new RenderObject(group, sceneComponent.transform.Matrix, affectedLights, sceneComponent);
+                    switch (material.renderQueue) {
+                        case RenderQueue.OPAQUE:
                             this.opaqueRenderQueue.push(renderObject);
-                        }
-                        break;
-                    case RenderQueue.TRANSPARENT:
-                        if (this.transparentRenderQueue.indexOf(renderObject) === -1) {
+                            break;
+                        case RenderQueue.TRANSPARENT:
                             this.transparentRenderQueue.push(renderObject);
-                        }
-                        break;
-                    case RenderQueue.INTERFACE:
-                        if (this.userInterfaceRenderQueue.indexOf(renderObject) === -1) {
+                            break;
+                        case RenderQueue.USER_INTERFACE:
                             this.userInterfaceRenderQueue.push(renderObject);
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
         }
@@ -475,9 +481,9 @@ export class Renderer {
         material.updateUniforms(gl);
 
         if (meshGroup.indices) {
-            gl.drawElements(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0);
+            gl.drawElementsInstanced(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0, renderObject.modelMatrices.length);
         } else {
-            gl.drawArrays(gl.TRIANGLES, 0, meshGroup.vertexCount);
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, meshGroup.vertexCount, renderObject.modelMatrices.length);
         }
     }
 }

@@ -9,13 +9,15 @@ export class BlinnPhongShader {
     .concat(ShaderBlocks.VertexLightning)
     .concat(
     [
+        "in highp mat4 instancedModelMatrix;",
+
         "void main(void) {",
     ],
     )
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
-            "vWorldPos = modelMatrix * aVertexPosition;",
+            "vWorldPos = instancedModelMatrix * aVertexPosition;",
             "uv = aUV;",
             "uv2 = aUV2;",
             "vColor = aVertexColor;",

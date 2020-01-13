@@ -16,6 +16,6 @@ export class FontMaterial extends BasicMaterial {
 
     constructor(shader = new Shader(ShaderMaterialLib.FontShader.vertexShader, ShaderMaterialLib.FontShader.fragmentShader)) {
         super(shader);
-        this.renderQueue = RenderQueue.INTERFACE;
+        this.renderQueue = RenderQueue.USER_INTERFACE;
     }
 }

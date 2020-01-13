@@ -14,12 +14,9 @@ export class TestScene extends Scene {
     private dirLight: DirectionalLight;
     private spotLight: SpotLight;
 
-    private activatedPost: boolean;
-
     public static game;
 
     public start() {
-        this.activatedPost = false;
         this.game.time.frameLimit = 60;
 
         this.game.input.createAction("Fire", [KEY_CODE.L, KEY_CODE.MOUSE_LEFT_CLICK]);
@@ -52,9 +49,9 @@ export class TestScene extends Scene {
         this.game.tween.add(this.spotLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
         this.game.tween.add(this.spotLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
 
-        actor = this.Instantiate(TestActor) as TestActor;	        // pointLight.distance = 5000;
-        actor.rootComponent.transform.position.x = 0;	        // pointLight.castShadow = true;
-        actor.rootComponent.transform.position.y = 0;
+        actor = this.Instantiate(TestActor) as TestActor;
+        actor.rootComponent.transform.position.x = 0;
+        actor.rootComponent.transform.position.y = 60;
         actor.rootComponent.transform.position.z = 0;
 
         for (const meshName in this.game.cache.geometries) {
@@ -66,10 +63,6 @@ export class TestScene extends Scene {
             }
         }
 
-    }
-
-    // tslint:disable-next-line: no-empty
-    public onWillRenderImage(renderer: Renderer, src: RenderTarget, dst: RenderTarget) {
     }
 }
 
