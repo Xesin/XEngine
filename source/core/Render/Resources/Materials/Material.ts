@@ -123,6 +123,10 @@ export class Material {
         return this.shader.currentVariant.vertexAttrs[this.secondUVsAttrName];
     }
 
+    public get instancedModel(): VertexAttribute {
+        return this.shader.currentVariant.vertexAttrs["instancedModel"];
+    }
+
     public get AttrStride(): number {
         return this.shader.attrStride;
     }

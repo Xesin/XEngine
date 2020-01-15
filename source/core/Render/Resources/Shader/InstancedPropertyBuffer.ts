@@ -1,8 +1,7 @@
 import {VertexAttribute} from "./VertexAttribute";
 
-export class VertexBuffer {
+export class InstancedPropertyBuffer {
 
-    private static CurrentVertexBuffer: VertexBuffer;
 
     public bufferType: number;
     public buffer: WebGLBuffer;
@@ -11,10 +10,9 @@ export class VertexBuffer {
     public mode: number;
 
     public static SetDiry() {
-        VertexBuffer.CurrentVertexBuffer = null;
     }
 
-    constructor(gl: WebGL2RenderingContext, buffer: WebGLBuffer, mode: number = gl.STATIC_DRAW) {
+    constructor(gl: WebGL2RenderingContext, buffer: WebGLBuffer, mode: number = gl.DYNAMIC_DRAW) {
         this.gl = gl;
         this.bufferType = gl.ARRAY_BUFFER;
         this.buffer = buffer;
@@ -22,25 +20,27 @@ export class VertexBuffer {
         this.mode = mode;
     }
 
-    public addAttribute(vertexAttribute: VertexAttribute, stride: number, offset: number) {
+    public addAttribute(vertexAttribute: VertexAttribute, stride: number, offset: number, locOffset: number) {
         let gl = this.gl;
+        let loc = vertexAttribute.index + locOffset;
         this.bind();
-        gl.enableVertexAttribArray(vertexAttribute.index);
+        gl.enableVertexAttribArray(loc);
         gl.vertexAttribPointer(
-            vertexAttribute.index,
+            loc,
             vertexAttribute.numItems,
             vertexAttribute.type,
             vertexAttribute.normalized,
             stride,
             offset,
         );
+        gl.vertexAttribDivisor(loc, 1);
     }
 
     public updateResource(bufferData: Float32Array | Uint32Array) {
         let gl = this.gl;
 
         gl.bindBuffer(this.bufferType, this.buffer);
-        gl.bufferData(this.bufferType, bufferData, this.mode);
+        gl.bufferSubData(this.bufferType, 0, bufferData);
         gl.bindBuffer(this.bufferType, null);
     }
 
@@ -52,27 +52,21 @@ export class VertexBuffer {
 
     public unbind() {
         let gl = this.gl;
-
-        if (VertexBuffer.CurrentVertexBuffer === this) {
-            gl.bindBuffer(this.bufferType, null);
-            VertexBuffer.SetDiry();
-        }
+        gl.bindBuffer(this.bufferType, null);
     }
 
     public destroy() {
         let gl = this.gl;
-        if (VertexBuffer.CurrentVertexBuffer === this) {
-            this.unbind();
-            gl.deleteBuffer(this.buffer);
-        }
+        this.unbind();
+        gl.deleteBuffer(this.buffer);
     }
 
-    public static Create(target: number, initialDataOrSize: number, usage: number, gl: WebGL2RenderingContext): VertexBuffer {
+    public static Create(target: number, initialDataOrSize: number, usage: number, gl: WebGL2RenderingContext): InstancedPropertyBuffer {
         let buffer = gl.createBuffer();
 
         gl.bindBuffer(target, buffer);
         gl.bufferData(target, initialDataOrSize, usage);
 
-        return new VertexBuffer(gl, buffer, usage);
+        return new InstancedPropertyBuffer(gl, buffer);
     }
 }

@@ -6,6 +6,7 @@ export class ShadowCasterShader {
     .concat(ShaderBlocks.VertexInput)
     .concat(ShaderBlocks.VertexOutput)
     .concat(ShaderBlocks.MVPUniforms)
+    .concat(ShaderBlocks.instancedProperties)
     .concat(
     [
         "out highp vec3 vWorldPos;",
@@ -15,6 +16,9 @@ export class ShadowCasterShader {
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
+        "mvMatrix = viewMatrix * instancedModel;",
+        "mvpMatrix = pMatrix * mvMatrix;",
+        "gl_Position = mvpMatrix * aVertexPosition;",
         "vWorldPos = gl_Position.xyz;",
         // "gl_Position.z = max(gl_Position.z, gl_Position.w);",
         "vColor = aVertexColor;",

@@ -106,7 +106,7 @@ export class TextComponent extends UIComponent {
                 }
             }
 
-            this._mesh.addGroup(0, this._mesh.indexData.length - 1, 0, this._mesh.indexData);
+            this._mesh.addGroup(0, this._mesh.vertexData.length / 3, 0, this._mesh.indexData);
         }
     }
 

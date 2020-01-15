@@ -37,6 +37,7 @@ export class VertexAttribute {
                 case ShaderType.INT_VEC4:
                 case ShaderType.FLOAT_VEC4:
                 case ShaderType.FLOAT_MAT2:
+                case ShaderType.FLOAT_MAT4:
                     this.numItems += 4;
                     break;
             }
@@ -55,6 +56,7 @@ export class VertexAttribute {
                 case ShaderType.FLOAT_VEC3:
                 case ShaderType.FLOAT_VEC4:
                 case ShaderType.FLOAT_MAT2:
+                case ShaderType.FLOAT_MAT4:
                     return ShaderType.FLOAT;
             }
     }

@@ -4,6 +4,7 @@ export class BlinnPhongShader {
     public static readonly vertexShader =
     ShaderBlocks.glVersion300
     .concat(ShaderBlocks.VertexInput)
+    .concat(ShaderBlocks.instancedProperties)
     .concat(ShaderBlocks.BlinnPhongVertexOutputs)
     .concat(ShaderBlocks.MVPUniforms)
     .concat(ShaderBlocks.VertexLightning)
@@ -17,12 +18,17 @@ export class BlinnPhongShader {
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
-            "vWorldPos = instancedModelMatrix * aVertexPosition;",
-            "uv = aUV;",
-            "uv2 = aUV2;",
-            "vColor = aVertexColor;",
-            "mat4 viewInverted = inverse(viewMatrix);",
-            "viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
+
+        "mvMatrix = viewMatrix * instancedModel;",
+        "mvpMatrix = pMatrix * mvMatrix;",
+        "gl_Position = mvpMatrix * aVertexPosition;",
+        "vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
+        "vWorldPos = modelMatrix * aVertexPosition;",
+        "uv = aUV;",
+        "uv2 = aUV2;",
+        "vColor = aVertexColor;",
+        "mat4 viewInverted = inverse(viewMatrix);",
+        "viewPos = -transpose(mat3(viewMatrix)) * viewMatrix[3].xyz;",
         "}",
     ]);
 

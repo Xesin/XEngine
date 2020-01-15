@@ -46,7 +46,7 @@ class RenderObject {
         this.group = group;
         this.modelMatrix = modelMatrix;
         this.affectedLights = affectedLights;
-        this.modelMatrices = new Array(1);
+        this.modelMatrices = new Array();
         this.modelMatrices.push(modelMatrix);
         this.componentOwner = componentOwner;
     }
@@ -357,7 +357,6 @@ export class Renderer {
             for (let k = 0; k < groups.length; k++) {
                 const group = groups[k];
                 let affectedLights = this.findAffectedLights(group, sceneLights);
-                
                 let material = group.Mesh.materials[group.materialIndex];
                 let filteredQueue = this.opaqueRenderQueue.filter(ro => ro.group == group);
                 if (filteredQueue.length > 0 && filteredQueue[0].group.Mesh.materials[filteredQueue[0].group.materialIndex] === material) {
@@ -395,7 +394,7 @@ export class Renderer {
             material = this.errorMat;
         }
         material.updateVariants(gl);
-        meshGroup.Mesh.updateResources(this, material);
+        meshGroup.Mesh.updateResources(this, material, renderObject.modelMatrices);
         meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
         material.bind(gl);
         material.modelMatrix = modelMatrix;

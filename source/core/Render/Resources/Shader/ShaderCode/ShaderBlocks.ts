@@ -53,6 +53,10 @@ export class ShaderBlocks {
         "in highp vec2 uv2;",
     ]);
 
+    public static instancedProperties = [
+        "in mat4 instancedModel;",
+    ]
+
     public static MVPUniforms =
     [
         "uniform highp mat4 modelMatrix;",
