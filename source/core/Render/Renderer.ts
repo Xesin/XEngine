@@ -393,6 +393,11 @@ export class Renderer {
         if (material.shader.compileStatus !== ShaderCompileStatus.Ok) {
             material = this.errorMat;
         }
+        if (renderObject.modelMatrices.length > 1) {
+            material.enableKeyword("INSTANCE_ENABLED");
+        } else {
+            material.disableKeyword("INSTANCE_ENABLED");
+        }
         material.updateVariants(gl);
         meshGroup.Mesh.updateResources(this, material, renderObject.modelMatrices);
         meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
@@ -480,9 +485,17 @@ export class Renderer {
         material.updateUniforms(gl);
 
         if (meshGroup.indices) {
-            gl.drawElementsInstanced(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0, renderObject.modelMatrices.length);
+            if (renderObject.modelMatrices.length > 1) {
+                gl.drawElementsInstanced(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0, renderObject.modelMatrices.length);
+            } else {
+                gl.drawElements(gl.TRIANGLES, meshGroup.indices.length, gl.UNSIGNED_SHORT, 0);
+            }
         } else {
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, meshGroup.vertexCount, renderObject.modelMatrices.length);
+            if (renderObject.modelMatrices.length > 1) {
+                gl.drawArraysInstanced(gl.TRIANGLES, 0, meshGroup.vertexCount, renderObject.modelMatrices.length);
+            } else {
+                gl.drawArrays(gl.TRIANGLES, 0, meshGroup.vertexCount);
+            }
         }
     }
 }

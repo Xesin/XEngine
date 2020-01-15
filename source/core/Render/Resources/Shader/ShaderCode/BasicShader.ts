@@ -4,6 +4,7 @@ export class BasicShader {
     public static readonly vertexShader =
     ShaderBlocks.glVersion300
     .concat(ShaderBlocks.MVPUniforms)
+    .concat(ShaderBlocks.instancedProperties)
     .concat(
     [
         "in vec4 aVertexPosition;",
@@ -18,12 +19,18 @@ export class BasicShader {
     )
     .concat(
     [
+        // "#ifdef INSTANCE_ENABLED",
+        // "mvMatrix = viewMatrix * instancedModel;",
+        // "mvpMatrix = pMatrix * mvMatrix;",
+        // "#else",
+        // "mvMatrix = viewMatrix * modelMatrix;",
+        // "mvpMatrix = pMatrix * mvMatrix;",
+        // "#endif",
         "mvMatrix = viewMatrix * modelMatrix;",
         "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",
-            "vColor = aVertexColor;",
-            "vColor = vec4(aVertexNormal, 1.0);",
-            "vColor = vec4(aUV, 0.0, 1.0);",
+        "gl_Position = pMatrix * viewMatrix * modelMatrix * aVertexPosition;",
+        "vColor = aVertexColor;",
         "}",
     ]);
 
@@ -36,11 +43,13 @@ export class BasicShader {
         "in mat4 mvpMatrix;",
         "in mat4 mvMatrix;",
 
-        "out vec4 fragColor;",
+        "layout(location = 0) out vec4 fragColor;",
+        "layout(location = 1) out vec4 fragNormals;",
 
         "void main(void) {",
             "float alpha = vColor.a;",
-            "fragColor = vColor;",
+            "fragColor = vec4(vColor.xyz, 1.0);",
+            "fragNormals = vec4(1.0);",
             // "if(alpha < 0.6) discard;",
         "}",
     ]);

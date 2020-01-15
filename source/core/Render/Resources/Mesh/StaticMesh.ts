@@ -105,7 +105,7 @@ export class StaticMesh {
             let material = overrideMaterial != null ? overrideMaterial : this.materials[this.groups[i].materialIndex];
 
             if (material.instancedModel) {
-                let dataBuffer = new DataBuffer32(material.instancedModel.itemSize * 1);
+                let dataBuffer = new DataBuffer32(material.instancedModel.itemSize * modelMatrix.length);
                 if (!this.instandecModelBuffer) {
                     this.instandecModelBuffer =
                         InstancedPropertyBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
@@ -113,13 +113,20 @@ export class StaticMesh {
                     this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
                     this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
                     this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
-                    
                 }
 
                 let floatBuffer = dataBuffer.floatView;
+                if (this.instandecModelBuffer.currentSize !== floatBuffer.length) {
+                    this.instandecModelBuffer =
+                        InstancedPropertyBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
+                }
 
                 for (let j = 0; j < modelMatrix.length; j++) {
-                    floatBuffer.set(modelMatrix[j].elements);
+                    floatBuffer.set(modelMatrix[j].elements, j * 16);
                 }
                 this.instandecModelBuffer.bind();
                 this.instandecModelBuffer.updateResource(floatBuffer);
@@ -333,9 +340,9 @@ export class StaticMesh {
 
         if (this.instandecModelBuffer && material.instancedModel) {
             this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
+            this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
+            this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
+            this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
         }
 
         this.positionBuffer[materialIndex].bind();

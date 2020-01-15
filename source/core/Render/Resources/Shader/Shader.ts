@@ -75,7 +75,7 @@ export class Shader {
         let shaderVariant = this.shaderVariants[this.hash];
         let activeUniforms = gl.getProgramParameter(shaderVariant.program, gl.ACTIVE_UNIFORMS);
         let activeAttributes = gl.getProgramParameter(shaderVariant.program, gl.ACTIVE_ATTRIBUTES);
-
+        shaderVariant.uniforms = new IDict<Uniform>();
         // Uniforms
         for (let i = 0; i < activeUniforms; i++) {
             let uniform = gl.getActiveUniform(shaderVariant.program, i);
@@ -88,11 +88,13 @@ export class Shader {
         }
 
         // Attributes
+        shaderVariant.vertexAttrs = new IDict<VertexAttribute>();
         this.attributeStride = 0;
         for (let i = 0; i < activeAttributes; i++) {
             let attribute = gl.getActiveAttrib(shaderVariant.program, i);
             let type = attribute.type as ShaderType;
-            let result = new VertexAttribute(i, attribute.name, type,
+            let location = gl.getAttribLocation(shaderVariant.program, attribute.name);
+            let result = new VertexAttribute(location, attribute.name, type,
                 gl.getAttribLocation(shaderVariant.program, attribute.name), this.attributeStride, false);
             shaderVariant.vertexAttrs[attribute.name] = result;
             switch (type) {

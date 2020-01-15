@@ -10,20 +10,20 @@ export class BlinnPhongShader {
     .concat(ShaderBlocks.VertexLightning)
     .concat(
     [
-        "in highp mat4 instancedModelMatrix;",
-
         "void main(void) {",
     ],
     )
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
-
+        "vWorldPos = modelMatrix * aVertexPosition;",
+        "#ifdef INSTANCED_ENABLED",
         "mvMatrix = viewMatrix * instancedModel;",
         "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",
+        "vWorldPos = instancedModel * aVertexPosition;",
+        "#endif",
         "vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
-        "vWorldPos = modelMatrix * aVertexPosition;",
         "uv = aUV;",
         "uv2 = aUV2;",
         "vColor = aVertexColor;",

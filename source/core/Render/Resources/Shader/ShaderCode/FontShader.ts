@@ -4,7 +4,6 @@ export class FontShader {
     public static readonly vertexShader =
     ShaderBlocks.glVersion300
     .concat(ShaderBlocks.MVPUniforms)
-    
     .concat(
     [
         "in vec4 aVertexPosition;",
@@ -17,7 +16,11 @@ export class FontShader {
         "out vec2 vUV;",
 
         "void main(void) {",
+            "#ifdef INSTANCED_ENABLED",
             "mat4 mvpMatrix = pMatrix * viewMatrix * instancedModel;",
+            "#else",
+            "mat4 mvpMatrix = pMatrix * viewMatrix * modelMatrix;",
+            "#endif",
             "vUV = aUV;",
             "vColor = aVertexColor;",
             "gl_Position = mvpMatrix * aVertexPosition;",

@@ -8,6 +8,7 @@ export class InstancedPropertyBuffer {
     private gl: WebGL2RenderingContext;
     public attributes: Array<any>;
     public mode: number;
+    public currentSize: number;
 
     public static SetDiry() {
     }
@@ -18,6 +19,7 @@ export class InstancedPropertyBuffer {
         this.buffer = buffer;
         this.attributes = new Array<any>();
         this.mode = mode;
+        this.currentSize = 0;
     }
 
     public addAttribute(vertexAttribute: VertexAttribute, stride: number, offset: number, locOffset: number) {
@@ -42,6 +44,7 @@ export class InstancedPropertyBuffer {
         gl.bindBuffer(this.bufferType, this.buffer);
         gl.bufferSubData(this.bufferType, 0, bufferData);
         gl.bindBuffer(this.bufferType, null);
+        this.currentSize = bufferData.length;
     }
 
     public bind() {

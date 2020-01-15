@@ -16,9 +16,11 @@ export class ShadowCasterShader {
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
+        "#ifdef INSTANCED_ENABLED",
         "mvMatrix = viewMatrix * instancedModel;",
         "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",
+        "#endif",
         "vWorldPos = gl_Position.xyz;",
         // "gl_Position.z = max(gl_Position.z, gl_Position.w);",
         "vColor = aVertexColor;",
