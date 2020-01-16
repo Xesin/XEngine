@@ -399,9 +399,9 @@ export class Renderer {
             material.disableKeyword("INSTANCE_ENABLED");
         }
         material.updateVariants(gl);
+        material.bind(gl);
         meshGroup.Mesh.updateResources(this, material, renderObject.modelMatrices);
         meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
-        material.bind(gl);
         material.modelMatrix = modelMatrix;
 
         material.viewMatrix = viewMatrix;

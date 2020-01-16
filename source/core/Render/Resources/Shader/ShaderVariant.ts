@@ -8,6 +8,7 @@ export class ShaderVariant {
     public uniforms: IDict<Uniform>;
     public vertexAttrs: IDict<VertexAttribute>;
     public samplers: Uniform[];
+    public vao: WebGLVertexArrayObject;
 
     constructor() {
         this.uniforms = new IDict<Uniform>();

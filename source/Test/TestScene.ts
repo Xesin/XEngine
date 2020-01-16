@@ -56,26 +56,32 @@ export class TestScene extends Scene {
         actor.rootComponent.transform.position.y = 0;
         actor.rootComponent.transform.position.z = -10;
 
-        // for (const meshName in this.game.cache.geometries) {
-        //     if (meshName) {
-        //         const mesh = this.game.cache.geometries[meshName];
-        //         let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
-        //         meshActor.rootComponent.transform.scale.setTo(0.10);
-        //         meshActor.staticMesh.Mesh = mesh;
-        //     }
-        // }
-
-        let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
-
-        let geom = new SphereMesh(mat, 5, 5, 5);
-
-        for (let i = 0; i < 100; i ++) {
-            for (let j = 0; j < 100; j ++) {
-                let actor = this.Instantiate(StaticMeshActor, `mesh${i}${j}`) as StaticMeshActor;
-                actor.Transform.position.setTo(i, 0, j);
-                actor.staticMesh.Mesh = geom;
+        for (const meshName in this.game.cache.geometries) {
+            if (meshName) {
+                const mesh = this.game.cache.geometries[meshName];
+                let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
+                meshActor.rootComponent.transform.scale.setTo(0.10);
+                meshActor.staticMesh.Mesh = mesh;
             }
         }
+
+        // let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+        // let mat2 = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+
+        // let geom = new SphereMesh(mat, 5, 5, 5);
+        // let geom2 = new SphereMesh(mat2, 5, 5, 5);
+
+        // for (let i = 0; i < 100; i ++) {
+        //     let actor = this.Instantiate(StaticMeshActor, `mesh${i}`) as StaticMeshActor;
+        //     actor.Transform.position.setTo(i, 0, 0);
+        //     actor.staticMesh.Mesh = geom;
+        // }
+
+        // for (let j = 0; j < 100; j ++) {
+        //     let actor = this.Instantiate(StaticMeshActor, `mesh${j}`) as StaticMeshActor;
+        //     actor.Transform.position.setTo(0, 0, j);
+        //     actor.staticMesh.Mesh = geom2;
+        // }
 
     }
 }
@@ -86,6 +92,6 @@ export function initGame() {
     TestScene.game = game;
     game.sceneManager.add(new LoadingScene("loading", game));
     game.sceneManager.add(new TestScene("test", game));
-    game.sceneManager.start("test");
+    game.sceneManager.start("loading");
     game.setBackgroundColor(100, 100, 100, 255);
  }

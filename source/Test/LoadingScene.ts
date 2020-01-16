@@ -4,10 +4,11 @@ import {Scene} from "../XEngine";
 import { StaticMeshActor } from "../core/Game";
 import { SphereMesh } from "../core/Render/Renderer";
 import { BlinnPhongMaterial } from "../core/Render/Resources/Materials/_module/Materials";
+import { CanvasContainer } from "./CanvasContainer";
 
 export class LoadingScene extends Scene {
 
-    // private actor: CanvasContainer;
+    private actor: CanvasContainer;
 
     public preload() {
         this.game.loader.bitmapFont("TestFont", "img/font.png", "img/font.fnt");
@@ -16,16 +17,16 @@ export class LoadingScene extends Scene {
     public start() {
         this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
 
-        // this.actor = this.Instantiate(CanvasContainer, "loadingActor") as CanvasContainer;
+        this.actor = this.Instantiate(CanvasContainer, "loadingActor") as CanvasContainer;
 
-        // this.game.loader.onCompleteFile.add(this.onCompleteFile, this);
-        // this.game.loader.onLoadingComplete.addOnce(this.onLoadedCompleted, this);
+        this.game.loader.onCompleteFile.add(this.onCompleteFile, this);
+        this.game.loader.onLoadingComplete.addOnce(this.onLoadedCompleted, this);
 
-        // this.game.loader.startLoading();
+        this.game.loader.startLoading();
     }
 
     private onCompleteFile(progress: number) {
-        // this.actor.setLabel((progress * 100).toLocaleString("es-ES", {maximumFractionDigits: 2}) + " %");
+        this.actor.setLabel((progress * 100).toLocaleString("es-ES", {maximumFractionDigits: 2}) + " %");
     }
 
     public onLoadedCompleted() {
