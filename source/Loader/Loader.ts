@@ -54,7 +54,11 @@ export class Loader {
      * @memberof Loader
      */
     public image(imageName: string, imageUrl: string, isNormal = false) {
-        this.pendingLoads.push(new ImageLoader(imageName, imageUrl, this, 0, 0, isNormal));
+
+        if (!this.game.cache.images.hasOwnProperty(imageName)
+        && this.pendingLoads.filter(p => p.imageName && p.imageName === imageName).length === 0) {
+            this.pendingLoads.push(new ImageLoader(imageName, imageUrl, this, 0, 0, isNormal));
+        }
     }
 
     /**

@@ -45,8 +45,8 @@ export class TestScene extends Scene {
         this.spotLight.color = pointLightColor;
         this.spotLight.spotAngle = 85;
         this.spotLight.intensity = 600;
-        this.spotLight.distance = 5000;
-        this.spotLight.castShadow = false;
+        this.spotLight.distance = 2000;
+        this.spotLight.castShadow = true;
 
         this.game.tween.add(this.spotLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
         this.game.tween.add(this.spotLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});

@@ -77,6 +77,7 @@ export class BlinnPhongShader {
             "fragColor.xyz = finalColor;",
             "fragColor.a = alpha;",
             "fragNormals = vec4(surfaceNormal, 1.0);",
+            // "fragColor = vec4(uv.x, uv.y, 0.0, 1.0);",
         "}",
     ]);
 }
