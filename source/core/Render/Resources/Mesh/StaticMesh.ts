@@ -296,6 +296,7 @@ export class StaticMesh {
                 vertexAttr.itemSize,
                 0,
                 );
+            gl.vertexAttribDivisor(vertexAttr.index, 0)
         }
         if (this.uvBuffer[materialIndex] && material.HasUVs) {
             this.uvBuffer[materialIndex].bind();
@@ -336,6 +337,7 @@ export class StaticMesh {
                 vertexAttr.itemSize,
                 0,
                 );
+            gl.vertexAttribDivisor(vertexAttr.index, 0)
         }
 
         if (this.instandecModelBuffer && material.instancedModel) {
@@ -356,6 +358,7 @@ export class StaticMesh {
             0,
             );
         gl.enableVertexAttribArray(vertexAttr.index);
+        gl.vertexAttribDivisor(vertexAttr.index, 0)
         if (this.indexed) {
             this.indexBuffer[materialIndex].bind();
         }

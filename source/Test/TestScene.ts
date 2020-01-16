@@ -53,8 +53,8 @@ export class TestScene extends Scene {
 
         actor = this.Instantiate(TestActor) as TestActor;
         actor.rootComponent.transform.position.x = 0;
-        actor.rootComponent.transform.position.y = 60;
-        actor.rootComponent.transform.position.z = 0;
+        actor.rootComponent.transform.position.y = 0;
+        actor.rootComponent.transform.position.z = -10;
 
         // for (const meshName in this.game.cache.geometries) {
         //     if (meshName) {
@@ -69,10 +69,12 @@ export class TestScene extends Scene {
 
         let geom = new SphereMesh(mat, 5, 5, 5);
 
-        for (let i = 0; i < 1000; i ++) {
-            let actor = this.Instantiate(StaticMeshActor, `mesh${i}`) as StaticMeshActor;
-            actor.Transform.position.setTo(0, 0, 0);
-            actor.staticMesh.Mesh = geom;
+        for (let i = 0; i < 100; i ++) {
+            for (let j = 0; j < 100; j ++) {
+                let actor = this.Instantiate(StaticMeshActor, `mesh${i}${j}`) as StaticMeshActor;
+                actor.Transform.position.setTo(i, 0, j);
+                actor.staticMesh.Mesh = geom;
+            }
         }
 
     }

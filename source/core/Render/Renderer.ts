@@ -177,7 +177,7 @@ export class Renderer {
 
         this.PopulateRenderQueues(scene, sceneLights);
 
-        this.renderShadowmaps(sceneLights, scene);
+        // this.renderShadowmaps(sceneLights, scene);
 
         if (camera.renderTarget) {
             camera.renderTarget.bind(this.gl);

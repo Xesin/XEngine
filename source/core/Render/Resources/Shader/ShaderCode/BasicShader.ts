@@ -19,17 +19,17 @@ export class BasicShader {
     )
     .concat(
     [
-        // "#ifdef INSTANCE_ENABLED",
-        // "mvMatrix = viewMatrix * instancedModel;",
-        // "mvpMatrix = pMatrix * mvMatrix;",
-        // "#else",
-        // "mvMatrix = viewMatrix * modelMatrix;",
-        // "mvpMatrix = pMatrix * mvMatrix;",
-        // "#endif",
+        "#ifdef INSTANCE_ENABLED",
+        "mvMatrix = viewMatrix * instancedModel;",
+        "mvpMatrix = pMatrix * mvMatrix;",
+        "#else",
         "mvMatrix = viewMatrix * modelMatrix;",
         "mvpMatrix = pMatrix * mvMatrix;",
+        "#endif",
+        // "mvMatrix = viewMatrix * modelMatrix;",
+        // "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",
-        "gl_Position = pMatrix * viewMatrix * modelMatrix * aVertexPosition;",
+        // "gl_Position = pMatrix * viewMatrix * modelMatrix * aVertexPosition;",
         "vColor = aVertexColor;",
         "}",
     ]);
