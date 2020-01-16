@@ -16,7 +16,7 @@ export class ShadowCasterShader {
     .concat(ShaderBlocks.mvpAndPosCalc)
     .concat(
     [
-        "#ifdef INSTANCED_ENABLED",
+        "#ifdef INSTANCE_ENABLED",
         "mvMatrix = viewMatrix * instancedModel;",
         "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",

@@ -16,7 +16,7 @@ export class FontShader {
         "out vec2 vUV;",
 
         "void main(void) {",
-            "#ifdef INSTANCED_ENABLED",
+            "#ifdef INSTANCE_ENABLED",
             "mat4 mvpMatrix = pMatrix * viewMatrix * instancedModel;",
             "#else",
             "mat4 mvpMatrix = pMatrix * viewMatrix * modelMatrix;",
