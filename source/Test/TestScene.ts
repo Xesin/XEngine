@@ -46,7 +46,7 @@ export class TestScene extends Scene {
         this.spotLight.spotAngle = 85;
         this.spotLight.intensity = 600;
         this.spotLight.distance = 2000;
-        this.spotLight.castShadow = true;
+        this.spotLight.castShadow = false;
 
         this.game.tween.add(this.spotLight.transform.position).to({x: 70}, 20000, Easing.Quad.InOut, true, 0, -1, true).from({x: -70});
         this.game.tween.add(this.spotLight.transform.rotation).to({y: 180}, 7000, Easing.Quad.InOut, true, 0, -1, true).from({y: -180});
@@ -64,6 +64,16 @@ export class TestScene extends Scene {
                 meshActor.staticMesh.Mesh = mesh;
             }
         }
+
+        // for (const meshName in this.game.cache.geometries) {
+        //     if (meshName) {
+        //         const mesh = this.game.cache.geometries[meshName];
+        //         let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
+        //         meshActor.rootComponent.transform.scale.setTo(0.10);
+        //         meshActor.staticMesh.Mesh = mesh;
+        //         meshActor.rootComponent.transform.position.x = 400;
+        //     }
+        // }
 
         // let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
         // let mat2 = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;

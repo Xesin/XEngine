@@ -17,7 +17,7 @@ export class BlinnPhongShader {
     .concat(
     [
         "vWorldPos = modelMatrix * aVertexPosition;",
-        "#ifdef INSTANCED_ENABLED",
+        "#ifdef INSTANCE_ENABLED",
         "mvMatrix = viewMatrix * instancedModel;",
         "mvpMatrix = pMatrix * mvMatrix;",
         "gl_Position = mvpMatrix * aVertexPosition;",

@@ -289,12 +289,11 @@ export class StaticMesh {
                 if (!this.instandecModelBuffer || this.instandecModelBuffer.currentSize !== floatBuffer.length) {
                     this.instandecModelBuffer =
                         InstancedPropertyBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
-                }                
-
-                this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
-                this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
-                this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
-                this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
+                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
+                }
 
                 for (let j = 0; j < modelMatrix.length; j++) {
                     floatBuffer.set(modelMatrix[j].elements, j * 16);
