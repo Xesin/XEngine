@@ -295,25 +295,7 @@ export class StaticMesh {
 
     public bind(gl: WebGL2RenderingContext, material: Material, materialIndex = 0) {
         gl.bindVertexArray(this.vaos[materialIndex].vao);
-        if (this.colorBuffer[materialIndex] && material.HasColor) {
-            this.colorBuffer[materialIndex].bind();
-        }
-        if (this.uvBuffer[materialIndex] && material.HasUVs) {
-            this.uvBuffer[materialIndex].bind();
-        }
-        if (this.uv2Buffer[materialIndex] && material.HasSecondUVs) {
-            this.uv2Buffer[materialIndex].bind();
-        }
-        if (this.normalBuffer[materialIndex] && material.HasNormals) {
-            this.normalBuffer[materialIndex].bind();
-        }
-
-        if (this.instandecModelBuffer && material.instancedModel) {
-            this.instandecModelBuffer.bind();
-        }
-
-        this.positionBuffer[materialIndex].bind();
-
+        
         if (this.indexed) {
             this.indexBuffer[materialIndex].bind();
         }
