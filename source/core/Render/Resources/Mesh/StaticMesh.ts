@@ -9,6 +9,7 @@ import {DataBuffer16} from "../Shader/DataBuffer16";
 import { InstancedPropertyBuffer } from "../Shader/InstancedPropertyBuffer";
 import { Mat4x4 } from "../../../../Math/Mathf";
 import { ShaderVariant } from "../Shader/ShaderVariant";
+import { IDict } from "../../../IDict";
 
 export class StaticMesh {
     public initialized = false;
@@ -104,19 +105,35 @@ export class StaticMesh {
         this.groups = new Array();
     }
 
+    private getVaoFromShadervariant(vaos: Array<{vao: WebGLVertexArrayObject,variant: ShaderVariant}>, variant: ShaderVariant): WebGLVertexArrayObject{
+        for (let i = 0; i < vaos.length; i++) {
+            const vao = vaos[i];
+            if(vao.variant == variant)
+                {
+                    return vao.vao;
+                }
+        }
+
+        return null;
+    }
+
     public updateResources(renderer: Renderer, overrideMaterial: Material = null, modelMatrix: Array<Mat4x4> = null) {
         this.gl = renderer.gl;
 
         for (let i = 0; i < this.groups.length; i++) {
             let material = overrideMaterial != null ? overrideMaterial : this.materials[this.groups[i].materialIndex];
+            let vao = this.getVaoFromShadervariant(this.vaos, material.shader.currentVariant);
+            if (!this.initialized || !vao) {
+                if(!vao){ 
+                    let vaoObject = {
+                        vao : this.gl.createVertexArray(),
+                        variant: material.shader.currentVariant
+                    }
+                    vao = vaoObject.vao;
+                    this.vaos.push(vaoObject);
+                }                
 
-            if (!this.initialized || this.vaos[i].variant !== material.shader.currentVariant) { 
-                this.vaos[i] = {
-                    vao : this.gl.createVertexArray(),
-                    variant: material.shader.currentVariant
-                }
-
-                this.gl.bindVertexArray(this.vaos[i].vao);
+                this.gl.bindVertexArray(vao);
                 
                 let startVertexData = this.groups[i].firstVertex;
                 let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount);
@@ -127,7 +144,6 @@ export class StaticMesh {
                         let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vColor.itemSize));
                         this.colorBuffer[i] =
                             VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-                        this.colorBuffer[i].addAttribute(material.vColor, material.vColor.itemSize, 0);
                         let floatBuffer = dataBuffer.floatView;
 
                         let index = dataBuffer.allocate(this.groups[i].vertexCount);
@@ -148,6 +164,7 @@ export class StaticMesh {
                         this.colorBuffer[i].bind();
                         this.colorBuffer[i].updateResource(floatBuffer);
                     }
+                    this.colorBuffer[i].addAttribute(material.vColor, material.vColor.itemSize, 0);
                 }
 
                 if (material.HasNormals) {
@@ -156,7 +173,6 @@ export class StaticMesh {
                         let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vNormal.itemSize));
                         this.normalBuffer[i] =
                         VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-                        this.normalBuffer[i].addAttribute(material.vNormal, material.vNormal.itemSize, 0);
                         let floatBuffer = dataBuffer.floatView;
 
                         let index = dataBuffer.allocate(this.groups[i].vertexCount);
@@ -174,6 +190,7 @@ export class StaticMesh {
                         this.normalBuffer[i].bind();
                         this.normalBuffer[i].updateResource(floatBuffer);
                     }
+                    this.normalBuffer[i].addAttribute(material.vNormal, material.vNormal.itemSize, 0);
                 }
 
                 if (material.HasUVs) {
@@ -182,7 +199,6 @@ export class StaticMesh {
                         let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vUv.itemSize));
                         this.uvBuffer[i] =
                         VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-                        this.uvBuffer[i].addAttribute(material.vUv, material.vUv.itemSize, 0);
                         let floatBuffer = dataBuffer.floatView;
 
                         let index = dataBuffer.allocate(this.groups[i].vertexCount);
@@ -198,6 +214,7 @@ export class StaticMesh {
                         this.uvBuffer[i].bind();
                         this.uvBuffer[i].updateResource(floatBuffer);
                     }
+                    this.uvBuffer[i].addAttribute(material.vUv, material.vUv.itemSize, 0);
                 }
 
                 if (material.HasSecondUVs) {
@@ -206,7 +223,7 @@ export class StaticMesh {
                         let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vUv2.itemSize));
                         this.uv2Buffer[i] =
                         VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-                        this.uv2Buffer[i].addAttribute(material.vUv2, material.vUv2.itemSize, 0);
+                        
                         let floatBuffer = dataBuffer.floatView;
 
                         let index = dataBuffer.allocate(this.groups[i].vertexCount);
@@ -222,6 +239,7 @@ export class StaticMesh {
                         this.uv2Buffer[i].bind();
                         this.uv2Buffer[i].updateResource(floatBuffer);
                     }
+                    this.uv2Buffer[i].addAttribute(material.vUv2, material.vUv2.itemSize, 0);
                 }
 
                 if (material.HasPosition) {
@@ -230,7 +248,6 @@ export class StaticMesh {
                         let dataBuffer = new DataBuffer32((this.groups[i].vertexCount * material.vPosition.itemSize));
                         this.positionBuffer[i] =
                             VertexBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.STATIC_DRAW, this.gl);
-                        this.positionBuffer[i].addAttribute(material.vPosition, material.vPosition.itemSize, 0);
                         let floatBuffer = dataBuffer.floatView;
 
                         let index = dataBuffer.allocate(this.groups[i].vertexCount);
@@ -243,6 +260,7 @@ export class StaticMesh {
                         this.positionBuffer[i].bind();
                         this.positionBuffer[i].updateResource(floatBuffer);
                     }
+                    this.positionBuffer[i].addAttribute(material.vPosition, material.vPosition.itemSize, 0);
                 }
 
                 if (this.indexData && !this.indexBuffer[i]) {
@@ -260,7 +278,7 @@ export class StaticMesh {
              }
              else
              {
-                this.gl.bindVertexArray(this.vaos[i].vao);
+                this.gl.bindVertexArray(vao);
              }
 
              if (material.instancedModel) {
@@ -294,8 +312,9 @@ export class StaticMesh {
     }
 
     public bind(gl: WebGL2RenderingContext, material: Material, materialIndex = 0) {
-        gl.bindVertexArray(this.vaos[materialIndex].vao);
-        
+        let vao = this.getVaoFromShadervariant(this.vaos, material.shader.currentVariant);
+        gl.bindVertexArray(vao);
+
         if (this.indexed) {
             this.indexBuffer[materialIndex].bind();
         }

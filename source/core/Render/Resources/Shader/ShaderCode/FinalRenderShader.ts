@@ -34,6 +34,7 @@ export class FinalRenderShader {
             "float baseSample = Linear01Depth(depthTex, uv);",
             "vec4 color = texture(mainTex, uv);",
             "fragColor = color;",
+            // "fragColor = vec4(uv.x, uv.y, 0.0,1.0);",
         "}",
     ]);
 }

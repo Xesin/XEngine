@@ -37,7 +37,7 @@ export class TestScene extends Scene {
         this.dirLight.transform.rotation.x = 85;
         this.dirLight.transform.rotation.y = 45;
         this.dirLight.color = pointLightColor;
-        this.dirLight.castShadow = false;
+        this.dirLight.castShadow = true;
 
         this.spotLight = new SpotLight(this.game);
 
