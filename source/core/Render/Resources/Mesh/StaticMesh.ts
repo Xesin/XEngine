@@ -11,7 +11,7 @@ import { Mat4x4 } from "../../../../Math/Mathf";
 import { ShaderVariant } from "../Shader/ShaderVariant";
 import { VertexArrayobject } from "../Shader/VertexArrayObject";
 
-class VertexArrayDictItem {
+export class VertexArrayDictItem {
     public vao: VertexArrayobject;
     public variant: ShaderVariant;
     public index: number;
@@ -114,7 +114,7 @@ export class StaticMesh {
         this.groups = new Array();
     }
 
-    private getVaoFromShadervariantAndIndex(vaos: Array<VertexArrayDictItem>
+    protected getVaoFromShadervariantAndIndex(vaos: Array<VertexArrayDictItem>
         , variant: ShaderVariant
         , index: number): VertexArrayobject {
         for (let i = 0; i < vaos.length; i++) {
@@ -324,13 +324,6 @@ export class StaticMesh {
 
         if (this.indexed) {
             this.indexBuffer[materialIndex].bind();
-        }
-    }
-
-    public unBind(materialIndex = 0) {
-        this.positionBuffer[materialIndex].unbind();
-        if (this.indexed) {
-            this.indexBuffer[materialIndex].unbind();
         }
     }
 }

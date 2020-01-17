@@ -2,18 +2,14 @@ import {Game} from "../../Game";
 import {SceneComponent} from "../SceneComponent";
 import {MeshGroup} from "../../Render/Resources/Mesh/MeshGroup";
 import {StaticMesh} from "../../Render/Resources/Mesh/StaticMesh";
-import {Mathf, Box, Vector3} from "../../../Math/Mathf";
+import {Box, Vector3} from "../../../Math/Mathf";
 
 export class StaticMeshComponent extends SceneComponent {
 
     public Mesh: StaticMesh;
 
-
-    private speed: number;
-
     constructor(game: Game, name = "StaticMeshComponent") {
         super(game, name);
-        this.speed = Mathf.randomRange(-60, 60);
         this.bCanUpdate = true;
     }
 
