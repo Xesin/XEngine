@@ -9,7 +9,13 @@ import {DataBuffer16} from "../Shader/DataBuffer16";
 import { InstancedPropertyBuffer } from "../Shader/InstancedPropertyBuffer";
 import { Mat4x4 } from "../../../../Math/Mathf";
 import { ShaderVariant } from "../Shader/ShaderVariant";
-import { IDict } from "../../../IDict";
+import { VertexArrayobject } from "../Shader/VertexArrayObject";
+
+class VertexArrayDictItem {
+    public vao: VertexArrayobject;
+    public variant: ShaderVariant;
+    public index: number;
+}
 
 export class StaticMesh {
     public initialized = false;
@@ -36,12 +42,9 @@ export class StaticMesh {
     public uv2Buffer: VertexBuffer[];
     public normalBuffer: VertexBuffer[];
     public colorBuffer: VertexBuffer[];
-    public instandecModelBuffer: InstancedPropertyBuffer;
-    public vaos: Array<{
-        vao: WebGLVertexArrayObject,
-        variant: ShaderVariant,
-        index: number,
-    }>;
+    public instancedModelBuffer: InstancedPropertyBuffer;
+
+    public vaos: Array<VertexArrayDictItem>;
 
     // tslint:disable-next-line:max-line-length
     constructor(vertexData: Array<number>, indexData: Array<number>, uvData: Array<number>, normalData: Array<number>, colorData: Array<number>, materials: Array<Material> = new Array(), topology = Topology.TRIANGLES, name = "", uv2Data: Array<number> = new Array()) {
@@ -53,7 +56,7 @@ export class StaticMesh {
         this.colorData = colorData;
         this.indexed = indexData != null ? true : false;
         this.groups = new Array();
-        this.instandecModelBuffer = null;
+        this.instancedModelBuffer = null;
         this.positionBuffer = new Array();
         this.uvBuffer = new Array();
         this.uv2Buffer = new Array();
@@ -100,15 +103,20 @@ export class StaticMesh {
                 this.gl.deleteBuffer(this.colorBuffer[i].buffer);
             }
         }
+
+        if (this.instancedModelBuffer) {
+            this.gl.deleteBuffer(this.instancedModelBuffer.buffer);
+            this.instancedModelBuffer = null;
+        }
         this.colorBuffer = new Array();
         this.initialized = false;
         this.vertexCount = 0;
         this.groups = new Array();
     }
 
-    private getVaoFromShadervariantAndIndex(vaos: Array<{vao: WebGLVertexArrayObject, variant: ShaderVariant, index: number}>
+    private getVaoFromShadervariantAndIndex(vaos: Array<VertexArrayDictItem>
         , variant: ShaderVariant
-        , index: number): WebGLVertexArrayObject {
+        , index: number): VertexArrayobject {
         for (let i = 0; i < vaos.length; i++) {
             const vao = vaos[i];
             if (vao.variant === variant && vao.index === index) {
@@ -127,16 +135,16 @@ export class StaticMesh {
             let vao = this.getVaoFromShadervariantAndIndex(this.vaos, material.shader.currentVariant, this.groups[i].materialIndex);
             if (!this.initialized || !vao) {
                 if (!vao) {
-                    let vaoObject = {
-                        index: this.groups[i].materialIndex,
-                        vao : this.gl.createVertexArray(),
-                        variant: material.shader.currentVariant,
-                    };
+                    let vaoObject = new VertexArrayDictItem();
+                    vaoObject.index = this.groups[i].materialIndex;
+                    vaoObject.vao = VertexArrayobject.Create(this.gl);
+                    vaoObject.variant = material.shader.currentVariant;
+
                     vao = vaoObject.vao;
                     this.vaos.push(vaoObject);
                 }
 
-                this.gl.bindVertexArray(vao);
+                vao.bind();
 
                 let startVertexData = this.groups[i].firstVertex;
                 let endVertexData = (this.groups[i].firstVertex + this.groups[i].vertexCount);
@@ -277,29 +285,29 @@ export class StaticMesh {
                     }
                     this.indexBuffer[i].updateResource(uintIndexBuffer);
                 }
-             } else {
-                this.gl.bindVertexArray(vao);
-             }
+                } else {
+                    vao.bind();
+                }
 
-             if (material.instancedModel) {
+                if (material.instancedModel) {
                 let dataBuffer = new DataBuffer32(material.instancedModel.itemSize * modelMatrix.length);
                 let floatBuffer = dataBuffer.floatView;
 
 
-                if (!this.instandecModelBuffer || this.instandecModelBuffer.currentSize !== floatBuffer.length) {
-                    this.instandecModelBuffer =
+                if (!this.instancedModelBuffer || this.instancedModelBuffer.currentSize !== floatBuffer.length) {
+                    this.instancedModelBuffer =
                         InstancedPropertyBuffer.Create(this.gl.ARRAY_BUFFER, dataBuffer.getByteCapacity(), this.gl.DYNAMIC_DRAW, this.gl);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
-                    this.instandecModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
+                    this.instancedModelBuffer.addAttribute(material.instancedModel, 64, 0, 0);
+                    this.instancedModelBuffer.addAttribute(material.instancedModel, 64, 16, 1);
+                    this.instancedModelBuffer.addAttribute(material.instancedModel, 64, 32, 2);
+                    this.instancedModelBuffer.addAttribute(material.instancedModel, 64, 48, 3);
                 }
 
                 for (let j = 0; j < modelMatrix.length; j++) {
                     floatBuffer.set(modelMatrix[j].elements, j * 16);
                 }
-                this.instandecModelBuffer.bind();
-                this.instandecModelBuffer.updateResource(floatBuffer);
+                this.instancedModelBuffer.bind();
+                this.instancedModelBuffer.updateResource(floatBuffer);
             }
         }
 
@@ -310,9 +318,9 @@ export class StaticMesh {
         this.groups.push(new MeshGroup(materialIndex, start, count, this, indices));
     }
 
-    public bind(gl: WebGL2RenderingContext, material: Material, materialIndex = 0) {
+    public bind(material: Material, materialIndex = 0) {
         let vao = this.getVaoFromShadervariantAndIndex(this.vaos, material.shader.currentVariant, materialIndex);
-        gl.bindVertexArray(vao);
+        vao.bind();
 
         if (this.indexed) {
             this.indexBuffer[materialIndex].bind();

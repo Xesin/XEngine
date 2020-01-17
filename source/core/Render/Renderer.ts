@@ -358,7 +358,7 @@ export class Renderer {
                 const group = groups[k];
                 let affectedLights = this.findAffectedLights(group, sceneLights);
                 let material = group.Mesh.materials[group.materialIndex];
-                let filteredQueue = this.opaqueRenderQueue.filter(ro => ro.group == group);
+                let filteredQueue = this.opaqueRenderQueue.filter(ro => ro.group === group);
                 if (filteredQueue.length > 0 && filteredQueue[0].group.Mesh.materials[filteredQueue[0].group.materialIndex] === material) {
                     filteredQueue[0].AddInstance(sceneComponent.transform.Matrix);
                 } else {
@@ -401,7 +401,7 @@ export class Renderer {
         material.updateVariants(gl);
         material.bind(gl);
         meshGroup.Mesh.updateResources(this, material, renderObject.modelMatrices);
-        meshGroup.Mesh.bind(this.gl, material, meshGroup.materialIndex);
+        meshGroup.Mesh.bind(material, meshGroup.materialIndex);
         material.modelMatrix = modelMatrix;
 
         material.viewMatrix = viewMatrix;
