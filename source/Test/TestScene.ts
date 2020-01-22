@@ -80,12 +80,14 @@ export class TestScene extends Scene {
         //     }
         // }
 
-        // let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+        let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
         // let mat2 = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
 
-        // let geom = new SphereMesh(mat, 5, 5, 5);
+        let geom = new SphereMesh(mat, 5, 5, 5);
         // let geom2 = new SphereMesh(mat2, 5, 5, 5);
-
+        let sphereActor = this.Instantiate(StaticMeshActor, `mesh`) as StaticMeshActor;
+        sphereActor.Transform.position.setTo(0, 0, 0);
+        sphereActor.staticMesh.Mesh = geom;
         // for (let i = 0; i < 100; i ++) {
         //     let actor = this.Instantiate(StaticMeshActor, `mesh${i}`) as StaticMeshActor;
         //     actor.Transform.position.setTo(i, 0, 0);

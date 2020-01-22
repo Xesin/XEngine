@@ -1,7 +1,7 @@
 import { Audio } from "./Audio";
 import { Vector3 } from "../XEngine";
 import { Game } from "../core/Game";
-import { Mathf } from "../Math/Mathf";
+import { Mathf, Mat4x4, Vector4 } from "../Math/Mathf";
 
 export class AudioEngine {
 
@@ -19,10 +19,12 @@ export class AudioEngine {
     public update() {
         if (this.context) {
             let camera = this.game.sceneManager.currentScene.mainCamera;
-            let cameraRotation = camera.transform.rotation;
-            this.context.listener.setPosition(camera.transform.position.x, camera.transform.position.y, camera.transform.position.z);
+            let modelMatrix = camera.transform.Matrix;
+            let position = new Vector3(0, 0, 0).multiplyMatrix(modelMatrix);
+            let rotation = camera.transform.forward();
+            this.context.listener.setPosition(position.x, position.y, position.z);
             this.context.listener.setOrientation(
-                Mathf.TO_RADIANS * cameraRotation.x, Mathf.TO_RADIANS * cameraRotation.y, Mathf.TO_RADIANS * cameraRotation.z
+                rotation.x, rotation.y, rotation.z
                 , 0
                 , 1
                 , 0);
@@ -54,7 +56,9 @@ export class AudioEngine {
         panner.setPosition(position.x, position.y, position.z);
         panner.coneInnerAngle = 5,
         panner.coneOuterAngle = 10;
-        panner.coneOuterGain = 0.2;
+        panner.coneOuterGain = 0.5;
+        panner.maxDistance = 200;
+        panner.rolloffFactor = 1.0;
         panner.connect(this.context.destination);
 
         gain.connect(panner);
