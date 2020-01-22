@@ -1,4 +1,5 @@
 import {BasicLoader, Loader} from "./_module/Loader";
+import { Audio } from "../Audio/Audio";
 
 export class AudioLoader implements BasicLoader {
     public audioName: string;
@@ -18,23 +19,20 @@ export class AudioLoader implements BasicLoader {
     public load() {
         let _this = this;
         this.isLoading = true;
-        let newAudio = {
-            audio: null,
-            audioName: _this.audioName,
-            decoded: false,
-        };
+        let newAudio = new Audio(null, this.audioName);
         let request = new XMLHttpRequest();
         request.open("GET", _this.audioUrl, true);
         request.responseType = "arraybuffer";
         let handler = function () {
-            let audioRef = _this.loader.game.cache.audios[_this.audioName];
+            let cachedAudio = _this.loader.game.cache.audios[_this.audioName];
             if (request.status === 200) {
-                _this.loader.game.audioContext.decodeAudioData(request.response, function (buffer) {
-                    audioRef.audio = buffer;
-                    audioRef.decoded = true;
+                _this.loader.game.audioEngine.decodeAudioData(request.response, function (buffer: AudioBuffer) {
+                    cachedAudio.buffer = buffer;
+                    cachedAudio.decoded = true;
                     _this.completed = true;
                     _this.loader._notifyCompleted();
-                }, function () {
+                }, function (error: DOMException) {
+                    console.error(error.message);
                     _this.completed = true;
                     _this.loader._notifyCompleted();
                 });

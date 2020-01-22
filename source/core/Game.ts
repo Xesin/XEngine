@@ -10,6 +10,7 @@ import {TweenManager} from "../tween/TweenManager";
 import {Renderer} from "./Render/Renderer";
 import {Material, BasicMaterial} from "./Render/Resources/Materials/_module/Materials";
 import {Shader} from "./Render/Resources/Shader/Shader";
+import { AudioEngine } from "../Audio/AudioEngine";
 
 declare global {
 
@@ -91,7 +92,6 @@ export class Game {
     public width: number;
 
     public canvas: HTMLCanvasElement;
-    public audioContext: AudioContext;
     public time: TimeManager;
     public scale: ScaleManager;
     public sceneManager: SceneManager;
@@ -99,7 +99,7 @@ export class Game {
     public loader: Loader;
     public input: InputManager;
     public tween: TweenManager;
-
+    public audioEngine: AudioEngine;
     public renderer: Renderer;
 
     private timer: number;
@@ -137,8 +137,6 @@ export class Game {
         this.canvas.setAttribute("width", width.toString());
         this.canvas.setAttribute("height", height.toString());
 
-        this.audioContext = new AudioContext();
-
         this.time = new TimeManager();
         this.scale = new ScaleManager(this, scaleType);
         this.renderer = new Renderer(this, this.canvas);
@@ -147,6 +145,9 @@ export class Game {
         this.loader = new Loader(this);
         this.input = new InputManager(this);
         this.tween = new TweenManager();
+        this.audioEngine = new AudioEngine(this);
+
+        this.input.onClick.addOnce(this.audioEngine.initialize, this.audioEngine);
 
         this.pause = false;
         this.isMobile = false;

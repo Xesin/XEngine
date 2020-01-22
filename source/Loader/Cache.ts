@@ -3,12 +3,13 @@ import {Texture2D} from "../core/Render/Resources/Texture/Texture2D";
 import {BitmapData} from "../core/Render/Resources/Texture/BitmapData";
 import {Material} from "../core/Render/Resources/Materials/_module/Materials";
 import {StaticMesh} from "../core/Render/Resources/Mesh/StaticMesh";
+import { Audio } from "../Audio/Audio";
 
 
 export class Cache {
 
     public images: IDict<Texture2D>;
-    public audios: IDict<any>;
+    public audios: IDict<Audio>;
     public json: IDict<any>;
     public bitmapData: IDict<BitmapData>;
     public geometries: IDict<StaticMesh>;
