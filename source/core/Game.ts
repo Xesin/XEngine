@@ -173,6 +173,7 @@ export class Game {
             this.input.update();
             this.tween.update(this.time.deltaTimeMillis);
             this.sceneManager.update(this.time.deltaTime);
+            this.audioEngine.update();
             this.sceneManager.render(this.renderer);
         }
     }

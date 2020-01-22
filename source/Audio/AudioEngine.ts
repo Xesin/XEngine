@@ -50,7 +50,7 @@ export class AudioEngine {
         let source = this.context.createBufferSource();
         let panner = this.context.createPanner();
         let gain = this.context.createGain();
-        gain.gain.value = 0.5;
+        gain.gain.value = 1.0;
         panner.setPosition(position.x, position.y, position.z);
         panner.coneInnerAngle = 5,
         panner.coneOuterAngle = 10;

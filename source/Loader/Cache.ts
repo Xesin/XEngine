@@ -34,7 +34,7 @@ export class Cache {
         }
     }
 
-    public audio(audioName: string) {
+    public audio(audioName: string): Audio {
         if (this.audios[audioName] === undefined) {
             console.error("No hay audio para el nombre: " + audioName);
         } else {
