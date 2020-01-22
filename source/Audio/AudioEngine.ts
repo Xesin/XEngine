@@ -8,7 +8,7 @@ export class AudioEngine {
 
     private context: AudioContext;
     private game: Game;
-    private gain: GainNode;
+    private gainNode: GainNode;
     public globalVolume: number;
 
     // tslint:disable-next-line: no-empty
@@ -18,10 +18,10 @@ export class AudioEngine {
 
     public initialize() {
         this.context = new AudioContext();
-        this.gain = this.context.createGain();
-        this.gain.connect(this.context.destination);
+        this.gainNode = this.context.createGain();
+        this.gainNode.connect(this.context.destination);
         this.globalVolume = 1;
-        this.gain.gain.value = 1;
+        this.gainNode.gain.value = 1;
         let _this = this;
         document.addEventListener("visibilitychange", function() {
             console.log(document.hidden, document.visibilityState);
@@ -44,7 +44,7 @@ export class AudioEngine {
                 , 0
                 , 1
                 , 0);
-            this.gain.gain.value = this.globalVolume;
+            this.gainNode.gain.value = this.globalVolume;
         }
     }
 
@@ -59,7 +59,7 @@ export class AudioEngine {
     public playAudio(audio: Audio, time = 0): AudioBufferSourceNode {
         let source = this.context.createBufferSource();
         source.buffer = audio.buffer;
-        let destinationNode: AudioNode = this.gain;
+        let destinationNode: AudioNode = this.gainNode;
         if (audio.audioMixer) {
             destinationNode = audio.audioMixer.connect(destinationNode);
         }
@@ -79,7 +79,7 @@ export class AudioEngine {
         panner.maxDistance = 200;
         panner.rolloffFactor = 1.0;
 
-        panner.connect(this.gain);
+        panner.connect(this.gainNode);
 
         let destinationNode: AudioNode = panner;
         if (audio.audioMixer) {
