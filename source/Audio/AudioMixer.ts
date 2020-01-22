@@ -44,6 +44,12 @@ export class AudioMixer {
         return lowPassNode;
     }
 
+    public addIIRFilter(feedForward: Array<number>, feedBackward: Array<number>): IIRFilterNode {
+        let effectNode = this.context.createIIRFilter(feedForward, feedBackward);
+        this.effects.iir = effectNode;
+        return effectNode;
+    }
+
     public set gain(v: number) {
         this.gainNode.gain.value = v;
     }
