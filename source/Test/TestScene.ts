@@ -99,8 +99,14 @@ export class TestScene extends Scene {
         //     actor.Transform.position.setTo(0, 0, j);
         //     actor.staticMesh.Mesh = geom2;
         // }
+        let mixer = this.game.audioEngine.createMixer();
+        let mixerGroup = this.game.audioEngine.createMixerGroup();
+        mixer.attachToGroup(mixerGroup);
+        mixer.addLowPassFilter();
+        let audio = this.game.cache.audio("music");
+        audio.audioMixer = mixer;
 
-        this.game.audioEngine.playAudioAtPosition(this.game.cache.audio("music"), new Vector3(), 0);
+        this.game.audioEngine.playAudioAtPosition(audio, new Vector3(), 0);
     }
 }
 
