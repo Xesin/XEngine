@@ -17,6 +17,9 @@ export class AudioEngine {
     }
 
     public initialize() {
+        if (this.context) {
+            return;
+        }
         this.context = new AudioContext();
         this.gainNode = this.context.createGain();
         this.gainNode.connect(this.context.destination);

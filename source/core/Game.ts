@@ -148,6 +148,7 @@ export class Game {
         this.audioEngine = new AudioEngine(this);
 
         this.input.onClick.addOnce(this.audioEngine.initialize, this.audioEngine);
+        this.input.onKeyDown.addOnce(this.audioEngine.initialize, this.audioEngine);
 
         this.pause = false;
         this.isMobile = false;

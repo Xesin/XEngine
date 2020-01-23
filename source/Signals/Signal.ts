@@ -34,7 +34,7 @@ export class Signal {
     }
 
     public dispatch(..._eventArguments: any[]) {
-        for (let i = 0; i < this.bindings.length; i++) {
+        for (let i = this.bindings.length - 1; i >= 0; i--) {
             if (this.bindings[i]) {
                 try {
                     this.bindings[i].dispatch.apply(this.bindings[i], arguments);
