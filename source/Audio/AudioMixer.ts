@@ -9,6 +9,7 @@ export class AudioMixer {
     private mixerGroup: AudioMixerGroup;
     private effects: IDict<AudioNode>;
     private destinationNode: AudioNode;
+    private lastNode: AudioNode;
     private alreadyConnected: boolean;
 
     constructor(context: AudioContext) {
@@ -22,28 +23,14 @@ export class AudioMixer {
         this.mixerGroup = mixerGroup;
     }
 
-    public connect(previousNode: AudioNode, destinationNode: AudioNode): AudioNode {
-        this.alreadyConnected = true;
+    public connect(previousNode: AudioNode, destinationNode: AudioNode) {
         this.destinationNode = destinationNode;
         previousNode.connect(this.gainNode);
-        let currentNode: AudioNode = this.gainNode;
-        for (const key in this.effects) {
-            if (this.effects.hasOwnProperty(key)) {
-                const effect = this.effects[key];
-                currentNode.disconnect();
-                currentNode.connect(effect);
-                currentNode = effect;
-            }
-        }
 
-        if (this.mixerGroup) {
-            currentNode.disconnect();
-            currentNode = this.mixerGroup.connect(currentNode);
+        if (!this.alreadyConnected) {
+            this.rewireConnection();
+            this.alreadyConnected = true;
         }
-        currentNode.disconnect();
-        currentNode.connect(destinationNode);
-
-        return currentNode;
     }
 
     private rewireConnection() {
@@ -74,7 +61,7 @@ export class AudioMixer {
         return lowPassNode;
     }
 
-    public addLowHigPassFilter(): BiquadFilterNode {
+    public addHigPassFilter(): BiquadFilterNode {
         let lowPassNode = this.context.createBiquadFilter();
         this.effects.highpass = lowPassNode;
         lowPassNode.type = "highpass";

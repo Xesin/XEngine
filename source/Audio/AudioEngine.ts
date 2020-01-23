@@ -62,9 +62,8 @@ export class AudioEngine {
     public playAudio(audio: Audio, time = 0): AudioBufferSourceNode {
         let source = this.context.createBufferSource();
         source.buffer = audio.buffer;
-        let destinationNode: AudioNode = this.gainNode;
         if (audio.audioMixer) {
-            destinationNode = audio.audioMixer.connect(source, this.gainNode);
+            audio.audioMixer.connect(source, this.gainNode);
         }
         source.start(time);
 
@@ -81,9 +80,9 @@ export class AudioEngine {
         panner.maxDistance = 200;
         panner.rolloffFactor = 1.0;
 
-        let destinationNode: AudioNode = this.gainNode;
+
         if (audio.audioMixer) {
-            destinationNode = audio.audioMixer.connect(panner, this.gainNode);
+            audio.audioMixer.connect(panner, this.gainNode);
         } else {
             panner.connect(this.gainNode);
         }
