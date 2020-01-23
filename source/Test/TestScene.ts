@@ -7,7 +7,7 @@ import { CanvasComponent } from "../core/Components/UI/CanvasComponent";
 import { LoadingScene } from "./LoadingScene";
 import { BlinnPhongMaterial, BasicMaterial } from "../core/Render/Resources/Materials/_module/Materials";
 import { Vector3 } from "../Math/Mathf";
-import { AudioInstance } from "../Audio/AudioInstance";
+import { AudioSource } from "../Audio/AudioSource";
 
 declare var dat: any;
 let actor: TestActor = null;
@@ -16,7 +16,7 @@ export class TestScene extends Scene {
 
     private dirLight: DirectionalLight;
     private spotLight: SpotLight;
-    public audio: AudioInstance;
+    public audio: AudioSource;
 
     public static game;
 

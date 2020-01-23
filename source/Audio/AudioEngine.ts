@@ -3,13 +3,13 @@ import { Vector3 } from "../XEngine";
 import { Game } from "../core/Game";
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { AudioMixer } from "./AudioMixer";
-import { AudioInstance } from "./AudioInstance";
+import { AudioSource } from "./AudioSource";
 
 export class AudioEngine {
 
     private context: AudioContext;
     private game: Game;
-    private gainNode: GainNode;
+    public gainNode: GainNode;
     public globalVolume: number;
 
     // tslint:disable-next-line: no-empty
@@ -60,52 +60,27 @@ export class AudioEngine {
         }
     }
 
-    public playAudio(audio: Audio, time = 0, loop = false): AudioInstance {
-        let instance = new AudioInstance(audio, this, this.game, loop);
+    public playAudio(audio: Audio, time = 0, loop = false): AudioSource {
+        let instance = this.createAudio(audio, time, loop);
         instance.start(time);
 
         return instance;
     }
 
-    public createAudioSourceNode(audio: Audio): AudioBufferSourceNode {
-        let source = this.context.createBufferSource();
-        source.buffer = audio.buffer;
-        if (audio.audioMixer) {
-            audio.audioMixer.connect(source, this.gainNode);
-        }
-
-        return source;
-    }
-
-    public playAudioAtPosition(audio: Audio, position: Vector3, time = 0, loop = false): AudioInstance {
-        let instance = new AudioInstance(audio, this, this.game, loop, position);
+    public createAudio(audio: Audio, time = 0, loop = false): AudioSource {
+        let instance = new AudioSource(audio, this.context, this, this.game, loop);
         instance.start(time);
 
         return instance;
     }
 
-    public createAudioSourceNodeAtPosition(audio: Audio, position: Vector3): AudioBufferSourceNode {
-        let source = this.context.createBufferSource();
-        let panner = this.context.createPanner();
-        panner.setPosition(position.x, position.y, position.z);
-        panner.coneInnerAngle = 5,
-        panner.coneOuterAngle = 10;
-        panner.coneOuterGain = 0.5;
-        panner.maxDistance = 200;
-        panner.rolloffFactor = 1.0;
+    public playAudioAtPosition(audio: Audio, position: Vector3, time = 0, loop = false): AudioSource {
+        let instance = this.createAudio(audio, time, loop);
+        instance.is3D = true;
+        instance.position = position;
+        instance.start(time);
 
-
-        if (audio.audioMixer) {
-            audio.audioMixer.connect(panner, this.gainNode);
-        } else {
-            panner.connect(this.gainNode);
-        }
-
-
-        source.buffer = audio.buffer;
-        source.connect(panner);
-
-        return source;
+        return instance;
     }
 
     public createMixerGroup(): AudioMixerGroup {

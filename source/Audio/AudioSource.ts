@@ -2,44 +2,88 @@ import { Audio } from "./Audio";
 import { Vector3, Game } from "../XEngine";
 import { AudioEngine } from "./AudioEngine";
 
-export class AudioInstance {
+export class AudioSource {
 
     private sourceAudio: Audio;
     private audioSourceNode: AudioBufferSourceNode;
-    private audioContext: AudioEngine;
-    private position: Vector3;
+    private audioContext: AudioContext;
+    private audioEngine: AudioEngine;
     private loop: boolean;
     private startedAtTime: number;
     private pauseTime: number;
     private game: Game;
+    private panner: PannerNode;
 
     public isPlaying: boolean;
     public isPaused: boolean;
+    public is3D: boolean;
+    public position: Vector3;
 
     constructor(
         audio: Audio
-        , audioContext: AudioEngine
+        , audioContext: AudioContext
+        , audioEngine: AudioEngine
         , game: Game
         , loop = false
+        , is3D = false
         , position: Vector3 = null) {
         this.sourceAudio = audio;
         this.audioSourceNode = null;
         this.audioContext = audioContext;
+        this.audioEngine = audioEngine;
         this.position = position;
         this.loop = loop;
         this.pauseTime = 0;
         this.startedAtTime = 0;
         this.game = game;
+        this.is3D = is3D;
+        if (this.is3D && !this.position) {
+            this.position = new Vector3(0, 0, 0);
+        }
+    }
+
+    private createAudioSource() {
+        let source = this.audioContext.createBufferSource();
+        let panner = null;
+        if (this.is3D) {
+            panner = this.audioContext.createPanner();
+            this.panner = panner;
+            panner.setPosition(this.position.x, this.position.y, this.position.z);
+            panner.coneInnerAngle = 360,
+            panner.coneOuterAngle = 0;
+            panner.coneOuterGain = 0.5;
+            panner.maxDistance = 200;
+            panner.rolloffFactor = 1.0;
+
+            if (this.sourceAudio.audioMixer) {
+                this.sourceAudio.audioMixer.connect(panner, this.audioEngine.gainNode);
+            } else {
+                panner.connect(this.audioEngine.gainNode);
+            }
+
+            source.buffer = this.sourceAudio.buffer;
+            source.connect(panner);
+        } else {
+            if (this.sourceAudio.audioMixer) {
+                this.sourceAudio.audioMixer.connect(source, this.audioEngine.gainNode);
+            } else {
+                source.connect(this.audioEngine.gainNode);
+            }
+        }
+
+        return source;
+    }
+
+    public update() {
+        if (this.is3D) {
+            this.panner.setPosition(this.position.x, this.position.y, this.position.z);
+        }
     }
 
     public start(offset = 0) {
         if (!this.isPlaying) {
             let _this = this;
-            if (this.position) {
-                this.audioSourceNode = this.audioContext.createAudioSourceNodeAtPosition(this.sourceAudio, this.position);
-            } else {
-                this.audioSourceNode = this.audioContext.createAudioSourceNode(this.sourceAudio);
-            }
+            this.audioSourceNode = this.createAudioSource();
             this.audioSourceNode.loop = this.loop;
             this.audioSourceNode.onended = function(event) {
                 if (!_this.isPaused) {
