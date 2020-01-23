@@ -3,6 +3,7 @@ import { Vector3 } from "../XEngine";
 import { Game } from "../core/Game";
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { AudioMixer } from "./AudioMixer";
+import { AudioInstance } from "./AudioInstance";
 
 export class AudioEngine {
 
@@ -59,18 +60,31 @@ export class AudioEngine {
         }
     }
 
-    public playAudio(audio: Audio, time = 0): AudioBufferSourceNode {
+    public playAudio(audio: Audio, time = 0, loop = false): AudioInstance {
+        let instance = new AudioInstance(audio, this, this.game, null, loop);
+        instance.start(time);
+
+        return instance;
+    }
+
+    public createAudioSourceNode(audio: Audio): AudioBufferSourceNode {
         let source = this.context.createBufferSource();
         source.buffer = audio.buffer;
         if (audio.audioMixer) {
             audio.audioMixer.connect(source, this.gainNode);
         }
-        source.start(time);
 
         return source;
     }
 
-    public playAudioAtPosition(audio: Audio, position: Vector3, time = 0): AudioBufferSourceNode {
+    public playAudioAtPosition(audio: Audio, position: Vector3, time = 0, loop = false): AudioInstance {
+        let instance = new AudioInstance(audio, this, this.game, position, loop);
+        instance.start(time);
+
+        return instance;
+    }
+
+    public createAudioSourceNodeAtPosition(audio: Audio, position: Vector3): AudioBufferSourceNode {
         let source = this.context.createBufferSource();
         let panner = this.context.createPanner();
         panner.setPosition(position.x, position.y, position.z);
@@ -90,8 +104,6 @@ export class AudioEngine {
 
         source.buffer = audio.buffer;
         source.connect(panner);
-        source.loop = true;
-        source.start(time);
 
         return source;
     }
