@@ -15,11 +15,11 @@ export class AudioMixerGroup {
         return this.gainNode;
     }
 
-    public set gain(v: number) {
+    public set volume(v: number) {
         this.gainNode.gain.value = v;
     }
 
-    public get gain(): number {
+    public get volume(): number {
         return this.gainNode.gain.value;
     }
 }

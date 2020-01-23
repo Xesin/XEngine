@@ -1,6 +1,5 @@
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { IDict } from "../core/Game";
-import { Audio } from "./Audio";
 
 export class AudioMixer {
 
@@ -9,7 +8,6 @@ export class AudioMixer {
     private mixerGroup: AudioMixerGroup;
     private effects: IDict<AudioNode>;
     private destinationNode: AudioNode;
-    private lastNode: AudioNode;
     private alreadyConnected: boolean;
 
     constructor(context: AudioContext) {
@@ -81,11 +79,11 @@ export class AudioMixer {
         return effectNode;
     }
 
-    public set gain(v: number) {
+    public set volume(v: number) {
         this.gainNode.gain.value = v;
     }
 
-    public get gain(): number {
+    public get volume(): number {
         return this.gainNode.gain.value;
     }
 

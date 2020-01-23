@@ -117,4 +117,12 @@ export class AudioEngine {
         let group = new AudioMixer(this.context);
         return group;
     }
+
+    public set volume(v: number) {
+        this.gainNode.gain.value = v;
+    }
+
+    public get volume(): number {
+        return this.gainNode.gain.value;
+    }
 }

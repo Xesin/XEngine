@@ -105,7 +105,7 @@ export class TestScene extends Scene {
         let mixerGroup = this.game.audioEngine.createMixerGroup();
         mixer.attachToGroup(mixerGroup);
 
-        mixer.gain = 3;
+        mixer.volume = 3;
         let audio = this.game.cache.audio("music");
         audio.audioMixer = mixer;
 
