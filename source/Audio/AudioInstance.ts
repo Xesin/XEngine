@@ -20,8 +20,8 @@ export class AudioInstance {
         audio: Audio
         , audioContext: AudioEngine
         , game: Game
-        , position: Vector3 = null
-        , loop = false) {
+        , loop = false
+        , position: Vector3 = null) {
         this.sourceAudio = audio;
         this.audioSourceNode = null;
         this.audioContext = audioContext;

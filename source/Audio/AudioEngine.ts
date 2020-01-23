@@ -61,7 +61,7 @@ export class AudioEngine {
     }
 
     public playAudio(audio: Audio, time = 0, loop = false): AudioInstance {
-        let instance = new AudioInstance(audio, this, this.game, null, loop);
+        let instance = new AudioInstance(audio, this, this.game, loop);
         instance.start(time);
 
         return instance;
@@ -78,7 +78,7 @@ export class AudioEngine {
     }
 
     public playAudioAtPosition(audio: Audio, position: Vector3, time = 0, loop = false): AudioInstance {
-        let instance = new AudioInstance(audio, this, this.game, position, loop);
+        let instance = new AudioInstance(audio, this, this.game, loop, position);
         instance.start(time);
 
         return instance;
