@@ -15,19 +15,19 @@ export class LoadingScene extends Scene {
     }
 
     public start() {
-        this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
+        // this.game.loader.obj("img/sponza.obj", "img/sponza.mtl");
 
         this.actor = this.Instantiate(CanvasContainer, "loadingActor") as CanvasContainer;
 
-        this.game.loader.onCompleteFile.add(this.onCompleteFile, this);
-        this.game.loader.onLoadingComplete.addOnce(this.onLoadedCompleted, this);
+        // this.game.loader.onCompleteFile.add(this.onCompleteFile, this);
+        // this.game.loader.onLoadingComplete.addOnce(this.onLoadedCompleted, this);
 
-        this.game.loader.startLoading();
+        // this.game.loader.startLoading();
 
-        // this.actor.setLabel("Press any key");
-        //     this.game.input.onKeyDown.addOnce(function() {
-        //         this.game.sceneManager.start("test");
-        //     }, this);
+        this.actor.setLabel("Press any key");
+            this.game.input.onKeyDown.addOnce(function() {
+                this.game.sceneManager.start("test");
+            }, this);
     }
 
     private onCompleteFile(progress: number) {

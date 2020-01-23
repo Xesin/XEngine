@@ -15,6 +15,7 @@ export class TestScene extends Scene {
 
     private dirLight: DirectionalLight;
     private spotLight: SpotLight;
+    public audio: AudioBufferSourceNode;
 
     public static game;
 
@@ -61,14 +62,14 @@ export class TestScene extends Scene {
         actor.rootComponent.transform.position.y = 0;
         actor.rootComponent.transform.position.z = -10;
 
-        for (const meshName in this.game.cache.geometries) {
-            if (meshName) {
-                const mesh = this.game.cache.geometries[meshName];
-                let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
-                meshActor.rootComponent.transform.scale.setTo(0.10);
-                meshActor.staticMesh.Mesh = mesh;
-            }
-        }
+        // for (const meshName in this.game.cache.geometries) {
+        //     if (meshName) {
+        //         const mesh = this.game.cache.geometries[meshName];
+        //         let meshActor = this.Instantiate(StaticMeshActor, meshName) as StaticMeshActor;
+        //         meshActor.rootComponent.transform.scale.setTo(0.10);
+        //         meshActor.staticMesh.Mesh = mesh;
+        //     }
+        // }
 
         // for (const meshName in this.game.cache.geometries) {
         //     if (meshName) {
@@ -80,14 +81,14 @@ export class TestScene extends Scene {
         //     }
         // }
 
-        // let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
-        // // let mat2 = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+        let mat = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
+        // let mat2 = this.game.createMaterialFromBase(BasicMaterial) as BasicMaterial;
 
-        // let geom = new SphereMesh(mat, 5, 5, 5);
-        // // let geom2 = new SphereMesh(mat2, 5, 5, 5);
-        // let sphereActor = this.Instantiate(StaticMeshActor, `mesh`) as StaticMeshActor;
-        // sphereActor.Transform.position.setTo(0, 0, 0);
-        // sphereActor.staticMesh.Mesh = geom;
+        let geom = new SphereMesh(mat, 5, 5, 5);
+        // let geom2 = new SphereMesh(mat2, 5, 5, 5);
+        let sphereActor = this.Instantiate(StaticMeshActor, `mesh`) as StaticMeshActor;
+        sphereActor.Transform.position.setTo(0, 0, 0);
+        sphereActor.staticMesh.Mesh = geom;
         // for (let i = 0; i < 100; i ++) {
         //     let actor = this.Instantiate(StaticMeshActor, `mesh${i}`) as StaticMeshActor;
         //     actor.Transform.position.setTo(i, 0, 0);
@@ -102,10 +103,11 @@ export class TestScene extends Scene {
         let mixer = this.game.audioEngine.createMixer();
         let mixerGroup = this.game.audioEngine.createMixerGroup();
         mixer.attachToGroup(mixerGroup);
+        // mixer.addLowPassFilter();
         let audio = this.game.cache.audio("music");
         audio.audioMixer = mixer;
 
-        this.game.audioEngine.playAudioAtPosition(audio, new Vector3(), 0);
+        this.audio = this.game.audioEngine.playAudioAtPosition(audio, new Vector3(), 0);
     }
 }
 

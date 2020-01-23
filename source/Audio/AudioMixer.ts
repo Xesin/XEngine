@@ -1,5 +1,6 @@
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { IDict } from "../core/Game";
+import { Audio } from "./Audio";
 
 export class AudioMixer {
 
@@ -7,7 +8,8 @@ export class AudioMixer {
     private gainNode: GainNode;
     private mixerGroup: AudioMixerGroup;
     private effects: IDict<AudioNode>;
-
+    private destinationNode: AudioNode;
+    private alreadyConnected: boolean;
 
     constructor(context: AudioContext) {
         this.context = context;
@@ -20,33 +22,75 @@ export class AudioMixer {
         this.mixerGroup = mixerGroup;
     }
 
-    public connect(previousNode: AudioNode): AudioNode {
-        let currentNode = previousNode;
-        if (this.mixerGroup) {
-            currentNode = this.mixerGroup.connect(currentNode);
-        }
+    public connect(previousNode: AudioNode, destinationNode: AudioNode): AudioNode {
+        this.alreadyConnected = true;
+        this.destinationNode = destinationNode;
+        previousNode.connect(this.gainNode);
+        let currentNode: AudioNode = this.gainNode;
         for (const key in this.effects) {
             if (this.effects.hasOwnProperty(key)) {
                 const effect = this.effects[key];
-                effect.connect(currentNode);
+                currentNode.disconnect();
+                currentNode.connect(effect);
                 currentNode = effect;
             }
         }
 
-        this.gainNode.connect(currentNode);
+        if (this.mixerGroup) {
+            currentNode.disconnect();
+            currentNode = this.mixerGroup.connect(currentNode);
+        }
+        currentNode.disconnect();
+        currentNode.connect(destinationNode);
 
-        return this.gainNode;
+        return currentNode;
+    }
+
+    private rewireConnection() {
+        let currentNode: AudioNode = this.gainNode;
+        for (const key in this.effects) {
+            if (this.effects.hasOwnProperty(key)) {
+                const effect = this.effects[key];
+                currentNode.disconnect();
+                currentNode.connect(effect);
+                currentNode = effect;
+            }
+        }
+
+        if (this.mixerGroup) {
+            currentNode.disconnect();
+            currentNode = this.mixerGroup.connect(currentNode);
+        }
+        currentNode.disconnect();
+        currentNode.connect(this.destinationNode);
     }
 
     public addLowPassFilter(): BiquadFilterNode {
         let lowPassNode = this.context.createBiquadFilter();
         this.effects.lowpass = lowPassNode;
+        if (this.alreadyConnected) {
+            this.rewireConnection();
+        }
+        return lowPassNode;
+    }
+
+    public addLowHigPassFilter(): BiquadFilterNode {
+        let lowPassNode = this.context.createBiquadFilter();
+        this.effects.highpass = lowPassNode;
+        lowPassNode.type = "highpass";
+        lowPassNode.frequency.value = 2200;
+        if (this.alreadyConnected) {
+            this.rewireConnection();
+        }
         return lowPassNode;
     }
 
     public addIIRFilter(feedForward: Array<number>, feedBackward: Array<number>): IIRFilterNode {
         let effectNode = this.context.createIIRFilter(feedForward, feedBackward);
         this.effects.iir = effectNode;
+        if (this.alreadyConnected) {
+            this.rewireConnection();
+        }
         return effectNode;
     }
 

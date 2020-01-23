@@ -11,7 +11,7 @@ export class AudioMixerGroup {
     }
 
     public connect(previuosNode: AudioNode): AudioNode {
-        this.gainNode.connect(previuosNode);
+        previuosNode.connect(this.gainNode);
         return this.gainNode;
     }
 
