@@ -1,5 +1,5 @@
-import {StaticMesh} from "../core/Render/Resources/Mesh/StaticMesh";
-import {Material} from "../core/Render/Resources/Materials/_module/Materials";
+import {StaticMesh} from "../Render/Resources/Mesh/StaticMesh";
+import {Material} from "../Render/Resources/Materials/_module/Materials";
 
 export class SphereMesh extends StaticMesh {
     constructor(material: Material, radius = 1, horizontalSlices = 4, verticalSlices = 4) {

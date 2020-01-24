@@ -7,7 +7,7 @@ import { CanvasComponent } from "../core/Components/UI/CanvasComponent";
 import { LoadingScene } from "./LoadingScene";
 import { BlinnPhongMaterial, BasicMaterial } from "../core/Render/Resources/Materials/_module/Materials";
 import { Vector3 } from "../Math/Mathf";
-import { AudioSource } from "../Audio/AudioSource";
+import { AudioSource } from "../core/Audio/AudioSource";
 import { AudioPlayerActor } from "../core/GameObjects/AudioPlayerActor";
 
 declare var dat: any;

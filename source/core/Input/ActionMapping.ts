@@ -1,4 +1,4 @@
-import {Signal} from "../Signals/Signal";
+import {Signal} from "../../Signals/Signal";
 import {KEY_ACTION} from "./KeyAction";
 
 export class ActionMapping {

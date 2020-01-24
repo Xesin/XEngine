@@ -1,6 +1,6 @@
-import {Signal} from "../Signals/Signal";
-import {Vector3} from "../Math/Mathf";
-import {Game, IDict, IHash} from "../core/Game";
+import {Signal} from "../../Signals/Signal";
+import {Vector3} from "../../Math/Mathf";
+import {Game, IDict, IHash} from "../Game";
 import {ActionMapping} from "./ActionMapping";
 import {AxisMapping} from "./AxisMapping";
 import {KEY_CODE} from "./KeyCodes";

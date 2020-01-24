@@ -1,5 +1,5 @@
 import {BasicLoader, Loader} from "./_module/Loader";
-import { Audio } from "../Audio/Audio";
+import { Audio } from "../core/Audio/Audio";
 
 export class AudioLoader implements BasicLoader {
     public audioName: string;

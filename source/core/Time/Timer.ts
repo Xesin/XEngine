@@ -1,4 +1,4 @@
-import { Signal } from "../Signals/Signal";
+import { Signal } from "../../Signals/Signal";
 
 export class Timer {
 

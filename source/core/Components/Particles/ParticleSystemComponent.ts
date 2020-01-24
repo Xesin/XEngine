@@ -1,6 +1,6 @@
 import { SceneComponent } from "../SceneComponent";
 import { Game } from "../../Game";
-import { Emitter } from "../../../ParticleSystem/Emitter";
+import { Emitter } from "../../ParticleSystem/Emitter";
 import { MeshGroup } from "../../Render/Renderer";
 
 export class ParticleSystemComponent extends SceneComponent {

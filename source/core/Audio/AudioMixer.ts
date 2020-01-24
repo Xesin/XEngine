@@ -1,5 +1,5 @@
 import { AudioMixerGroup } from "./AudioMixerGroup";
-import { IDict } from "../core/Game";
+import { IDict } from "../Game";
 
 export class AudioMixer {
 

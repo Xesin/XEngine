@@ -5,6 +5,6 @@ export * from "./Math/Mathf";
 export * from "./core/Components/Components";
 export * from "./Signals/Signal";
 export * from "./Signals/SignalBinding";
-export * from "./Input/InputManager";
+export * from "./core/Input/InputManager";
 
 export * from "./Test/TestScene";

@@ -1,7 +1,7 @@
 import { SceneComponent } from "../SceneComponent";
 import { Game } from "../../Game";
-import { Audio } from "../../../Audio/Audio";
-import { AudioSource } from "../../../Audio/AudioSource";
+import { Audio } from "../../Audio/Audio";
+import { AudioSource } from "../../Audio/AudioSource";
 import { Signal } from "../../../Signals/Signal";
 
 export class AudioSourceComponent extends SceneComponent {

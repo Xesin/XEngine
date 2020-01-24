@@ -1,4 +1,4 @@
-import { Transform, Vector3 } from "../Math/Mathf";
+import { Transform, Vector3 } from "../../Math/Mathf";
 
 export class Particle {
 

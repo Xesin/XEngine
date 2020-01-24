@@ -1,11 +1,11 @@
 import { Audio } from "./Audio";
-import { Vector3 } from "../XEngine";
-import { Game } from "../core/Game";
+import { Vector3 } from "../../XEngine";
+import { Game } from "../Game";
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { AudioMixer } from "./AudioMixer";
 import { AudioSource } from "./AudioSource";
-import { AudioSourceComponent } from "../core/Components/Audio/AudioSourceComponent";
-import { AudioPlayerActor } from "../core/GameObjects/AudioPlayerActor";
+import { AudioSourceComponent } from "../Components/Audio/AudioSourceComponent";
+import { AudioPlayerActor } from "../GameObjects/AudioPlayerActor";
 
 export class AudioEngine {
 

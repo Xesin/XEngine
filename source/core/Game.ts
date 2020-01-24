@@ -1,16 +1,16 @@
 import { Cache } from "../Loader/_module/Loader";
-import { TimeManager } from "../Time/TimeManager";
+import { TimeManager } from "./Time/TimeManager";
 import {EObject} from "./EObject";
 import {ScaleManager} from "../Scale/ScaleManager";
 import {ScaleType} from "../Scale/EScaleType";
 import {SceneManager} from "./Scenes/SceneManager";
 import {Loader} from "../Loader/Loader";
-import {InputManager} from "../Input/InputManager";
+import {InputManager} from "./Input/InputManager";
 import {TweenManager} from "../tween/TweenManager";
 import {Renderer} from "./Render/Renderer";
 import {Material, BasicMaterial} from "./Render/Resources/Materials/_module/Materials";
 import {Shader} from "./Render/Resources/Shader/Shader";
-import { AudioEngine } from "../Audio/AudioEngine";
+import { AudioEngine } from "./Audio/AudioEngine";
 
 declare global {
 
@@ -201,12 +201,12 @@ export class Game {
 export {IHash} from "./IHash";
 export {IDict} from "./IDict";
 export { Cache } from "../Loader/_module/Loader";
-export { TimeManager } from "../Time/TimeManager";
+export { TimeManager } from "./Time/TimeManager";
 export * from "../Scale/ScaleManager";
 export {SceneManager} from "./Scenes/SceneManager";
 export {Scene} from "./Scenes/Scene";
 export {Loader} from "../Loader/Loader";
-export {InputManager} from "../Input/InputManager";
+export {InputManager} from "./Input/InputManager";
 export * from "../tween/TweenManager";
 export {Renderer} from "./Render/Renderer";
 export {EObject} from "./EObject";

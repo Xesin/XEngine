@@ -1,7 +1,7 @@
 import { Audio } from "./Audio";
-import { Vector3, Game } from "../XEngine";
+import { Vector3, Game } from "../../XEngine";
 import { AudioEngine } from "./AudioEngine";
-import { Signal } from "../Signals/Signal";
+import { Signal } from "../../Signals/Signal";
 
 export class AudioSource {
 

@@ -17,7 +17,7 @@ import {SceneComponent} from "../Components/SceneComponent";
 import {Shader} from "./Resources/Shader/Shader";
 import {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial";
 import * as ShaderMaterialLib from "./Resources/Shader/ShaderCode/ShaderMaterialLib";
-import * as BasicGeometries from "../../BasicGeometries/Geometries";
+import * as BasicGeometries from "../BasicGeometries/Geometries";
 import { Component } from "../Components/Component";
 import { UIComponent } from "../Components/UI/UIComponent";
 import { CanvasComponent } from "../Components/UI/CanvasComponent";
@@ -32,7 +32,7 @@ export {Material, PhongMaterial, ShadowCasterMaterial} from "./Resources/Materia
 export {Shader} from "./Resources/Shader/Shader";
 export {PostProcessMaterial} from "./Resources/Materials/PostProcessMaterial";
 export * from "./Resources/Shader/ShaderCode/ShaderMaterialLib";
-export * from "../../BasicGeometries/Geometries";
+export * from "../BasicGeometries/Geometries";
 
 
 class RenderObject {

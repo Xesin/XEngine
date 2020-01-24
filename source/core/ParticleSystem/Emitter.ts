@@ -1,9 +1,9 @@
 import { Particle } from "./Particle";
-import { StaticMesh } from "../core/Render/Resources/Mesh/StaticMesh";
+import { StaticMesh } from "../Render/Resources/Mesh/StaticMesh";
 import { QuadMesh } from "../BasicGeometries/Quad";
-import { Material } from "../core/Render/Renderer";
-import { BasicMaterial } from "../core/Render/Resources/Materials/BasicMaterial";
-import { Vector3 } from "../Math/Mathf";
+import { Material } from "../Render/Renderer";
+import { BasicMaterial } from "../Render/Resources/Materials/BasicMaterial";
+import { Vector3 } from "../../Math/Mathf";
 
 export class Emitter {
 
