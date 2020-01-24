@@ -51,14 +51,14 @@ export class Actor extends EObject {
         if (this.Transform) {
             return this.Transform.forward();
         }
-        return new Vector3(0, 0, 0);
+        return Vector3.zero;
     }
 
     public getActorRightVector(): Vector3 {
         if (this.Transform) {
             return this.Transform.right();
         }
-        return new Vector3(0, 0, 0);
+        return Vector3.right;
     }
 
 

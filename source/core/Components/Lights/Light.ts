@@ -40,11 +40,7 @@ export class Light extends SceneComponent {
         translation.z *= -1.0;
         let matrix = new Mat4x4();
 
-        matrix.lookAt(translation, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-
-        // mat4.translate(matrix.elements, matrix.elements, new Vector3(0).toArray());
-        // mat4.invert(matrix.elements, matrix.elements);
-
+        matrix.lookAt(translation, Vector3.zero, Vector3.up);
         return matrix;
     }
 

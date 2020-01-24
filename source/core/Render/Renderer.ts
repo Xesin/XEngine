@@ -423,8 +423,15 @@ export class Renderer {
                     let spotLightDirectionUniform = material.getLightUniform(i, "spotLightDirection");
                     let lightProjectionUniform = material.getLightUniform(i, "worldToShadowMatrix");
                     let lightShadowBiasUniform = material.getLightUniform(i, "shadowBias");
-                    spotLightDirectionUniform.value = new Vector4(0, 0, 0, 0);
-                    lightAttenuationUniform.value = new Vector4(0, 0, 0, 1.0);
+                    if (!spotLightDirectionUniform.value) {
+                        spotLightDirectionUniform.value = new Vector4(0, 0, 0, 0);
+                    }
+                    spotLightDirectionUniform.value = spotLightDirectionUniform.value as Vector4;
+                    if (!lightAttenuationUniform.value) {
+                        lightAttenuationUniform.value = new Vector4(0, 0, 0, 0);
+                    }
+                    lightAttenuationUniform.value = lightAttenuationUniform.value as Vector4;
+                    lightAttenuationUniform.value.setTo(0, 0, 0, 1.0);
                     if (this.shadowMap && meshGroup.Mesh.recieveShadows) {
                         if (material instanceof PhongMaterial) {
                             if ((material as PhongMaterial).shadowMap) {
@@ -475,7 +482,7 @@ export class Renderer {
                         lightIntensityUniform.value = light.intensity;
                         lightColorUniform.value = light.color.getVector3();
                     } else {
-                        lightColorUniform.value = new Vector3(0, 0, 0);
+                        lightColorUniform.value = Vector3.zero;
                     }
 
                 }

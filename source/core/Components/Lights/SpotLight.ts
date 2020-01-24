@@ -20,7 +20,7 @@ export class SpotLight extends Light {
         let target = this.transform.position.Clone().add(translation);
         let matrix = new Mat4x4();
 
-        return matrix.lookAt(this.transform.position, target, new Vector3(0, 1, 0));
+        return matrix.lookAt(this.transform.position, target, Vector3.up);
     }
 
     public get projectionMatrix(): Mat4x4 {

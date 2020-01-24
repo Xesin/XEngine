@@ -3,7 +3,7 @@ import {Vector3} from "./Mathf";
 export class Color {
 
     public zOffset = 0;
-
+    private colorVector = new Vector3(0, 0, 0);
     public r: number;
     public g: number;
     public b: number;
@@ -62,7 +62,8 @@ export class Color {
     }
 
     public getVector3(): Vector3 {
-        return new Vector3(this.r, this.g, this.b);
+        this.colorVector.setTo(this.r, this.g, this.b);
+        return this.colorVector;
     }
 }
 

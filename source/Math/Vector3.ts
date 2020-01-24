@@ -2,7 +2,9 @@ import {Mat4x4} from "./Mathf";
 
 export class Vector3 {
 
-    private static readonly _zero = new Vector3(0);
+    public static readonly zero = new Vector3(0, 0, 0);
+    public static readonly up = new Vector3(0, 1, 0);
+    public static readonly right = new Vector3(1, 0, 0);
     public zOffset = 0;
 
     private dirty = true;
@@ -193,12 +195,6 @@ export class Vector3 {
         this.arr[2] = this.z;
         return this.arr;
     }
-
-    public get Zero(): Vector3 {
-        Vector3._zero.setTo(0);
-        return Vector3._zero;
-    }
-
 
     public get Dirty(): boolean {
         return this.dirty;

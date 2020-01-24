@@ -4,10 +4,7 @@ export class Mat4x4 {
 
     public elements: Float32Array;
     private v0 = new Vector3();
-    private vX = new Vector3();
-    private vY = new Vector3();
-    private vZ = new Vector3();
-
+    
     constructor() {
         this.elements = new Float32Array(4 * 4);
         this.identity();
