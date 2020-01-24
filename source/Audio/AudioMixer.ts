@@ -59,6 +59,17 @@ export class AudioMixer {
         return lowPassNode;
     }
 
+    public removeLowPassFilter() {
+        let lowPassNode = this.effects.lowpass;
+        if (lowPassNode) {
+            lowPassNode.disconnect();
+            this.effects.lowpass = undefined;
+            if (this.alreadyConnected) {
+                this.rewireConnection();
+            }
+        }
+    }
+
     public addHigPassFilter(): BiquadFilterNode {
         let lowPassNode = this.context.createBiquadFilter();
         this.effects.highpass = lowPassNode;
@@ -70,6 +81,17 @@ export class AudioMixer {
         return lowPassNode;
     }
 
+    public removeHighPassFilter() {
+        let highPassNode = this.effects.highpass;
+        if (highPassNode) {
+            highPassNode.disconnect();
+            this.effects.highpass = undefined;
+            if (this.alreadyConnected) {
+                this.rewireConnection();
+            }
+        }
+    }
+
     public addIIRFilter(feedForward: Array<number>, feedBackward: Array<number>): IIRFilterNode {
         let effectNode = this.context.createIIRFilter(feedForward, feedBackward);
         this.effects.iir = effectNode;
@@ -77,6 +99,17 @@ export class AudioMixer {
             this.rewireConnection();
         }
         return effectNode;
+    }
+
+    public removeIIRFilter() {
+        let iirNode = this.effects.iir;
+        if (iirNode) {
+            iirNode.disconnect();
+            this.effects.iir = undefined;
+            if (this.alreadyConnected) {
+                this.rewireConnection();
+            }
+        }
     }
 
     public set volume(v: number) {
