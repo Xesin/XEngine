@@ -68,7 +68,10 @@ export class Loader {
      * @param  {number} frameHeight
      */
     public spriteSheet(imageName: string, imageUrl: string, frameWidth: number, frameHeight: number) {
-        this.pendingLoads.push(new ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
+        if (!this.game.cache.images.hasOwnProperty(imageName)
+        && this.pendingLoads.filter(p => p.imageName && p.imageName === imageName).length === 0) {
+            this.pendingLoads.push(new ImageLoader(imageName, imageUrl, this, frameWidth, frameHeight));
+        }
     }
 
     /**
@@ -77,17 +80,26 @@ export class Loader {
      * @param  {string} jsonUrl
      */
     public jsonSpriteSheet(imageName: string, imageUrl: string, jsonUrl: string) {
-        this.pendingLoads.push(new JsonImageLoader(imageName, imageUrl, jsonUrl, this));
+        if (!this.game.cache.json.hasOwnProperty(imageName)
+        && this.pendingLoads.filter(p => p.imageName && p.imageName === imageName).length === 0) {
+            this.pendingLoads.push(new JsonImageLoader(imageName, imageUrl, jsonUrl, this));
+        }
     }
 
 
     public bitmapFont(fontName, imageUrl, xmlUrl) {
-        this.pendingLoads.push(new BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
+        if (!this.game.cache.bitmapData.hasOwnProperty(fontName)
+        && this.pendingLoads.filter(p => p.imageName && p.imageName === fontName).length === 0) {
+            this.pendingLoads.push(new BitmapXMLLoader(fontName, imageUrl, xmlUrl, this));
+        }
     }
 
 
     public audio(audioName: string, audioUrl: Array<string>) {
-        this.pendingLoads.push(new AudioLoader(audioName, audioUrl, this));
+        if (!this.game.cache.audios.hasOwnProperty(audioName)
+        && this.pendingLoads.filter(p => p.audioName && p.audioName === audioName).length === 0) {
+            this.pendingLoads.push(new AudioLoader(audioName, audioUrl, this));
+        }
     }
 
     public obj(objURL, mtlUrl) {
