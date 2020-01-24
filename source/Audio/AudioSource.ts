@@ -14,6 +14,8 @@ export class AudioSource {
     private pauseTime: number;
     private game: Game;
     private panner: PannerNode;
+    private _refDistance = 300;
+    private _rollOffFactor = 1.0;
 
     public isPlaying: boolean;
     public isPaused: boolean;
@@ -57,8 +59,8 @@ export class AudioSource {
             panner.coneInnerAngle = 360,
             panner.coneOuterAngle = 0;
             panner.coneOuterGain = 0.5;
-            panner.maxDistance = 200;
-            panner.rolloffFactor = 1.0;
+            panner.maxDistance = this.refDistance;
+            panner.rolloffFactor = this.rollOffFactor;
 
             if (this.sourceAudio.audioMixer) {
                 this.sourceAudio.audioMixer.connect(panner, this.audioEngine.gainNode);
@@ -143,5 +145,27 @@ export class AudioSource {
             this.audioSourceNode.stop();
         }
         this.isPlaying = false;
+    }
+
+    public set refDistance(v: number) {
+        this._refDistance = v;
+        if (this.panner) {
+            this.panner.refDistance = v;
+        }
+    }
+
+    public get refDistance(): number {
+        return this._refDistance;
+    }
+
+    public set rollOffFactor(v: number) {
+        this._rollOffFactor = v;
+        if (this.panner) {
+            this.panner.rolloffFactor = v;
+        }
+    }
+
+    public get rollOffFactor(): number {
+        return this._rollOffFactor;
     }
 }
