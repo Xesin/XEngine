@@ -86,7 +86,7 @@ export class Loader {
     }
 
 
-    public audio(audioName, audioUrl) {
+    public audio(audioName: string, audioUrl: Array<string>) {
         this.pendingLoads.push(new AudioLoader(audioName, audioUrl, this));
     }
 

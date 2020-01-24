@@ -22,7 +22,7 @@ export class TestScene extends Scene {
     public static game;
 
     public preload() {
-        this.game.loader.audio("music", "img/BlastProcessing.ogg");
+        this.game.loader.audio("music", ["img/fadsf.mp3", "img/BlastProcessing.ogg"]);
     }
 
     public start() {

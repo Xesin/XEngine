@@ -3,12 +3,12 @@ import { Audio } from "../Audio/Audio";
 
 export class AudioLoader implements BasicLoader {
     public audioName: string;
-    public audioUrl: string;
+    public audioUrl: Array<string>;
     public completed: boolean;
     public isLoading: boolean;
     private loader: Loader;
 
-    constructor (audioName: string, audioUrl: string, loader: Loader) {
+    constructor (audioName: string, audioUrl: Array<string>, loader: Loader) {
         this.audioName = audioName;
         this.audioUrl = audioUrl;
         this.completed = false;
@@ -16,12 +16,14 @@ export class AudioLoader implements BasicLoader {
         this.isLoading = false;
     }
 
-    public load() {
+    private attemptLoad(attemptNumber: number, callback: Function) {
+        if (attemptNumber > this.audioUrl.length - 1) {
+            this.completed = true;
+            callback.apply(this, false);
+        }
         let _this = this;
-        this.isLoading = true;
-        let newAudio = new Audio(null, this.audioName);
         let request = new XMLHttpRequest();
-        request.open("GET", _this.audioUrl, true);
+        request.open("GET", this.audioUrl[attemptNumber], true);
         request.responseType = "arraybuffer";
         let handler = function () {
             let cachedAudio = _this.loader.game.cache.audios[_this.audioName];
@@ -30,19 +32,31 @@ export class AudioLoader implements BasicLoader {
                     cachedAudio.buffer = buffer;
                     cachedAudio.decoded = true;
                     _this.completed = true;
-                    _this.loader._notifyCompleted();
+                    callback.apply(_this, [true]);
                 }, function (error: DOMException) {
                     console.error(error.message);
-                    _this.completed = true;
-                    _this.loader._notifyCompleted();
+                    _this.attemptLoad(++attemptNumber, callback);
                 });
             } else {
-                _this.completed = true;
-                _this.loader._notifyCompleted();
+                _this.attemptLoad(++attemptNumber, callback);
             }
         };
         request.onload = handler;
-        _this.loader.game.cache.audios[_this.audioName] = newAudio;
         request.send();
+    }
+
+    public load() {
+        let _this = this;
+        this.isLoading = true;
+        let newAudio = new Audio(null, this.audioName);
+
+        let attemptNumber = 0;
+        let handler = function (success: boolean) {
+            _this.completed = true;
+            _this.loader._notifyCompleted();
+        };
+        this.attemptLoad(attemptNumber, handler);
+
+        _this.loader.game.cache.audios[_this.audioName] = newAudio;
     }
 }
