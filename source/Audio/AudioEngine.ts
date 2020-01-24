@@ -88,6 +88,14 @@ export class AudioEngine {
         return playerActor;
     }
 
+    public pauseAudio() {
+        this.context.suspend();
+    }
+
+    public resumeAudio() {
+        this.context.resume();
+    }
+
     public createMixerGroup(): AudioMixerGroup {
         let group = new AudioMixerGroup(this.context);
         return group;
