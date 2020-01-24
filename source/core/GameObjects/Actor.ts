@@ -38,6 +38,9 @@ export class Actor extends EObject {
     public update(deltaTime: number) {
         let components = this.GetComponents<Component>(Component);
         components.forEach(component => {
+            if (!component.bInitialized) {
+                component.beginPlay();
+            }
             if (component.bCanUpdate) {
                 component.update(deltaTime);
             }

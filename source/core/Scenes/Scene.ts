@@ -46,7 +46,7 @@ export class Scene {
                 actor.update(deltaTime);
             }
         });
-        this.actors.removePending();
+        this.actors = this.actors.removePending();
     }
 
     public Render(renderer: Renderer, camera = this.mainCamera) {

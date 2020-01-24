@@ -1,6 +1,7 @@
 import { Audio } from "./Audio";
 import { Vector3, Game } from "../XEngine";
 import { AudioEngine } from "./AudioEngine";
+import { Signal } from "../Signals/Signal";
 
 export class AudioSource {
 
@@ -18,6 +19,7 @@ export class AudioSource {
     public isPaused: boolean;
     public is3D: boolean;
     public position: Vector3;
+    public onStop: Signal;
 
     constructor(
         audio: Audio
@@ -37,6 +39,7 @@ export class AudioSource {
         this.startedAtTime = 0;
         this.game = game;
         this.is3D = is3D;
+        this.onStop = new Signal();
         if (this.is3D && !this.position) {
             this.position = new Vector3(0, 0, 0);
         }
@@ -44,7 +47,9 @@ export class AudioSource {
 
     private createAudioSource() {
         let source = this.audioContext.createBufferSource();
+        source.buffer = this.sourceAudio.buffer;
         let panner = null;
+        let _this = this;
         if (this.is3D) {
             panner = this.audioContext.createPanner();
             this.panner = panner;
@@ -61,7 +66,6 @@ export class AudioSource {
                 panner.connect(this.audioEngine.gainNode);
             }
 
-            source.buffer = this.sourceAudio.buffer;
             source.connect(panner);
         } else {
             if (this.sourceAudio.audioMixer) {
@@ -70,6 +74,10 @@ export class AudioSource {
                 source.connect(this.audioEngine.gainNode);
             }
         }
+
+        source.onended = function() {
+            _this.onStop.dispatch();
+        };
 
         return source;
     }
@@ -87,13 +95,21 @@ export class AudioSource {
             this.audioSourceNode.loop = this.loop;
             this.audioSourceNode.onended = function(event) {
                 if (!_this.isPaused) {
-                    _this.startedAtTime = _this.game.time.elapsedTime;
+                    _this.onStop.dispatch();
                 }
             };
             this.startedAtTime = this.game.time.elapsedTime - offset * 1000;
             this.audioSourceNode.start(0, offset);
             this.isPlaying = true;
             this.isPaused = false;
+        }
+    }
+
+    public destroy() {
+        if (this.isPlaying) {
+            this.audioSourceNode.stop();
+            this.audioSourceNode = null;
+            this.panner = null;
         }
     }
 

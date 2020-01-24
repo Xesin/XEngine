@@ -15,7 +15,7 @@ import { AudioEngine } from "../Audio/AudioEngine";
 declare global {
 
     interface Array<T> {
-        removePending();
+        removePending(): Array<T>;
         equals(other: Array<T>): boolean;
 
     }
@@ -54,7 +54,7 @@ Array.prototype.equals = function (array): boolean {
 
 
 Array.prototype.removePending = function () {
-    this.filter(go => {
+    return this.filter(go => {
         if (go instanceof EObject) {
             if ((go as EObject).pendingDestroy) {
                 return false;

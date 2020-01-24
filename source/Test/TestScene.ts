@@ -8,6 +8,7 @@ import { LoadingScene } from "./LoadingScene";
 import { BlinnPhongMaterial, BasicMaterial } from "../core/Render/Resources/Materials/_module/Materials";
 import { Vector3 } from "../Math/Mathf";
 import { AudioSource } from "../Audio/AudioSource";
+import { AudioPlayerActor } from "../core/GameObjects/AudioPlayerActor";
 
 declare var dat: any;
 let actor: TestActor = null;
@@ -16,7 +17,7 @@ export class TestScene extends Scene {
 
     private dirLight: DirectionalLight;
     private spotLight: SpotLight;
-    public audio: AudioSource;
+    public audio: AudioPlayerActor;
 
     public static game;
 
@@ -101,15 +102,15 @@ export class TestScene extends Scene {
         //     actor.Transform.position.setTo(0, 0, j);
         //     actor.staticMesh.Mesh = geom2;
         // }
-        let mixer = this.game.audioEngine.createMixer();
-        let mixerGroup = this.game.audioEngine.createMixerGroup();
-        mixer.attachToGroup(mixerGroup);
+        // let mixer = this.game.audioEngine.createMixer();
+        // let mixerGroup = this.game.audioEngine.createMixerGroup();
+        // mixer.attachToGroup(mixerGroup);
 
-        mixer.volume = 3;
+        // mixer.volume = 3;
         let audio = this.game.cache.audio("music");
-        audio.audioMixer = mixer;
+        // audio.audioMixer = mixer;
 
-        this.audio = this.game.audioEngine.playAudioAtPosition(audio, new Vector3(), 0, true);
+        this.audio = this.game.audioEngine.playAudioAtPosition(audio, new Vector3(), true);
     }
 }
 

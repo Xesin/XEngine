@@ -4,6 +4,7 @@ import {EObject} from "../EObject";
 export class Component extends EObject {
     public parent: Component;
     public bCanUpdate: boolean;
+    public bInitialized: boolean;
     public game: Game;
     public name: string;
 
@@ -21,5 +22,10 @@ export class Component extends EObject {
     // tslint:disable-next-line: no-empty
     public update(deltaTime: number) {
 
+    }
+
+    // tslint:disable-next-line: no-empty
+    public beginPlay() {
+        this.bInitialized = true;
     }
 }

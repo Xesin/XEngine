@@ -4,6 +4,8 @@ import { Game } from "../core/Game";
 import { AudioMixerGroup } from "./AudioMixerGroup";
 import { AudioMixer } from "./AudioMixer";
 import { AudioSource } from "./AudioSource";
+import { AudioSourceComponent } from "../core/Components/Audio/AudioSourceComponent";
+import { AudioPlayerActor } from "../core/GameObjects/AudioPlayerActor";
 
 export class AudioEngine {
 
@@ -60,27 +62,30 @@ export class AudioEngine {
         }
     }
 
-    public playAudio(audio: Audio, time = 0, loop = false): AudioSource {
-        let instance = this.createAudio(audio, time, loop);
-        instance.start(time);
+    public playAudio(audio: Audio, loop = false): AudioPlayerActor {
+        let playerActor = this.game.sceneManager.currentScene.Instantiate(AudioPlayerActor, "AutoAudioCompoennt") as AudioPlayerActor;
+        playerActor.audioSource.is3DSound = false;
+        playerActor.audioSource.loop = loop;
+        playerActor.audioSource.audio = audio;
+        playerActor.autoDestroy = true;
 
-        return instance;
+        return playerActor;
     }
 
     public createAudio(audio: Audio, time = 0, loop = false): AudioSource {
         let instance = new AudioSource(audio, this.context, this, this.game, loop);
-        instance.start(time);
-
         return instance;
     }
 
-    public playAudioAtPosition(audio: Audio, position: Vector3, time = 0, loop = false): AudioSource {
-        let instance = this.createAudio(audio, time, loop);
-        instance.is3D = true;
-        instance.position = position;
-        instance.start(time);
+    public playAudioAtPosition(audio: Audio, position: Vector3, loop = false): AudioPlayerActor {
+        let playerActor = this.game.sceneManager.currentScene.Instantiate(AudioPlayerActor, "AutoAudioCompoennt") as AudioPlayerActor;
+        playerActor.audioSource.is3DSound = true;
+        playerActor.audioSource.loop = loop;
+        playerActor.Transform.position.setTo(position.x, position.y, position.z);
+        playerActor.autoDestroy = true;
+        playerActor.audioSource.audio = audio;
 
-        return instance;
+        return playerActor;
     }
 
     public createMixerGroup(): AudioMixerGroup {
