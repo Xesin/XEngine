@@ -19,6 +19,9 @@ export class AudioMixer {
 
     public attachToGroup(mixerGroup: AudioMixerGroup) {
         this.mixerGroup = mixerGroup;
+        if (this.alreadyConnected) {
+            this.rewireConnection();
+        }
     }
 
     public connect(previousNode: AudioNode, destinationNode: AudioNode) {
