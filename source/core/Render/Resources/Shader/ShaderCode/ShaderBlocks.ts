@@ -55,7 +55,7 @@ export class ShaderBlocks {
 
     public static instancedProperties = [
         "in mat4 instancedModel;",
-    ]
+    ];
 
     public static MVPUniforms =
     [
@@ -102,9 +102,16 @@ export class ShaderBlocks {
 
     public static mvpAndPosCalc =
     [
-        "mvMatrix = viewMatrix * modelMatrix;",
-        "mvpMatrix = pMatrix * mvMatrix;",
-        "gl_Position = mvpMatrix * aVertexPosition;",
+        "#ifdef INSTANCE_ENABLED",
+            "mvMatrix = viewMatrix * instancedModel;",
+            "mvpMatrix = pMatrix * mvMatrix;",
+            "gl_Position = mvpMatrix * aVertexPosition;",
+            "vWorldPos = instancedModel * aVertexPosition;",
+        "#else",
+            "mvMatrix = viewMatrix * modelMatrix;",
+            "mvpMatrix = pMatrix * mvMatrix;",
+            "gl_Position = mvpMatrix * aVertexPosition;",
+        "#endif",
         "vNormal = normalize((normalMatrix * vec4(aVertexNormal, 1.0)).xyz);",
     ];
 
