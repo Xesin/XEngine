@@ -1,16 +1,17 @@
 {
+    "include": [
+        "typings/*.d.ts/",
+        "source/**/**.ts"
+    ],
     "compilerOptions": {
-        "target": "es5",
+        "outDir": "./dist/",
         "sourceMap": true,
-        "module": "amd",
-        "moduleResolution": "node",
-        "isolatedModules": false,
+        "module": "CommonJS",
+        "target": "es5",
         "jsx": "react",
-        "outFile": "XEngine.js",
-        "declaration": true,
+        "allowJs": true,
         "noImplicitAny": false,
         "removeComments": true,
-        "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "alwaysStrict": true

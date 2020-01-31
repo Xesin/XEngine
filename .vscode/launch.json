@@ -1,15 +1,15 @@
 {
-	// Utilizar IntelliSense para aprender acerca de los posibles atributos.
-	// Mantenga el puntero para ver las descripciones de los existentes atributos 
-	// Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch Chrome against localhost",
-			"url": "http://localhost/XEngine/",
-			"webRoot": "${workspaceFolder}"
-		}
-	]
+    // Use IntelliSense para saber los atributos posibles.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos 
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8081",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
 }
