@@ -11,7 +11,7 @@
   "author": "Francisco Ferrer",
   "license": "MIT",
   "devDependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gulp": "^4.0.2",
     "gulp-clean": "^0.4.0",
     "gulp-sequence": "^1.0.0",
